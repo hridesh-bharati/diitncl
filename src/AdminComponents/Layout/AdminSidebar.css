@@ -1,0 +1,89 @@
+/* Sidebar container */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 260px;
+  background: #ffffff;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  padding: 12px;
+  transition: transform 0.3s ease;
+  z-index: 1001;
+}
+
+/* Closed (mobile default) */
+.admin-sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+/* Open */
+.admin-sidebar.open {
+  transform: translateX(0);
+}
+
+/* Header */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 6px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Sidebar links */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  color: #444;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sidebar-item svg {
+  font-size: 20px;
+  color: #4f46e5;
+}
+
+.sidebar-item:hover {
+  background: #eef2ff;
+}
+
+/* Active tab */
+.sidebar-item.active {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.sidebar-item.active svg {
+  color: #fff;
+}
+
+/* Icon button */
+.icon-btn {
+  border: none;
+  background: none;
+}
+
+/* Backdrop */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+
+/* Desktop behaviour */
+@media (min-width: 992px) {
+  .admin-sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: none;
+  }
+}
