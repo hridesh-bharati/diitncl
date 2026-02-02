@@ -1,90 +1,40 @@
-/* Android Material Design System - Optimized */
 .android-app-container {
-  /* font-family: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; */
   background: #f8f9fa;
   min-height: 100vh;
 }
 
-/* Custom Colors & Gradients */
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-}
-
-.gradient-text-warning {
-  background: linear-gradient(45deg, #FFD700, #FF6B6B);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Course Cards */
-.course-card {
-  border: 1px solid rgba(0,0,0,0.05) !important;
-}
-
-.course-title {
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Progress Bars */
+/* Progress */
 .progress {
-  background-color: #f0f0f0;
+  background: #eee;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .progress-bar {
-  border-radius: 10px;
-  transition: width 1s ease-in-out;
+  height: 100%;
+  transition: width 1s ease;
 }
 
-/* Hover Effects */
-.hover-primary:hover {
-  color: #1976d2 !important;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .display-4 {
-    font-size: 2rem;
-  }
-  
-  .display-5 {
-    font-size: 1.75rem;
-  }
-  
-  .course-card {
-    margin-bottom: 1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .container {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  
-  .btn-lg {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-}
-/* Add these to your existing Desc.css file */
-
-/* Progress Bar Animation */
-.progress-bar {
-  transition: width 1s ease-in-out;
-}
-
-/* Circular Chart Animation */
+/* Circular Chart */
 .completion-chart {
-  transition: all 0.3s ease;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.completion-inner {
+  background: #fff;
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover */
+a:hover {
+  color: #1976d2;
 }

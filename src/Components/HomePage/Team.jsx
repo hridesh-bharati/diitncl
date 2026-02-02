@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
+import "./Team.css"; // We'll create this file next
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Team = () => {
   const tpath = "images/team/team";
-
   const [hrideshData, setHrideshData] = useState({
     name: "Hridesh Rao",
     bio: "Frontend & MERN Stack Developer",
-    image: "",
+    image: "https://via.placeholder.com/150",
     repos: 0,
   });
 
@@ -33,12 +33,7 @@ const Team = () => {
       bio: "Founder of DIIT with 20+ years of experience in IT and education. Leading with vision and passion.",
       image: `${tpath}1.png`,
       badges: ["🎓 Education Expert", "🥇 Top Mentor"],
-      socialLinks: {
-        phone: "tel:+919918151032",
-        whatsapp: "https://wa.me/919918151032",
-        linkedin: "#",
-        github: "#",
-      },
+      socialLinks: { phone: "tel:+919918151032", whatsapp: "https://wa.me/919918151032", linkedin: "#" },
     },
     {
       name: "Santosh Chauhan",
@@ -46,44 +41,27 @@ const Team = () => {
       bio: "Handles administrative operations, student support, and strategic decisions with utmost dedication.",
       image: `${tpath}2.png`,
       badges: ["🎯 Management Pro"],
-      socialLinks: {
-        phone: "tel:+917398889347",
-        whatsapp: "https://wa.me/917398889347",
-        linkedin: "#",
-        github: "#",
-      },
+      socialLinks: { phone: "tel:+917398889347", whatsapp: "https://wa.me/917398889347", linkedin: "#" },
     },
     {
       name: "Manjesh Vishwakarma",
       role: "Senior Accounts Executive",
-      bio: "Specialist in digital finance, business accounting, and official documentation with a strong focus on accuracy and compliance.",
+      bio: "Specialist in digital finance, business accounting, and official documentation with accuracy.",
       image: `${tpath}3.png`,
-      badges: ["📈 Financial Compliance"],
-      socialLinks: {
-        phone: "tel:+919621444858",
-        whatsapp: "https://wa.me/919621444858",
-        linkedin: "#",
-        github: "#",
-      },
+      badges: ["📈 Finance Pro"],
+      socialLinks: { phone: "tel:+919621444858", whatsapp: "https://wa.me/919621444858", linkedin: "#" },
     },
     {
       name: hrideshData.name,
-      role: "Technical Instructor & Lab Coordinator",
+      role: "Technical Instructor",
       bio: hrideshData.bio,
       image: hrideshData.image,
       repoCount: hrideshData.repos,
       badges: [
         "🚀 MERN Specialist",
-        ...(hrideshData.repos >= 100
-          ? ["🏆 GitHub Legend"]
-          : hrideshData.repos >= 50
-            ? ["🌟 GitHub Master"]
-            : hrideshData.repos >= 20
-              ? ["⭐ Star Developer"]
-              : []),
+        ...(hrideshData.repos >= 20 ? ["⭐ Star Developer"] : []),
       ],
       socialLinks: {
-        phone: "tel:+917267995307",
         whatsapp: "https://wa.me/917267995307",
         linkedin: "https://www.linkedin.com/in/hridesh-bharati-95867425b/",
         github: "https://github.com/hridesh-bharati",
@@ -91,83 +69,61 @@ const Team = () => {
     },
   ];
 
-  const socialIcons = {
-    phone: "bi-telephone-fill",
-    whatsapp: "bi-whatsapp",
-    linkedin: "bi-linkedin",
-    github: "bi-github",
-  };
-
   return (
-    <>
+    <section className="team-section py-5" id="team">
+      <div className="container">
+        <div className="text-center mb-5 mt-4">
+          <h2 className="section-title">
+            Meet Our <span className="text-highlight">Expert Team</span>
+          </h2>
+          <div className="title-underline"></div>
+          <p className="section-subtitle mt-3">
+            Passionate educators and professionals shaping the future of tech and business education.
+          </p>
+        </div>
 
-      <section className="py-4" id="team">
-        <div className="container-fluid">
-          <div className="text-center mb-5">
-            <h2 className="fw-bold">
-              Meet Our <span className="text-gradient">Expert Team</span>
-            </h2>
-            <p className="text-muted" style={{ maxWidth: 600, margin: "auto" }}>
-              Passionate educators and professionals shaping the future of tech and business education.
-            </p>
-          </div>
-
-          <div className="row g-4 my-1">
-            {expertData.map(({ name, role, bio, image, socialLinks, repoCount, badges }) => (
-              <div className="col-12 col-sm-6 col-lg-3 my-5" key={name}>
-                <div className="expert-card">
-                  <div className="expert-avatar-wrapper">
-                    <img src={image} alt={name} className="expert-avatar" loading="lazy" />
+        <div className="row g-5 ">
+          {expertData.map((member, index) => (
+            <div className="col-12 col-sm-6 col-lg-3" key={index}>
+              <div className="expert-card">
+                <div className="card-top-design"></div>
+                <div className="expert-image-container">
+                  <img src={member.image} alt={member.name} className="expert-img" />
+                </div>
+                
+                <div className="expert-info text-center">
+                  <h4 className="expert-name">{member.name}</h4>
+                  <p className="expert-role">{member.role}</p>
+                  
+                  <div className="badge-container">
+                    {member.badges.map((badge, bIdx) => (
+                      <span key={bIdx} className="custom-badge">{badge}</span>
+                    ))}
                   </div>
 
-                  <div className="expert-name">{name}</div>
-                  <div className="expert-role">{role}</div>
+                  <p className="expert-bio">{member.bio}</p>
 
-                  {badges?.length > 0 && (
-                    <div className="d-flex flex-wrap justify-content-center mb-2">
-                      {badges.map((badge, idx) => (
-                        <span key={idx} className="badge-tag">{badge}</span>
-                      ))}
+                  {member.repoCount !== undefined && (
+                    <div className="github-metric">
+                      <i className="bi bi-github"></i>
+                      <span>{member.repoCount} Projects</span>
                     </div>
                   )}
 
-                  <div className="expert-bio">{bio}</div>
-
-                  {typeof repoCount === "number" && (
-                    <div className="expert-repos">
-                      <span className="badge bg-dark">
-                        <i className="bi bi-journal-code me-1" />
-                        {repoCount} Public GitHub Repos
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="expert-social mt-3">
-                    {["phone", "whatsapp", "linkedin", "github"].map((key) => {
-                      const url = socialLinks[key];
-                      if (!url) return null;
-                      const isPhone = key === "phone";
-                      return (
-                        <a
-                          key={key}
-                          href={url}
-                          target={isPhone ? undefined : "_blank"}
-                          rel={isPhone ? undefined : "noopener noreferrer"}
-                          className="m-2 fs-4"
-                          title={key.charAt(0).toUpperCase() + key.slice(1)}
-                        >
-                          <i className={`bi ${socialIcons[key]}`}></i>
-                        </a>
-                      );
-                    })}
+                  <div className="social-tray">
+                    {Object.entries(member.socialLinks).map(([key, url]) => (
+                      <a key={key} href={url} target="_blank" rel="noreferrer" className={`social-icon ${key}`}>
+                        <i className={`bi bi-${key === 'phone' ? 'telephone' : key}`}></i>
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

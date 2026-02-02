@@ -125,10 +125,10 @@ export default function Header() {
 
 
 
-  const brandNames = [
-  "दृष्टि कंप्यूटर सेंटर",
-  "डिजिटल शिक्षा की पहचान",
-  "प्रवेश प्रारंभ"
+const brandNames = [
+  "Drishtee Computer Center",
+  "Empowering Digital Skills",
+  "Enroll Today"
 ];
 
 
@@ -183,6 +183,7 @@ export default function Header() {
           <ul className="nav-links">
             <li><Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link></li>
             <li><Link to="/About" className={location.pathname === "/About" ? "active" : ""}>About</Link></li>
+            <li><Link to="/Branch" className={location.pathname === "/Branch" ? "active" : ""}>Branch</Link></li>
             <li><Link to="/OurCourses" className={location.pathname === "/OurCourses" ? "active" : ""}>Courses</Link></li>
             <li><Link to="/Library" className={location.pathname === "/Library" ? "active" : ""}>Library</Link></li>
             <li><Link to="/Gallery" className={location.pathname === "/Gallery" ? "active" : ""}>Gallery</Link></li>
@@ -296,7 +297,7 @@ export default function Header() {
           <>
 
             <img src="/images/icon/logo.png" className="mobile-logo" alt="Brand" />
-            <span className="mobile-title typing fs-6">
+            <span className="mobile-title typing small">
               {text}
               <span className="cursor">|</span>
             </span>

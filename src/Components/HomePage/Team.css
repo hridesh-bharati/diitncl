@@ -1,0 +1,149 @@
+:root {
+  --primary-color: #0d6efd;
+  --text-gradient: linear-gradient(45deg, #0d6efd, #00d4ff);
+  --card-bg: #ffffff;
+}
+
+.team-section {
+  background: #f8f9fa;
+  overflow: hidden;
+}
+
+.section-title {
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: #212529;
+}
+
+.text-highlight {
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.title-underline {
+  width: 80px;
+  height: 4px;
+  background: var(--text-gradient);
+  margin: 10px auto;
+  border-radius: 2px;
+}
+
+/* Card Styling */
+.expert-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 30px 20px;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  border: 1px solid rgba(0,0,0,0.02);
+}
+
+.expert-card:hover {
+  transform: translateY(-15px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Image Container */
+.expert-image-container {
+  width: 120px;
+  height: 120px;
+  margin: -80px auto 20px;
+  border-radius: 50%;
+  padding: 5px;
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.expert-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #fff;
+}
+
+/* Typography */
+.expert-name {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.expert-role {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.expert-bio {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Badges */
+.custom-badge {
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 2px;
+  display: inline-block;
+}
+
+/* GitHub Metric */
+.github-metric {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #24292e;
+  color: white;
+  padding: 6px 15px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+}
+
+/* Social Icons */
+.social-tray {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f1f1f1;
+  color: #444;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.social-icon:hover {
+  color: white;
+}
+
+.social-icon.whatsapp:hover { background: #25D366; }
+.social-icon.linkedin:hover { background: #0077B5; }
+.social-icon.github:hover { background: #333; }
+.social-icon.phone:hover { background: #0d6efd; }
