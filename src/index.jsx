@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import { HelmetProvider } from "react-helmet-async";
 import { ToastContainer } from "react-toastify";
 
-import { store } from "./store/reduxStore/store";
 import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,23 +13,21 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "react-toastify/dist/ReactToastify.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
-import "./index.css";
-import "./App.css";
-import "./MediaQuery.css";
-import "./utilities.css";
+// import "./index.css";
+// import "./App.css";
+// import "./MediaQuery.css";
+// import "./utilities.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <HelmetProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </HelmetProvider>
+  <HelmetProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
     <ToastContainer />
-  </Provider>
+  </HelmetProvider>
 );
- 
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')

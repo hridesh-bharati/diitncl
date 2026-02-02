@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Form, Spinner, Card, Container } from "react-bootstrap";
 import AdmissionProvider from "../../../../AdminComponents/Admissions/AdmissionProvider";
 import StudentCertificate from "../../../../AdminComponents/Certificate/StudentCertificate";
-import Captcha from "./Captcha"; // <-- Import Captcha
+import Captcha from "./Captcha"; 
 
 const STYLES = {
   card: {
@@ -40,8 +40,7 @@ export default function Verification() {
   return (
     <AdmissionProvider>
       {({ admissions, loading }) => {
-        if (loading) return <LoadingScreen />;
-
+       
         if (!studentId) {
           return (
             <div className="min-vh-100 d-flex align-items-center justify-content-center bg-primary-subtle p-3">
@@ -86,12 +85,6 @@ export default function Verification() {
   );
 }
 
-// --- Sub-components ---
-const LoadingScreen = () => (
-  <div className="vh-100 d-flex justify-content-center align-items-center bg-white">
-    <Spinner animation="grow" variant="primary" />
-  </div>
-);
 
 const HeaderSection = ({ title, subtitle }) => (
   <div className="text-center mb-5">

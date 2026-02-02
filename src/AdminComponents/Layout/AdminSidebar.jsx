@@ -6,11 +6,11 @@ import {
   ClipboardCheckFill,
   PersonCircle,
   X,
+  Images,
 } from "react-bootstrap-icons";
 import "./AdminSidebar.css";
 
 export default function AdminSidebar({ open, setOpen }) {
-
   const handleNavClick = () => setOpen(false);
 
   return (
@@ -25,43 +25,27 @@ export default function AdminSidebar({ open, setOpen }) {
           </button>
         </div>
 
-        {/* ✅ DASHBOARD */}
-        <NavLink
-          to="/admin"
-          end
-          className="sidebar-item"
-          onClick={handleNavClick}
-        >
+        <NavLink to="/admin" end className="sidebar-item" onClick={handleNavClick}>
           <Speedometer2 />
           <span>Dashboard</span>
         </NavLink>
 
-        {/* ✅ ADMISSIONS */}
-        <NavLink
-          to="/admin/admissions"
-          className="sidebar-item"
-          onClick={handleNavClick}
-        >
+        <NavLink to="/admin/admissions" className="sidebar-item" onClick={handleNavClick}>
           <ClipboardCheckFill />
           <span>Admissions</span>
         </NavLink>
 
-        {/* ✅ STUDENTS */}
-        <NavLink
-          to="/admin/students"
-          className="sidebar-item"
-          onClick={handleNavClick}
-        >
+        <NavLink to="/admin/students" className="sidebar-item" onClick={handleNavClick}>
           <PeopleFill />
           <span>Students</span>
         </NavLink>
 
-        {/* ✅ PROFILE */}
-        <NavLink
-          to="/admin/profile"
-          className="sidebar-item"
-          onClick={handleNavClick}
-        >
+        <NavLink to="/admin/gallery" className="sidebar-item" onClick={handleNavClick}>
+          <Images />
+          <span>Gallery</span>
+        </NavLink>
+
+        <NavLink to="/admin/profile" className="sidebar-item" onClick={handleNavClick}>
           <PersonCircle />
           <span>Admin Profile</span>
         </NavLink>

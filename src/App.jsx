@@ -78,7 +78,7 @@ export default function App() {
         <Route path="/About" element={<HelmetManager><About /></HelmetManager>} />
         <Route path="/OurCourses" element={<HelmetManager><OurCourses /></HelmetManager>} />
         <Route path="/Branch" element={<HelmetManager><Branch /></HelmetManager>} />
-        <Route path="/Gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
+        <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
         <Route path="/Download-Certificate" element={<HelmetManager><Verification /></HelmetManager>} />
         <Route path="/Contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
         <Route path="/Offers" element={<HelmetManager><Offers /></HelmetManager>} />

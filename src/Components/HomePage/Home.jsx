@@ -409,7 +409,7 @@ function Home() {
                 </div>
             </div>
             <Footer />
-            <ScrollUp />
+            {/* <ScrollUp /> */}
         </div>
     );
 }
