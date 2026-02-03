@@ -41,9 +41,9 @@ const quickActions = [
 ];
 
 const sliderImages = [
-    'images/mainSlider/slider1.webp',
+    'images/mainSlider/slider1.png',
     'images/mainSlider/slider2.png',
-    'images/mainSlider/slider3.webp'
+    'images/mainSlider/slider3.png'
 ];
 
 function Home() {
@@ -101,7 +101,7 @@ function Home() {
                             <img
                                 src={image}
                                 loading={idx === 0 ? "eager" : "lazy"}
-                                className="d-block w-100"
+                                className="d-block w-100 shadow shadow-sm"
                                 style={{ height: "auto", width: "100%" }}
                                 alt={`Drishtee Computer Center ${idx + 1}`}
                             />

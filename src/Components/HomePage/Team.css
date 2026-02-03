@@ -1,149 +1,146 @@
 :root {
-  --primary-color: #0d6efd;
-  --text-gradient: linear-gradient(45deg, #0d6efd, #00d4ff);
-  --card-bg: #ffffff;
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
 }
 
-.team-section {
-  background: #f8f9fa;
-  overflow: hidden;
+/* ===== TEAM SECTION ===== */
+#team {
+  background-color: #f8fafc;
 }
 
-.section-title {
-  font-weight: 800;
-  font-size: 2.5rem;
-  color: #212529;
-}
-
-.text-highlight {
-  background: var(--text-gradient);
+.text-gradient {
+  background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.title-underline {
-  width: 80px;
-  height: 4px;
-  background: var(--text-gradient);
-  margin: 10px auto;
-  border-radius: 2px;
-}
-
-/* Card Styling */
+/* ===== CARD ===== */
 .expert-card {
-  background: var(--card-bg);
+  background: var(--glass-bg);
   border-radius: 20px;
-  padding: 30px 20px;
-  position: relative;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  height: 100%;
+  padding: 1.5rem 1rem 1rem;
   display: flex;
   flex-direction: column;
-  margin-top: 40px;
-  border: 1px solid rgba(0,0,0,0.02);
+  justify-content: flex-start;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  position: relative;
+  height: 350px; /* chhota height */
 }
 
+/* Hover */
 .expert-card:hover {
-  transform: translateY(-15px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(99,102,241,0.15);
 }
 
-/* Image Container */
-.expert-image-container {
-  width: 120px;
-  height: 120px;
-  margin: -80px auto 20px;
+/* ===== AVATAR ===== */
+.expert-avatar-wrapper {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 50%;
-  padding: 5px;
-  background: #fff;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  border: 4px solid #e3e9ff;
+  background: var(--primary-gradient);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.expert-img {
-  width: 100%;
-  height: 100%;
+.expert-avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
   object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #fff;
+  background: #fff;
 }
 
-/* Typography */
+/* ===== TEXT ===== */
 .expert-name {
+  text-align: center;
+  font-size: 1.15rem;
   font-weight: 700;
-  font-size: 1.25rem;
-  margin-bottom: 5px;
-  color: #333;
+  margin-top: 55px;
+  color: var(--text-dark);
 }
 
 .expert-role {
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 0.9rem;
+  text-align: center;
+  font-size: 0.7rem; /* small subtitle */
+  font-weight: 500;
+  color: #8b5cf6;
+  margin-bottom: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 15px;
+  letter-spacing: 0.5px;
 }
 
 .expert-bio {
-  font-size: 0.9rem;
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  text-align: center;
+  flex-grow: 1;
 }
 
 /* Badges */
-.custom-badge {
-  background: #eef2ff;
-  color: #4338ca;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin: 2px;
+.badge-tag {
   display: inline-block;
+  padding: 3px 10px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  margin: 2px;
 }
 
-/* GitHub Metric */
-.github-metric {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: #24292e;
-  color: white;
-  padding: 6px 15px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  margin-bottom: 15px;
+/* GitHub */
+.expert-repos {
+  text-align: center;
+  margin-top: 5px;
 }
 
-/* Social Icons */
-.social-tray {
+.expert-repos .badge {
+  font-size: 0.75rem;
+  border-radius: 12px;
+  padding: 5px 12px;
+}
+
+/* Social */
+.expert-social {
+  text-align: center;
   margin-top: auto;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
 }
 
-.social-icon {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #f1f1f1;
-  color: #444;
-  text-decoration: none;
-  transition: 0.3s;
+.expert-social a {
+  margin: 0 5px;
+  font-size: 1.1rem;
+  color: #6b7280;
+  transition: all 0.25s ease;
 }
 
-.social-icon:hover {
-  color: white;
+.expert-social a:hover {
+  color: #4f46e5;
+  transform: scale(1.15);
 }
 
-.social-icon.whatsapp:hover { background: #25D366; }
-.social-icon.linkedin:hover { background: #0077B5; }
-.social-icon.github:hover { background: #333; }
-.social-icon.phone:hover { background: #0d6efd; }
+/* MOBILE */
+@media (max-width: 576px) {
+  .expert-card {
+    height: 320px;
+    padding: 1rem;
+  }
+  .expert-avatar-wrapper {
+    width: 80px;
+    height: 80px;
+    top: -40px;
+  }
+  .expert-avatar {
+    width: 72px;
+    height: 72px;
+  }
+}

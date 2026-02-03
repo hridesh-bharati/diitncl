@@ -1,186 +1,212 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import callIcon from "/images/icon/call.gif";
 
 const addressData = {
   address1: "Paragpur Road Near Sunshine School Nichlaul, Maharajganj.",
   address2: "Main Market Road, Behind Pakli Mandi Thoothibari, Maharajganj.",
   phoneNumbers: [
     { name: "Mr. Ajay Tiwari", number: "9918151032" },
+    { name: "Hridesh Bharati", number: "7267995307" },
     { name: "Santosh Singh Chauhan", number: "7398889347" },
     { name: "Manjesh Vishwakarma", number: "9621444858" },
-    { name: "Hridesh Bharati", number: "7267995307" },
   ],
 };
 
 const quickLinks = [
-  { text: "Home", link: "/" },
   { text: "Branch", link: "/branch" },
-  { text: "NIELIT Course", link: "/Nielet" },
-  { text: "Diploma Courses", link: "/OurCourses" },
+  { text: "About", link: "/About" },
 ];
 
 const otherLinks = [
-  { text: "Certification", link: "/Download-Certificate" },
-  { text: "New Admission", link: "/AdmissionForm" },
   { text: "Enquiry", link: "/Contact-us" },
-  { text: "Terms & Conditions", link: "/Discription" },
+  { text: "T.&C.", link: "/Discription" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="footer-dark pt-5">
-      <div className="container">
+    <footer className="footer-container">
+      <div className="container pt-5 pb-4">
         <div className="row gy-4">
 
-          {/* ADDRESS */}
-          <div className="col-md-4">
-            <h5 className="footer-title">
-              <i className="bi bi-geo-alt-fill me-2"></i>Address
-            </h5>
-
-            <p className="footer-text">
-              <i className="bi bi-building me-2"></i>
-              {addressData.address1}
-            </p>
-            <p className="footer-text">
-              <i className="bi bi-building me-2"></i>
-              {addressData.address2}
-            </p>
-
-            <div className="mt-3">
-              {addressData.phoneNumbers.map((p, i) => (
-                <div key={i} className="d-flex align-items-center mb-2 footer-text">
-                  <img src={callIcon} width="22" alt="call" />
-                  <span className="ms-2">+91 {p.number}</span>
+          {/* BRAND SECTION */}
+          <div className="col-lg-4 col-md-12">
+            <div className="footer-brand mb-4">
+              <div className="brand-header">
+                  <img src="images/icon/ccc.jpg" className="w-25 img-fluid" alt="DIIT" />
+                <div className="brand-text">
+                  <p className="brand-subtitle">Drishtee Institute of Information Technology</p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* QUICK LINKS */}
-          <div className="col-md-4">
-            <h5 className="footer-title">
-              <i className="bi bi-link-45deg me-2"></i>Quick Links
-            </h5>
-
-            <div className="row">
-              <div className="col-6">
-                {quickLinks.map((l, i) => (
-                  <Link key={i} to={l.link} className="footer-link">
-                    <i className="bi bi-chevron-right"></i> {l.text}
-                  </Link>
-                ))}
               </div>
-              <div className="col-6">
-                {otherLinks.map((l, i) => (
-                  <Link key={i} to={l.link} className="footer-link">
-                    <i className="bi bi-chevron-right"></i> {l.text}
-                  </Link>
-                ))}
+              <p className="brand-tagline">
+                Empowering students with cutting-edge technical education and practical skills for tomorrow's digital world.
+              </p>
+            </div>
+
+            <div className="contact-info-box">
+              <div className="d-flex align-items-start mb-3">
+                <div>
+                  <h6 className="contact-title mb-1">Main Campus</h6>
+                  <p className="address-text mb-0">{addressData.address1}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* CONNECT */}
-          <div className="col-md-4">
-            <h5 className="footer-title">
-              <i className="bi bi-broadcast me-2"></i>Connect With Us
-            </h5>
+          {/* QUICK LINKS SECTION */}
+          <div className="col-lg-4 col-md-6">
+            <div className="links-section">
+              <h5 className="section-title">Quick Links</h5>
+              <div className="row">
+                <div className="col-6">
+                  <ul className="nav-links">
+                    {quickLinks.map((l, i) => (
+                      <li key={i}>
+                        <Link to={l.link} className="nav-link">
+                          {l.text}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="col-6">
+                  <ul className="nav-links">
+                    {otherLinks.map((l, i) => (
+                      <li key={i}>
+                        <Link to={l.link} className="nav-link">
+                          {l.text}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
 
-            <p className="footer-text">
-              Get updates, announcements and admission details through our
-              official channels.
-            </p>
+            <div className="social-section mt-4">
+              <h6 className="social-title">Follow Us</h6>
+              <div className="social-icons">
+                <a href="#" className="social-icon yt" aria-label="YouTube"><i className="bi bi-youtube"></i></a>
+                <a href="#" className="social-icon fb" aria-label="Facebook"><i className="bi bi-facebook"></i></a>
+                <a href="#" className="social-icon wa" aria-label="WhatsApp"><i className="bi bi-whatsapp"></i></a>
+                <a href="#" className="social-icon ig" aria-label="Instagram"><i className="bi bi-instagram"></i></a>
+                <a href="#" className="social-icon li" aria-label="LinkedIn"><i className="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
 
-            <div className="d-flex gap-3 mt-3">
-              <a href="#" className="social-icon yt">
-                <i className="bi bi-youtube"></i>
-              </a>
-              <a href="#" className="social-icon fb">
-                <i className="bi bi-facebook"></i>
-              </a>
-              <a href="#" className="social-icon wa">
-                <i className="bi bi-whatsapp"></i>
-              </a>
+          {/* CONTACT SECTION */}
+          <div className="col-lg-4 col-md-6">
+            <div className="contact-section">
+              <h5 className="section-title">Contact Details</h5>
+              <div className="contact-details">
+                <div className="contact-item mb-4">
+                  <h6 className="contact-label">Helpline Numbers</h6>
+                  <div className="phone-grid">
+                    {addressData.phoneNumbers.slice(0, 2).map((p, i) => (
+                      <div key={i} className="phone-card">
+                        <a href={`tel:+91${p.number}`} className="phone-number">+91 {p.number}</a>
+                        <div className="contact-person">{p.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="contact-item">
+                  <h6 className="contact-label">Office Hours</h6>
+                  <div className="timing">
+                    <div>Monday - Saturday: 7:00 AM - 7:00 PM</div>
+                    <div>Sunday: Closed</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="footer-divider"></div>
+
+        <div className="footer-bottom">
+          <div className="row align-items-center">
+            <div className="col-md-8">
+              <div className="copyright-text">
+                © 2026 <strong>Drishtee Institute of Information Technology</strong>.
+                All Rights Reserved. |
+                <Link to="/privacy" className="policy-link ms-2">Privacy Policy</Link> |
+                <Link to="/terms" className="policy-link ms-2">Terms of Service</Link>
+              </div>
+            </div>
+            <div className="col-md-4 text-md-end">
+              <div className="developer-credit">
+                <span className="credit-text">Designed & Developed by</span>
+                <span className="developer-name">Hridesh Bharati</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <hr className="footer-divider" />
-
-        <p className="text-center footer-bottom">
-          © 2025 <b>DIIT</b> All Rights Reserved <br />
-           || Developed by <span>Hridesh Bharati</span>  ||
-        </p>
       </div>
 
-      {/* CSS INLINE (you can move to Footer.css) */}
       <style>{`
-        .footer-dark {
-          background: linear-gradient(180deg, #000957, #020b14);
-          color: #cfd8e3;
+        .footer-container {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          color: #495057;
+          border-top: 1px solid #dee2e6;
+          position: relative;
+          overflow: hidden;
+        }
+        .brand-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .logo-icon { font-size: 28px; font-weight: 800; color: white; font-family: 'Segoe UI', sans-serif; }
+        .brand-subtitle { font-size: 14px; color: #6c757d; font-weight: 500; margin-bottom: 0; }
+        .brand-tagline { font-size: 15px; line-height: 1.6; color: #6c757d; margin-top: 15px; }
+
+        .section-title {
+          color: #212529; font-weight: 600; font-size: 18px; margin-bottom: 20px;
+          padding-bottom: 10px; position: relative;
+        }
+        .section-title::after {
+          content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 3px; background: #0d6efd; border-radius: 2px;
         }
 
-        .footer-title {
-          color: #ffffff;
-          font-weight: 600;
-          margin-bottom: 15px;
-        }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 12px; }
+        .nav-link { color: #495057; text-decoration: none; font-size: 14px; transition: all 0.3s ease; padding: 4px 0; }
+        .nav-link:hover { color: #0d6efd; text-decoration: none; }
 
-        .footer-text {
-          font-size: 14px;
-          line-height: 1.6;
-          color: #cfd8e3;
-        }
+        .contact-info-box, .contact-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .contact-title, .contact-label { font-size: 15px; font-weight: 600; color: #212529; margin-bottom: 5px; }
+        .address-text { font-size: 14px; color: #6c757d; line-height: 1.5; }
 
-        .footer-link {
-          display: block;
-          color: #cfd8e3;
-          text-decoration: none;
-          margin-bottom: 10px;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
+        .phone-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .phone-card { background: #f8f9fa; border-radius: 8px; padding: 12px; border-left: 4px solid #0d6efd; }
+        .phone-card:hover { background: #e9ecef; transform: translateY(-2px); }
+        .phone-number { color: #0d6efd; text-decoration: none; font-weight: 600; font-size: 15px; display: block; margin-bottom: 4px; }
+        .phone-number:hover { color: #0b5ed7; text-decoration: underline; }
+        .contact-person { font-size: 13px; color: #6c757d; }
 
-        .footer-link:hover {
-          color: #0dcaf0;
-          transform: translateX(5px);
-        }
+        .timing { font-size: 14px; color: #495057; line-height: 1.6; }
+        .timing div { margin-bottom: 6px; }
 
-        .social-icon {
-          width: 45px;
-          height: 45px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 20px;
-          color: white;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+        .social-section { margin-top: 25px; }
+        .social-title { font-size: 15px; font-weight: 600; color: #212529; margin-bottom: 15px; }
+        .social-icons { display: flex; gap: 12px; }
+        .social-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; text-decoration: none; }
+        .yt { background: #ff0000; } .fb { background: #1877f2; } .wa { background: #25d366; } .ig { background: linear-gradient(45deg, #405DE6, #C13584, #E1306C, #FD1D1D); } .li { background: #0a66c2; }
 
-        .social-icon:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
+        .footer-divider { height: 1px; background: linear-gradient(90deg, transparent, #dee2e6, transparent); margin: 40px 0 25px; }
+        .footer-bottom { padding-top: 20px; }
+        .copyright-text { font-size: 14px; color: #6c757d; }
+        .copyright-text strong { color: #212529; font-weight: 600; }
+        .policy-link { color: #0d6efd; text-decoration: none; font-size: 14px; }
+        .policy-link:hover { color: #0b5ed7; text-decoration: underline; }
+        .developer-credit { display: inline-flex; align-items: center; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .credit-text { font-size: 13px; color: #6c757d; margin-right: 8px; }
+        .developer-name { color: #0d6efd; font-weight: 600; font-size: 14px; }
 
-        .yt { background: #ff0000; }
-        .fb { background: #1877f2; }
-        .wa { background: #25d366; }
-
-        .footer-divider {
-          border-color: rgba(255,255,255,0.1);
-          margin: 30px 0 15px;
-        }
-
-        .footer-bottom {
-          font-size: 13px;
-          color: #9fb3c8;
-        }
-
-        .footer-bottom span {
-          color: #0dcaf0;
+        @media (max-width: 768px) {
+          .brand-header { flex-direction: column; text-align: center; }
+          .social-icons { justify-content: center; }
+          .developer-credit { margin-top: 15px; }
+          .copyright-text { text-align: center; margin-bottom: 15px; }
         }
       `}</style>
     </footer>

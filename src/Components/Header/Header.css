@@ -22,10 +22,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  padding-bottom: 75px !important;
-}
-
 /* DESKTOP NAVBAR */
 .navbar-desktop {
   position: fixed;

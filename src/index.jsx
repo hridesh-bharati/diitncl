@@ -13,10 +13,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "react-toastify/dist/ReactToastify.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
-// import "./index.css";
-// import "./App.css";
-// import "./MediaQuery.css";
-// import "./utilities.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
