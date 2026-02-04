@@ -44,7 +44,7 @@ function ScrollUp() {
                 title="Scroll to Top"
                 aria-label="Scroll to top"
                 style={{
-                    bottom: '25px',
+                    bottom: '100px',
                     right: '10px',
                     zIndex: 9999,
                     borderRadius: '50%',

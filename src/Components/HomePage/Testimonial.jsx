@@ -1,79 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const testimonials = [
   {
     name: "Rohit Sharma",
     img: "images/testimonial/testimonial1.jpg",
-    text: "Drishtee Computer Center transformed my understanding of technology—top-notch training and hands-on support every step of the way."
+    text: "Drishtee Computer Center transformed my understanding of technology—top-notch training.",
+    rating: 5
   },
   {
     name: "Abhay Gautam",
     img: "images/testimonial/testimonial2.jpg",
-    text: "The expert guidance and practical approach here gave me the confidence to tackle complex computer problems with ease."
+    text: "The expert guidance and practical approach here gave me the confidence to tackle problems.",
+    rating: 5
   },
   {
-    name: "The jugnoo",
+    name: "The Jugnoo",
     img: "images/testimonial/testimonial3.png",
-    text: "I appreciated the personalized coaching and up-to-date resources. Drishtee truly prepares you for the real world of technology."
+    text: "I appreciated the personalized coaching. Drishtee truly prepares you for the real world.",
+    rating: 4
   },
   {
     name: "Aditi Verma",
     img: "http://themes.audemedia.com/html/goodgrowth/images/testimonial4.jpg",
-    text: "From basic skills to advanced concepts, the team at Drishtee helped me grow my knowledge and problem-solving skills exponentially."
+    text: "From basic skills to advanced concepts, the team helped me grow exponentially.",
+    rating: 5
   }
 ];
 
 const getSlidesToShow = () => {
-  if (window.innerWidth < 576) return 1;
-  if (window.innerWidth < 992) return 2;
+  if (window.innerWidth < 768) return 1;
   return 3;
 };
-
-// Reusable Nav Button
-const NavButton = ({ direction, onClick }) => (
-  <button
-    className="btn btn-outline-primary rounded-circle mx-2"
-    style={{ width: 44, height: 44, zIndex: 2 }}
-    onClick={onClick}
-    aria-label={`${direction === "left" ? "Previous" : "Next"} testimonial`}
-  >
-    <i className={`bi bi-chevron-${direction}`} />
-  </button>
-);
-
-// Reusable Testimonial Card
-const TestimonialCard = ({ testimonial, isCenter, width }) => (
-  <div
-    className="testimonial-item text-center px-1 "
-    style={{
-      flex: `0 0 ${width}%`,
-      maxWidth: `${width}%`,
-      transform: `scale(${isCenter ? 1 : 0.85})`,
-      opacity: isCenter ? 1 : 0.4,
-      transition: "transform 0.6s ease, opacity 0.6s ease"
-    }}
-  >
-    <div className="shadow-effect bg-white p-4 rounded shadow-sm">
-      <img
-        src={testimonial.img}
-        alt={testimonial.name}
-        className="img-fluid rounded-circle mb-3"
-        style={{ width: 80, height: 80, objectFit: "cover" }}
-      />
-      <p className="mb-2">{testimonial.text}</p>
-      <div className="testimonial-name bg-primary text-white rounded-pill py-1 px-3 d-inline-block mt-2">
-        {testimonial.name}
-      </div>
-    </div>
-  </div>
-);
 
 const Testimonials = () => {
   const [centerIdx, setCenterIdx] = useState(0);
   const [slidesToShow, setSlidesToShow] = useState(getSlidesToShow());
-  const [carouselDirection, setCarouselDirection] = useState("next"); // for animation
   const intervalRef = useRef();
 
   useEffect(() => {
@@ -83,139 +45,119 @@ const Testimonials = () => {
   }, []);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => handleNext(), 2000);
+    intervalRef.current = setInterval(() => {
+      setCenterIdx((prev) => (prev + 1) % testimonials.length);
+    }, 3000);
     return () => clearInterval(intervalRef.current);
-    // eslint-disable-next-line
-  }, [centerIdx, slidesToShow]);
+  }, [centerIdx]);
 
-  const handlePrev = () => {
-    setCarouselDirection("prev");
-    setCenterIdx((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+  const getVisibleSlides = () => {
+    if (slidesToShow === 1) return [testimonials[centerIdx]];
+    const prev = (centerIdx - 1 + testimonials.length) % testimonials.length;
+    const next = (centerIdx + 1) % testimonials.length;
+    return [testimonials[prev], testimonials[centerIdx], testimonials[next]];
   };
-
-  const handleNext = () => {
-    setCarouselDirection("next");
-    setCenterIdx((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const handleDot = (idx) => {
-    setCarouselDirection(idx > centerIdx ? "next" : "prev");
-    setCenterIdx(idx);
-  };
-
-  // Calculate visible testimonials based on center index and slides to show
-  const getVisibleTestimonials = () => {
-    const slides = [];
-    let start =
-      centerIdx - Math.floor(slidesToShow / 2) < 0
-        ? testimonials.length + (centerIdx - Math.floor(slidesToShow / 2))
-        : centerIdx - Math.floor(slidesToShow / 2);
-    for (let i = 0; i < slidesToShow; i++) {
-      slides.push(testimonials[(start + i) % testimonials.length]);
-    }
-    return slides;
-  };
-
-  const visibleTestimonials = getVisibleTestimonials();
-
-  // Animation class based on direction
-  const animationClass =
-    carouselDirection === "next"
-      ? "carousel slide carousel-fade animate-next"
-      : "carousel slide carousel-fade animate-prev";
 
   return (
-    <section className="testimonials py-5 bg-white" id="TestimonialParent">
+    <section className="app-testimonial-section py-5">
       <div className="container">
-        <div className="text-center mb-4">
-          <h2 className="fw-bold">Testimonials</h2>
+        {/* App Style Header */}
+        <div className="text-center mb-5">
+          <span className="badge rounded-pill bg-primary-soft text-primary px-3 py-2 mb-2">Student Reviews</span>
+          <h2 className="fw-extrabold text-dark">What Our Students Say</h2>
         </div>
-        <div className="d-flex justify-content-center align-items-center position-relative" id="TestimonialChild">
-          <NavButton direction="left"  onClick={handlePrev} />
 
-          <div
-            className={`d-flex overflow-hidden flex-grow-1 py-1 justify-content-center align-items-center ${animationClass}`}
-            style={{ maxWidth: "100%", minHeight: 320 }}
-            key={centerIdx + "-" + slidesToShow}
-          >
-            {visibleTestimonials.map((testimonial, idx) => {
-              const isCenter = idx === Math.floor(slidesToShow / 2);
+        <div className="testimonial-wrapper position-relative">
+          <div className="d-flex justify-content-center align-items-center gap-3">
+            {getVisibleSlides().map((item, idx) => {
+              const isCenter = slidesToShow === 1 ? true : idx === 1;
               return (
-                <TestimonialCard
-                  key={testimonial.name + idx}
-                  testimonial={testimonial}
-                  isCenter={isCenter}
-                  width={100 / slidesToShow}
-                />
+                <div 
+                  key={item.name + idx} 
+                  className={`app-testi-card shadow-sm ${isCenter ? 'center-card' : 'side-card d-none d-md-block'}`}
+                >
+                  <div className="quote-icon"><i className="bi bi-quote"></i></div>
+                  
+                  <div className="rating mb-2">
+                    {[...Array(item.rating)].map((_, i) => <i key={i} className="bi bi-star-fill text-warning me-1 small"></i>)}
+                  </div>
+
+                  <p className="testi-text mb-4">"{item.text}"</p>
+
+                  <div className="d-flex align-items-center mt-auto border-top pt-3">
+                    <img src={item.img} alt={item.name} className="user-avatar shadow-sm" />
+                    <div className="ms-3 text-start">
+                      <h6 className="mb-0 fw-bold text-dark">{item.name} <i className="bi bi-patch-check-fill text-primary ms-1 small"></i></h6>
+                      <small className="text-muted x-small">Verified Student</small>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
-
-          <NavButton direction="right" onClick={handleNext} />
         </div>
 
-        {/* Dots */}
-        <div className="d-flex justify-content-center mt-4">
+        {/* Custom Dots */}
+        <div className="d-flex justify-content-center mt-5 gap-2">
           {testimonials.map((_, idx) => (
-            <button
-              key={idx}
-              className={`rounded-circle border-0 mx-1 ${centerIdx === idx ? "bg-primary" : "bg-secondary"
-                }`}
-              style={{
-                width: 14,
-                height: 14,
-                opacity: centerIdx === idx ? 1 : 0.4
-              }}
-              onClick={() => handleDot(idx)}
-              aria-label={`Go to testimonial ${idx + 1}`}
-            />
+            <div 
+              key={idx} 
+              onClick={() => setCenterIdx(idx)}
+              className={`dot ${centerIdx === idx ? 'active' : ''}`}
+            ></div>
           ))}
         </div>
       </div>
 
-      {/* Inline styles for animation and dark mode */}
       <style>{`
-        .animate-next {
-          animation: carouselNext 0.6s;
-        }
-        .animate-prev {
-          animation: carouselPrev 0.6s;
-        }
-        @keyframes carouselNext {
-          0% { opacity: 0; transform: translateX(50px);}
-          100% { opacity: 1; transform: translateX(0);}
-        }
-        @keyframes carouselPrev {
-          0% { opacity: 0; transform: translateX(-50px);}
-          100% { opacity: 1; transform: translateX(0);}
+        .app-testimonial-section { background: #f8fafc; overflow: hidden; }
+        .bg-primary-soft { background: #e0e7ff; font-size: 0.75rem; font-weight: 800; }
+        .fw-extrabold { font-weight: 800; letter-spacing: -1px; }
+
+        .app-testi-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
-        /* Dark mode for testimonial section */
-        .dark-mode #TestimonialParent {
-          background: #23293a !important;
-          color: #f1f1f1;
-          transition: background 0.3s;
+        .side-card { transform: scale(0.85); opacity: 0.4; filter: blur(1px); }
+        .center-card { transform: scale(1); opacity: 1; z-index: 10; border: 1px solid #e2e8f0; }
+
+        .quote-icon {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            color: #f1f5f9;
+            z-index: 0;
         }
-        .dark-mode #TestimonialChild {
-          background: #273043 !important;
+
+        .testi-text {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.6;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
         }
-        .dark-mode #TestimonialParent .shadow-effect {
-          background: #181c22 !important;
-          color: #f1f1f1;
+
+        .user-avatar { width: 50px; height: 50px; border-radius: 15px; object-fit: cover; }
+        .x-small { font-size: 0.7rem; font-weight: 600; }
+
+        .dot {
+            width: 8px; height: 8px; background: #cbd5e1;
+            border-radius: 50px; cursor: pointer; transition: 0.3s;
         }
-        .dark-mode #TestimonialParent .testimonial-name {
-          background: #ffe066 !important;
-          color: #23293a !important;
-        }
-        .dark-mode #TestimonialParent .bg-primary {
-          background-color: #ffe066!important;
-          color: #23293a!important;
-        }
-        .dark-mode #TestimonialParent .bg-secondary {
-          background-color: #bdbdbd!important;
-        }
-        .dark-mode #TestimonialParent .text-white {
-          color: #23293a!important;
+        .dot.active { width: 25px; background: #0a2885; }
+
+        @media (max-width: 768px) {
+            .app-testi-card { padding: 20px; max-width: 90%; margin: 0 auto; }
+            .testi-text { font-size: 0.85rem; }
         }
       `}</style>
     </section>

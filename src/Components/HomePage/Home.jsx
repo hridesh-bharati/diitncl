@@ -1,295 +1,281 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Typed from 'typed.js';
+import Typed from "typed.js";
+
+// Components
 import TopCourseList from "./TopCourseList";
-import Features from "./Features";
-import Team from "./Team";
 import Testimonial from "./Testimonial";
 import Footer from "../Footer/Footer";
 import QueryForm from "./pages/QueryFrom";
-import Offers from "./Offers";
 import NoticeBoard from "../HelperCmp/FeaturesUpdate/NoticeBoard";
 import TimeTable from "../HelperCmp/FeaturesUpdate/TimeTable";
 import CardSlider from "./Cardslider";
-import Desc from "./pages/Desc";
-
-const homeItems = [
-    {
-        title: "Student-Centric Approach",
-        content: "We prioritize the needs and aspirations of our students, providing a supportive learning environment.",
-        aosDuration: 1000
-    },
-    {
-        title: "Comprehensive Computer Courses",
-        content: "We offer a wide range of courses, including programming, web development, networking, and software applications, designed to cater to all skill levels—from beginners to advanced learners.",
-        aosDuration: 1500
-    },
-    {
-        title: "Join the Drishtee Community",
-        content: "At Drishtee Institute, we believe in creating a supportive community. Participate in workshops, seminars, and networking events that enhance your learning experience and connect you with peers and professionals in the field.",
-        aosDuration: 1500
-    }
-];
-
-const quickActions = [
-    { path: "/Download-Certificate", label: "Result", icon: "fas fa-file-lines", color: "#E91E63" },
-    { path: "/Contact-us", label: "Enquiry", icon: "fas fa-headset", color: "#9C27B0" },
-    { path: "/Student-Portal", label: "Students", icon: "fas fa-user-graduate", color: "#3F51B5" },
-    { path: "/AdmissionForm", label: "Admission", icon: "fas fa-user-plus", color: "#009688" },
-    { path: "/Gallery", label: "Gallery", icon: "fas fa-images", color: "#FF5722" },
-    { path: "/Library", label: "Library", icon: "fas fa-book-open", color: "#607D8B" }
-];
-
-const sliderImages = [
-    'images/mainSlider/slider1.png',
-    'images/mainSlider/slider2.png',
-    'images/mainSlider/slider3.png'
-];
 
 function Home() {
-    const navigate = useNavigate();
-    const aToken = localStorage.getItem('aToken');
+    const typedHero = useRef(null);
 
     useEffect(() => {
-        if (aToken) navigate('/Admin-Pannel');
-    }, [aToken, navigate]);
-
-    useEffect(() => {
-        const typed1 = new Typed('#element', {
-            strings: [
-                `"<span class="text-danger fw-bold">Drishtee</span> envisions a world where all communities are empowered to achieve shared prosperity."`
-            ],
-            typeSpeed: 55,
-            loop: true,
-        });
-
-        const typed2 = new Typed('#diit', {
-            strings: [
-                "Empowering Tomorrow's Tech Leaders!",
-                "Unlocking Your Digital Potential!",
-                "Coding Your Future, Today!",
-                "Where Innovation Meets Education!",
-                "Building Skills for the Digital Age!",
-                "Transforming Learners into Developers!",
-                "Your Gateway to the Tech World!",
-                "Learn. Code. Succeed."
-            ],
-            typeSpeed: 55,
-            loop: true,
-        });
-
-        const typed3 = new Typed('#admnow', {
-            strings: ["Get your admission now"],
-            typeSpeed: 55,
-            loop: true,
-        });
-
-        return () => {
-            typed1.destroy();
-            typed2.destroy();
-            typed3.destroy();
-        };
+        if (typedHero.current) {
+            const typed = new Typed(typedHero.current, {
+                strings: ["Software Engineering", "Professional Accounting", "Graphic Designing", "Digital Literacy"],
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true
+            });
+            return () => typed.destroy();
+        }
     }, []);
 
     return (
-        <div>
-            {/* Hero Carousel */}
-            <div id="heroCarousel" className="carousel mt-5 slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
-                <div className="carousel-inner">
-                    {sliderImages.map((image, idx) => (
-                        <div key={idx} className={`carousel-item ${idx === 0 ? "active" : ""}`}>
-                            <img
-                                src={image}
-                                loading={idx === 0 ? "eager" : "lazy"}
-                                className="d-block w-100 shadow shadow-sm"
-                                style={{ height: "auto", width: "100%" }}
-                                alt={`Drishtee Computer Center ${idx + 1}`}
-                            />
-                        </div>
-                    ))}
-                </div>
-                <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Previous</span>
-                </button>
-                <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Next</span>
-                </button>
+        <div className="hybrid-app-shell">
 
-                <style>{`
-                .carousel-control-next-icon, .carousel-control-prev-icon {
-    width: 1px;
-    height: 1px;
+            {/* --- 1. PREMIUM HERO SECTION --- */}
+            <section className="hybrid-hero mt-4 pt-3 rounded-1">
+                <div className="hero-visual-layer"></div>
+                <div className="hero-overlay-gradient"></div>
 
-                }
-                `}</style>
-            </div>
-
-            {/* Welcome Section */}
-            <section className="py-4 bg-light">
-                <div className="container">
-                    <div className="card border-0 shadow-sm">
-                        <div className="card-body p-4">
-                            <h5 className="fw-bold text-primary text-uppercase mb-3">Welcome to Drishtee Computer Center</h5>
-                            <p className=" mb-3">
-                                Drishtee Institute of Information Technology has been inaugurated at a new location:
-                                Paragpur Road, near Sunshine School, Nichlaul, Maharajganj.
+                <div className="container position-relative z-3">
+                    <div className="row align-items-center min-vh-80">
+                        <div className="col-lg-8 animate__animated animate__fadeInLeft">
+                            <div className="status-badge">
+                                <span className="pulse-icon"></span> Session 2026-27 Admissions Live
+                            </div>
+                            <h1 className="display-4 fw-black text-white mt-3">
+                                Shape Your Future in <br />
+                                <span className="text-warning" ref={typedHero}></span>
+                            </h1>
+                            <p className="text-white-50 mb-4 pe-lg-5">
+                                Join Northern India's most trusted IT Skill Hub. ISO 9001:2015 Certified excellence in education since 2008.
                             </p>
-                            <h6 className="mb-4 small">
-                                <span className="text-danger fw-bold">Drishtee</span>{" "}
-                                <span id="diit" className="small text-primary fw-semibold "></span>
-                            </h6>
-                            <Link to="/Contact-us" className="btn btn-primary rounded-pill px-4">
-                                <i className="fas fa-phone-alt me-2"></i>Call To Action
-                            </Link>
+                            <div className="d-flex flex-wrap gap-3">
+                                <Link to="/AdmissionForm" className="btn-main-gold">Get Started Today</Link>
+                                <Link to="/Student-Portal" className="btn-main-glass">
+                                    <i className="bi bi-person-badge me-2"></i>E-Student Portal
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* About Section */}
-            <section className="py-5">
-                <div className="container">
-                    <div className="row g-4 align-items-center">
-                        <div className="col-lg-5">
-                            <img
-                                src="images/vender/aboutBg.webp"
-                                className="img-fluid rounded-3 shadow"
-                                alt="About Drishtee Institute"
-                                loading="lazy"
-                            />
+            {/* --- 2. PORTAL HUB DASHBOARD --- */}
+            <div className="container mt-minus-70">
+                <div className="portal-hub-card shadow-lg border-0">
+                    <div className="portal-grid">
+                        {[
+                            { label: "Verify ID", icon: "bi-shield-check", link: "/Verify-Certificate", bg: "#4F46E5" },
+                            { label: "Results", icon: "bi-bar-chart-line", link: "/Student-Result", bg: "#0891B2" },
+                            { label: "Study Material", icon: "bi-file-earmark-pdf", link: "/Library", bg: "#E11D48" },
+                            { label: "Placements", icon: "bi-person-workspace", link: "/Placement", bg: "#F59E0B" },
+                            { label: "LMS Login", icon: "bi-cpu-fill", link: "/login", bg: "#7C3AED" },
+                            { label: "App Link", icon: "bi-phone-vibrate", link: "/download", bg: "#10B981" }
+                        ].map((item, i) => (
+                            <Link key={i} to={item.link} className="portal-item">
+                                <div className="portal-icon-wrapper" style={{ '--icon-bg': item.bg }}>
+                                    <i className={`bi ${item.icon}`}></i>
+                                </div>
+                                <span className="fw-bold small">{item.label}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* --- ABOUT DRISHTEE : BOOTSTRAP ONLY --- */}
+            <section className="container py-5 my-5">
+                <div className="row align-items-center g-5">
+
+                    {/* IMAGE SIDE */}
+                    <div className="col-lg-6 position-relative">
+                        <img
+                            src="/images/mainSlider/slider1.webp"
+                            alt="Drishtee Campus"
+                            className="img-fluid rounded-4 shadow-lg w-100"
+                        />
+
+                        {/* EXPERIENCE BADGE */}
+                        <div
+                            className="position-absolute top-0 start-25 translate-middle bg-primary text-white text-center px-4 py-3 rounded-4 shadow"
+                            style={{ left: "15%", top: "15%" }}
+                        >
+                            <h2 className="fw-bold mb-0">15+</h2>
+                            <small className="text-uppercase fw-semibold">
+                                Years of Excellence
+                            </small>
                         </div>
-                        <div className="col-lg-7">
-                            <h2 className="text-primary fw-bold mb-4">Drishtee Institute of Information Technology</h2>
-                            {homeItems.map((item, idx) => (
-                                <div className="card border-0 shadow-sm mb-3" key={idx} data-aos="fade-up" data-aos-duration={item.aosDuration}>
-                                    <div className="card-body">
-                                        <h5 className="text-primary fw-semibold">{item.title}</h5>
-                                        <p className="mb-0">{item.content}</p>
+                    </div>
+
+                    {/* CONTENT SIDE */}
+                    <div className="col-lg-6">
+                        <span className="badge bg-primary-subtle text-primary text-uppercase fw-semibold mb-3">
+                            About Drishtee
+                        </span>
+
+                        <h2 className="fw-bold display-6 mb-3">
+                            A Legacy of Quality <br /> Technical Education
+                        </h2>
+
+                        <p className="text-secondary fs-5">
+                            Founded in 2008, Drishtee Computer Centre has been at the forefront of
+                            the digital revolution in the region.
+                        </p>
+
+                        <p className="text-muted mb-4">
+                            As an ISO 9001:2015 certified institution, we focus on practical
+                            knowledge over theory. Our industry-designed curriculum ensures every
+                            student becomes <strong>job-ready</strong> from day one.
+                        </p>
+
+                        {/* FEATURES */}
+                        <div className="row gy-3">
+                            <div className="col-sm-6">
+                                <div className="d-flex align-items-center gap-2">
+                                    <i className="bi bi-check-circle-fill text-success fs-5"></i>
+                                    <span className="fw-semibold">Modern IT Labs</span>
+                                </div>
+                            </div>
+
+                            <div className="col-sm-6">
+                                <div className="d-flex align-items-center gap-2">
+                                    <i className="bi bi-check-circle-fill text-success fs-5"></i>
+                                    <span className="fw-semibold">Job Portal Access</span>
+                                </div>
+                            </div>
+
+                            <div className="col-sm-6">
+                                <div className="d-flex align-items-center gap-2">
+                                    <i className="bi bi-check-circle-fill text-success fs-5"></i>
+                                    <span className="fw-semibold">Free Soft Skills</span>
+                                </div>
+                            </div>
+
+                            <div className="col-sm-6">
+                                <div className="d-flex align-items-center gap-2">
+                                    <i className="bi bi-check-circle-fill text-success fs-5"></i>
+                                    <span className="fw-semibold">Strong Alumni Network</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            {/* --- 4. THE VISIONARIES (Leadership - Light Theme) --- */}
+            <section className="py-100 position-relative" style={{ backgroundColor: "#f8fafc" }}>
+                <div className="container position-relative z-3">
+                    <div className="text-center mb-5">
+                        <h6 className="text-primary fw-bold text-uppercase tracking-widest">Institutional Leadership</h6>
+                        <h2 className="display-5 fw-black text-dark">The Minds Behind Drishtee</h2>
+                        <div className="mx-auto bg-warning mt-2" style={{ width: '60px', height: '4px', borderRadius: '10px' }}></div>
+                    </div>
+
+                    <div className="row g-4 justify-content-center">
+                        {/* Ajay Tiwari Card */}
+                        <div className="col-lg-5">
+                            <div className="visionary-card-light">
+                                <div className="visionary-image-wrapper">
+                                    <img src="/images/team/team1.png" alt="Ajay Tiwari" />
+                                    <div className="visionary-badge-gold">MD</div>
+                                </div>
+                                <div className="visionary-content-light">
+                                    <h3 className="fw-black text-dark mb-1">Ajay Tiwari</h3>
+                                    <p className="text-primary fw-bold small mb-3">Managing Director</p>
+                                    <p className="text-muted fst-italic">"Our mission is to democratize high-end IT education and make every youth digitally independent."</p>
+                                    <div className="social-links-vision mt-3">
+                                        <i className="bi bi-linkedin me-2"></i>
+                                        <i className="bi bi-envelope-fill"></i>
                                     </div>
                                 </div>
-                            ))}
-                            <Link to="/About" className="btn btn-outline-primary mt-3">
-                                Learn More <i className="fas fa-arrow-right ms-2"></i>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <Desc />
-
-            {/* Top Courses Section */}
-            <section className="py-5 bg-light">
-                <div className="container">
-                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-                        <div>
-                            <h6 className="text-danger fw-bold mb-1">DRISHTEE</h6>
-                            <h2 className="text-primary fw-bold mb-0">TOP COURSES</h2>
-                        </div>
-                        <Link to="/AdmissionForm" className="btn btn-success mt-3 mt-md-0">
-                            Take Admission <i className="fas fa-arrow-right ms-2"></i>
-                        </Link>
-                    </div>
-                    <TopCourseList />
-                    <div className="mt-5">
-                        <CardSlider />
-                    </div>
-                </div>
-            </section>
-
-            <div className="row g-3">
-                {quickActions.map((action, index) => (
-                    <div
-                        key={index}
-                        className="col-6 col-md-4 col-lg-2"
-                    >
-                        <Link
-                            to={action.path}
-                            className="card text-decoration-none border-0 shadow-sm h-100 text-center hover-lift"
-                        >
-                            <div className="card-body py-4">
-                                <div
-                                    className="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: "60px",
-                                        height: "60px",
-                                        backgroundColor: action.color
-                                    }}
-                                >
-                                    <i className={`${action.icon} fa-lg text-white`}></i>
-                                </div>
-
-                                <h6 className="fw-semibold mb-0">{action.label}</h6>
                             </div>
-                        </Link>
-                    </div>
-                ))}
-            </div>
-
-
-            <Features />
-
-            {/* Testimonials */}
-            <section className="py-5 bg-light">
-                <div className="container">
-                    <Testimonial />
-                </div>
-            </section>
-
-            {/* Features & Updates */}
-            <section className="py-5">
-                <div className="container">
-                    <h2 className="text-primary fw-bold text-center mb-4">Features And Updates</h2>
-                    <div className="text-center mb-5">
-                        <p className="lead mb-0" id="element"></p>
-                    </div>
-                    <div className="row g-4">
-                        <div className="col-lg-6">
-                            <TimeTable />
                         </div>
-                        <div className="col-lg-6">
-                            <NoticeBoard />
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Team */}
-            <section className="py-5 bg-light" id="team">
-                <div className="container">
-                    <Team />
-                </div>
-            </section>
-
-            {/* Offers & Query Form */}
-            <section className="py-5">
-                <div className="container">
-                    <div className="row g-4">
+                        {/* Santosh Singh Card */}
                         <div className="col-lg-5">
-                            <Offers />
-                        </div>
-                        <div className="col-lg-7">
-                            <QueryForm />
+                            <div className="visionary-card-light">
+                                <div className="visionary-image-wrapper">
+                                    <img src="/images/team/team2.png" alt="Santosh Singh Chauhan" />
+                                    <div className="visionary-badge-gold">AD</div>
+                                </div>
+                                <div className="visionary-content-light">
+                                    <h3 className="fw-black text-dark mb-1">Santosh Singh</h3>
+                                    <p className="text-primary fw-bold small mb-3">Academic Director</p>
+                                    <p className="text-muted fst-italic">"Quality education is about methodology. We bridge the gap between classroom and industry."</p>
+                                    <div className="social-links-vision mt-3">
+                                        <i className="bi bi-linkedin me-2"></i>
+                                        <i className="bi bi-twitter-x"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="py-5" style={{ backgroundColor: "#6a41ed" }}>
+            {/* --- 5. INFRASTRUCTURE & FACILITIES --- */}
+            <section className="container py-100">
+                <div className="row align-items-center mb-5">
+                    <div className="col-md-6">
+                        <h2 className="fw-black display-6">World-Class Facilities</h2>
+                        <div className="accent-bar-gold"></div>
+                    </div>
+                </div>
+                <div className="facility-grid">
+                    <div className="facility-item" style={{ backgroundImage: "url('/images/vender/lab.jpg')" }}>
+                        <div className="item-label">High-Tech IT Lab</div>
+                    </div>
+                    <div className="facility-item" style={{ backgroundImage: "url('/images/vender/librarypic2.jpg')" }}>
+                        <div className="item-label">Digital Library</div>
+                    </div>
+                    <div className="facility-item" style={{ backgroundImage: "url('/images/vender/classroom.jpg')" }}>
+                        <div className="item-label">Smart Classrooms</div>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- 6. CAMPUS DASHBOARD --- */}
+            <section className="bg-light py-100">
                 <div className="container">
-                    <div className="row align-items-center">
-                        <div className="col-md-7 mb-4 mb-md-0">
-                            <h1 className="text-white fw-bold mb-0" id="admnow"></h1>
+                    <div className="row g-4">
+                        <div className="col-lg-8">
+                            <div className="dashboard-widget p-2 h-100">
+                                <h4 className="fw-black mb-4 text-dark"><i className="bi bi-broadcast text-danger me-2"></i>Campus Notice Board</h4>
+                                <NoticeBoard />
+                            </div>
                         </div>
-                        <div className="col-md-5 text-md-end">
-                            <Link to="/AdmissionForm">
-                                <button className="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold hover-scale">
-                                    Enroll Now <i className="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </Link>
+                        <div className="col-lg-4">
+                            <div className="dashboard-widget p-2 h-100 bg-white">
+                                <h4 className="fw-black mb-4 text-dark"><i className="bi bi-clock-history text-primary me-2"></i>Batch Schedules</h4>
+                                <TimeTable />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- 7. COURSES & SLIDERS --- */}
+            <section className="container py-100">
+                <h2 className="display-6 fw-black text-center mb-2 text-primary">Job-Oriented Programs</h2>
+                <TopCourseList />
+                <div className="mt-5"><CardSlider /></div>
+            </section>
+
+            {/* --- 8. CTA SECTION --- */}
+            <section className="container pb-100">
+                <div className="conversion-card overflow-hidden">
+                    <div className="row g-0">
+                        <div className="col-lg-7 p-5 bg-gradient-blue text-white">
+                            <h2 className="display-5 fw-black mb-4">Start Your Tech <br />Journey Today</h2>
+                            <p className="opacity-75 mb-5">Connect with our counselors to find the best career path for you.</p>
+                            <div className="d-flex gap-5">
+                                <div><h3 className="fw-black mb-0">12k+</h3><small className="text-warning">Graduates</small></div>
+                                <div><h3 className="fw-black mb-0">98%</h3><small className="text-warning">Placement</small></div>
+                            </div>
+                        </div>
+                        <div className="col-lg-5 p-5 bg-white shadow">
+                            <h4 className="fw-bold mb-4 text-dark">Enquire Now</h4>
+                            <QueryForm />
                         </div>
                     </div>
                 </div>
@@ -297,32 +283,75 @@ function Home() {
 
             <Footer />
 
-            {/* Add this CSS to your global styles or in a style tag */}
             <style>{`
-                .hover-lift {
-                    transition: transform 0.2s ease;
+                
+                :root { --p-blue: #061b5c; --a-gold: #f59e0b; }
+                .hybrid-app-shell { overflow-x: hidden; color: #334155; }
+                .fw-black { font-weight: 900; }
+                .py-100 { padding: 90px 0; }
+                .accent-bar-gold { width: 70px; height: 5px; background: var(--a-gold); border-radius: 10px; margin-top: 10px; }
+
+                /* HERO */
+                .hybrid-hero { position: relative; overflow: hidden; background: var(--p-blue); }
+                .hero-visual-layer { position: absolute; inset: 0; background: url('images/mainSlider/slider1.webp') center/cover; opacity: 0.25; }
+                .hero-overlay-gradient { position: absolute; inset: 0; background: linear-gradient(115deg, var(--p-blue) 45%, transparent 100%); }
+                .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 50px; color: #fff; font-size: 13px; font-weight: 600; }
+                .pulse-icon { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1.8s infinite; }
+
+                /* BUTTONS */
+                .btn-main-gold { background: var(--a-gold); color: #000; padding: 16px 35px; border-radius: 12px; font-weight: 800; text-decoration: none; display: inline-block; transition: 0.3s; }
+                .btn-main-glass { background: rgba(255,255,255,0.1); color: #fff; padding: 16px 35px; border-radius: 12px; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); display: inline-block; }
+
+                /* PORTAL GRID */
+                .mt-minus-70 { margin-top: -70px; position: relative; z-index: 50; }
+                .portal-hub-card { background: white; border-radius: 35px; padding: 40px; }
+                .portal-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
+                .portal-item { text-decoration: none; color: #1e293b; text-align: center; }
+                .portal-icon-wrapper { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: #f1f5f9; color: var(--icon-bg); margin: 0 auto 12px; transition: 0.3s; }
+                .portal-item:hover .portal-icon-wrapper { background: var(--icon-bg); color: white; transform: translateY(-5px); box-shadow: 0 10px 20px -5px var(--icon-bg); }
+
+                /* VISIONARY LIGHT CARDS */
+                .visionary-card-light {
+                    background: #ffffff;
+                    border-radius: 40px;
+                    padding: 30px;
+                    box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+                    display: flex;
+                    align-items: center;
+                    gap: 25px;
+                    height: 100%;
+                    border: 1px solid #edf2f7;
+                    transition: 0.4s;
                 }
-                .hover-lift:hover {
-                    transform: translateY(-5px);
-                }
-                .hover-scale {
-                    transition: transform 0.2s ease;
-                }
-                .hover-scale:hover {
-                    transform: scale(1.05);
-                }
-                .object-fit-cover {
-                    object-fit: cover;
-                }
-                @media (max-width: 768px) {
-                    .carousel-item img {
-                        height: 300px !important;
-                    }
-                    h1 {
-                        font-size: 1.8rem;
-                        text-align: center;
-                    }
-                }
+                .visionary-card-light:hover { transform: translateY(-10px); border-color: var(--a-gold); }
+                .visionary-image-wrapper { position: relative; flex-shrink: 0; }
+                .visionary-image-wrapper img { width: 100px; height: auto; object-fit: cover; border-radius: 25px; }
+                .visionary-badge-gold { position: absolute; top: -10px; left: -10px; background: var(--a-gold); color: #fff; padding: 4px 12px; border-radius: 10px; font-weight: 900; font-size: 11px; }
+
+                /* FACILITY GRID */
+                .facility-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 300px; gap: 20px; }
+                .facility-item { border-radius: 25px; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+                .item-label { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 20px; font-weight: 700; }
+
+                .dashboard-widget { background: #fff; border-radius: 25px; border: 1px solid #e2e8f0; }
+                .conversion-card { border-radius: 35px; box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+                .bg-gradient-blue { background: linear-gradient(135deg, var(--p-blue) 0%, #1e40af 100%); }
+
+                @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+                @media (max-width: 992px) {
+                    .portal-grid { grid-template-columns: repeat(3, 1fr); }
+                    .visionary-card-light { flex-direction: column; text-align: center; }
+                    .visionary-image-wrapper img { width: 100%; height: 220px; }
+                    .facility-grid { grid-template-columns: 1fr; }
+                }    
+                    @media (max-width: 1200px) { 
+    .facility-grid { grid-template-columns: repeat(2, 1fr); } /* 2 per row on tablet */
+}
+@media (max-width: 768px) {
+    .facility-grid { grid-template-columns: 1fr; } /* 1 per row on mobile */
+    .facility-item { aspect-ratio: auto; height: 220px; } /* fix height for mobile */
+    .item-label { padding: 15px; font-size: 0.9rem; }
+}
             `}</style>
         </div>
     );

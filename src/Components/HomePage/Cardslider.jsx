@@ -21,9 +21,10 @@ export default function CardSlider() {
     ];
 
     return (
-        <div style={{ width: "100%", overflow: "hidden" }} className="about-section">
+       <div className="p-1">
+         <div style={{ width: "100%", overflow: "hidden" }} className="about-section">
             <Swiper
-                className="pb-5 about-card"
+                className="pb-5 about-card rounded-1 overflow-hidden"
                 style={{ height: "100%", width: "100%" }}
                 modules={[Pagination, Autoplay]}
                 pagination={{ clickable: true }}
@@ -70,5 +71,6 @@ export default function CardSlider() {
                 }
             `}</style>
         </div>
+       </div>
     );
 }

@@ -1,0 +1,149 @@
+/* ===== BASE ===== */
+body {
+  background: #f3f4f6;
+}
+
+.app-container {
+  padding: 16px;
+}
+
+/* ===== HEADER ===== */
+.app-header {
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(12px);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+/* ===== HERO GLASS ===== */
+.hero-card-glass {
+  background: rgba(255,255,255,.7);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.12);
+}
+
+.hero-badge {
+  background: #e0e7ff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: .75rem;
+}
+
+.hero-card-glass h2 span {
+  color: #2563eb;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary-app {
+  background: #2563eb;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.btn-outline-app {
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+/* ===== QUICK GRID ===== */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+}
+
+.quick-app-icon {
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 6px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  text-decoration: none;
+  color: #111;
+}
+
+.quick-app-icon i {
+  font-size: 1.4rem;
+  color: #2563eb;
+}
+
+/* ===== STATS ===== */
+.stats-strip {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.stats-strip span {
+  font-size: .75rem;
+  color: #555;
+}
+
+/* ===== WHY ===== */
+.why-card {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  padding: 14px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.07);
+}
+
+.why-card i {
+  font-size: 1.5rem;
+  color: #2563eb;
+}
+
+/* ===== SHEETS ===== */
+.sheet-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.1);
+}
+
+/* ===== CTA ===== */
+.cta-app-card {
+  background: linear-gradient(135deg,#2563eb,#1e40af);
+  color: #fff;
+  padding: 24px;
+  border-radius: 24px;
+  text-align: center;
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 768px) {
+  .app-container {
+    max-width: 420px;
+    margin: auto;
+  }
+}
