@@ -8,7 +8,7 @@ export default function AdminLayout() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="admin-layout mt-4 pt-2">
+    <div className="admin-layout">
       <AdminSidebar open={open} setOpen={setOpen} />
 
       <div className="admin-main">

@@ -10,9 +10,15 @@ export default function AdmissionForm() {
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
   const [form, setForm] = useState({
-    name: "", fatherName: "", motherName: "",
-    course: "", issueDate: "", photoUrl: "",
-    mobile: "", email: "",
+    name: "",
+    fatherName: "",
+    motherName: "",
+    course: "",
+    dob: "",         // Date of Birth
+    photoUrl: "",
+    mobile: "",
+    email: "",
+    address: ""     // Complete address
   });
 
   const uploadImg = async (file) => {
@@ -53,9 +59,15 @@ export default function AdmissionForm() {
       });
       toast.success("Admission Successful!");
       setForm({
-        name: "", fatherName: "", motherName: "",
-        course: "", issueDate: "", photoUrl: "",
-        mobile: "", email: "",
+        name: "",
+        fatherName: "",
+        motherName: "",
+        course: "",
+        dob: "",
+        photoUrl: "",
+        mobile: "",
+        email: "",
+        address: ""
       });
     } catch (e) {
       toast.error(e.message);
@@ -70,7 +82,7 @@ export default function AdmissionForm() {
         <div className="app-card card mx-auto p-2 p-md-4 m-0">
 
           {/* Avatar Upload */}
-          <div className="avatar-container">
+          <div className="avatar-container pt-2">
             <img
               src={form.photoUrl || "https://www.w3schools.com/howto/img_avatar.png"}
               className="avatar-preview"
@@ -84,7 +96,7 @@ export default function AdmissionForm() {
 
           <h5 className="text-center fw-bold mb-3">Student Registration</h5>
 
-          <form onSubmit={handleSubmit} className="row g-3">
+          <form onSubmit={handleSubmit} className="row g-3 mb-5 pb-5 mb-lg-0 pb-lg-0">
             <div className="col-12 form-floating">
               <input className="form-control" placeholder="Name"
                 value={form.name}
@@ -118,9 +130,16 @@ export default function AdmissionForm() {
 
             <div className="col-6 form-floating">
               <input type="date" className="form-control"
-                value={form.issueDate}
-                onChange={e => setForm({ ...form, issueDate: e.target.value })} required />
-              <label>Issue Date</label>
+                value={form.dob}
+                onChange={e => setForm({ ...form, dob: e.target.value })} required />
+              <label>Date of Birth</label>
+            </div>
+
+            <div className="col-12 form-floating">
+              <textarea className="form-control" placeholder="Complete Address" rows={2}
+                value={form.address}
+                onChange={e => setForm({ ...form, address: e.target.value })} required />
+              <label>Complete Address</label>
             </div>
 
             <div className="col-12 col-md-6 form-floating">
@@ -137,7 +156,7 @@ export default function AdmissionForm() {
               <label>Email</label>
             </div>
 
-            <div className="col-12">
+            <div className="col-12 pb-3">
               <button className="btn btn-primary w-100 submit-btn" disabled={loading}>
                 {loading ? "Saving..." : "SUBMIT"}
               </button>

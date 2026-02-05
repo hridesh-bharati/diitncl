@@ -7,7 +7,7 @@ import StudentProfile from "./Students/StudentProfile";
 import AdminProfile from "./Profile/AdminProfile";
 import StudentCertificate from "./Certificate/StudentCertificate";
 import AdminGalleryUpload from "./Gallery/GalleryUpload";
-
+import AdminList from "./Profile/AdminList";
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -19,6 +19,7 @@ export default function AdminRoutes() {
         <Route path="students/:id/certificate" element={<StudentCertificate />} />
         <Route path="gallery" element={<AdminGalleryUpload />} />
         <Route path="profile" element={<AdminProfile />} />
+        <Route path="admin-list" element={<AdminList />} />
 
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>

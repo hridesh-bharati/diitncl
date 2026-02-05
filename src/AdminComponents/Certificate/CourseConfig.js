@@ -1,6 +1,5 @@
 // src/AdminComponents/Certificate/CourseConfig.js
 
-// =================== COURSE DATA CONFIGURATION ===================
 export const COURSE_CONFIG = {
   ADCA: {
     code: "ADCA",
@@ -27,7 +26,6 @@ export const COURSE_CONFIG = {
     ],
     hours: "580 Hrs."
   },
-
   DCAA: {
     code: "DCAA",
     fullName: "Diploma in Computer Accounting Application",
@@ -43,7 +41,6 @@ export const COURSE_CONFIG = {
     ],
     hours: "320 Hrs."
   },
-
   DCA: {
     code: "DCA",
     fullName: "Diploma in Computer Application",
@@ -65,22 +62,15 @@ export const COURSE_CONFIG = {
   }
 };
 
-// =================== HELPER FUNCTION ===================
+// ✅ Helper returns null if no valid course
 export const getCourseData = (courseCode) => {
-  if (!courseCode) return COURSE_CONFIG.ADCA;
+  if (!courseCode) return null;
 
   const course = courseCode.toUpperCase().trim();
 
-  if (course.includes("ADCA") || course.includes("ADVANCE DIPLOMA")) {
-    return COURSE_CONFIG.ADCA;
-  }
-  if (course.includes("DCAA")) {
-    return COURSE_CONFIG.DCAA;
-  }
-  if (course.includes("DCA")) {
-    return COURSE_CONFIG.DCA;
-  }
+  if (course.includes("ADCA") || course.includes("ADVANCE DIPLOMA")) return COURSE_CONFIG.ADCA;
+  if (course.includes("DCAA")) return COURSE_CONFIG.DCAA;
+  if (course.includes("DCA")) return COURSE_CONFIG.DCA;
 
-  // fallback
-  return COURSE_CONFIG.ADCA;
+  return null; // fallback
 };

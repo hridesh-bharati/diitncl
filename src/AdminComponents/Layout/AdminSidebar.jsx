@@ -7,6 +7,7 @@ import {
   PersonCircle,
   X,
   Images,
+  FileEarmarkTextFill, // ✅ admin list icon
 } from "react-bootstrap-icons";
 import "./AdminSidebar.css";
 
@@ -43,6 +44,12 @@ export default function AdminSidebar({ open, setOpen }) {
         <NavLink to="/admin/gallery" className="sidebar-item" onClick={handleNavClick}>
           <Images />
           <span>Gallery</span>
+        </NavLink>
+
+        {/* ✅ Admin List Link */}
+        <NavLink to="/admin/admin-list" className="sidebar-item" onClick={handleNavClick}>
+          <FileEarmarkTextFill />
+          <span>Admin List</span>
         </NavLink>
 
         <NavLink to="/admin/profile" className="sidebar-item" onClick={handleNavClick}>
