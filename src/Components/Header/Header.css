@@ -6,16 +6,16 @@
 .pc-menu { display: flex; gap: 35px; }
 .pc-menu a { text-decoration: none; color: #475569; font-weight: 600; font-size: 16px; }
 .pc-menu a.active { color: #0a2885; }
-.pc-right { display: flex; align-items: center; gap: 20px; }
+.pc-right { display: flex; align-items: center; justify-content: center; gap: 20px; }
 .pc-search-wrap { background: #f1f5f9; padding: 8px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; width: 250px; }
 .pc-btn-log { background: #0a2885; color: white; border: none; padding: 9px 25px; border-radius: 12px; font-weight: 700; }
 
 /* --- MOBILE TOP HEADER --- */
-.mobile-curved-top { height: 75px; background: #0a2885; border-radius: 0 0 35px 35px; position: sticky; top: 0; z-index: 900; padding: 0 20px; display: flex; align-items: center; }
+.mobile-curved-top { height: 75px; background: #0a2885; border-radius: 0 0 35px 35px; position: sticky; top: 0; z-index: 900; padding: 0 10px; display: flex; align-items: center; }
 .mob-top-inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-.mob-logo-img { height: 45px; }
-.mob-search-trigger { background: rgba(255,255,255,0.15); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; }
-.mob-login-pill-btn { background: #f59e0b; color: white; border: none; padding: 6px 16px; border-radius: 20px; font-weight: 700; }
+.mob-top-inner .lead{font-size: 0.7rem !important;}
+.mob-logo-img { height: 35px; }
+.mob-search-trigger { background: rgba(255,255,255,0.15); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; }
 
 /* --- LOGIN MODAL ZOOM ANIMATION --- */
 .login-modal-overlay { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 25px; }
@@ -76,3 +76,5 @@
 /* SEARCH */
 .search-layer-full { position: fixed; inset: 0; z-index: 9999; background: white; padding: 15px; }
 .search-bar-top { display: flex; align-items: center; gap: 15px; }
+
+

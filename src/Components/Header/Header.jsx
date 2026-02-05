@@ -63,11 +63,11 @@ export default function Header() {
             <Link to="/Library" className={location.pathname === "/Library" ? "active" : ""}>E-Library</Link>
           </div>
           <div className="pc-right">
-             <div className="pc-search-wrap">
-               <i className="bi bi-search"></i>
-               <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
-             </div>
-             {!user && <button className="pc-btn-log" onClick={() => setShowLoginModal(true)}>Login</button>}
+            <div className="pc-search-wrap">
+              <i className="bi bi-search"></i>
+              <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
+            </div>
+            {!user && <button className="pc-btn-log" onClick={() => setShowLoginModal(true)}>Login</button>}
           </div>
         </div>
       </nav>
@@ -75,14 +75,24 @@ export default function Header() {
       {/* --- MOBILE TOP HEADER (CURVED) --- */}
       <header className="mobile-curved-top d-lg-none">
         <div className="mob-top-inner">
-          <img src="/images/icon/logo.png" className="mob-logo-img" onClick={() => navigate("/")} alt="Logo" />
-          <div className="mob-top-actions">
+          <div className="d-flex">
+            <img src="/images/icon/icon.webp" className="bg-white rounded-3 mob-logo-img" onClick={() => navigate("/")} alt="Logo" />
+            <span class="ms-2">
+              <p className="p-0 m-0 lh-0 text-white fw-bolder">Drishtee Computer Center</p>
+              <p className="p-0 m-0 lh-0 text-white lead">ISO 9001:2015 Certified</p>
+            </span>
+          </div>
+          <div className="mob-top-actions d-flex align-items-center">
             <button className="mob-search-trigger" onClick={() => setIsSearchActive(true)}>
               <i className="bi bi-search"></i>
             </button>
+              <button className="btn btn-sm fs-4 text-white">
+              <i className="bi bi-geo-alt-fill fs-3"></i>
+            </button>
+
             {/* Login button removes (NULL) when logged in */}
             {!user && (
-              <button className="mob-login-pill-btn" onClick={() => setShowLoginModal(true)}>Login</button>
+              <button className="btn text-white fs-3 m-0 p-0" onClick={() => setShowLoginModal(true)}> <i class="bi bi-person-circle"></i> </button>
             )}
           </div>
         </div>
@@ -99,7 +109,7 @@ export default function Header() {
 
           <div className="sidebar-user-info">
             <div className="avatar-frame">
-               <img src={user?.photoURL || "/images/icon/default-avatar.png"} alt="user" />
+              <img src={user?.photoURL || "/images/icon/default-avatar.png"} alt="user" />
             </div>
             <div className="user-text-info">
               <h4>{user ? user.displayName : "Guest User"}</h4>
@@ -113,12 +123,12 @@ export default function Header() {
             <Link to="/Admission" onClick={() => setIsMenuOpen(false)}><i className="bi bi-person-plus"></i> New Admission</Link>
             <Link to="/Verify-Certificate" onClick={() => setIsMenuOpen(false)}><i className="bi bi-patch-check"></i> Verify Certificate</Link>
             <Link to="/Student-Result" onClick={() => setIsMenuOpen(false)}><i className="bi bi-file-earmark-bar-graph"></i> Check Results</Link>
-            
+
             <p className="list-label">Resources</p>
             <Link to="/Library" onClick={() => setIsMenuOpen(false)}><i className="bi bi-journal-code"></i> E-Notes & Books</Link>
             <Link to="/Gallery" onClick={() => setIsMenuOpen(false)}><i className="bi bi-images"></i> Center Gallery</Link>
             <Link to="/Contact-us" onClick={() => setIsMenuOpen(false)}><i className="bi bi-geo-alt"></i> Locate Center</Link>
-            
+
             {user && (
               <button className="sidebar-logout-btn" onClick={handleLogout}>
                 <i className="bi bi-box-arrow-right"></i> Logout Securely
@@ -138,7 +148,7 @@ export default function Header() {
           <i className="bi bi-info-circle-fill"></i>
           <span>About</span>
         </Link>
-        
+
         {/* CONTACT FAB (BLUE GRADIENT + WHITE BORDER) */}
         <div className="fab-call-container">
           <Link to="/Contact-us" className="fab-call-btn">
