@@ -255,7 +255,7 @@ function ProfileInput({ label, value, disabled, onChange, textarea }) {
           value={value || ""}
           disabled={disabled}
           onChange={(e) => onChange?.(e.target.value)}
-          rows={3}
+          rows={2}
         />
       ) : (
         <input

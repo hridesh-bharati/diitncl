@@ -1,3 +1,4 @@
+// src\AdminComponents\Layout\AdminSidebar.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
@@ -31,14 +32,14 @@ export default function AdminSidebar({ open, setOpen }) {
           <span>Dashboard</span>
         </NavLink>
 
-        <NavLink to="/admin/admissions" className="sidebar-item" onClick={handleNavClick}>
+        <NavLink to="/admin/admitted-student-list" className="sidebar-item" onClick={handleNavClick}>
           <ClipboardCheckFill />
-          <span>Admissions</span>
+          <span>Students List</span>
         </NavLink>
 
         <NavLink to="/admin/students" className="sidebar-item" onClick={handleNavClick}>
           <PeopleFill />
-          <span>Students</span>
+          <span>Students Status</span>
         </NavLink>
 
         <NavLink to="/admin/gallery" className="sidebar-item" onClick={handleNavClick}>

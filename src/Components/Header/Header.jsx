@@ -94,11 +94,19 @@ export default function Header() {
               <i className="bi bi-search"></i>
               <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
             </div>
-            {!user && <button className="pc-btn-log" onClick={() => setShowLoginModal(true)}>Login</button>}
+
+            {!user && (
+              <button className="pc-btn-log" onClick={() => setShowLoginModal(true)}>Login</button>
+            )}
+
             {user && (
-              <button className="btn btn-danger btn-sm" onClick={handleLogout}>
-                <i className="bi bi-box-arrow-right"></i> Logout
-              </button>
+              <>
+                {/* Dashboard Button */}
+                <Link to="/admin" className="btn btn-primary btn-sm me-2">Dashboard</Link>
+
+                {/* Logout Button */}
+                <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
+              </>
             )}
           </div>
         </div>

@@ -1,3 +1,4 @@
+// src\AdminComponents\Students\StudentProfile.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Spinner, Button, Badge } from "react-bootstrap";
 import AdmissionProvider from "../Admissions/AdmissionProvider";

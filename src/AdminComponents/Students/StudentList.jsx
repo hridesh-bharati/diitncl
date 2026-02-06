@@ -1,113 +1,98 @@
-// src/AdminComponents/Students/StudentList.jsx
-import { Card, Button, Spinner, Form, Badge } from "react-bootstrap";
-import { Trash, CreditCard2Back, Eye, PersonCircle, Check2Circle, XCircle, Save } from "react-bootstrap-icons";
+import React, { useState, useCallback } from "react";
+import { Button, Form, Spinner, Badge } from "react-bootstrap";
+import { Trash, CreditCard2Back, Eye, Check2Circle, XCircle, Save } from "react-bootstrap-icons";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { Link } from "react-router-dom";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
-import { useState } from "react";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import LoadingSpinner from "../Common/LoadingSpinner";
+import StudentCard from "../Common/StudentCard";
 
-// ========================
-// Fixed center code variable
-// ========================
 const CENTER_CODE = "DIIT124";
-
-// ========================
-// Helper to generate Reg No
-// ========================
-const generateRegNo = (course, enteredRegNo) => {
-  if (!course || !enteredRegNo) return "";
+const generateRegNo = (course, regInput) => {
+  if (!course || !regInput) return "";
   const courseClean = course.replace(/\s+/g, "_").toUpperCase();
-  return `${CENTER_CODE}/${courseClean}/${enteredRegNo}`;
+  return `${CENTER_CODE}/${courseClean}/${regInput}`;
 };
 
 export default function StudentList() {
   const [regInputs, setRegInputs] = useState({});
   const [percentageInputs, setPercentageInputs] = useState({});
-  const [loadingReg, setLoadingReg] = useState({});
-  const [loadingPercentage, setLoadingPercentage] = useState({});
-  const [savedRegNos, setSavedRegNos] = useState({});
-  const [savedPercentages, setSavedPercentages] = useState({});
+  const [loadingStates, setLoadingStates] = useState({});
 
-  // Input handlers
-  const handleRegChange = (id, value) => setRegInputs(prev => ({ ...prev, [id]: value }));
-  const handlePercentageChange = (id, value) => setPercentageInputs(prev => ({ ...prev, [id]: value }));
+  const handleRegChange = useCallback((id, value) => {
+    setRegInputs(prev => ({ ...prev, [id]: value }));
+  }, []);
 
-  // Save Reg No
-  const saveRegNo = async (student) => {
+  const handlePercentageChange = useCallback((id, value) => {
+    setPercentageInputs(prev => ({ ...prev, [id]: value }));
+  }, []);
+
+  const saveRegNo = useCallback(async (student) => {
     const enteredRegNo = regInputs[student.id];
-    if (!enteredRegNo) return toast.error("Enter Registration Number");
+    if (!enteredRegNo?.trim()) {
+      toast.error("Enter Registration Number");
+      return;
+    }
 
     const regNo = generateRegNo(student.course, enteredRegNo);
+    setLoadingStates(prev => ({ ...prev, [`${student.id}_reg`]: true }));
 
-    setLoadingReg(prev => ({ ...prev, [student.id]: true }));
     try {
       await updateDoc(doc(db, "admissions", student.id), { regNo });
-      toast.success("Registration Number saved: " + regNo);
-      
-      // Mark as saved locally
-      setSavedRegNos(prev => ({ ...prev, [student.id]: true }));
-      setSavedPercentages(prev => ({ ...prev, [student.id]: false })); // Reset percentage saved state
-      
-      // Clear the input
+      toast.success(`Registration saved: ${regNo}`);
       setRegInputs(prev => ({ ...prev, [student.id]: "" }));
     } catch (err) {
       toast.error(err.message);
     } finally {
-      setLoadingReg(prev => ({ ...prev, [student.id]: false }));
+      setLoadingStates(prev => ({ ...prev, [`${student.id}_reg`]: false }));
     }
-  };
+  }, [regInputs]);
 
-  // Save Percentage
-  const savePercentage = async (student) => {
+  const savePercentage = useCallback(async (student) => {
     const percentage = percentageInputs[student.id];
-    if (!percentage) return toast.error("Enter Percentage");
-    
-    // Validate percentage
+    if (!percentage) {
+      toast.error("Enter Percentage");
+      return;
+    }
+
     const percNum = parseFloat(percentage);
     if (isNaN(percNum) || percNum < 0 || percNum > 100) {
-      return toast.error("Enter valid percentage (0-100)");
+      toast.error("Enter valid percentage (0-100)");
+      return;
     }
 
-    setLoadingPercentage(prev => ({ ...prev, [student.id]: true }));
+    setLoadingStates(prev => ({ ...prev, [`${student.id}_perc`]: true }));
+
     try {
-      await updateDoc(doc(db, "admissions", student.id), { percentage: percNum.toString() });
-      toast.success("Percentage saved: " + percNum + "%");
-      
-      // Mark as saved locally
-      setSavedPercentages(prev => ({ ...prev, [student.id]: true }));
-      
-      // Clear the input
+      await updateDoc(doc(db, "admissions", student.id), {
+        percentage: percNum.toFixed(2)
+      });
+      toast.success(`Percentage saved: ${percNum}%`);
       setPercentageInputs(prev => ({ ...prev, [student.id]: "" }));
     } catch (err) {
       toast.error(err.message);
     } finally {
-      setLoadingPercentage(prev => ({ ...prev, [student.id]: false }));
+      setLoadingStates(prev => ({ ...prev, [`${student.id}_perc`]: false }));
     }
-  };
+  }, [percentageInputs]);
 
-  // Toggle Admission Status
-  const toggleStatus = async (student, status) => {
+  const toggleStatus = useCallback(async (student, status) => {
     try {
       await updateDoc(doc(db, "admissions", student.id), { status });
       toast.success(`Admission ${status}`);
-      
-      // If accepting, reset saved states
+
       if (status === "accepted") {
-        setSavedRegNos(prev => ({ ...prev, [student.id]: false }));
-        setSavedPercentages(prev => ({ ...prev, [student.id]: false }));
         setRegInputs(prev => ({ ...prev, [student.id]: "" }));
         setPercentageInputs(prev => ({ ...prev, [student.id]: "" }));
       }
     } catch (err) {
       toast.error(err.message);
     }
-  };
+  }, []);
 
-  // Delete admission
-  const handleDelete = async (student) => {
+  const handleDelete = useCallback(async (student) => {
     if (window.confirm("Are you sure you want to delete this admission?")) {
       try {
         await deleteDoc(doc(db, "admissions", student.id));
@@ -116,243 +101,219 @@ export default function StudentList() {
         toast.error(err.message);
       }
     }
-  };
+  }, []);
+
+  const renderStudentCard = useCallback((student) => {
+    const status = student.status || "pending";
+    const isCanceled = status === "canceled";
+    const isAccepted = status === "accepted";
+    const isPending = status === "pending";
+
+    const hasRegNo = !!student.regNo;
+    const hasPercentage = !!student.percentage;
+
+    const showRegInput = isAccepted && !hasRegNo;
+    const showPercentageInput = isAccepted && hasRegNo && !hasPercentage;
+    const certificateEnabled = isAccepted && hasRegNo && hasPercentage;
+
+    const isLoadingReg = loadingStates[`${student.id}_reg`];
+    const isLoadingPercentage = loadingStates[`${student.id}_perc`];
+
+    return (
+      <div key={student.id} className="col-12 col-sm-6 col-lg-4">
+        <StudentCard student={student} isCanceled={isCanceled}>
+          {/* Registration Input */}
+          {showRegInput && (
+            <div className="mb-2">
+              <Form.Control
+                size="sm"
+                placeholder="Enter reg number (e.g., 2A)"
+                value={regInputs[student.id] || ""}
+                onChange={(e) => handleRegChange(student.id, e.target.value)}
+                disabled={isLoadingReg}
+                maxLength={10}
+              />
+              <Button
+                size="sm"
+                variant="success"
+                onClick={() => saveRegNo(student)}
+                disabled={isLoadingReg || !regInputs[student.id]}
+                className="mt-1 w-100"
+              >
+                {isLoadingReg ? (
+                  <Spinner size="sm" animation="border" />
+                ) : (
+                  <>
+                    <Save size={14} className="me-1" /> Save Reg No
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {/* Percentage Input */}
+          {showPercentageInput && (
+            <div className="mb-2">
+              <Form.Control
+                size="sm"
+                type="number"
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="Enter percentage (0-100)"
+                value={percentageInputs[student.id] || ""}
+                onChange={(e) => handlePercentageChange(student.id, e.target.value)}
+                disabled={isLoadingPercentage}
+              />
+              <Button
+                size="sm"
+                variant="success"
+                onClick={() => savePercentage(student)}
+                disabled={isLoadingPercentage || !percentageInputs[student.id]}
+                className="mt-1 w-100"
+              >
+                {isLoadingPercentage ? (
+                  <Spinner size="sm" animation="border" />
+                ) : (
+                  <>
+                    <Save size={14} className="me-1" /> Save Percentage
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {/* Display Saved Info */}
+          {(hasRegNo || hasPercentage) && (
+            <div className="mb-2 small bg-light p-2 rounded">
+              {hasRegNo && (
+                <div className="d-block mb-1">
+                  <strong>Reg No:</strong> {student.regNo}
+                </div>
+              )}
+              {hasPercentage && (
+                <div className="d-block">
+                  <strong>Percentage:</strong> {student.percentage}%
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="d-flex gap-2 mt-3 flex-wrap">
+            {!isCanceled && (
+              <Link to={`/admin/students/${student.id}`} className="flex-fill">
+                <Button size="sm" variant="outline-primary" className="w-100">
+                  <Eye /> View
+                </Button>
+              </Link>
+            )}
+
+            {!isCanceled && certificateEnabled && (
+              <Link to={`/admin/students/${student.id}/certificate`} className="flex-fill">
+                <Button size="sm" variant="primary" className="w-100">
+                  <CreditCard2Back /> Certificate
+                </Button>
+              </Link>
+            )}
+
+            {isPending && (
+              <>
+                <Button
+                  size="sm"
+                  variant="success"
+                  className="flex-fill"
+                  onClick={() => toggleStatus(student, "accepted")}
+                >
+                  <Check2Circle /> Accept
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="flex-fill"
+                  onClick={() => toggleStatus(student, "canceled")}
+                >
+                  <XCircle /> Cancel
+                </Button>
+              </>
+            )}
+
+            <Button
+              size="sm"
+              variant="outline-danger"
+              className="flex-fill"
+              onClick={() => handleDelete(student)}
+            >
+              <Trash /> Delete
+            </Button>
+          </div>
+        </StudentCard>
+      </div>
+    );
+  }, [
+    regInputs,
+    percentageInputs,
+    loadingStates,
+    handleRegChange,
+    handlePercentageChange,
+    saveRegNo,
+    savePercentage,
+    toggleStatus,
+    handleDelete
+  ]);
 
   return (
     <AdmissionProvider>
       {({ admissions, loading }) => {
-        if (loading)
-          return (
-            <div className="vh-100 d-flex justify-content-center align-items-center">
-              <Spinner />
-            </div>
-          );
+        if (loading) return <LoadingSpinner />;
 
-        if (!admissions.length) return <p className="text-center mt-5">No admissions found.</p>;
+        // REMOVE useMemo and calculate directly
+        const pending = admissions.filter(a => a.status === "pending");
+        const accepted = admissions.filter(a => a.status === "accepted");
+        const canceled = admissions.filter(a => a.status === "canceled");
+        const groupedAdmissions = { pending, accepted, canceled };
 
         return (
           <div className="container-fluid p-3 bg-light min-vh-100">
-            <div className="row g-3">
-              {admissions.map(student => {
-                const status = student.status || "pending";
-                const isCanceled = status === "canceled";
-                const isAccepted = status === "accepted";
-                
-                // Check what data exists
-                const hasRegNo = !!student.regNo;
-                const hasPercentage = !!student.percentage;
-                
-                // Check what has been saved in current session
-                const regSavedInSession = savedRegNos[student.id] || hasRegNo;
-                const percentageSavedInSession = savedPercentages[student.id] || hasPercentage;
-                
-                // Determine what to show
-                const showAcceptCancel = status === "pending";
-                const showRegInput = isAccepted && !regSavedInSession;
-                const showPercentageInput = isAccepted && regSavedInSession && !percentageSavedInSession;
-                
-                // Certificate button enabled condition
-                const certificateEnabled = regSavedInSession && percentageSavedInSession;
+            {/* NEW ADMISSIONS */}
+            <section className="mb-5">
+              <div className="d-flex align-items-center mb-3">
+                <h4 className="mb-0">New Admissions</h4>
+                <Badge bg="warning" className="ms-2">
+                  {pending.length} Pending
+                </Badge>
+              </div>
 
-                return (
-                  <div key={student.id} className="col-12 col-sm-6 col-lg-3">
-                    <Card className={`border-0 shadow-sm rounded-4 h-100 ${isCanceled ? "opacity-50" : ""}`}>
-                      <Card.Body className={isCanceled ? "pointer-events-none" : ""}>
-                        {/* Status Badge */}
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <Badge 
-                            bg={
-                              status === "accepted" ? "success" : 
-                              status === "canceled" ? "danger" : 
-                              "warning"
-                            }
-                            className="text-uppercase"
-                          >
-                            {status}
-                          </Badge>
-                          
-                          {/* Display saved Reg No */}
-                          {regSavedInSession && (
-                            <small className="text-muted text-truncate ms-2">
-                              {student.regNo || "Reg No saved"}
-                            </small>
-                          )}
-                        </div>
+              {pending.length ? (
+                <div className="row g-3">
+                  {pending.map(renderStudentCard)}
+                </div>
+              ) : (
+                <div className="text-center py-4 border rounded bg-white">
+                  <p className="text-muted mb-0">No pending admissions</p>
+                </div>
+              )}
+            </section>
 
-                        {/* PHOTO + NAME */}
-                        <div className="d-flex gap-2 align-items-center mb-3">
-                          {student.photoUrl ? (
-                            <img
-                              src={student.photoUrl}
-                              alt=""
-                              className="rounded-circle"
-                              style={{ width: 45, height: 45, objectFit: "cover" }}
-                            />
-                          ) : (
-                            <PersonCircle size={45} className="text-muted" />
-                          )}
-                          <div className="overflow-hidden">
-                            <strong className="d-block text-truncate">{student.name}</strong>
-                            <small className="text-muted d-block text-truncate">{student.course}</small>
-                          </div>
-                        </div>
+            {/* ACCEPTED ADMISSIONS */}
+            <section>
+              <div className="d-flex align-items-center mb-3">
+                <h4 className="mb-0">Accepted Admissions</h4>
+                <Badge bg="success" className="ms-2">
+                  {accepted.length} Accepted
+                </Badge>
+              </div>
 
-                        {/* REG NO INPUT - Shows after acceptance, before saving */}
-                        {showRegInput && (
-                          <div className="mb-2">
-                            <div className="d-flex gap-1 align-items-center mb-1">
-                              <small className="text-muted">Registration Number</small>
-                            </div>
-                            <div className="d-flex gap-2">
-                              <Form.Control
-                                size="sm"
-                                placeholder="e.g., 2A"
-                                value={regInputs[student.id] || ""}
-                                onChange={e => handleRegChange(student.id, e.target.value)}
-                                disabled={loadingReg[student.id]}
-                              />
-                              <Button
-                                size="sm"
-                                variant="success"
-                                onClick={() => saveRegNo(student)}
-                                disabled={loadingReg[student.id] || !regInputs[student.id]}
-                                className="d-flex align-items-center"
-                              >
-                                {loadingReg[student.id] ? (
-                                  <Spinner size="sm" animation="border" />
-                                ) : (
-                                  <>
-                                    <Save size={14} className="me-1" /> Save
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                            <small className="text-muted mt-1 d-block">
-                              Format: {CENTER_CODE}/{student.course?.replace(/\s+/g, "_").toUpperCase()}/[Your Input]
-                            </small>
-                          </div>
-                        )}
-
-                        {/* PERCENTAGE INPUT - Shows only after Reg No is saved */}
-                        {showPercentageInput && (
-                          <div className="mb-2">
-                            <div className="d-flex gap-1 align-items-center mb-1">
-                              <small className="text-muted">Percentage</small>
-                              {hasPercentage && (
-                                <Badge bg="success" className="ms-2" pill>
-                                  Saved
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="d-flex gap-2">
-                              <Form.Control
-                                size="sm"
-                                type="number"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                                placeholder="e.g., 85.5"
-                                value={percentageInputs[student.id] || ""}
-                                onChange={e => handlePercentageChange(student.id, e.target.value)}
-                                disabled={loadingPercentage[student.id]}
-                              />
-                              <Button
-                                size="sm"
-                                variant="success"
-                                onClick={() => savePercentage(student)}
-                                disabled={loadingPercentage[student.id] || !percentageInputs[student.id]}
-                                className="d-flex align-items-center"
-                              >
-                                {loadingPercentage[student.id] ? (
-                                  <Spinner size="sm" animation="border" />
-                                ) : (
-                                  <>
-                                    <Save size={14} className="me-1" /> Save
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Display saved info */}
-                        {(regSavedInSession || percentageSavedInSession) && (
-                          <div className="mb-2">
-                            {regSavedInSession && (
-                              <small className="d-block">
-                                <strong>Reg No:</strong> {student.regNo}
-                              </small>
-                            )}
-                            {percentageSavedInSession && (
-                              <small className="d-block">
-                                <strong>Percentage:</strong> {student.percentage}%
-                              </small>
-                            )}
-                          </div>
-                        )}
-
-                        {/* ACTIONS */}
-                        <div className="d-flex gap-2 mt-3 flex-wrap">
-                          {/* View Button - Always visible if not canceled */}
-                          {!isCanceled && (
-                            <Link to={`/admin/students/${student.id}`} className="flex-fill">
-                              <Button size="sm" variant="outline-primary" className="w-100">
-                                <Eye /> View
-                              </Button>
-                            </Link>
-                          )}
-
-                          {/* Certificate Button - Only enabled when both saved */}
-                          {!isCanceled && certificateEnabled && (
-                            <Link to={`/admin/students/${student.id}/certificate`} className="flex-fill">
-                              <Button
-                                size="sm"
-                                variant="primary"
-                                className="w-100"
-                              >
-                                <CreditCard2Back /> Certificate
-                              </Button>
-                            </Link>
-                          )}
-
-                          {/* Accept/Cancel Buttons - Only for pending status */}
-                          {showAcceptCancel && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="success"
-                                className="flex-fill"
-                                onClick={() => toggleStatus(student, "accepted")}
-                              >
-                                <Check2Circle /> Accept
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="danger"
-                                className="flex-fill"
-                                onClick={() => toggleStatus(student, "canceled")}
-                              >
-                                <XCircle /> Cancel
-                              </Button>
-                            </>
-                          )}
-
-                          {/* Delete Button - Always visible */}
-                          <Button
-                            size="sm"
-                            variant="outline-danger"
-                            className="flex-fill"
-                            onClick={() => handleDelete(student)}
-                          >
-                            <Trash /> Delete
-                          </Button>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </div>
-                );
-              })}
-            </div>
+              {accepted.length ? (
+                <div className="row g-3">
+                  {accepted.map(renderStudentCard)}
+                </div>
+              ) : (
+                <div className="text-center py-4 border rounded bg-white">
+                  <p className="text-muted mb-0">No accepted admissions yet</p>
+                </div>
+              )}
+            </section>
           </div>
         );
       }}
