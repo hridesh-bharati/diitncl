@@ -1,50 +1,77 @@
-import { Card, Badge } from "react-bootstrap";
-import { PersonCircle } from "react-bootstrap-icons";
+import { Badge, Button } from "react-bootstrap";
+import { PersonCircle, CreditCard2Back } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 
-const STATUS_COLORS = {
-  pending: "warning",
-  accepted: "success",
-  canceled: "danger"
-};
-
-export default function StudentCard({ student, children, isCanceled = false }) {
+export default function StudentCard({ student }) {
   const status = student.status || "pending";
 
-  return (
-    <Card className={`border-0 shadow-sm rounded-4 h-100 ${isCanceled ? "opacity-50" : ""}`}>
-      <Card.Body className={isCanceled ? "pointer-events-none" : ""}>
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <Badge bg={STATUS_COLORS[status] || "secondary"} className="text-uppercase">
-            {status}
-          </Badge>
-          {student.regNo && (
-            <small className="text-muted text-truncate ms-2">
-              {student.regNo}
-            </small>
-          )}
-        </div>
+  const statusColor =
+    status === "accepted"
+      ? "success"
+      : status === "canceled"
+      ? "danger"
+      : "warning";
 
-        <div className="d-flex gap-2 align-items-center mb-3">
-          {student.photoUrl ? (
-            <img
-              src={student.photoUrl}
-              alt={student.name}
-              className="rounded-circle"
-              style={{ width: 45, height: 45, objectFit: "cover" }}
-            />
-          ) : (
-            <PersonCircle size={45} className="text-muted" />
-          )}
-          <div className="overflow-hidden">
-            <strong className="d-block text-truncate">{student.name}</strong>
-            <small className="text-muted d-block text-truncate">
-              {student.course}
+  return (
+    <div className="border rounded shadow-sm bg-white h-100 d-flex flex-column">
+      
+      {/* Photo */}
+      {student.photoUrl ? (
+        <img
+          src={student.photoUrl}
+          alt={student.name}
+          style={{ width: "100%", height: 200, objectFit: "cover" }}
+        />
+      ) : (
+        <div
+          className="bg-secondary d-flex justify-content-center align-items-center"
+          style={{ height: 200 }}
+        >
+          <PersonCircle size={80} className="text-white opacity-50" />
+        </div>
+      )}
+
+      {/* Status */}
+      <Badge bg={statusColor} className="position-absolute top-0 end-0 m-2">
+        {status}
+      </Badge>
+
+      {/* Content */}
+      <div className="p-3 flex-grow-1">
+        
+        {/* Name & Course */}
+        <b className="d-block text-truncate">{student.name}</b>
+        <small className="text-muted d-block text-truncate mb-2">
+          {student.course}
+        </small>
+
+        {/* 🔥 Percentage TOP with Progress Bar */}
+        {student.percentage && (
+          <div className="mb-3">
+            <div className="progress" style={{ height: 6 }}>
+              <div
+                className="progress-bar bg-success"
+                style={{ width: `${student.percentage}%` }}
+              />
+            </div>
+            <small className="text-success fw-bold">
+              {student.percentage}%
             </small>
           </div>
-        </div>
+        )}
+      </div>
 
-        {children}
-      </Card.Body>
-    </Card>
+      {/* 🔽 Certificate Button BOTTOM */}
+      {student.percentage && (
+        <div className="p-2 border-top text-center">
+          <Link to={`/admin/students/${student.id}/certificate`}>
+            <Button size="sm" variant="dark" className="w-100">
+              <CreditCard2Back className="me-1" />
+              View Certificate
+            </Button>
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }

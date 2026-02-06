@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+
 import Header from "./Components/Header/Header";
 import InstallPrompt from "./InstallPrompt";
 import HelmetManager from "./Components/HomePage/pages/HelmetManager";

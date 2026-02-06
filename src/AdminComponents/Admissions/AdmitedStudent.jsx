@@ -1,117 +1,99 @@
-import React, { useCallback } from "react";
-import { Button, Badge } from "react-bootstrap";
-import { Trash, Eye, Check2Circle, XCircle } from "react-bootstrap-icons";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import React, { useState } from "react";
+import { Button, Form, InputGroup, Dropdown, Card, Row, Col, Container } from "react-bootstrap";
+import { Trash, Eye, Search, Filter } from "react-bootstrap-icons";
+import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { Link } from "react-router-dom";
 import AdmissionProvider from "./AdmissionProvider";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../Common/LoadingSpinner";
-import StudentCard from "../Common/StudentCard";
-
-const STATUS_CONFIG = {
-  pending: { color: "warning", label: "Pending" },
-  accepted: { color: "success", label: "Accepted" },
-  canceled: { color: "danger", label: "Canceled" }
-};
+import StudentCard from "../Common/StudentCard"; 
 
 export default function AdmittedStudentList() {
-  const toggleStatus = useCallback(async (student, status) => {
-    try {
-      await updateDoc(doc(db, "admissions", student.id), { status });
-      toast.success(`Admission ${status}`);
-    } catch (err) {
-      toast.error(err.message);
-    }
-  }, []);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
-  const handleDelete = useCallback(async (student) => {
-    if (window.confirm("Are you sure you want to delete this admission?")) {
+  const handleDelete = async (id) => {
+    if (window.confirm("Permanent delete this admission?")) {
       try {
-        await deleteDoc(doc(db, "admissions", student.id));
-        toast.success("Admission deleted");
-      } catch (err) {
-        toast.error(err.message);
-      }
+        await deleteDoc(doc(db, "admissions", id));
+        toast.success("Record deleted");
+      } catch (err) { toast.error(err.message); }
     }
-  }, []);
-
-  const renderAdmissionCard = useCallback((student) => {
-    const status = student.status || "pending";
-    const isPending = status === "pending";
-    const isCanceled = status === "canceled";
-
-    return (
-      <div key={student.id} className="col-12 col-sm-6 col-lg-4">
-        <StudentCard student={student} isCanceled={isCanceled}>
-          <div className="d-flex gap-2 mt-3 flex-wrap">
-            <Link to={`/admin/students/${student.id}`} className="flex-fill">
-              <Button size="sm" variant="outline-primary" className="w-100">
-                <Eye /> View
-              </Button>
-            </Link>
-
-            {isPending && (
-              <>
-                <Button
-                  size="sm"
-                  variant="success"
-                  className="flex-fill"
-                  onClick={() => toggleStatus(student, "accepted")}
-                >
-                  <Check2Circle /> Accept
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  className="flex-fill"
-                  onClick={() => toggleStatus(student, "canceled")}
-                >
-                  <XCircle /> Cancel
-                </Button>
-              </>
-            )}
-
-            <Button
-              size="sm"
-              variant="outline-danger"
-              className="flex-fill"
-              onClick={() => handleDelete(student)}
-            >
-              <Trash /> Delete
-            </Button>
-          </div>
-        </StudentCard>
-      </div>
-    );
-  }, [toggleStatus, handleDelete]);
+  };
 
   return (
     <AdmissionProvider>
       {({ admissions, loading }) => {
         if (loading) return <LoadingSpinner />;
 
-        if (!admissions.length) {
-          return (
-            <div className="container-fluid p-3 min-vh-100">
-              <p className="text-center mt-5">No admissions found.</p>
-            </div>
-          );
-        }
+        const filtered = admissions.filter(s => {
+          const searchMatch = s.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              s.course?.toLowerCase().includes(searchTerm.toLowerCase());
+          const filterMatch = filterStatus === "all" || s.status === filterStatus;
+          return searchMatch && filterMatch;
+        });
 
         return (
-          <div className="container-fluid p-3 bg-light min-vh-100">
-            <h4 className="mb-3">
-              All Admissions
-              <Badge bg="info" className="ms-2">
-                {admissions.length}
-              </Badge>
-            </h4>
-            
-            <div className="row g-3">
-              {admissions.map(renderAdmissionCard)}
+          <Container fluid className="py-4 bg-light min-vh-100">
+            {/* SEARCH & FILTER BAR */}
+            <div className="d-flex flex-column flex-md-row gap-3 mb-4 justify-content-center align-items-center">
+              <InputGroup className="shadow-sm rounded-pill overflow-hidden border-0" style={{ maxWidth: "500px" }}>
+                <InputGroup.Text className="bg-white border-0 ps-4"><Search className="text-muted"/></InputGroup.Text>
+                <Form.Control 
+                  className="border-0 shadow-none py-2" 
+                  placeholder="Search students..." 
+                  onChange={(e) => setSearchTerm(e.target.value)} 
+                />
+              </InputGroup>
+
+              <Dropdown onSelect={(val) => setFilterStatus(val)}>
+                <Dropdown.Toggle variant="white" className="shadow-sm border-0 rounded-pill px-4 py-2 fw-bold">
+                  <Filter className="me-2"/> {filterStatus.toUpperCase()}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="border-0 shadow">
+                  <Dropdown.Item eventKey="all">All Friends</Dropdown.Item>
+                  <Dropdown.Item eventKey="accepted">Accepted</Dropdown.Item>
+                  <Dropdown.Item eventKey="pending">Pending</Dropdown.Item>
+                  <Dropdown.Item eventKey="canceled">Canceled</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
-          </div>
+
+            {/* LIST GRID */}
+            <Row className="g-3">
+              {filtered.map((student) => (
+                <Col key={student.id} xs={12} sm={6} md={4} lg={3} xl={2}>
+                  <Card className="h-100 border-0 shadow-sm rounded-4 overflow-hidden fb-card">
+                    <StudentCard student={student}>
+                      <div className="d-flex flex-column gap-2 mt-2 px-2 pb-3">
+                        <Link to={`/admin/students/${student.id}`} className="text-decoration-none">
+                          <Button variant="primary" size="sm" className="w-100 fw-bold rounded-3 py-2">
+                            View Profile
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="light" 
+                          size="sm" 
+                          className="w-100 fw-bold text-danger rounded-3"
+                          onClick={() => handleDelete(student.id)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </StudentCard>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            <style>{`
+              .fb-card { transition: transform 0.2s; }
+              .fb-card:hover { transform: scale(1.02); }
+              /* Hide StudentCard's internal children wrapper padding if needed */
+              .student-card .card-body { padding: 0 !important; }
+            `}</style>
+          </Container>
         );
       }}
     </AdmissionProvider>

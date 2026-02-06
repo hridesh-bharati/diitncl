@@ -2,32 +2,42 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-import "./Form.css";
+import {
+  FaUser, FaUserTie, FaUserFriends, FaGraduationCap,
+  FaCalendarAlt, FaHome, FaPhone, FaEnvelope,
+  FaCamera, FaSpinner, FaFileSignature
+} from "react-icons/fa";
 
 const COURSES = ["ADCA+", "ADCA", "DCAA", "DCA", "TALLY", "CCC", "CAC", "CCA", "O LEVEL"];
+const INITIAL_STATE = {
+  name: "", fatherName: "", motherName: "", course: "",
+  dob: "", photoUrl: "", mobile: "", email: "", address: ""
+};
 
 export default function AdmissionForm() {
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    fatherName: "",
-    motherName: "",
-    course: "",
-    dob: "",         // Date of Birth
-    photoUrl: "",
-    mobile: "",
-    email: "",
-    address: ""     // Complete address
-  });
+  const [form, setForm] = useState(INITIAL_STATE);
+
+  const handleChange = (e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const uploadImg = async (file) => {
     if (!file) return;
+
+    // Production constraint: 100KB limit
+    const maxSize = 100 * 1024;
+    if (file.size > maxSize) {
+      toast.error("Image must be smaller than 100KB. Please compress it.");
+      return;
+    }
+
     setImgLoading(true);
     try {
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("upload_preset", "hridesh99!");
+      fd.append("upload_preset", "hridesh99!"); // Ensure this is 'Unsigned' in Cloudinary
       fd.append("cloud_name", "draowpiml");
 
       const res = await fetch(
@@ -36,10 +46,10 @@ export default function AdmissionForm() {
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message);
+      if (!res.ok) throw new Error(data.error?.message || "Upload failed");
 
       setForm(p => ({ ...p, photoUrl: data.secure_url }));
-      toast.success("Photo Uploaded!");
+      toast.success("Photo uploaded!");
     } catch (e) {
       toast.error(e.message);
     } finally {
@@ -55,115 +65,130 @@ export default function AdmissionForm() {
     try {
       await addDoc(collection(db, "admissions"), {
         ...form,
+        status: "pending",
         createdAt: serverTimestamp(),
       });
-      toast.success("Admission Successful!");
-      setForm({
-        name: "",
-        fatherName: "",
-        motherName: "",
-        course: "",
-        dob: "",
-        photoUrl: "",
-        mobile: "",
-        email: "",
-        address: ""
-      });
+      toast.success("🎉 Admission Submitted Successfully!");
+      setForm(INITIAL_STATE);
     } catch (e) {
-      toast.error(e.message);
+      toast.error("Database Error: " + e.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="mobile-app-bg">
-      <div className="container p-0 mt-5">
-        <div className="app-card card mx-auto p-2 p-md-4 m-0">
+    <div className="min-vh-100 bg-light-blue py-4">
+      <div className="container">
+        <div className="card shadow-lg border-0 overflow-hidden mx-auto" style={{ maxWidth: '800px' }}>
 
-          {/* Avatar Upload */}
-          <div className="avatar-container pt-2">
-            <img
-              src={form.photoUrl || "https://www.w3schools.com/howto/img_avatar.png"}
-              className="avatar-preview"
-              alt=""
-            />
-            <label className="upload-badge">
-              {imgLoading ? "..." : "+"}
-              <input type="file" hidden onChange={e => uploadImg(e.target.files[0])} />
-            </label>
+          <div className="card-header bg-primary d-flex justify-content-center align-items-center text-white py-4">
+            <FaFileSignature className="fs-2 me-3" />
+            <h2 className="mb-0 fw-bold text-center">
+              STUDENT ADMISSION <span className="d-none d-lg-inline">FORM</span>
+            </h2>
           </div>
 
-          <h5 className="text-center fw-bold mb-3">Student Registration</h5>
 
-          <form onSubmit={handleSubmit} className="row g-3 mb-5 pb-5 mb-lg-0 pb-lg-0">
-            <div className="col-12 form-floating">
-              <input className="form-control" placeholder="Name"
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })} required />
-              <label>Student Name</label>
+          <div className="card-body p-4 p-md-5">
+            {/* Photo Section */}
+            <div className="text-center mb-5">
+              <div className="position-relative d-inline-block">
+                <div className="photo-frame p-1 border border-3 border-primary rounded-circle bg-white shadow">
+                  <img
+                    src={form.photoUrl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                    className="rounded-circle object-fit-cover"
+                    width="140" height="140" alt="Student"
+                  />
+                </div>
+                <label className="photo-upload-btn position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 shadow cursor-pointer">
+                  {imgLoading ? <FaSpinner className="spin" /> : <FaCamera />}
+                  <input type="file" hidden accept="image/*" onChange={e => uploadImg(e.target.files[0])} />
+                </label>
+              </div>
+              <p className="text-muted mt-2 small">Max size: 100KB</p>
             </div>
 
-            <div className="col-6 form-floating">
-              <input className="form-control" placeholder="Father"
-                value={form.fatherName}
-                onChange={e => setForm({ ...form, fatherName: e.target.value })} required />
-              <label>Father</label>
-            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="row g-4">
+                {/* Section Header */}
+                <SectionTitle icon={<FaUser />} title="Personal Details" />
 
-            <div className="col-6 form-floating">
-              <input className="form-control" placeholder="Mother"
-                value={form.motherName}
-                onChange={e => setForm({ ...form, motherName: e.target.value })} required />
-              <label>Mother</label>
-            </div>
+                <FormInput label="Full Name" name="name" value={form.name} onChange={handleChange} icon={<FaUser color="#0d6efd" />} />
 
-            <div className="col-6 form-floating">
-              <select className="form-select"
-                value={form.course}
-                onChange={e => setForm({ ...form, course: e.target.value })} required>
-                <option value="">Select</option>
-                {COURSES.map(c => <option key={c}>{c}</option>)}
-              </select>
-              <label>Course</label>
-            </div>
+                <div className="col-md-6">
+                  <div className="form-floating">
+                    <select className="form-select" name="course" value={form.course} onChange={handleChange} required style={{ borderLeft: '4px solid #198754' }}>
+                      <option value="">Select Course</option>
+                      {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <label><FaGraduationCap className="me-2 text-success" />Course *</label>
+                  </div>
+                </div>
 
-            <div className="col-6 form-floating">
-              <input type="date" className="form-control"
-                value={form.dob}
-                onChange={e => setForm({ ...form, dob: e.target.value })} required />
-              <label>Date of Birth</label>
-            </div>
+                <FormInput label="Date of Birth" name="dob" type="date" value={form.dob} onChange={handleChange} icon={<FaCalendarAlt color="#fd7e14" />} />
 
-            <div className="col-12 form-floating">
-              <textarea className="form-control" placeholder="Complete Address" rows={2}
-                value={form.address}
-                onChange={e => setForm({ ...form, address: e.target.value })} required />
-              <label>Complete Address</label>
-            </div>
+                <SectionTitle icon={<FaUserFriends />} title="Guardian Details" />
+                <FormInput label="Father's Name" name="fatherName" value={form.fatherName} onChange={handleChange} icon={<FaUserTie color="#6f42c1" />} />
+                <FormInput label="Mother's Name" name="motherName" value={form.motherName} onChange={handleChange} icon={<FaUserFriends color="#d63384" />} />
 
-            <div className="col-12 col-md-6 form-floating">
-              <input className="form-control" placeholder="Mobile"
-                value={form.mobile}
-                onChange={e => setForm({ ...form, mobile: e.target.value })} required />
-              <label>Mobile</label>
-            </div>
+                <SectionTitle icon={<FaPhone />} title="Contact Information" />
+                <FormInput label="Mobile Number" name="mobile" type="tel" value={form.mobile} onChange={handleChange} icon={<FaPhone color="#20c997" />} pattern="[6-9][0-9]{9}" maxLength="10" />
+                <FormInput label="Email Address" name="email" type="email" value={form.email} onChange={handleChange} icon={<FaEnvelope color="#dc3545" />} />
 
-            <div className="col-12 col-md-6 form-floating">
-              <input className="form-control" placeholder="Email"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })} required />
-              <label>Email</label>
-            </div>
+                <div className="col-12">
+                  <div className="form-floating">
+                    <textarea className="form-control" name="address" value={form.address} onChange={handleChange} required style={{ borderLeft: '4px solid #0dcaf0', minHeight: '100px' }} placeholder="Address" />
+                    <label><FaHome className="me-2 text-info" />Complete Address *</label>
+                  </div>
+                </div>
 
-            <div className="col-12 pb-3">
-              <button className="btn btn-primary w-100 submit-btn" disabled={loading}>
-                {loading ? "Saving..." : "SUBMIT"}
-              </button>
-            </div>
-          </form>
+                <div className="col-12 mt-4">
+                  <button type="submit" className="btn btn-primary btn-lg w-100 py-3 fw-bold" disabled={loading || imgLoading}>
+                    {loading ? <><FaSpinner className="spin me-2" /> Submitting...</> : "SUBMIT ADMISSION FORM"}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div className="card-footer bg-light d-flex justify-content-between small text-muted mb-5 pb-5">
+            <span>© {new Date().getFullYear()} Drishtee Computer Center</span>
+            <span> : 9918151032</span>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .bg-light-blue { background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%); }
+        .photo-frame img { border: 3px solid #e9ecef; }
+        .photo-upload-btn:hover { transform: scale(1.1); background-color: #0b5ed7 !important; }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .form-control, .form-select { border-left-width: 4px !important; }
+      `}</style>
     </div>
   );
 }
+
+// Helper Components for cleaner code
+const SectionTitle = ({ icon, title }) => (
+  <div className="col-12 mt-4">
+    <h5 className="border-bottom pb-2 text-primary">{icon} <span className="ms-2">{title}</span></h5>
+  </div>
+);
+
+const FormInput = ({ label, icon, ...props }) => (
+  <div className="col-md-6">
+    <div className="form-floating">
+      <input
+        className="form-control"
+        required
+        placeholder={label}
+        style={{ borderLeft: `4px solid ${props.iconColor || '#0d6efd'}` }}
+        {...props}
+      />
+      <label>{icon}<span className="ms-2">{label} *</span></label>
+    </div>
+  </div>
+);
