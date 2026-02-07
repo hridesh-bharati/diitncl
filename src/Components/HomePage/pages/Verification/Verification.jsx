@@ -104,10 +104,9 @@ const ResultScreen = ({ student, onBack }) => (
       </Button>
       <h6 className="m-0 fw-bold text-uppercase" style={{ letterSpacing: "1px" }}>Verification Result</h6>
     </div>
-    <Container className="py-4">
-      <div className="bg-white p-2" style={{ borderRadius: "28px", boxShadow: "0 20px 40px rgba(0,0,0,0.06)" }}>
-        <StudentCertificate student={student} />
-      </div>
-    </Container>
+  <div className="w-100">
+  <StudentCertificate student={student} />
+</div>
+
   </div>
 );

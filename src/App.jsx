@@ -1,6 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import "./App.css"
 
 import Header from "./Components/Header/Header";
 import InstallPrompt from "./InstallPrompt";
@@ -13,7 +13,6 @@ import About from "./Components/HomePage/pages/About/About";
 import OurCourses from "./Components/HomePage/pages/Course/OurCourses";
 import Branch from "./Components/HomePage/pages/Branch/Branch";
 import Gallery from "./Components/HomePage/pages/Gallery";
-// import AdmissionForm from "./AdminComponents/Admissions/AdmissionForm";
 import AdmissionForm from "./AdminComponents/Admissions/AdmissionForm";
 import Verification from "./Components/HomePage/pages/Verification/Verification";
 import QueryForm from "./Components/HomePage/pages/QueryFrom";

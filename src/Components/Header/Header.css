@@ -6,8 +6,7 @@
 .pc-menu { display: flex; gap: 35px; }
 .pc-menu a { text-decoration: none; color: #475569; font-weight: 600; font-size: 16px; }
 .pc-menu a.active { color: #0a2885; }
-.pc-right { display: flex; align-items: center; justify-content: center; gap: 20px; }
-.pc-search-wrap { background: #f1f5f9; padding: 8px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; width: 250px; }
+.pc-right { display: flex; align-items: center; justify-content: center; gap: 2px; }
 .pc-btn-log { background: #0a2885; color: white; border: none; padding: 9px 25px; border-radius: 12px; font-weight: 700; }
 
 /* --- MOBILE TOP HEADER --- */
@@ -76,3 +75,45 @@
 .search-bar-top { display: flex; align-items: center; gap: 15px; }
 
 
+/* Unique Sidebar Action Buttons */
+.dr-sidebar-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  text-decoration: none !important;
+  font-weight: 800;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Dashboard Style (Success) */
+.dr-bg-success {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white !important;
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.2);
+}
+
+/* Logout Style (Danger) */
+.dr-bg-danger {
+  background: #fff5f5;
+  color: #dc3545 !important;
+  border: 1.5px solid #feb2b2;
+}
+
+.dr-sidebar-action-btn i {
+  font-size: 18px;
+}
+
+.dr-sidebar-action-btn:active {
+  transform: scale(0.96);
+}
+
+.dr-sidebar-action-btn:hover {
+  filter: brightness(1.1);
+}

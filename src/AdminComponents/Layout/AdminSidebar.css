@@ -1,89 +1,98 @@
-/* Sidebar container */
-.admin-sidebar {
+/* Jio + Facebook Production CSS */
+:root {
+  --jio-blue: #0052cc;
+  --fb-gray: #f0f2f5;
+  --meta-active: #e7f3ff;
+  --meta-blue: #1877f2;
+}
+
+.jio-sidebar {
   position: fixed;
-  top: 60px;
+  top: 0;
   left: 0;
   height: 100vh;
-  width: 260px;
+  width: 280px;
   background: #ffffff;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-  padding: 12px;
-  transition: transform 0.3s ease;
-  z-index: 1001;
+  z-index: 2100; /* Sidebar hamesha upar */
+  border-right: 1px solid #dddfe2;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Closed (mobile default) */
-.admin-sidebar.collapsed {
-  transform: translateX(-100%);
+.jio-sidebar.is-collapsed { transform: translateX(-100%); }
+.jio-sidebar.is-open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.05); }
+
+.sidebar-flex-wrapper { display: flex; flex-direction: column; height: 100%; }
+
+/* Header Section */
+.sidebar-header-jio { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+
+.gradient-box {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, #0052cc, #00d4ff);
+  color: white; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 20px;
 }
 
-/* Open */
-.admin-sidebar.open {
-  transform: translateX(0);
+.brand-name-stack { display: flex; flex-direction: column; margin-left: 12px; }
+.brand-title { font-weight: 700; font-size: 18px; color: #1c1e21; letter-spacing: -0.3px; }
+.brand-status { font-size: 10px; font-weight: 700; color: #31a24c; text-transform: uppercase; }
+
+/* Scrollable Nav */
+.sidebar-scrollable-content { flex: 1; overflow-y: auto; padding: 10px 12px; }
+
+.nav-group-meta { margin-bottom: 20px; }
+.group-label { font-size: 11px; font-weight: 600; color: #65676b; margin-left: 10px; margin-bottom: 5px; display: block; }
+
+.meta-nav-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 8px;
+  color: #1c1e21; text-decoration: none !important;
+  font-weight: 500; font-size: 15px; transition: 0.2s;
 }
 
-/* Header */
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 6px;
-  border-bottom: 1px solid #eee;
+.meta-nav-link:hover { background: var(--fb-gray); }
+
+.meta-nav-link.active {
+  background: var(--meta-active);
+  color: var(--meta-blue);
+  font-weight: 600;
 }
 
-/* Sidebar links */
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px;
-  margin-top: 6px;
-  border-radius: 10px;
-  color: #444;
-  text-decoration: none;
-  font-weight: 500;
+.nav-icon { font-size: 20px; opacity: 0.8; }
+.active .nav-icon { color: var(--meta-blue); opacity: 1; }
+
+/* Profile Footer */
+.sidebar-footer-fb { padding: 16px; border-top: 1px solid #dddfe2; background: #fff; }
+
+.profile-card-fb {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px; border-radius: 12px;
+  text-decoration: none !important; transition: 0.2s;
 }
 
-.sidebar-item svg {
-  font-size: 20px;
-  color: #4f46e5;
+.profile-card-fb:hover { background: var(--fb-gray); }
+
+.avatar-wrapper { position: relative; }
+.online-status {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 10px; height: 10px; background: #31a24c;
+  border: 2px solid #fff; border-radius: 50%;
 }
 
-.sidebar-item:hover {
-  background: #eef2ff;
-}
-
-/* Active tab */
-.sidebar-item.active {
-  background: #4f46e5;
-  color: #fff;
-}
-
-.sidebar-item.active svg {
-  color: #fff;
-}
-
-/* Icon button */
-.icon-btn {
-  border: none;
-  background: none;
-}
+.profile-name { display: block; font-size: 14px; font-weight: 600; color: #1c1e21; }
+.profile-link { font-size: 11px; color: #65676b; }
 
 /* Backdrop */
-.sidebar-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1000;
+.fb-sidebar-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(244, 246, 248, 0.75);
+  backdrop-filter: blur(4px); z-index: 2000;
 }
 
-/* Desktop behaviour */
-@media (min-width: 992px) {
-  .admin-sidebar {
-    transform: translateX(0);
-  }
+.fb-close-btn { border: none; background: var(--fb-gray); border-radius: 50%; padding: 6px; }
 
-  .sidebar-backdrop {
-    display: none;
-  }
+@media (min-width: 992px) {
+  .jio-sidebar { transform: translateX(0) !important; width: 260px; }
+  .fb-sidebar-backdrop { display: none; }
 }

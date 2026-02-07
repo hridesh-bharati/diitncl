@@ -22,10 +22,10 @@ const CENTER_CODE = "DIIT124";
 // Grade calculation function
 const getGradeFromPercentage = (percentage) => {
   if (!percentage) return "Not Available";
-  
+
   const percNum = parseFloat(percentage);
   if (isNaN(percNum)) return "Invalid";
-  
+
   if (percNum >= 81 && percNum <= 100) {
     return "Excellent";
   } else if (percNum >= 71 && percNum <= 80) {
@@ -83,7 +83,7 @@ const StudentInfoSection = ({ student, courseData, totalHours, grade }) => (
     </p>
     <p className="p-0 m-0">
       <span className="certificate-body-text">
-        On the successfully completion of a <b>{student.duration || "COURSE_DURATION"}</b> ({totalHours}) course, titled
+        On the successfully completion of a <b>{courseData.duration || "COURSE_DURATION"}</b> ({totalHours}) course, titled
       </span>
     </p>
     <h4 className="certificate-course-title py-1 m-0">{courseData.fullName}</h4>
@@ -119,7 +119,7 @@ const ModulesSection = ({ modules }) => (
 const FooterSection = ({ student, issueDate }) => {
   const percentage = parseFloat(student.percentage);
   const grade = getGradeFromPercentage(student.percentage);
-  
+
   return (
     <div className="certificateFooter m-auto">
       <div className="d-flex justify-content-start align-items-end">
@@ -177,12 +177,12 @@ const CertificateContent = ({ student }) => {
   // Get course data using helper function
   const courseData = useMemo(() => getCourseData(student.course), [student.course]);
 
-  const issueDate = useMemo(() => 
+  const issueDate = useMemo(() =>
     formatDate(student.issueDate || new Date().toISOString()), [student.issueDate]
   );
 
   // Calculate grade based on percentage
-  const grade = useMemo(() => 
+  const grade = useMemo(() =>
     getGradeFromPercentage(student.percentage), [student.percentage]
   );
 
@@ -193,18 +193,18 @@ const CertificateContent = ({ student }) => {
           <div id="printResult" className="certificate-sheet-landscape m-auto">
             <div id="watermark">
               <HeaderSection student={student} />
-              
+
               <h1 className="certificate-title arial">Certificate of Course Completion</h1>
 
-              <StudentInfoSection 
-                student={student} 
+              <StudentInfoSection
+                student={student}
                 courseData={courseData}
                 totalHours={courseData.hours}
                 grade={grade}
               />
 
               <ModulesSection modules={courseData.modules} />
-              
+
               <FooterSection student={student} issueDate={issueDate} />
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function StudentCertificate({ student: propStudent }) {
     }
 
     const filename = `cert_${new Date().getTime()}.pdf`;
-    
+
     html2pdf()
       .set({ ...PDF_OPTIONS, filename })
       .from(printResult)
@@ -290,7 +290,7 @@ export default function StudentCertificate({ student: propStudent }) {
           {/* Mobile Header */}
           <div className="d-flex align-items-center mb-4">
             <button className="border-0 bg-transparent p-0 me-3" onClick={() => navigate(-1)}>
-               <span style={{fontSize: '24px'}}>←</span>
+              <span style={{ fontSize: '24px' }}>←</span>
             </button>
             <h5 className="mb-0 fw-bold">Certificate Status</h5>
           </div>
@@ -301,10 +301,10 @@ export default function StudentCertificate({ student: propStudent }) {
             </div>
             <Card.Body className="p-4">
               <div className="text-center mb-4">
-                <div style={{fontSize: '3rem'}}>📜</div>
+                <div style={{ fontSize: '3rem' }}>📜</div>
                 <h5 className="fw-bold mt-2">Not Yet Available</h5>
               </div>
-              
+
               <div className="bg-light rounded-3 p-3 mb-4">
                 <h6 className="small fw-bold text-uppercase text-muted mb-3">Checklist:</h6>
                 <div className="d-flex flex-column gap-2">
@@ -325,8 +325,8 @@ export default function StudentCertificate({ student: propStudent }) {
                 </div>
               </div>
 
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 className="w-100 rounded-pill mt-4 py-2 fw-bold"
                 onClick={() => navigate(`/admin/students/${student.id}`)}
               >
@@ -342,30 +342,32 @@ export default function StudentCertificate({ student: propStudent }) {
       <div className="bg-white min-vh-100 d-flex flex-column">
         {/* Mobile Navbar for Certificate Page */}
         <div className="p-3 d-flex justify-content-between align-items-center border-bottom bg-white sticky-top">
-           <button className="btn btn-light rounded-circle" onClick={() => navigate(-1)}>←</button>
-           <h6 className="mb-0 fw-bold">E-Certificate</h6>
-           <div style={{width: '40px'}}></div>
+          <button className="btn btn-light rounded-circle" onClick={() => navigate(-1)}>←</button>
+          <h6 className="mb-0 fw-bold">E-Certificate</h6>
+          <div style={{ width: '40px' }}></div>
         </div>
 
-        <div className="flex-grow-1 overflow-auto p-2 d-flex align-items-center justify-content-center bg-secondary-subtle">
-           <div className="w-100 shadow-lg bg-white rounded" style={{maxWidth: '600px', transform: 'scale(0.95)'}}>
-              <CertificateContent student={student} />
-           </div>
+        <div
+          className="d-flex justify-content-center w-100"
+          style={{ overflowX: "auto" }}
+        >
+          <div style={{ width: "1123px", height: "794px" }}>
+            <CertificateContent student={student} />
+          </div>
         </div>
+
 
         {/* Bottom App-like Action Bar */}
-        <div className="p-3 bg-white border-top shadow-lg">
-          <button 
-            className="btn btn-primary w-100 py-3 rounded-4 d-flex align-items-center justify-content-center gap-2 shadow-sm" 
-            onClick={downloadPDF}
-          >
-            <img src="/images/icon/download.png" height="20" style={{filter: 'brightness(0) invert(1)'}} alt="" />
-            <span className="fw-bold">Download Certificate (PDF)</span>
-          </button>
-          <p className="text-center text-muted x-small mt-2 mb-0" style={{fontSize: '11px'}}>
-            Verified and Digitally Signed Document
-          </p>
-        </div>
+        {/* Bottom Minimal Action */}
+<div className="p-3 bg-white border-top d-flex justify-content-center">
+  <button
+    className="btn btn-primary px-4 py-2 rounded-3 d-flex align-items-center gap-2"
+    onClick={downloadPDF}
+  >
+    <span style={{ fontSize: "14px" }}>Download PDF</span>
+  </button>
+</div>
+
       </div>
     );
   };

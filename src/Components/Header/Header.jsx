@@ -90,10 +90,7 @@ export default function Header() {
             <Link to="/Contact-us" className={location.pathname === "/Contact-us" ? "active" : ""}>Contact</Link>
           </div>
           <div className="pc-right">
-            <div className="pc-search-wrap">
-              <i className="bi bi-search"></i>
               <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
-            </div>
 
             {!user && (
               <button className="pc-btn-log" onClick={() => setShowLoginModal(true)}>Login</button>
@@ -117,9 +114,9 @@ export default function Header() {
         <div className="mob-top-inner">
           <div className="d-flex">
             <img src="/images/icon/icon.webp" className="bg-white rounded-3 mob-logo-img" onClick={() => navigate("/")} alt="Logo" />
-            <span class="ms-2">
-              <p className="p-0 m-0 lh-0 text-white fw-bolder">Drishtee Computer Center</p>
-              <p className="p-0 m-0 lh-0 text-white lead">ISO 9001:2015 Certified</p>
+            <span className="ms-2 small">
+              <p className="p-0 m-0 lh-0 text-white fw-bolder fs-6">Drishtee Computer Center</p>
+              <p className="p-0 m-0 lh-0 text-white small">ISO 9001:2015 Certified</p>
             </span>
           </div>
           <div className="mob-top-actions d-flex align-items-center">
@@ -132,7 +129,7 @@ export default function Header() {
 
             {/* Login button removes (NULL) when logged in */}
             {!user && (
-              <button className="btn text-white fs-3 m-0 p-0" onClick={() => setShowLoginModal(true)}> <i class="bi bi-person-circle"></i> </button>
+              <button className="btn text-white fs-3 m-0 p-0" onClick={() => setShowLoginModal(true)}> <i className="bi bi-person-circle"></i> </button>
             )}
           </div>
         </div>
@@ -169,11 +166,24 @@ export default function Header() {
             <Link to="/Gallery" onClick={() => setIsMenuOpen(false)}><i className="bi bi-images"></i> Center Gallery</Link>
             <Link to="/Contact-us" onClick={() => setIsMenuOpen(false)}><i className="bi bi-geo-alt"></i> Locate Center</Link>
 
+          
             {user && (
-              <button className="sidebar-logout-btn" onClick={handleLogout}>
-                <i className="bi bi-box-arrow-right"></i> Logout Securely
-              </button>
-            )}
+  <div className="sidebar-auth-wrapper px-3 mt-4">
+    <div className="d-grid gap-2">
+      {/* Dashboard Button - Premium Green Gradient */}
+      <Link to="/admin" className="dr-sidebar-action-btn dr-bg-success">
+        <i className="bi bi-speedometer2"></i>
+        <span>Admin Dashboard</span>
+      </Link>
+
+      {/* Logout Button - Soft Red Minimal */}
+      <button className="dr-sidebar-action-btn dr-bg-danger" onClick={handleLogout}>
+        <i className="bi bi-power"></i>
+        <span>Sign Out Account</span>
+      </button>
+    </div>
+  </div>
+)}
           </div>
         </div>
       </div>

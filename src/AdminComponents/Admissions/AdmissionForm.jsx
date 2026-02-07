@@ -145,7 +145,7 @@ export default function AdmissionForm() {
 
                 <div className="col-12 mt-4">
                   <button type="submit" className="btn btn-primary btn-lg w-100 py-3 fw-bold" disabled={loading || imgLoading}>
-                    {loading ? <><FaSpinner className="spin me-2" /> Submitting...</> : "SUBMIT ADMISSION FORM"}
+                    {loading ? <><FaSpinner className="spin me-2" /> Submitting...</> : "SUBMIT"}
                   </button>
                 </div>
               </div>

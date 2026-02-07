@@ -1,9 +1,9 @@
-// src/AdminComponents/Certificate/CourseConfig.js
-
 export const COURSE_CONFIG = {
-  ADCA: {
-    code: "ADCA",
-    fullName: "Advance Diploma in Computer Application",
+  ADCA_PLUS: {
+    code: "ADCA+",
+    fullName: "Advance Diploma in Computer Application (Plus)",
+    duration: "18 Months",
+    hours: "580 Hrs.",
     modules: [
       "Computer fundamentals",
       "MS-Windows",
@@ -11,24 +11,23 @@ export const COURSE_CONFIG = {
       "MS-PowerPoint",
       "MS-Excel",
       "MS-Access",
-      "Tally 9.2 with Inventory & Taxation",
+      "Tally with GST",
       "Internet & E-mail",
       "Photoshop",
       "PageMaker",
       "Corel Draw",
       "C & C++",
-      "Virus",
       "HTML",
-      "Java Script",
-      "MS Front page",
-      "Hardware & Its Fault",
+      "JavaScript",
       "Project Development"
-    ],
-    hours: "580 Hrs."
+    ]
   },
-  DCAA: {
-    code: "DCAA",
-    fullName: "Diploma in Computer Accounting Application",
+
+  ADCA: {
+    code: "ADCA",
+    fullName: "Advance Diploma in Computer Application",
+    duration: "15 Months",
+    hours: "580 Hrs.",
     modules: [
       "Computer fundamentals",
       "MS-Windows",
@@ -36,41 +35,62 @@ export const COURSE_CONFIG = {
       "MS-PowerPoint",
       "MS-Excel",
       "MS-Access",
-      "Tally 9.2 with Inventory & Taxation",
-      "Internet & E-mail"
-    ],
-    hours: "320 Hrs."
-  },
-  DCA: {
-    code: "DCA",
-    fullName: "Diploma in Computer Application",
-    modules: [
-      "Computer fundamentals",
-      "MS-Windows",
-      "MS-Word",
-      "MS-PowerPoint",
-      "MS-Excel",
-      "MS-Access",
-      "Tally 9.2 with Inventory & Taxation",
+      "Tally with GST",
       "Internet & E-mail",
       "Photoshop",
       "PageMaker",
       "Corel Draw",
-      "C & C++"
-    ],
-    hours: "480 Hrs."
+      "C & C++",
+      "HTML",
+      "JavaScript",
+      "Project Development"
+    ]
+  },
+
+  DCA: {
+    code: "DCA",
+    fullName: "Diploma in Computer Application",
+    duration: "12 Months",
+    hours: "480 Hrs.",
+    modules: [
+      "Computer fundamentals",
+      "MS-Windows",
+      "MS-Word",
+      "MS-PowerPoint",
+      "MS-Excel",
+      "MS-Access",
+      "Internet & E-mail",
+      "Photoshop",
+      "C Programming"
+    ]
+  },
+
+  DCAA: {
+    code: "DCAA",
+    fullName: "Diploma in Computer Accounting Application",
+    duration: "6 Months",
+    hours: "320 Hrs.",
+    modules: [
+      "Computer fundamentals",
+      "MS-Windows",
+      "MS-Word",
+      "MS-Excel",
+      "Tally with GST",
+      "Internet & E-mail"
+    ]
   }
 };
 
-// ✅ Helper returns null if no valid course
+// 🔥 SINGLE SOURCE OF TRUTH
 export const getCourseData = (courseCode) => {
   if (!courseCode) return null;
 
   const course = courseCode.toUpperCase().trim();
 
-  if (course.includes("ADCA") || course.includes("ADVANCE DIPLOMA")) return COURSE_CONFIG.ADCA;
+  if (course.includes("ADCA+")) return COURSE_CONFIG.ADCA_PLUS;
+  if (course.includes("ADCA")) return COURSE_CONFIG.ADCA;
   if (course.includes("DCAA")) return COURSE_CONFIG.DCAA;
   if (course.includes("DCA")) return COURSE_CONFIG.DCA;
 
-  return null; // fallback
+  return null;
 };

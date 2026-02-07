@@ -1,130 +1,136 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { FiClock, FiLayers, FiChevronRight, FiCheckCircle } from "react-icons/fi";
 import CourseNav from "./CourseNav";
-import Footer from "../../../Footer/Footer";
+import { staticCourses } from "./courseData";
+
+const CourseCard = React.memo(({ course, themeColor }) => (
+  <div className="col-12 col-md-6 mb-4">
+    <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden shadow-hover">
+
+      {/* Header */}
+      <div
+        className="p-4 text-white position-relative"
+        style={{ background: `linear-gradient(135deg, ${themeColor} 0%, ${themeColor}dd 100%)` }}
+      >
+        <div className="d-flex justify-content-between align-items-center position-relative" style={{ zIndex: 1 }}>
+          <div className="d-flex align-items-center">
+            <div className="bg-white bg-opacity-25 rounded-3 p-2 d-flex shadow-sm">
+              <FiLayers size={28} />
+            </div>
+            <h4 className="ms-3 mb-0 fw-bold fs-pc-name">{course.name}</h4>
+          </div>
+
+          {/* Duration on right */}
+          <div className="bg-white text-dark px-3 py-1 rounded-pill fw-bold small shadow-sm flex-shrink-0 fs-pc-duration">
+            <FiClock className="me-1 mb-1" /> {course.duration} Months
+          </div>
+        </div>
+
+        <p className="mt-3 mb-0 opacity-90 fw-medium fs-pc-desc">
+          {course.description}
+        </p>
+      </div>
+
+      {/* Card Body */}
+      <div className="card-body p-4 d-flex flex-column">
+        <h6 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.8rem', letterSpacing: '1px' }}>
+          Course Modules
+        </h6>
+
+        {/* Subjects Grid */}
+        <div className="row row-cols-2 g-2 mb-4 flex-grow-1">
+          {course.subjects.map((sub, i) => (
+            <div key={i} className="col">
+              <div className="d-flex align-items-center h-100 bg-light rounded-3 p-2 border border-white">
+                <FiCheckCircle className="text-primary me-2 flex-shrink-0" size={14} />
+                <span className="text-dark fw-medium" style={{ fontSize: "0.75rem", lineHeight: '1.2' }}>
+                  {sub.name}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Enroll Button */}
+        <Link
+          to="/AdmissionForm"
+          className="btn w-100 rounded-3 py-3 fw-bold d-flex align-items-center justify-content-between text-white border-0 shadow-sm transition-all mt-auto jio-btn-hover"
+          style={{ backgroundColor: themeColor }}
+        >
+          <span className="ps-2 fs-pc-btn">Enroll Now</span>
+          <div className="bg-black bg-opacity-10 rounded-circle p-1 d-flex">
+            <FiChevronRight size={22} />
+          </div>
+        </Link>
+      </div>
+    </div>
+  </div>
+));
 
 function CommanCourse({ targetCourses, CTitle }) {
-    const [courses, setCourses] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [columnsPerRow, setColumnsPerRow] = useState(2);
-    const crs = useSelector(state => state.courses);
+  const [searchQuery, setSearchQuery] = useState("");
 
-    useEffect(() => {
-        if (crs?.length) setCourses(crs);
-
-        const updateColumns = () => {
-            const width = window.innerWidth;
-            if (width < 576) setColumnsPerRow(2);
-            else if (width < 768) setColumnsPerRow(3);
-            else setColumnsPerRow(4);
-        };
-
-        updateColumns();
-        window.addEventListener("resize", updateColumns);
-        return () => window.removeEventListener("resize", updateColumns);
-    }, [crs]);
-
-    const trimmedQuery = searchQuery.trim().toLowerCase();
+  const filteredCourses = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
     const isAll = targetCourses.includes("All");
 
-    const filteredCourses = courses.filter(course =>
-        (isAll || targetCourses.some(tc => tc.toLowerCase() === course.name.toLowerCase())) &&
-        (trimmedQuery ? course.name.toLowerCase().includes(trimmedQuery) : true)
-    );
+    return staticCourses.filter((course) => {
+      const matchesCategory =
+        isAll || targetCourses.some(tc => tc.toLowerCase() === (course.category || "").toLowerCase());
+      const matchesSearch =
+        !query ||
+        course.name.toLowerCase().includes(query) ||
+        course.subjects.some((s) => s.name.toLowerCase().includes(query));
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchQuery, targetCourses]);
 
-    return (
-        <>
-            <div className="container-fluid px-2">
-                <div className="mt-3 py-4">
-                    <CourseNav data={CTitle} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+  const getThemeColor = useCallback((cat) => {
+    const themes = {
+      web: "#1565C0",
+      programming: "#00897B",
+      nielit: "#EF6C00",
+      default: "#4F46E5",
+    };
+    return themes[cat] || themes.default;
+  }, []);
 
-                    <div className="row">
-                        {filteredCourses.length === 0 ? (
-                            <div className="text-center mt-4 text-danger">
-                                <p>⚠️ No courses found.</p>
-                            </div>
-                        ) : (
-                            filteredCourses.map((course, index) => (
-                                <div key={index} className="col-12 mb-4 bg-white" data-aos="fade-up">
-                                    <div className="card border-0 shadow rounded-4 h-100 bg-white">
-                                        <div className="card-body position-relative">
-                                            <div className="course-header mb-3 px-2 py-2 rounded-3 text-white" style={{ background: 'linear-gradient(135deg, #0061ff, #60efff)' }}>
-                                                <div className="d-flex justify-content-between align-items-center">
-                                                    <h5 className="mb-0 fw-bold">
-                                                        <i className="fas fa-laptop-code me-2"></i>{course.name}
-                                                    </h5>
-                                                    <span className="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm small">
-                                                        ⏳ {course.duration} Month{course.duration > 1 ? "s" : ""}
-                                                    </span>
-                                                </div>
-                                                <p className="mb-0 mt-2 small text-white fw-bolder">{course.description}</p>
-                                            </div>
+  return (
+    <div className="min-vh-100 py-4 bg-light">
+      <div className="container-xxl">
+        <div className="bg-white p-3 mb-5 shadow-sm rounded-3 border" style={{ zIndex: 1020, top: '1rem' }}>
+          <CourseNav data={CTitle} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        </div>
 
-                                            <div className="table-responsive rounded-3 overflow-hidden mb-3 shadow-sm border border-1 border-primary-subtle">
-                                                <table className="table table-sm text-start mb-0 bg-white">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colSpan={columnsPerRow} className="py-2 fs-6 text-center">
-                                                                📘 <span className="fw-bold">Course Subjects</span>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {[...Array(Math.ceil(course.subjects.length / columnsPerRow))].map((_, rowIndex) => (
-                                                            <tr key={rowIndex}>
-                                                                {[...Array(columnsPerRow)].map((_, colIndex) => {
-                                                                    const subject = course.subjects[rowIndex * columnsPerRow + colIndex];
-                                                                    return (
-                                                                        <td key={colIndex} className="ps-2 text-truncate border-end border-light">
-                                                                            {subject?.name ? (
-                                                                                <>
-                                                                                    <i className="fas fa-check-circle text-success me-2"></i>
-                                                                                    {subject.name}
-                                                                                </>
-                                                                            ) : (
-                                                                                ""
-                                                                            )}
-                                                                        </td>
+        <div className="row g-4">
+          {filteredCourses.map((course) => (
+            <CourseCard
+              key={course.id}
+              course={course}
+              themeColor={getThemeColor(course.category)}
+            />
+          ))}
+        </div>
+      </div>
 
-                                                                    );
-                                                                })}
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+      <style>{`
+        .shadow-hover { transition: all 0.3s ease; }
+        .shadow-hover:hover { transform: translateY(-7px); box-shadow: 0 1.5rem 4rem rgba(0,0,0,.15) !important; }
 
-                                            <div className="text-end">
-                                                <Link to="/AdmissionForm" className="btn btn-primary btn-sm px-3 rounded-pill shadow-sm">
-                                                    <i className="fas fa-paper-plane me-2"></i>Apply Now
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
+        .jio-btn-hover:hover { filter: brightness(1.1); }
+        .transition-all:active { transform: scale(0.97); }
 
-                    <style>{`
-                        .card-title {
-                            font-size: 1.2rem;
-                        }
-                        .text-truncate {
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            white-space: nowrap;
-                        }
-                        .table th, .table td {
-                            vertical-align: middle !important;
-                        }
-                    `}</style>
-                </div>
-            </div>
-            <Footer />
-        </>
-    );
+        /* Responsive PC Font Sizes */
+        @media (min-width: 992px) {
+          .fs-pc-name { font-size: 2rem !important; }
+          .fs-pc-duration { font-size: 1rem !important; }
+          .fs-pc-desc { font-size: 1rem !important; }
+          .fs-pc-btn { font-size: 1.25rem !important; }
+        }
+      `}</style>
+    </div>
+  );
 }
 
 export default CommanCourse;
