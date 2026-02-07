@@ -1,47 +1,54 @@
-// src/AdminComponents/Certificate/StudentCertificate.jsx
 import React, { useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, Spinner, Image, Card, Badge, Alert } from "react-bootstrap";
+import { Button, Spinner, Image, Card, Alert } from "react-bootstrap";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
-import { COURSE_CONFIG, getCourseData } from "./CourseConfig";
 import html2pdf from "html2pdf.js";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import './StudentCertificate.css'
+import './StudentCertificate.css';
+
+// डेटा सोर्स इम्पोर्ट करें
+import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 
 // =================== UTILITY FUNCTIONS ===================
 const formatDate = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`;
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`;
 };
 
-// Fixed center code variable
 const CENTER_CODE = "DIIT124";
 
-// Grade calculation function
 const getGradeFromPercentage = (percentage) => {
-  if (!percentage) return "Not Available";
-
-  const percNum = parseFloat(percentage);
-  if (isNaN(percNum)) return "Invalid";
-
-  if (percNum >= 81 && percNum <= 100) {
-    return "Excellent";
-  } else if (percNum >= 71 && percNum <= 80) {
-    return "Very Good";
-  } else if (percNum >= 51 && percNum <= 70) {
-    return "Good";
-  } else if (percNum >= 50 && percNum <= 60) {
-    return "Satisfactory";
-  } else if (percNum < 50) {
-    return "Needs Improvement";
-  } else {
-    return "Invalid";
-  }
+    if (!percentage) return "Not Available";
+    const percNum = parseFloat(percentage);
+    if (isNaN(percNum)) return "Invalid";
+    if (percNum >= 81) return "Excellent";
+    else if (percNum >= 71) return "Very Good";
+    else if (percNum >= 51) return "Good";
+    else if (percNum >= 50) return "Satisfactory";
+    else return "Needs Improvement";
 };
 
-// =================== REUSABLE COMPONENTS ===================
+// =================== DYNAMIC COURSE LOGIC ===================
+const getCourseData = (courseName) => {
+    if (!courseName) return { fullName: "", duration: "", hours: "", modules: [] };
+
+    const found = staticCourses.find(
+        (c) => c.name.toUpperCase().trim() === courseName.toUpperCase().trim()
+    );
+
+    if (!found) return { fullName: courseName, duration: "", hours: "", modules: [] };
+
+    return {
+        fullName: found.description.split('-')[0].trim() || found.name,
+        duration: `${found.duration} Months`,
+        hours: `${found.duration * 40} Hrs.`, // आप अपने हिसाब से कैलकुलेशन बदल सकते हैं
+        modules: found.subjects.map(s => s.name)
+    };
+};
+
+// =================== REUSABLE COMPONENTS (Original Design) ===================
 const HeaderSection = ({ student }) => (
   <div className="certificate-header-grid">
     <div>
@@ -73,7 +80,7 @@ const HeaderSection = ({ student }) => (
   </div>
 );
 
-const StudentInfoSection = ({ student, courseData, totalHours, grade }) => (
+const StudentInfoSection = ({ student, courseData, grade }) => (
   <div className="certificate-body-grid p-0 m-0 text-center text-black">
     <p className="certificate-awarded-to d-inline pt-2">
       <span className="certificate-body-text">This certificate is awarded to Mr/Miss</span>
@@ -83,7 +90,7 @@ const StudentInfoSection = ({ student, courseData, totalHours, grade }) => (
     </p>
     <p className="p-0 m-0">
       <span className="certificate-body-text">
-        On the successfully completion of a <b>{courseData.duration || "COURSE_DURATION"}</b> ({totalHours}) course, titled
+        On the successfully completion of a <b>{courseData.duration}</b> ({courseData.hours}) course, titled
       </span>
     </p>
     <h4 className="certificate-course-title py-1 m-0">{courseData.fullName}</h4>
@@ -106,6 +113,7 @@ const ModulesSection = ({ modules }) => (
     </div>
     <div className="col-9">
       <div className="d-flex flex-wrap gap-1 justify-content-start p-0 m-0">
+        {/* यहाँ सभी Modules बिना slice के आ रहे हैं */}
         {modules.map((module, index) => (
           <span key={index} className="certificate-module-item p-0 my-0">
             {index + 1}. {module}
@@ -116,11 +124,7 @@ const ModulesSection = ({ modules }) => (
   </div>
 );
 
-const FooterSection = ({ student, issueDate }) => {
-  const percentage = parseFloat(student.percentage);
-  const grade = getGradeFromPercentage(student.percentage);
-
-  return (
+const FooterSection = ({ student, issueDate }) => (
     <div className="certificateFooter m-auto">
       <div className="d-flex justify-content-start align-items-end">
         <div className="text-start w-50">
@@ -134,11 +138,8 @@ const FooterSection = ({ student, issueDate }) => {
         </div>
       </div>
 
-      <div className="d-flex justify-content-between mt-2 fw-bold ftrTExt certificate-footer-reg px-5 py-1"
-        style={{
-          borderTop: "1px solid darkblue",
-          borderBottom: "1px solid darkblue",
-        }}
+      <div className="d-flex justify-content-between mt-2 fw-bold certificate-footer-reg px-5 py-1"
+        style={{ borderTop: "1px solid darkblue", borderBottom: "1px solid darkblue" }}
       >
         <div>
           <span className="dbluetext">Student Reg No. :</span>
@@ -169,220 +170,70 @@ const FooterSection = ({ student, issueDate }) => {
         </p>
       </div>
     </div>
-  );
-};
+);
 
-// =================== MAIN CERTIFICATE COMPONENT ===================
+// =================== MAIN COMPONENTS ===================
 const CertificateContent = ({ student }) => {
-  // Get course data using helper function
-  const courseData = useMemo(() => getCourseData(student.course), [student.course]);
-
-  const issueDate = useMemo(() =>
-    formatDate(student.issueDate || new Date().toISOString()), [student.issueDate]
-  );
-
-  // Calculate grade based on percentage
-  const grade = useMemo(() =>
-    getGradeFromPercentage(student.percentage), [student.percentage]
-  );
-
-  return (
-    <div id="overflow-card">
-      <div id="certificate-fixed-a4">
-        <div className="certificate-wrapper">
-          <div id="printResult" className="certificate-sheet-landscape m-auto">
-            <div id="watermark">
-              <HeaderSection student={student} />
-
-              <h1 className="certificate-title arial">Certificate of Course Completion</h1>
-
-              <StudentInfoSection
-                student={student}
-                courseData={courseData}
-                totalHours={courseData.hours}
-                grade={grade}
-              />
-
-              <ModulesSection modules={courseData.modules} />
-
-              <FooterSection student={student} issueDate={issueDate} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// =================== PDF DOWNLOAD CONFIGURATION ===================
-const PDF_OPTIONS = {
-  margin: 0,
-  image: { type: 'jpeg', quality: 1 },
-  html2canvas: {
-    scale: 4,
-    useCORS: true,
-    scrollY: 0,
-    width: 1123,
-    height: 794,
-    windowWidth: 1123,
-    windowHeight: 794
-  },
-  jsPDF: {
-    unit: 'mm',
-    format: [294.64, 209.211],
-    orientation: 'landscape'
-  }
-};
-
-// =================== MAIN EXPORTED COMPONENT (Mobile Optimized) ===================
-export default function StudentCertificate({ student: propStudent }) {
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  const downloadPDF = useCallback(() => {
-    const printResult = document.getElementById("printResult");
-    if (!printResult) {
-      toast.error("Certificate not found.");
-      return;
-    }
-
-    const filename = `cert_${new Date().getTime()}.pdf`;
-
-    html2pdf()
-      .set({ ...PDF_OPTIONS, filename })
-      .from(printResult)
-      .save()
-      .then(() => toast.success("Downloaded!"))
-      .catch(() => toast.error("Failed to download."));
-  }, []);
-
-  const renderContent = ({ admissions, loading }) => {
-    if (loading) {
-      return (
-        <div className="d-flex justify-content-center align-items-center" style={{ height: '90vh' }}>
-          <Spinner animation="border" variant="primary" />
-        </div>
-      );
-    }
-
-    const student = propStudent || admissions.find(s => String(s.id) === String(id));
-
-    if (!student) {
-      return (
-        <div className="p-4 text-center">
-          <div className="mb-3 mt-5">🚫</div>
-          <h6 className="fw-bold">Student Not Found</h6>
-          <button className="btn btn-outline-secondary btn-sm mt-3 w-100" onClick={() => navigate(-1)}>
-            Go Back
-          </button>
-        </div>
-      );
-    }
-
-    const isAccepted = student.status === "accepted";
-    const hasRegNo = !!student.regNo;
-    const hasPercentage = !!student.percentage;
-    const eligible = isAccepted && hasRegNo && hasPercentage;
-
-    if (!eligible) {
-      return (
-        <div className="bg-light min-vh-100 p-3">
-          {/* Mobile Header */}
-          <div className="d-flex align-items-center mb-4">
-            <button className="border-0 bg-transparent p-0 me-3" onClick={() => navigate(-1)}>
-              <span style={{ fontSize: '24px' }}>←</span>
-            </button>
-            <h5 className="mb-0 fw-bold">Certificate Status</h5>
-          </div>
-
-          <Card className="border-0 shadow-sm rounded-4 overflow-hidden">
-            <div className="bg-danger p-2 text-center text-white small">
-              Action Required
-            </div>
-            <Card.Body className="p-4">
-              <div className="text-center mb-4">
-                <div style={{ fontSize: '3rem' }}>📜</div>
-                <h5 className="fw-bold mt-2">Not Yet Available</h5>
-              </div>
-
-              <div className="bg-light rounded-3 p-3 mb-4">
-                <h6 className="small fw-bold text-uppercase text-muted mb-3">Checklist:</h6>
-                <div className="d-flex flex-column gap-2">
-                  <StatusItem label="Admission Status" done={isAccepted} />
-                  <StatusItem label="Reg. Number" done={hasRegNo} />
-                  <StatusItem label="Final Percentage" done={hasPercentage} />
-                </div>
-              </div>
-
-              <div className="small border-top pt-3">
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">Student:</span>
-                  <span className="fw-bold">{student.name}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-muted">Course:</span>
-                  <span className="fw-bold text-truncate ms-2">{student.course}</span>
-                </div>
-              </div>
-
-              <Button
-                variant="primary"
-                className="w-100 rounded-pill mt-4 py-2 fw-bold"
-                onClick={() => navigate(`/admin/students/${student.id}`)}
-              >
-                View Profile
-              </Button>
-            </Card.Body>
-          </Card>
-        </div>
-      );
-    }
+    const courseData = useMemo(() => getCourseData(student.course), [student.course]);
+    const issueDate = useMemo(() => formatDate(student.issueDate || new Date().toISOString()), [student.issueDate]);
+    const grade = useMemo(() => getGradeFromPercentage(student.percentage), [student.percentage]);
 
     return (
-      <div className="bg-white min-vh-100 d-flex flex-column">
-        {/* Mobile Navbar for Certificate Page */}
-        <div className="p-3 d-flex justify-content-between align-items-center border-bottom bg-white sticky-top">
-          <button className="btn btn-light rounded-circle" onClick={() => navigate(-1)}>←</button>
-          <h6 className="mb-0 fw-bold">E-Certificate</h6>
-          <div style={{ width: '40px' }}></div>
+        <div id="overflow-card">
+            <div id="certificate-fixed-a4">
+                <div className="certificate-wrapper">
+                    <div id="printResult" className="certificate-sheet-landscape m-auto">
+                        <div id="watermark">
+                            <HeaderSection student={student} />
+                            <h1 className="certificate-title arial">Certificate of Course Completion</h1>
+                            <StudentInfoSection student={student} courseData={courseData} grade={grade} />
+                            <ModulesSection modules={courseData.modules} />
+                            <FooterSection student={student} issueDate={issueDate} />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div
-          className="d-flex justify-content-center w-100"
-          style={{ overflowX: "auto" }}
-        >
-          <div style={{ width: "1123px", height: "794px" }}>
-            <CertificateContent student={student} />
-          </div>
-        </div>
-
-
-        {/* Bottom App-like Action Bar */}
-        {/* Bottom Minimal Action */}
-<div className="p-3 bg-white border-top d-flex justify-content-center">
-  <button
-    className="btn btn-primary px-4 py-2 rounded-3 d-flex align-items-center gap-2"
-    onClick={downloadPDF}
-  >
-    <span style={{ fontSize: "14px" }}>Download PDF</span>
-  </button>
-</div>
-
-      </div>
     );
-  };
+};
 
-  return (
-    <AdmissionProvider>
-      {renderContent}
-    </AdmissionProvider>
-  );
+export default function StudentCertificate({ student: propStudent }) {
+    const { id } = useParams();
+    const navigate = useNavigate();
+
+    const downloadPDF = useCallback(() => {
+        const printResult = document.getElementById("printResult");
+        if (!printResult) return;
+        
+        html2pdf()
+            .set({
+                margin: 0,
+                filename: `cert_${new Date().getTime()}.pdf`,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 4, useCORS: true, width: 1123, height: 794 },
+                jsPDF: { unit: 'mm', format: [294.64, 209.211], orientation: 'landscape' }
+            })
+            .from(printResult)
+            .save();
+    }, []);
+
+    const renderContent = ({ admissions, loading }) => {
+        if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
+        const student = propStudent || admissions.find(s => String(s.id) === String(id));
+        if (!student) return <Alert variant="danger">Student Not Found</Alert>;
+
+        return (
+            <div className="bg-white min-vh-100">
+                <div className="p-3 d-flex justify-content-between border-bottom sticky-top bg-white">
+                    <Button variant="light" onClick={() => navigate(-1)}>← Back</Button>
+                    <Button variant="primary" onClick={downloadPDF}>Download PDF</Button>
+                </div>
+                <div className="d-flex justify-content-center py-4" style={{ overflowX: "auto" }}>
+                    <CertificateContent student={student} />
+                </div>
+            </div>
+        );
+    };
+
+    return <AdmissionProvider>{renderContent}</AdmissionProvider>;
 }
-
-// Helper Component for UI consistency
-const StatusItem = ({ label, done }) => (
-  <div className="d-flex align-items-center gap-2">
-    <span>{done ? "✅" : "⭕"}</span>
-    <span className={done ? "text-dark" : "text-muted"}>{label}</span>
-  </div>
-);

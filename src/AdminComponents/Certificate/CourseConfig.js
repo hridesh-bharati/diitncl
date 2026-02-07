@@ -1,3 +1,4 @@
+// src\AdminComponents\Certificate\StudentCertificate.jsx
 export const COURSE_CONFIG = {
   ADCA_PLUS: {
     code: "ADCA+",
