@@ -2,7 +2,7 @@ import React from 'react';
 import CommanCourse from './CommanCourse';
 
 export default function Banking() {
-    const targetCourses = ['dbi'];
+    const targetCourses = ['DBI'];
     const CTitle = 'Banking';
 
     return (

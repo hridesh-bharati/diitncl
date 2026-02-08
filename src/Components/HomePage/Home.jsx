@@ -42,10 +42,10 @@ function Home() {
                             </div>
                             <h1 className="display-4 fw-black text-white mt-3">
                                 Shape Your Future in <br />
-                                <span className="text-warning" ref={typedHero}></span>
+                                <span className="text-warning small" ref={typedHero}></span>
                             </h1>
                             <p className="text-white-50 mb-4 pe-lg-5">
-                                Join Northern India's most trusted IT Skill Hub. ISO 9001:2015 Certified excellence in education since 2008.
+                                Join Drishtee India's most trusted IT Skill Hub. ISO 9001:2015 Certified excellence in education since 2007.
                             </p>
                             <div className="d-flex flex-wrap gap-3">
                                 <Link to="/AdmissionForm" className="btn-main-gold">Get Started Today</Link>

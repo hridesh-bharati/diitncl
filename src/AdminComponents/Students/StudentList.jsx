@@ -32,7 +32,7 @@ export default function StudentList() {
             const matchStatus = statusFilter === "all" || (s.status || "pending") === statusFilter;
             return matchSearch && matchStatus;
           })
-          .slice().reverse(); // REVERSE LOGIC
+          .slice().reverse();
 
         return (
           <div className="app-main-bg">

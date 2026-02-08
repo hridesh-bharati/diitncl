@@ -34,13 +34,10 @@ export default function AdmittedList() {
             s.regNo?.toLowerCase().includes(q.toLowerCase())
           ))
           .sort((a, b) => {
-            // RegNo format: DIIT124/COURSE/001
             const getNum = (str) => {
               const parts = str.split('/');
-              // Last part ko number mein badlo (e.g., "005" -> 5)
               return parseInt(parts[parts.length - 1]) || 0;
             };
-            // DESCENDING ORDER: Bada number pehle (4, 3, 2, 1)
             return getNum(b.regNo) - getNum(a.regNo); 
           });
 

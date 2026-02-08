@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { authListener, logoutUser, getUserRole } from "../../firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
@@ -8,6 +10,7 @@ import "./Header.css";
 
 export default function Header() {
   const [user, setUser] = useState(null);
+  const [student, setStudent] = useState(null); // <-- Firestore student data
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -19,21 +22,34 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Sticky navbar scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 15);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Auth listener + fetch Firestore student profile
   useEffect(() => {
     const unsubscribe = authListener(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         const userRole = await getUserRole(currentUser.uid);
         setRole(userRole);
+
+        // Fetch Firestore student info for mobile header & bottom nav
+        const q = query(collection(db, "admissions"), where("email", "==", currentUser.email.toLowerCase()));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          setStudent({ id: snap.docs[0].id, ...snap.docs[0].data() });
+        } else {
+          setStudent(null);
+        }
+
       } else {
         setUser(null);
         setRole(null);
+        setStudent(null);
       }
       setLoading(false);
     });
@@ -76,7 +92,6 @@ export default function Header() {
             </div>
             <Link to="/Library" className={location.pathname === "/Library" ? "active" : ""}>Library</Link>
             <Link to="/Branch">Branch</Link>
-            {/* --- Student Zone Dropdown --- */}
             <div className="dropdown pc-dropdown">
               <Link to="/Student-Zone" className="dropdown-toggle" role="button" data-bs-toggle="dropdown">
                 Student Zone
@@ -90,21 +105,42 @@ export default function Header() {
             <Link to="/Contact-us" className={location.pathname === "/Contact-us" ? "active" : ""}>Contact</Link>
           </div>
           <div className="pc-right">
-              <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
-
+            <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
             {!user && (
               <button className="pc-btn-log" onClick={() => setShowLoginModal(true)}>Login</button>
             )}
-
             {user && (
-              <>
-                {/* Dashboard Button */}
-                <Link to="/admin" className="btn btn-primary btn-sm me-2">Dashboard</Link>
+  <div className="pc-profile-dropdown dropdown">
+    <img
+      src={student?.photoUrl || user?.photoURL || "/images/icon/default-avatar.png"}
+      className="pc-profile-pic rounded-circle"
+      alt="profile"
+      id="pcProfileDropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      style={{ width: 40, height: 40, objectFit: "cover", cursor: "pointer" }}
+    />
+    <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="pcProfileDropdown">
+      <li>
+        <Link
+          className="dropdown-item d-flex align-items-center"
+          to={role === "admin" ? "/admin" : "/student"}
+        >
+          <i className="bi bi-speedometer2 me-2"></i> Dashboard
+        </Link>
+      </li>
+      <li>
+        <button
+          className="dropdown-item d-flex align-items-center"
+          onClick={handleLogout}
+        >
+          <i className="bi bi-power me-2"></i> Logout
+        </button>
+      </li>
+    </ul>
+  </div>
+)}
 
-                {/* Logout Button */}
-                <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
-              </>
-            )}
           </div>
         </div>
       </nav>
@@ -127,15 +163,26 @@ export default function Header() {
               <i className="bi bi-geo-alt-fill fs-3"></i>
             </button>
 
-            {/* Login button removes (NULL) when logged in */}
             {!user && (
-              <button className="btn text-white fs-3 m-0 p-0" onClick={() => setShowLoginModal(true)}> <i className="bi bi-person-circle"></i> </button>
+              <button className="btn text-white fs-3 m-0 p-0" onClick={() => setShowLoginModal(true)}>
+                <i className="bi bi-person-circle"></i>
+              </button>
+            )}
+            {user && student && (
+              <button className="btn p-0" onClick={() => setIsMenuOpen(true)}>
+                <img
+                  src={student.photoUrl || "/images/icon/default-avatar.png"}
+                  alt="Student"
+                  className="rounded-circle"
+                  style={{ width: 36, height: 36, objectFit: "cover", border: "2px solid white" }}
+                />
+              </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* --- BLUE THEME SIDEBAR (IMPORTANT LINKS) --- */}
+      {/* --- BLUE THEME SIDEBAR --- */}
       <div className={`blue-sidebar ${isMenuOpen ? "is-open" : ""}`}>
         <div className="sidebar-mask" onClick={() => setIsMenuOpen(false)}></div>
         <div className="sidebar-panel">
@@ -146,11 +193,11 @@ export default function Header() {
 
           <div className="sidebar-user-info">
             <div className="avatar-frame">
-              <img src={user?.photoURL || "/images/icon/default-avatar.png"} alt="user" />
+              <img src={student?.photoUrl || user?.photoURL || "/images/icon/default-avatar.png"} alt="user" />
             </div>
             <div className="user-text-info">
-              <h4>{user ? user.displayName : "Guest User"}</h4>
-              <p>{user ? user.email : "Sign in to access Portal"}</p>
+              <h4>{student?.name || user?.displayName || "Guest User"}</h4>
+              <p>{user?.email || "Sign in to access Portal"}</p>
             </div>
           </div>
 
@@ -166,24 +213,20 @@ export default function Header() {
             <Link to="/Gallery" onClick={() => setIsMenuOpen(false)}><i className="bi bi-images"></i> Center Gallery</Link>
             <Link to="/Contact-us" onClick={() => setIsMenuOpen(false)}><i className="bi bi-geo-alt"></i> Locate Center</Link>
 
-          
             {user && (
-  <div className="sidebar-auth-wrapper px-3 mt-4">
-    <div className="d-grid gap-2">
-      {/* Dashboard Button - Premium Green Gradient */}
-      <Link to="/admin" className="dr-sidebar-action-btn dr-bg-success">
-        <i className="bi bi-speedometer2"></i>
-        <span>Admin Dashboard</span>
-      </Link>
-
-      {/* Logout Button - Soft Red Minimal */}
-      <button className="dr-sidebar-action-btn dr-bg-danger" onClick={handleLogout}>
-        <i className="bi bi-power"></i>
-        <span>Sign Out Account</span>
-      </button>
-    </div>
-  </div>
-)}
+              <div className="sidebar-auth-wrapper px-3 mt-4">
+                <div className="d-grid gap-2">
+                  <Link to="/admin" className="dr-sidebar-action-btn dr-bg-success">
+                    <i className="bi bi-speedometer2"></i>
+                    <span>Admin Dashboard</span>
+                  </Link>
+                  <button className="dr-sidebar-action-btn dr-bg-danger" onClick={handleLogout}>
+                    <i className="bi bi-power"></i>
+                    <span>Sign Out Account</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -199,7 +242,6 @@ export default function Header() {
           <span>About</span>
         </Link>
 
-        {/* CONTACT FAB (BLUE GRADIENT + WHITE BORDER) */}
         <div className="fab-call-container">
           <Link to="/Contact-us" className="fab-call-btn">
             <i className="bi bi-telephone-fill"></i>
@@ -211,10 +253,9 @@ export default function Header() {
           <span>Library</span>
         </Link>
 
-        {/* ACCOUNT (INSTA STYLE PIC FETCH) */}
         <button onClick={() => setIsMenuOpen(true)} className={isMenuOpen ? "active" : ""}>
-          {user ? (
-            <img src={user.photoURL || "/images/icon/default-avatar.png"} className="nav-profile-pic" alt="p" />
+          {student?.photoUrl || user?.photoURL ? (
+            <img src={student?.photoUrl || user?.photoURL} className="nav-profile-pic" alt="p" />
           ) : (
             <i className="bi bi-person-circle"></i>
           )}
@@ -222,7 +263,7 @@ export default function Header() {
         </button>
       </nav>
 
-      {/* --- LOGIN MODAL (ZOOM EFFECT) --- */}
+      {/* --- LOGIN MODAL --- */}
       {showLoginModal && (
         <div className="login-modal-overlay">
           <div className="login-modal-backdrop" onClick={() => setShowLoginModal(false)}></div>

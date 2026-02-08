@@ -110,14 +110,14 @@ export default function App() {
 
 
         {/* 🎓 STUDENT */}
-        <Route
-          path="/student/dashboard/*"
-          element={
-            user && role === "student"
-              ? <StudentRoutes />
-              : <Navigate to="/" replace />
-          }
-        />
+      <Route
+  path="/student/*"
+  element={
+    loading ? null : (user && role === "student"
+      ? <StudentRoutes />
+      : <Navigate to="/" replace />)
+  }
+/>
 
 
         {/* ❌ 404 */}

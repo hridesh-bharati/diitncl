@@ -1,98 +1,147 @@
-/* Jio + Facebook Production CSS */
 :root {
-  --jio-blue: #0052cc;
-  --fb-gray: #f0f2f5;
-  --meta-active: #e7f3ff;
-  --meta-blue: #1877f2;
+  --primary: #0d6efd;
+  --bg: #ffffff;
+  --hover: #f1f5ff;
+  --active: #e7f1ff;
+  --text: #212529;
+  --muted: #6c757d;
 }
 
-.jio-sidebar {
+/* Backdrop (PC + Mobile) */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1040;
+}
+
+/* Sidebar */
+.admin-sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
   width: 280px;
-  background: #ffffff;
-  z-index: 2100; /* Sidebar hamesha upar */
-  border-right: 1px solid #dddfe2;
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  height: 100vh;
+  background: var(--bg);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
 }
 
-.jio-sidebar.is-collapsed { transform: translateX(-100%); }
-.jio-sidebar.is-open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.05); }
-
-.sidebar-flex-wrapper { display: flex; flex-direction: column; height: 100%; }
-
-/* Header Section */
-.sidebar-header-jio { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
-
-.gradient-box {
-  width: 40px; height: 40px;
-  background: linear-gradient(135deg, #0052cc, #00d4ff);
-  color: white; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 20px;
+.admin-sidebar.open {
+  transform: translateX(0);
 }
 
-.brand-name-stack { display: flex; flex-direction: column; margin-left: 12px; }
-.brand-title { font-weight: 700; font-size: 18px; color: #1c1e21; letter-spacing: -0.3px; }
-.brand-status { font-size: 10px; font-weight: 700; color: #31a24c; text-transform: uppercase; }
-
-/* Scrollable Nav */
-.sidebar-scrollable-content { flex: 1; overflow-y: auto; padding: 10px 12px; }
-
-.nav-group-meta { margin-bottom: 20px; }
-.group-label { font-size: 11px; font-weight: 600; color: #65676b; margin-left: 10px; margin-bottom: 5px; display: block; }
-
-.meta-nav-link {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: 8px;
-  color: #1c1e21; text-decoration: none !important;
-  font-weight: 500; font-size: 15px; transition: 0.2s;
+/* Header */
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.meta-nav-link:hover { background: var(--fb-gray); }
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 
-.meta-nav-link.active {
-  background: var(--meta-active);
-  color: var(--meta-blue);
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0d6efd, #20c997);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Close Button */
+.close-btn {
+  background: #f1f3f5;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #e9ecef;
+}
+
+/* Menu */
+.sidebar-menu {
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.menu-link:hover {
+  background: var(--hover);
+}
+
+.menu-link.active {
+  background: var(--active);
+  color: var(--primary);
+}
+
+/* Footer */
+.sidebar-footer {
+  padding: 14px;
+  border-top: 1px solid #dee2e6;
+}
+
+.profile-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.profile-name {
   font-weight: 600;
 }
 
-.nav-icon { font-size: 20px; opacity: 0.8; }
-.active .nav-icon { color: var(--meta-blue); opacity: 1; }
-
-/* Profile Footer */
-.sidebar-footer-fb { padding: 16px; border-top: 1px solid #dddfe2; background: #fff; }
-
-.profile-card-fb {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px; border-radius: 12px;
-  text-decoration: none !important; transition: 0.2s;
+.profile-sub {
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.profile-card-fb:hover { background: var(--fb-gray); }
 
-.avatar-wrapper { position: relative; }
-.online-status {
-  position: absolute; bottom: 2px; right: 2px;
-  width: 10px; height: 10px; background: #31a24c;
-  border: 2px solid #fff; border-radius: 50%;
-}
-
-.profile-name { display: block; font-size: 14px; font-weight: 600; color: #1c1e21; }
-.profile-link { font-size: 11px; color: #65676b; }
-
-/* Backdrop */
-.fb-sidebar-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(244, 246, 248, 0.75);
-  backdrop-filter: blur(4px); z-index: 2000;
-}
-
-.fb-close-btn { border: none; background: var(--fb-gray); border-radius: 50%; padding: 6px; }
-
-@media (min-width: 992px) {
-  .jio-sidebar { transform: translateX(0) !important; width: 260px; }
-  .fb-sidebar-backdrop { display: none; }
+@media (max-width: 768px) {
+  .admin-sidebar {
+    height: 94vh;
+    border-radius: 0 18px 18px 0;
+  }
 }

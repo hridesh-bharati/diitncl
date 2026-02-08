@@ -1,3 +1,4 @@
+// src\AdminComponents\Certificate\StudentCertificate.jsx
 import React, { useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Spinner, Image, Card, Alert } from "react-bootstrap";
@@ -7,13 +8,14 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import './StudentCertificate.css';
 
-// डेटा सोर्स इम्पोर्ट करें
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 
 // =================== UTILITY FUNCTIONS ===================
+// Isse fix kiya gaya hai taaki real date format (DD/MM/YYYY) mile
 const formatDate = (dateString) => {
-    if (!dateString) return "";
+    if (!dateString) return "---"; // Agar date nahi hai toh blank na dikhe
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // Agar string already formatted hai
     return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`;
 };
 
@@ -43,12 +45,12 @@ const getCourseData = (courseName) => {
     return {
         fullName: found.description.split('-')[0].trim() || found.name,
         duration: `${found.duration} Months`,
-        hours: `${found.duration * 40} Hrs.`, // आप अपने हिसाब से कैलकुलेशन बदल सकते हैं
+        hours: `${found.duration * 40} Hrs.`,  
         modules: found.subjects.map(s => s.name)
     };
 };
 
-// =================== REUSABLE COMPONENTS (Original Design) ===================
+// =================== REUSABLE COMPONENTS ===================
 const HeaderSection = ({ student }) => (
   <div className="certificate-header-grid">
     <div>
@@ -113,7 +115,6 @@ const ModulesSection = ({ modules }) => (
     </div>
     <div className="col-9">
       <div className="d-flex flex-wrap gap-1 justify-content-start p-0 m-0">
-        {/* यहाँ सभी Modules बिना slice के आ रहे हैं */}
         {modules.map((module, index) => (
           <span key={index} className="certificate-module-item p-0 my-0">
             {index + 1}. {module}
@@ -133,6 +134,7 @@ const FooterSection = ({ student, issueDate }) => (
         </div>
         <div className="text-start w-50 fw-bolder">
           <p className="m-0 certificate-footer-text">
+            {/* Real Issue Date Yahan Dikh Rahi Hai */}
             Date of Issue : <span className="dbluetext">{issueDate}</span>
           </p>
         </div>
@@ -164,9 +166,9 @@ const FooterSection = ({ student, issueDate }) => (
         <p className="m-0 ftrTExt certificate-footer-text arial redText">
           (An unit of Drishtee Educational & welfare Trust)
         </p>
-        <p className="m-0 ftrTExt certificate-footer-text arial blueColor d-flex justify-content-center">
+        <p className="m-0 ftrTExt certificate-footer-text arial blueColor d-flex justify-content-evenly">
           <span>Reg Office: Harredeeh, ward No. 5, Nichhalu, Dist-Maharajganj (273304) </span>
-          <span className="small ms-2">https://www.drishteeindia.com</span>
+          <span className="small ms-4">https://www.drishteeindia.com</span>
         </p>
       </div>
     </div>
@@ -175,7 +177,10 @@ const FooterSection = ({ student, issueDate }) => (
 // =================== MAIN COMPONENTS ===================
 const CertificateContent = ({ student }) => {
     const courseData = useMemo(() => getCourseData(student.course), [student.course]);
-    const issueDate = useMemo(() => formatDate(student.issueDate || new Date().toISOString()), [student.issueDate]);
+    
+    // Issue Date Logic: Agar DB mein hai toh wahi, warna default empty
+    const issueDate = useMemo(() => formatDate(student.issueDate), [student.issueDate]);
+    
     const grade = useMemo(() => getGradeFromPercentage(student.percentage), [student.percentage]);
 
     return (
@@ -208,23 +213,23 @@ export default function StudentCertificate({ student: propStudent }) {
         html2pdf()
             .set({
                 margin: 0,
-                filename: `cert_${new Date().getTime()}.pdf`,
+                filename: `cert_${propStudent?.name || 'student'}.pdf`,
                 image: { type: 'jpeg', quality: 1 },
                 html2canvas: { scale: 4, useCORS: true, width: 1123, height: 794 },
                 jsPDF: { unit: 'mm', format: [294.64, 209.211], orientation: 'landscape' }
             })
             .from(printResult)
             .save();
-    }, []);
+    }, [propStudent]);
 
     const renderContent = ({ admissions, loading }) => {
         if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
         const student = propStudent || admissions.find(s => String(s.id) === String(id));
-        if (!student) return <Alert variant="danger">Student Not Found</Alert>;
+        if (!student) return <Alert variant="danger" className="m-5">Student Not Found or Record Missing</Alert>;
 
         return (
             <div className="bg-white min-vh-100">
-                <div className="p-3 d-flex justify-content-between border-bottom sticky-top bg-white">
+                <div className="p-3 d-flex justify-content-between border-bottom bg-white no-print">
                     <Button variant="light" onClick={() => navigate(-1)}>← Back</Button>
                     <Button variant="primary" onClick={downloadPDF}>Download PDF</Button>
                 </div>

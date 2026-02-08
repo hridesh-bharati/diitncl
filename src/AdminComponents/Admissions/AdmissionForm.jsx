@@ -38,7 +38,7 @@ export default function AdmissionForm() {
         try {
             const fd = new FormData();
             fd.append("file", file);
-            fd.append("upload_preset", "hridesh99!"); 
+            fd.append("upload_preset", "hridesh99!");
             fd.append("cloud_name", "draowpiml");
 
             const res = await fetch(
@@ -117,12 +117,12 @@ export default function AdmissionForm() {
 
                                 <div className="col-md-6">
                                     <div className="form-floating">
-                                        <select 
-                                            className="form-select" 
-                                            name="course" 
-                                            value={form.course} 
-                                            onChange={handleChange} 
-                                            required 
+                                        <select
+                                            className="form-select"
+                                            name="course"
+                                            value={form.course}
+                                            onChange={handleChange}
+                                            required
                                             style={{ borderLeft: '4px solid #198754' }}
                                         >
                                             <option value="">Select Course</option>
