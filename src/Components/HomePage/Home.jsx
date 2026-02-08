@@ -45,7 +45,11 @@ function Home() {
                                 <span className="text-warning small" ref={typedHero}></span>
                             </h1>
                             <p className="text-white-50 mb-4 pe-lg-5">
+<<<<<<< HEAD
                                 Join Drishtee India's most trusted IT Skill Hub. ISO 9001:2015 Certified excellence in education since 2007.
+=======
+                                Join DRISHTEE India's most trusted IT Skill Hub. ISO 9001:2015 Certified excellence in education since 2007.
+>>>>>>> dddde693f11889e6e6ef833576b6d14fa16a227b
                             </p>
                             <div className="d-flex flex-wrap gap-3">
                                 <Link to="/AdmissionForm" className="btn-main-gold">Get Started Today</Link>
