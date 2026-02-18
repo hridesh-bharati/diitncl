@@ -1,0 +1,52 @@
+/* // src/components/Gallery/LikeButton.css */
+.instagram-like-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.instagram-like-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #262626;
+}
+
+.instagram-like-icon.liked {
+  color: #ed4956;
+  animation: likePop 0.45s ease-in-out;
+}
+
+.instagram-like-count {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  transition: color 0.2s ease;
+}
+
+.instagram-like-count.liked {
+  color: #ed4956;
+}
+
+@keyframes likePop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.instagram-like-wrapper:hover .instagram-like-icon:not(.liked) {
+  transform: scale(1.1);
+  color: #ed4956;
+}
+
+.double-click-like {
+  animation: likePop 0.45s ease-in-out !important;
+}
+
+.instagram-like-wrapper:active .instagram-like-icon {
+  transform: scale(0.9);
+}

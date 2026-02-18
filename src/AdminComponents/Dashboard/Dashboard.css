@@ -1,0 +1,72 @@
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        .fw-800 { font-weight: 800; }
+        .fw-700 { font-weight: 700; }
+        .fw-600 { font-weight: 600; }
+
+        /* Watermark Card Style */
+        .stat-card {
+          border-radius: 24px;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+          border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-card:hover { transform: translateY(-8px); }
+
+        .watermark-icon {
+          position: absolute;
+          right: -15px;
+          bottom: -20px;
+          font-size: 5rem;
+          color: white;
+          opacity: 0.15;
+          transform: rotate(-15deg);
+          pointer-events: none;
+          transition: all 0.4s ease;
+        }
+
+        .stat-card:hover .watermark-icon {
+          transform: rotate(0deg) scale(1.1);
+          opacity: 0.25;
+        }
+
+        .content-on-top { position: relative; z-index: 2; }
+
+        .icon-badge {
+          width: 38px; height: 38px;
+          background: rgba(255,255,255,0.2);
+          backdrop-filter: blur(8px);
+          display: flex; align-items: center; justify-content: center;
+          border-radius: 12px;
+          color: white;
+        }
+
+        .main-card { border-radius: 28px; }
+
+        .avatar-box { width: 42px; height: 42px; border-radius: 12px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .custom-table th { border: 0; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 15px; }
+        .custom-table td { border-top: 1px solid #f8fafc; padding: 12px 0; }
+
+        .badge-soft-indigo { background: #eef2ff; color: #4f46e5; font-weight: 700; padding: 6px 12px; }
+
+        .query-card { background: #f8fafc; border-radius: 20px; transition: all 0.3s ease; border: 1px solid transparent; }
+        .query-card:hover { background: #fff; border-color: #e2e8f0; transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+
+        .time-tag { font-size: 10px; font-weight: 700; color: #64748b; background: white; padding: 2px 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+
+        .call-link { font-size: 11px; font-weight: 800; color: #4f46e5; text-decoration: none; display: flex; align-items: center; }
+
+        .btn-pill-sm { font-size: 11px; font-weight: 800; color: #4f46e5; background: #f5f3ff; border-radius: 10px; padding: 6px 14px; text-decoration: none; }
+
+        .btn-dark-modern { background: #0f172a; color: white; border-radius: 18px; padding: 15px; font-weight: 700; display: block; text-align: center; text-decoration: none; transition: 0.3s; box-shadow: 0 10px 20px -10px #0f172a; }
+        .btn-dark-modern:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -10px #0f172a; color: white; }
+
+        @media (max-width: 576px) {
+          .stat-card { padding: 1rem !important; }
+          .watermark-icon { font-size: 3.5rem; right: -10px; bottom: -15px; }
+        }

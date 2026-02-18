@@ -1,0 +1,370 @@
+@import url('https://fonts.cdnfonts.com/css/pristina');
+/* ====================== Certificate CSS ====================== */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --certificate-bg: #fff;
+  --certificate-primary: #00062B;
+  --certificate-primary2: rgb(11, 1, 56);
+  --certificate-accent: maroon;
+  --certificate-name: #be0027;
+  --certificate-font-main: 'Poppins', sans-serif;
+  --certificate-font-title: 'Rubik', sans-serif;
+  --certificate-font-cinzel: 'Cinzel', serif;
+  --certificate-font-arial-black: 'Arial Black', Arial, sans-serif;
+  --prastina: 'Pristina', sans-serif;
+  
+  /* Text colors */
+  --maroon-text: #800000;
+  --dark-blue-text: rgb(27, 2, 68);
+  
+  /* Font sizes */
+  --body-text-size: 25px;
+  --name-text-size: 22px;
+  --course-title-size: 22px;
+  --grade-highlight-size: 22px;
+  --module-item-size: 16px;
+  --footer-text-size: 17px;
+  --footer-reg-size: 18px;
+  --institute-title-size: 20px;
+  --center-text-size: 20px;
+  --right-text-size: 13px;
+}
+
+/* Text Colors */
+.maroonText { color: var(--maroon-text); }
+.dbluetext { color: var(--dark-blue-text); }
+.redText { color: var(--certificate-name); }
+.blueColor { color: var(--certificate-primary2); }
+.arial { font-family: var(--certificate-font-arial-black); }
+.grade { font-weight: 500; }
+
+/* Certificate Container - Fixed A4 Size */
+#certificate-fixed-a4 {
+  width: 294.64mm;
+  height: 209.211mm;
+  margin: auto;
+  background: var(--certificate-bg);
+  overflow: hidden;
+  position: relative;
+  min-width: 294.64mm;
+  min-height: 209.211mm;
+  max-width: 294.64mm;
+  max-height: 209.211mm;
+}
+
+/* Scrollable Wrapper */
+#overflow-card,
+.certificate-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--certificate-primary) #f0f0f0;
+  -webkit-overflow-scrolling: touch;
+  margin: auto;
+  background: transparent;
+}
+
+/* Certificate Sheet */
+.certificate-sheet-landscape {
+  width: 100%;
+  height: 100%;
+  padding: 4mm;
+  background: white;
+  overflow: hidden;
+}
+
+/* Header Grid */
+.certificate-header-grid {
+  display: grid;
+  grid-template-columns: 90px 1fr 220px;
+  align-items: start;
+  height: 100px;
+  padding: 0.3rem;
+  gap: 0 15px;
+}
+
+.header-logo-img {
+  width: 95px;
+  height: 95px;
+  object-fit: contain;
+}
+
+/* Student Photo */
+.certificate-photo-container {
+  width: 90px;
+  aspect-ratio: 1 / 1;
+  background: var(--certificate-bg);
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+}
+
+.certificate-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Main Titles */
+.certificate-title {
+  font-family: var(--certificate-font-arial-black);
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: #fff;
+  background: var(--certificate-primary2);
+  margin: 5px 0 0 0;
+  text-transform: uppercase;
+  text-align: center;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.certificate-main-title {
+  font-family: var(--certificate-font-title);
+  font-weight: 750;
+  font-size: 80px;
+  color: var(--certificate-primary2);
+  margin: 0;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  line-height: 0.9;
+}
+
+.certificate-sub-title {
+  color: var(--certificate-accent);
+  font-family: var(--certificate-font-main);
+  letter-spacing: 1.1px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* Body Content */
+.certificate-body-grid {
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  width: 100%;
+  padding: 0 10px;
+}
+
+/* Text Elements with consistent sizing */
+.certificate-body-text {
+  font-size: var(--body-text-size);
+  font-family: var(--certificate-font-main);
+  font-weight: 500;
+}
+
+.certificate-name,
+.certificate-course-title {
+  font-family: var(--certificate-font-arial-black);
+  font-weight: bold;
+  color: var(--certificate-name);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-left: 6px;
+  display: inline-block;
+}
+
+.certificate-name { font-size: var(--name-text-size); }
+.certificate-course-title { 
+  font-size: var(--course-title-size);
+  letter-spacing: 0.8px;
+}
+.certificate-grade-highlight {
+  color: var(--certificate-name);
+  font-size: var(--grade-highlight-size);
+  font-weight: 700;
+}
+
+/* Modules Section */
+.modules-container {
+  width: 93%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.certificate-modules-title {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.certificate-module-item {
+  font-size: var(--module-item-size);
+  font-family: var(--certificate-font-main);
+  color: var(--certificate-primary);
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background: transparent;
+  display: inline-block;
+  margin: 2px;
+  white-space: nowrap;
+}
+
+/* Footer */
+.certificateFooter {
+  width: 92%;
+  margin-top: 1.5rem;
+}
+
+.certificate-footer-text { font-size: var(--footer-text-size); }
+.certificate-footer-reg { font-size: var(--footer-reg-size); }
+.certificate-institute-title { font-size: var(--institute-title-size); }
+.cert-center, .footer-grade, .certificate-footer-note { 
+  font-size: var(--center-text-size);
+}
+.cert-right { 
+  font-size: var(--right-text-size);
+  margin-top: 10px;
+}
+
+/* Watermark Background */
+#watermark {
+  position: relative;
+  background: white;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border: 13px solid var(--certificate-primary2);
+}
+
+#watermark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: url("/images/vender/logos.png") no-repeat center center;
+  background-size: 70% 70%;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+#watermark > * { position: relative; z-index: 1; }
+
+/* Print Styles */
+@media print {
+  html, body {
+    width: 294.64mm;
+    height: 209.211mm;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  @page { size: auto; margin: 0; }
+
+  #certificate-fixed-a4,
+  .certificate-sheet-landscape,
+  #printResult {
+    width: 294.64mm !important;
+    height: 209.211mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 1024px) {
+  #certificate-fixed-a4 { transform: scale(0.9); transform-origin: top center; }
+  .modules-container { width: 70%; }
+  
+  :root {
+    --body-text-size: 17px;
+    --name-text-size: 18px;
+    --course-title-size: 18px;
+    --grade-highlight-size: 18px;
+    --module-item-size: 14px;
+    --footer-text-size: 16px;
+    --footer-reg-size: 16px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #certificate-fixed-a4 { transform: scale(0.8); transform-origin: top center; }
+  .modules-container { width: 80%; }
+  
+  :root {
+    --body-text-size: 16px;
+    --name-text-size: 16px;
+    --course-title-size: 16px;
+    --grade-highlight-size: 16px;
+    --module-item-size: 13px;
+    --footer-text-size: 14px;
+    --footer-reg-size: 14px;
+    --center-text-size: 18px;
+    --right-text-size: 13px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  #certificate-fixed-a4 { transform: scale(0.7); transform-origin: top center; }
+  .modules-container { width: 90%; }
+  .certificate-title { font-size: 40px; height: 50px; padding: 8px 0; }
+  
+  :root {
+    --body-text-size: 14px;
+    --name-text-size: 14px;
+    --course-title-size: 14px;
+    --grade-highlight-size: 14px;
+    --module-item-size: 12px;
+    --footer-text-size: 12px;
+    --footer-reg-size: 12px;
+    --center-text-size: 16px;
+    --right-text-size: 10px;
+  }
+}
+/* QR Code Styling */
+.qr-code-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.qr-code-wrapper {
+  background: white;
+  padding: 3px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Print Optimization */
+@media print {
+  .qr-code-section {
+    break-inside: avoid;
+  }
+  
+  .qr-code-wrapper {
+    border: 1px solid #999 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* PDF Generation ke liye optimization */
+html2pdf__page-break {
+  break-inside: avoid;
+}

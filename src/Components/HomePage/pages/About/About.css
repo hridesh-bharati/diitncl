@@ -1,0 +1,134 @@
+/* ====== BASE & RESET ====== */
+.about-container {
+    line-height: 1.6;
+    color: #333;
+}
+
+/* ====== TYPOGRAPHY ENHANCEMENTS ====== */
+.gradient-text {
+    background: linear-gradient(135deg, #0a2885 0%, #157ed2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.fw-800 {
+    font-weight: 800 !important;
+}
+
+.fw-700 {
+    font-weight: 700 !important;
+}
+
+.display-4 {
+    font-size: 3.5rem;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .display-5 {
+        font-size: 2.2rem;
+    }
+}
+
+/* ====== MODERN CARD STYLES ====== */
+.modern-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modern-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ====== HOVER EFFECTS ====== */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12) !important;
+}
+
+.hover-scale {
+    transition: all 0.4s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+/* ====== STAT ICONS ANIMATION ====== */
+.stat-icon {
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-icon:hover {
+    transform: rotate(10deg) scale(1.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ====== IMAGE STYLING ====== */
+.feature-img {
+    transition: transform 0.8s ease;
+    border-radius: 15px;
+}
+
+.feature-img:hover {
+    transform: scale(1.08);
+}
+
+/* ====== BUTTON STYLES ====== */
+.btn-primary {
+    background: linear-gradient(135deg, #0a2885 0%, #157ed2 100%);
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 12px 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #091f6e 0%, #126db3 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(10, 40, 133, 0.2);
+}
+
+.btn-outline-primary {
+    border: 2px solid #0a2885;
+    color: #0a2885;
+    font-weight: 600;
+    padding: 10px 28px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg, #0a2885 0%, #157ed2 100%);
+    border-color: #0a2885;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(10, 40, 133, 0.15);
+}
+
+/* ====== RESPONSIVE UTILITIES ====== */
+@media (max-width: 768px) {
+    .modern-card {
+        margin-bottom: 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}

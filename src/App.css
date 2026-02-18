@@ -1,0 +1,132 @@
+/* --- APP DESIGN SYSTEM --- */
+.app-main-bg {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.app-sticky-header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.app-title {
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #111;
+  margin: 0;
+}
+
+.app-badge {
+  background: #000;
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.app-search-bar {
+  background: #f1f3f5 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  align-items: center;
+}
+
+.app-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  padding: 10px 12px;
+}
+
+.app-chip {
+  border: none;
+  background: #fff;
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #6c757d;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  text-transform: capitalize;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.app-chip.active {
+  background: #000;
+  color: #fff;
+}
+
+.app-loader {
+  display: flex;
+  justify-content: center;
+  padding: 50px 0;
+  opacity: 0.5;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+/* ..........................Conatct + gallery .............  */
+/* Windows 11 Acrylic Glass Effect */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 12px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.win11-bg {
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}
+
+
+
+/* Windows 11 Acrylic Glass Effect */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 12px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.win11-bg {
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}

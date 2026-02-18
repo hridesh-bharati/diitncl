@@ -1,0 +1,84 @@
+/* DownloadButton.css */
+
+.instagram-download-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.instagram-download-btn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #262626;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instagram-download-btn:hover {
+  color: #0095f6;
+  background: rgba(0, 149, 246, 0.1);
+}
+
+.facebook-download-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.facebook-download-btn {
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease;
+}
+
+.facebook-download-btn:hover {
+  background-color: #e7f3ff !important;
+  color: #1877f2 !important;
+}
+
+/* Download Counter Styles */
+.download-counter {
+  display: inline-flex;
+  align-items: center;
+  color: #65676b;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    color: #1877f2;
+  }
+  50% {
+    transform: scale(1.2);
+    color: #1877f2;
+  }
+  100% {
+    transform: scale(1);
+    color: #65676b;
+  }
+}
+
+.pulse {
+  animation: pulse 0.5s ease;
+}
+
+.download-counter:hover {
+  color: #1877f2;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .download-counter {
+  color: #b0b3b8;
+}
+
+[data-theme="dark"] .download-counter:hover {
+  color: #1877f2;
+}
