@@ -1,0 +1,42 @@
+/* DownloadCounter.css - FB/Insta style animations */
+.download-counter {
+  display: inline-flex;
+  align-items: center;
+  color: #65676b; /* FB gray */
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+/* Pulse animation - jaise like button */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    color: #1877f2;
+  }
+  50% {
+    transform: scale(1.2);
+    color: #1877f2;
+  }
+  100% {
+    transform: scale(1);
+    color: #65676b;
+  }
+}
+
+.pulse {
+  animation: pulse 0.5s ease;
+}
+
+/* Hover effect */
+.download-counter:hover {
+  color: #1877f2;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .download-counter {
+  color: #b0b3b8;
+}
+
+[data-theme="dark"] .download-counter:hover {
+  color: #1877f2;
+}

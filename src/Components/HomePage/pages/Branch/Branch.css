@@ -1,0 +1,77 @@
+/* --- App Design Tokens --- */
+:root {
+    --primary-gradient: linear-gradient(135deg, #00268f 0%, #0052D4 100%);
+    --surface-color: #f4f7fe;
+}
+
+/* --- Layout --- */
+.app-layout {
+    background-color: var(--surface-color);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+}
+
+/* --- Header --- */
+.app-header {
+    background: var(--primary-gradient);
+    padding: 60px 20px 110px;
+    border-radius: 0 0 40px 40px;
+    color: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Overlap Section --- */
+.overlap-container {
+    margin-top: -65px;
+    position: relative;
+    z-index: 10;
+}
+
+/* --- Floating Action Buttons --- */
+.fab-bottom {
+    position: fixed;
+    bottom: 6px;
+    left: 16px;
+    right: 16px;
+    z-index: 1050;
+}
+
+/* --- Call Button --- */
+.btn-app {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 18px;
+    padding: 16px;
+    font-size: 1.05rem;
+    box-shadow: 0 8px 25px rgba(0, 82, 212, 0.4);
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+.btn-app:hover {
+    transform: translateY(-2px);
+}
+
+/* --- WhatsApp Button --- */
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    border: none;
+    border-radius: 18px;
+    padding: 16px;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+}
+
+/* --- Mobile Tweaks --- */
+@media (max-width: 768px) {
+    .app-header {
+        padding: 40px 15px 90px;
+    }
+}

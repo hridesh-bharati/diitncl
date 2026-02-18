@@ -1,0 +1,30 @@
+.admin-layout {
+  display: flex;
+}
+
+.admin-main {
+  width: 100%;
+  min-height: 100vh;
+  background: #f4f6fb;
+}
+
+/* Top bar */
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Content */
+.admin-content {
+  padding: 0px;
+}
+
+/* Mobile fix */
+@media (max-width: 991px) {
+  .admin-main {
+    margin-left: 0;
+  }
+}
