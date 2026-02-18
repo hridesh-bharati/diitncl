@@ -4,7 +4,7 @@
 }
 
 /* --- PC NAVBAR (RESTORED CLASSIC) --- */
-.pc-nav { height: 90px; background: white; padding: 0 6%; position: sticky; top: 0; z-index: 1000; align-items: center; border-bottom: 1px solid #f1f5f9; }
+.pc-nav { height: 90px; background: white; padding: 0 1%; position: sticky; top: 0; z-index: 1000; align-items: center; border-bottom: 1px solid #f1f5f9; }
 .pc-sticky { height: 75px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
 .pc-content { width: 100%; display: flex; justify-content: space-between; align-items: center; }
 .pc-logo-box img { height: 50px; }

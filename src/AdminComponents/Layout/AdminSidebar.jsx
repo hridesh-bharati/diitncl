@@ -9,13 +9,9 @@ import {
   PersonCircle,
   XLg,
   ChatLeftText,
-<<<<<<< HEAD
   Tag,
   List,
 } from "react-bootstrap-icons"; // Added Tag & List for offers
-=======
-} from "react-bootstrap-icons";
->>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 import "./AdminSidebar.css";
 
 export default function AdminSidebar({ open, setOpen }) {
@@ -63,7 +59,6 @@ export default function AdminSidebar({ open, setOpen }) {
             <Images /> Gallery
           </NavLink>
 
-<<<<<<< HEAD
           <NavLink to="/admin/new-offers" className="menu-link">
             <Tag /> Offer
           </NavLink>
@@ -71,8 +66,6 @@ export default function AdminSidebar({ open, setOpen }) {
           <NavLink to="/admin/delete-offers" className="menu-link">
             <List /> All Offers
           </NavLink>
-=======
->>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
           <NavLink to="/admin/clients-contacts" className="menu-link">
             <ChatLeftText /> Contacts

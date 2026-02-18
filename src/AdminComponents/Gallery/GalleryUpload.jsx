@@ -7,11 +7,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function AdminGalleryManager() {
-<<<<<<< HEAD
   const { user, displayName, photoURL } = useAuth(); 
-=======
-  const { user, displayName, photoURL } = useAuth(); // ✅ ADD photoURL
->>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
   const [img, setImg] = useState(null);
   const [preview, setPreview] = useState(null);

@@ -231,7 +231,7 @@ export default function ChatPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", padding: 10, backgroundColor: "#075E54", color: "#fff", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}>
         <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#fff", fontSize: 18, marginRight: 10 }}>←</button>
-        <h3 style={{ flexGrow: 1, margin: 0 }}>Global Chat</h3>
+        <h3 style={{ flexGrow: 1, margin: 0 }}>Drishtee Member Chat</h3>
         <img src={photoURL || `https://ui-avatars.com/api/?name=${displayName}&background=075E54&color=fff`} alt="avatar" style={{ width: 35, height: 35, borderRadius: "50%", objectFit: "cover", marginLeft: 5 }} />
       </div>
 
