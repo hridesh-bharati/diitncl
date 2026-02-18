@@ -1,9 +1,9 @@
 /* =========================
    DRISHTEE SERVICE WORKER
-   CACHE + FCM SUPPORT
+   CACHE + WEB PUSH
 ========================= */
 
-const CACHE_NAME = "drishtee-cache-v5";
+const CACHE_NAME = "drishtee-cache-v6";
 
 const STATIC_ASSETS = [
   "/",
@@ -18,62 +18,50 @@ const STATIC_ASSETS = [
 ];
 
 /* =========================
-   🔥 FIREBASE FCM SECTION
+   🔔 WEB PUSH SECTION
 ========================= */
 
-importScripts("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js");
+self.addEventListener("push", function (event) {
+  if (!event.data) return;
 
-firebase.initializeApp({
-  apiKey: "AIzaSyDm15ex3UZlOTzhHALn6ukvmRO9jobM4Y8",
-  authDomain: "diit-5bff0.firebaseapp.com",
-  projectId: "diit-5bff0",
-  messagingSenderId: "55289745043",
-  appId: "1:55289745043:web:7ddcb37bb1a4b4f02a4766",
-});
+  const data = event.data.json();
 
-const messaging = firebase.messaging();
-
-/* Background FCM Notification */
-messaging.onBackgroundMessage((payload) => {
-  console.log("[FCM] Background message:", payload);
-
-  const notificationTitle = payload.notification?.title || "Drishtee Update";
-  const notificationOptions = {
-    body: payload.notification?.body || "New update received",
+  const options = {
+    body: data.body,
     icon: "/images/icon/icon-192.png",
     badge: "/images/icon/icon-512.png",
     data: {
-      url: payload?.fcmOptions?.link || "/admin"
+      url: "/admin/queries"
     }
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-/* Click → Open Admin Panel */
-self.addEventListener("notificationclick", function (event) {
-  event.notification.close();
-
-  const targetUrl = event.notification.data?.url || "/admin";
-
   event.waitUntil(
-    clients.matchAll({ type: "window" }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url === targetUrl && "focus" in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
-      }
-    })
+    self.registration.showNotification(data.title, options)
   );
 });
 
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+
+  const targetUrl = event.notification.data?.url || "/admin/queries";
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if (client.url.includes(targetUrl) && "focus" in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(targetUrl);
+        }
+      })
+  );
+});
 
 /* =========================
-   🗂 CACHE SYSTEM (UNCHANGED LOGIC)
+   🗂 CACHE SYSTEM
 ========================= */
 
 self.addEventListener("install", (event) => {

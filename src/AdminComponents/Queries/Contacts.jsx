@@ -1,13 +1,15 @@
+
 // src\AdminComponents\Queries\Contacts.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../../firebase/firebase';
 import { collection, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
+import { addDoc } from "firebase/firestore";
 
 export default function Contacts() {
     const [queries, setQueries] = useState([]);
     const [loading, setLoading] = useState(true);
-    const previousLength = useRef(0); // Previous queries count track karne ke liye
+    const previousLength = useRef(0); 
     
     // Modal States
     const [showModal, setShowModal] = useState(false);
@@ -20,48 +22,36 @@ export default function Contacts() {
         }
     }, []);
 
-    useEffect(() => {
-        const q = query(collection(db, "studentQueries"), orderBy("timestamp", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const queryList = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            // 🔥 Check for new queries
-            if (queryList.length > previousLength.current) {
-                // Naya query aaya hai!
-                const newQuery = queryList[0]; // Sabse naya query
-                
-                // Toast notification
-                toast.info(`📬 ${newQuery.fullName}: ${newQuery.title}`, {
-                    autoClose: 8000,
-                    onClick: () => {
-                        // Scroll to new query
-                        const element = document.getElementById(`query-${newQuery.id}`);
-                        if (element) {
-                            element.scrollIntoView({ behavior: 'smooth' });
-                            element.classList.add('highlight-new');
-                        }
-                    }
-                });
-                
-                // Browser notification
-                if (Notification.permission === 'granted') {
-                    new Notification('🔔 New Student Query', {
-                        body: `${newQuery.fullName} - ${newQuery.title}`,
-                        icon: '/favicon.ico'
-                    });
-                }
-            }
-            
-            previousLength.current = queryList.length;
-            setQueries(queryList);
-            setLoading(false);
-        });
-        
-        return () => unsubscribe();
-    }, []);
+   useEffect(() => {
+  async function setupPush() {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
+
+    const reg = await navigator.serviceWorker.ready;
+
+    const existingSub = await reg.pushManager.getSubscription();
+    if (existingSub) {
+      console.log("Already subscribed");
+      return;
+    }
+
+    const subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: "BFIacnaHPzbs9l-bgfn5dDkpKy4XZ8wdqABEI5dIT4rzuNXnVyVtrVQ6ebtlkyaPFACdUrCC9gSIRUWbiv27_qk"
+    });
+
+    await addDoc(collection(db, "adminSubscriptions"), {
+      subscription,
+      createdAt: new Date()
+    });
+
+    console.log("Push subscription saved");
+  }
+
+  setupPush();
+}, []);
 
     // Function to trigger modal
     const confirmDelete = (id) => {
