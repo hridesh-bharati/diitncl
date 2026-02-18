@@ -1,4 +1,4 @@
-// src/pages/Gallery/PublicSocialGallery.jsx (FULL FIXED CODE)
+// src/pages/Gallery/PublicSocialGallery.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
@@ -169,7 +169,7 @@ export default function PublicSocialGallery() {
         createdAt: serverTimestamp(),
         likes: [],
         comments: [],
-        downloadCount: 0 // ✅ INITIAL DOWNLOAD COUNT
+        downloadCount: 0
       });
 
       toast.success("Post shared!");
@@ -199,10 +199,10 @@ export default function PublicSocialGallery() {
     );
 
   return (
-    <div style={{ background: "#f0f2f5", minHeight: "100vh" }}>
+    <div className="win11-bg p-3">
 
       {/* HEADER */}
-      <div className="bg-white border-bottom py-2 shadow-sm">
+      <div className="bg-white border-bottom py-2 shadow-sm glass-panel">
         <Container className="d-flex justify-content-between align-items-center">
           <h4 className="fw-bold text-danger mb-0">Gallery</h4>
           {isLoggedIn ? (
@@ -229,11 +229,11 @@ export default function PublicSocialGallery() {
       </div>
 
       {/* FEED */}
-      <Container className="py-4 pb-5 pb-lg-0">
+      <Container className="m-0 p-0 mt-2 mb-5">
         <Row className="g-4 pb-5 justify-content-center">
           {posts.map((post) => (
             <Col key={post.id} xs={12} md={8} lg={6}>
-              <Card className="shadow-sm border-0 rounded-4 overflow-hidden">
+              <Card className="glass-card shadow-sm overflow-hidden">
 
                 {/* Header - User Info */}
                 <Card.Body className="d-flex justify-content-between align-items-center pb-0">
@@ -308,7 +308,7 @@ export default function PublicSocialGallery() {
                 <Card.Body className="py-2">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
 
-                    {/* ✅ INSTAGRAM STYLE LIKE BUTTON WITH ANIMATION */}
+                    {/* Like Button */}
                     <LikeButton
                       isLiked={post.likes.includes(currentUserId)}
                       count={post.likes.length}
@@ -324,7 +324,7 @@ export default function PublicSocialGallery() {
                       </span>
                     </div>
 
-                    {/* ✅ DOWNLOAD BUTTON WITH COUNTER */}
+                    {/* Download Button */}
                     <DownloadButton
                       imageUrl={post.url}
                       imageId={post.id}
@@ -336,7 +336,6 @@ export default function PublicSocialGallery() {
 
                 {/* Comments Section */}
                 <Card.Body className="pt-0">
-                  {/* Comments List */}
                   {post.comments.map((c) => (
                     <div key={c.commentId} className="small mb-2 d-flex align-items-start">
                       <strong className="me-1">{c.userName}:</strong>
@@ -391,11 +390,11 @@ export default function PublicSocialGallery() {
       </Container>
 
       {/* UPLOAD MODAL */}
-      <Modal show={showUpload} onHide={() => setShowUpload(false)} centered>
+      <Modal show={showUpload} onHide={() => setShowUpload(false)} centered className="glass-panel">
         <Modal.Header closeButton className="border-0 pb-0">
           <Modal.Title className="fw-bold">Create New Post</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="pt-2">
+        <Modal.Body className="pt-2 glass-panel">
           <Form.Group className="mb-3">
             <Form.Label className="small fw-bold text-muted">Select Image</Form.Label>
             <Form.Control
