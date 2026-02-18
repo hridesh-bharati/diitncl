@@ -12,7 +12,10 @@ import TimeTable from "../HelperCmp/FeaturesUpdate/TimeTable";
 import CardSlider from "./Cardslider";
 import Team from "./Team";
 import Testimonials from "./Testimonial";
+<<<<<<< HEAD
 import HomeOffers from "./pages/offers/HomeOffers";
+=======
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
 function Home() {
     const typedElement = useRef(null);  
@@ -241,14 +244,20 @@ function Home() {
                 </div>
             </section>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
             {/* --- 7. COURSES --- */}
             <section className="container py-100">
                 <h2 className="display-6 fw-bolder text-center mb-2 text-primary">Job-Oriented Programs</h2>
                 <TopCourseList />
                 <div className="mt-5"><CardSlider /></div>
             </section>
+<<<<<<< HEAD
                     <HomeOffers />
+=======
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
             <Testimonials />
             <Team />

@@ -22,6 +22,10 @@ import Gallery from "./Components/HomePage/pages/Gallery";
 import AdmissionForm from "./AdminComponents/Admissions/AdmissionForm";
 import Verification from "./Components/HomePage/pages/Verification/Verification";
 import QueryForm from "./Components/HomePage/pages/QueryFrom";
+<<<<<<< HEAD
+=======
+import Offers from "./Components/HomePage/Offers";
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 import Certificate from "./Components/HomePage/pages/Course/Ceritificate";
 import ComputerLanguage from "./Components/HomePage/pages/Course/ComputerLanguage";
 import Designing from "./Components/HomePage/pages/Course/Designing";
@@ -45,8 +49,11 @@ import PageNotFound from "./Components/HomePage/pages/PageNotFound";
 import HeroSection from "./Components/HomePage/Sec";
 import LocationMapCard from "./Components/HomePage/pages/Location/LocationMapCard";
 import LoginForm from "./Components/Header/LoginForm";
+<<<<<<< HEAD
 import ChatPage from "./Components/Chats/ChatPage";
 
+=======
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -73,6 +80,7 @@ export default function App() {
 
   return (
     <div>
+<<<<<<< HEAD
       {/* <Lock> 
          <UserSelectNone> 
           <CopyBoard> */}
@@ -132,6 +140,67 @@ export default function App() {
       {/* </CopyBoard>
         </UserSelectNone> 
        </Lock>  */}
+=======
+       <Lock> 
+         <UserSelectNone> 
+          <CopyBoard>
+
+            <NetworkStatus />
+            <Header />
+            <InstallPrompt />
+
+            <Routes>
+              {/* 🌐 Public Routes */}
+              <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
+              <Route path="/About" element={<HelmetManager><About /></HelmetManager>} />
+              <Route path="/OurCourses" element={<HelmetManager><OurCourses /></HelmetManager>} />
+              <Route path="/Branch" element={<HelmetManager><Branch /></HelmetManager>} />
+              <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
+              <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
+              <Route path="/drishtee-computer-center/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+              <Route path="/Download-Certificate" element={<HelmetManager><Verification /></HelmetManager>} />
+              <Route path="/Contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
+              <Route path="/login-as-member" element={<HelmetManager><LoginForm /></HelmetManager>} />
+              <Route path="/Offers" element={<HelmetManager><Offers /></HelmetManager>} />
+              <Route path="/Certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
+              <Route path="/ComputerLanguage" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
+              <Route path="/Designing" element={<HelmetManager><Designing /></HelmetManager>} />
+              <Route path="/WebDev" element={<HelmetManager><WebDev /></HelmetManager>} />
+              <Route path="/Nielet" element={<HelmetManager><Nielet /></HelmetManager>} />
+              <Route path="/Banking" element={<HelmetManager><Banking /></HelmetManager>} />
+              <Route path="/Discription" element={<HelmetManager><Discription /></HelmetManager>} />
+              <Route path="/Library" element={<HelmetManager><Library /></HelmetManager>} />
+              <Route path="/HeroSection" element={<HelmetManager><HeroSection /></HelmetManager>} />
+
+              {/* 🔐 ADMIN BASE */}
+              <Route
+                path="/admin/*"
+                element={
+                  user && role === "admin"
+                    ? <AdminRoutes />
+                    : <Navigate to="/" replace />
+                }
+              />
+
+
+              {/* 🎓 STUDENT */}
+              <Route
+                path="/student/*"
+                element={
+                  loading ? null : (user && role === "student"
+                    ? <StudentRoutes />
+                    : <Navigate to="/" replace />)
+                }
+              />
+
+
+              {/* ❌ 404 */}
+              <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
+            </Routes>
+          </CopyBoard>
+        </UserSelectNone> 
+       </Lock> 
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
     </div>
   );
 }

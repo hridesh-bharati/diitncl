@@ -5,8 +5,11 @@ import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
 import "./Header.css";
+<<<<<<< HEAD
 import { Button } from "react-bootstrap";
 import { ChatDots } from "react-bootstrap-icons";
+=======
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
 export default function Header() {
   const { user, student, role, isAdmin, logout } = useAuth();
@@ -44,7 +47,11 @@ export default function Header() {
           <Link to="/" className="pc-logo-box">
             <img src="/images/icon/logo.png" alt="Logo" />
           </Link>
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
           <div className="pc-menu">
             <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
             <Link to="/About" className={location.pathname === "/About" ? "active" : ""}>About</Link>
@@ -76,6 +83,7 @@ export default function Header() {
                 <li><Link className="dropdown-item" to="/Download-Certificate">Download Certificate</Link></li>
               </ul>
             </div>
+<<<<<<< HEAD
             <Button
               variant="info"
               className="rounded-pill d-flex align-items-center gap-2"
@@ -83,13 +91,20 @@ export default function Header() {
             >
               <ChatDots />
             </Button>
+=======
+
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
             <Link to="/Gallery">Gallery</Link>
             <Link to="/Contact-us" className={location.pathname === "/Contact-us" ? "active" : ""}>Contact</Link>
           </div>
 
           <div className="pc-right d-flex">
             <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
             {!user ? (
               <button className="pc-btn-log ms-3" onClick={() => setShowLoginModal(true)}>Login</button>
             ) : (
@@ -118,7 +133,11 @@ export default function Header() {
               </div>
             )}
           </div>
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
           <button className="icon-btn-circle bg-danger" onClick={() => navigate("/drishtee-computer-center/nichlaul/location")}>
             <i className="bi bi-geo-alt-fill"></i>
           </button>
@@ -213,6 +232,7 @@ export default function Header() {
               <Link to="/About" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-info-circle"></i> <span>About Center</span>
               </Link>
+<<<<<<< HEAD
               <Button
                 variant="info"
                 className="rounded-pill d-flex align-items-center gap-2"
@@ -221,6 +241,8 @@ export default function Header() {
                 <ChatDots />
                 Group Chat
               </Button>
+=======
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
               <Link to="/Branch" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-geo-alt"></i> <span>Our Branches</span>
               </Link>
@@ -258,6 +280,7 @@ export default function Header() {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* --- MOBILE BOTTOM TAB BAR --- */}
       <nav className="app-tab-bar d-lg-none">
         <Link to="/" className={`tab-item ${location.pathname === "/" ? "active" : ""}`}>
@@ -297,6 +320,47 @@ export default function Header() {
           <span>Account</span>
         </button>
       </nav>
+=======
+{/* --- MOBILE BOTTOM TAB BAR --- */}
+<nav className="app-tab-bar d-lg-none">
+  <Link to="/" className={`tab-item ${location.pathname === "/" ? "active" : ""}`}>
+    <div className="icon-wrapper">
+      <i className={location.pathname === "/" ? "bi bi-house-door-fill" : "bi bi-house-door"}></i>
+    </div>
+    <span>Home</span>
+  </Link>
+  
+  <Link to="/OurCourses" className={`tab-item ${location.pathname === "/OurCourses" ? "active" : ""}`}>
+    <div className="icon-wrapper">
+      <i className={location.pathname === "/OurCourses" ? "bi bi-mortarboard-fill" : "bi bi-mortarboard"}></i>
+    </div>
+    <span>Courses</span>
+  </Link>
+
+  <div className="tab-fab-wrapper">
+    <Link to="/Gallery" className="tab-fab">
+      <i className="bi bi-camera-fill"></i>
+    </Link>
+  </div>
+
+  <Link to="/Library" className={`tab-item ${location.pathname === "/Library" ? "active" : ""}`}>
+    <div className="icon-wrapper">
+      <i className={location.pathname === "/Library" ? "bi bi-book-half" : "bi bi-book"}></i>
+    </div>
+    <span>Library</span>
+  </Link>
+  
+  <button 
+    onClick={() => setIsMenuOpen(true)} 
+    className={`tab-item border-0 bg-transparent ${isMenuOpen ? "active" : ""}`}
+  >
+    <div className="nav-profile-frame">
+      <img src={photoUrl} alt="p" />
+    </div>
+    <span>Account</span>
+  </button>
+</nav>
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
 
       {/* --- LOGIN MODAL --- */}
       {showLoginModal && (

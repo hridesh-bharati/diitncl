@@ -141,7 +141,11 @@
 
 @media (max-width: 768px) {
   .admin-sidebar {
+<<<<<<< HEAD
     height: 100vh;
+=======
+    height: 94vh;
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
     border-radius: 0 18px 18px 0;
   }
 }

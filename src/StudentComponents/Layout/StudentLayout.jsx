@@ -14,6 +14,10 @@ export default function StudentLayout() {
   useEffect(() => {
     if (!user?.email) return;
 
+<<<<<<< HEAD
+=======
+    // Header mein real pic lane ke liye data fetch
+>>>>>>> 2d3ad1377860588c75becbdcae6c9eb0d009857d
     const q = query(collection(db, "admissions"), where("email", "==", user.email.trim().toLowerCase()));
     const unsubscribe = onSnapshot(q, (snap) => {
       if (!snap.empty) {
