@@ -15,12 +15,25 @@ import { staticCourses } from "../../Components/HomePage/pages/Course/courseData
 const formatDate = (dateString) => {
     if (!dateString) return "---";
     try {
-        const date = new Date(dateString);
+        // Agar date DD/MM/YYYY format mein aa rahi hai toh usse parse karne ke liye logic
+        let date;
+        if (typeof dateString === "string" && dateString.includes("/")) {
+            const [day, month, year] = dateString.split("/");
+            date = new Date(`${year}-${month}-${day}`);
+        } else {
+            date = new Date(dateString);
+        }
+
         if (isNaN(date.getTime())) return dateString;
 
         const day = date.getDate().toString().padStart(2, "0");
-        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        
+        // Full Month Names for "JANUARY" instead of "JAN"
+        const monthNames = [
+            "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+            "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+        ];
+        
         const month = monthNames[date.getMonth()];
         const year = date.getFullYear();
 
@@ -29,7 +42,6 @@ const formatDate = (dateString) => {
         return dateString;
     }
 };
-
 
 const CENTER_CODE = "DIIT124";
 

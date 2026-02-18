@@ -1,232 +1,132 @@
+import React, { useState, useEffect } from "react";
+import { db } from "../../firebase/firebase";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { Container, Row, Col, Card, Badge, Button, Spinner, Modal } from "react-bootstrap";
+import { Trash3, Check2Circle, Inbox, Clock, Plus, ArrowCounterclockwise } from "react-bootstrap-icons";
 
-// src\AdminComponents\Queries\Contacts.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../../firebase/firebase';
-import { collection, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { toast } from 'react-toastify';
-import { addDoc } from "firebase/firestore";
-
-export default function Contacts() {
+export default function AdaptiveAdminQueries() {
     const [queries, setQueries] = useState([]);
     const [loading, setLoading] = useState(true);
-    const previousLength = useRef(0); 
-    
-    // Modal States
-    const [showModal, setShowModal] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
+    const [filter, setFilter] = useState("all");
+    const [modal, setModal] = useState({ show: false, query: null });
 
-    // Notification permission lene ke liye
     useEffect(() => {
-        if (Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
+        const q = query(collection(db, "studentQueries"), orderBy("timestamp", "desc"));
+        const unsub = onSnapshot(q, snapshot => {
+            setQueries(snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                timestamp: doc.data().timestamp?.toDate() || new Date()
+            })));
+            setLoading(false);
+        });
+        return () => unsub();
     }, []);
 
-   useEffect(() => {
-  async function setupPush() {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    const toggleStatus = async (q) => {
+        await updateDoc(doc(db, "studentQueries", q.id), { status: q.status === "reviewed" ? "pending" : "reviewed" });
+    };
 
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") return;
+    const deleteQuery = async () => {
+        await deleteDoc(doc(db, "studentQueries", modal.query.id));
+        setModal({ show: false, query: null });
+    };
 
-    const reg = await navigator.serviceWorker.ready;
-
-    const existingSub = await reg.pushManager.getSubscription();
-    if (existingSub) {
-      console.log("Already subscribed");
-      return;
-    }
-
-    const subscription = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: "BFIacnaHPzbs9l-bgfn5dDkpKy4XZ8wdqABEI5dIT4rzuNXnVyVtrVQ6ebtlkyaPFACdUrCC9gSIRUWbiv27_qk"
+    const filtered = queries.filter(q => {
+        if (filter === "pending" && q.status === "reviewed") return false;
+        if (filter === "reviewed" && q.status !== "reviewed") return false;
+        return true;
     });
-
-    await addDoc(collection(db, "adminSubscriptions"), {
-      subscription,
-      createdAt: new Date()
-    });
-
-    console.log("Push subscription saved");
-  }
-
-  setupPush();
-}, []);
-
-    // Function to trigger modal
-    const confirmDelete = (id) => {
-        setSelectedId(id);
-        setShowModal(true);
-    };
-
-    // Actual Delete Logic
-    const handleDelete = async () => {
-        if (selectedId) {
-            try {
-                await deleteDoc(doc(db, "studentQueries", selectedId));
-                toast.success("Query deleted successfully");
-            } catch (error) {
-                toast.error("Error deleting query");
-            } finally {
-                setShowModal(false);
-                setSelectedId(null);
-            }
-        }
-    };
-
-    const markAsRead = async (id, currentStatus) => {
-        const newStatus = currentStatus === 'pending' ? 'reviewed' : 'pending';
-        await updateDoc(doc(db, "studentQueries", id), { status: newStatus });
-    };
 
     return (
-        <div className="container-fluid py-4 bg-light min-vh-100 position-relative">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 className="fw-bold text-dark">Student Enquiries 
-                    <span className="badge bg-primary ms-2">{queries.length}</span>
-                    {queries.filter(q => q.status === 'pending' || !q.status).length > 0 && (
-                        <span className="badge bg-danger ms-2 pulse">
-                            {queries.filter(q => q.status === 'pending' || !q.status).length} new
-                        </span>
-                    )}
-                </h3>
-            </div>
-
-            {loading ? (
-                <div className="text-center py-5"><div className="spinner-border text-primary"></div></div>
-            ) : (
-              <div className="row g-3 mb-4 pb-4 mb-md-0 pb-md-0">
-                    {queries.map((item) => (
-                        <div className="col-xl-4 col-md-6" key={item.id} id={`query-${item.id}`}>
-                            <div className={`card h-100 border-0 shadow-sm admin-query-card ${item.status === 'pending' ? 'border-start border-4 border-warning new-query-flash' : ''}`}>
-                                <div className="card-body p-4">
-                                    <div className="d-flex justify-content-between align-items-start mb-3">
-                                        <div className="user-avatar bg-soft-primary text-primary">
-                                            {item.fullName?.charAt(0).toUpperCase()}
-                                        </div>
-                                        <span className={`badge ${item.status === 'pending' ? 'bg-warning text-dark' : 'bg-success text-white'}`}>
-                                            {item.status || 'new'}
-                                        </span>
-                                    </div>
-
-                                    <h5 className="fw-bold mb-1">{item.fullName}</h5>
-                                    <p className="text-muted small mb-3"><i className="bi bi-clock me-1"></i> {item.timestamp?.toDate().toLocaleString()}</p>
-                                    
-                                    <div className="query-box bg-light p-3 rounded-3 mb-3">
-                                        <h6 className="fw-bold small text-uppercase text-secondary">Subject: {item.title}</h6>
-                                        <p className="mb-0 text-dark small text-truncate-2">{item.query}</p>
-                                    </div>
-
-                                    <div className="contact-links mb-3">
-                                        <div className="d-flex align-items-center gap-2 mb-1">
-                                            <i className="bi bi-telephone text-primary small"></i>
-                                            <a href={`tel:${item.mobile}`} className="text-decoration-none text-dark small">{item.mobile}</a>
-                                        </div>
-                                        <div className="d-flex align-items-center gap-2">
-                                            <i className="bi bi-envelope text-danger small"></i>
-                                            <span className="text-dark small text-truncate">{item.email}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="d-flex gap-2 pt-3 border-top mt-auto">
-                                        <button className="btn btn-sm btn-outline-success flex-grow-1" onClick={() => markAsRead(item.id, item.status)}>
-                                            <i className={`bi ${item.status === 'pending' ? 'bi-check2-circle' : 'bi-arrow-counterclockwise'}`}></i> {item.status === 'pending' ? 'Done' : 'Undo'}
-                                        </button>
-                                        <a href={`https://wa.me/91${item.mobile}?text=Hello ${item.fullName}`} target="_blank" className="btn btn-sm btn-outline-primary">
-                                            <i className="bi bi-whatsapp"></i>
-                                        </a>
-                                        {/* Updated Delete Button */}
-                                        <button className="btn btn-sm btn-outline-danger" onClick={() => confirmDelete(item.id)}>
-                                            <i className="bi bi-trash3"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* --- CUSTOM CENTERED MODAL --- */}
-            {showModal && (
-                <div className="modal-overlay d-flex align-items-center justify-content-center">
-                    <div className="modal-content-custom shadow-lg p-4 bg-white text-center">
-                        <div className="icon-circle bg-light-danger text-danger mb-3 mx-auto">
-                            <i className="bi bi-exclamation-triangle fs-2"></i>
-                        </div>
-                        <h4 className="fw-bold">Delete Enquiry?</h4>
-                        <p className="text-muted">Kya aap sure hain? Ye action wapas nahi liya ja sakega.</p>
-                        <div className="d-flex gap-2 mt-4">
-                            <button className="btn btn-light w-100 py-2 fw-semibold" onClick={() => setShowModal(false)}>Cancel</button>
-                            <button className="btn btn-danger w-100 py-2 fw-semibold shadow-sm" onClick={handleDelete}>Yes, Delete</button>
-                        </div>
+        <div className="win11-bg py-4 px-1">
+            <Container fluid="lg">
+                {/* Glass Header */}
+                <div className="glass-panel p-4 mb-4 d-flex justify-content-between align-items-center shadow-sm">
+                    <div>
+                        <h3 className="fw-bold mb-0">Query Dashboard</h3>
+                        <small className="text-muted">{filtered.length} active sessions</small>
+                    </div>
+                    <div className="bg-primary text-white p-2 rounded-3 shadow">
+                        <Inbox size={24} />
                     </div>
                 </div>
-            )}
 
-            <style>
-                {`
-                .admin-query-card { transition: all 0.3s ease; border-radius: 16px; }
-                .admin-query-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
-                .user-avatar { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: bold; font-size: 1.2rem; }
-                .bg-soft-primary { background-color: #eef4ff; }
-                .text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-                .badge { font-weight: 500; padding: 6px 12px; border-radius: 8px; }
+                {/* Adaptive Filters */}
+                <div className="glass-panel p-2 mb-4 d-flex gap-2 overflow-auto">
+                    {["all", "pending", "reviewed"].map(f => (
+                        <Button
+                            key={f}
+                            variant={filter === f ? "primary" : "light"}
+                            onClick={() => setFilter(f)}
+                            className="rounded-pill px-4 flex-grow-1 flex-lg-grow-0"
+                            style={{ minWidth: '100px' }}
+                        >
+                            {f === "all" ? "All" : f === "pending" ? "New" : "Solved"}
+                        </Button>
+                    ))}
+                </div>
 
-                /* New Query Animation */
-                .new-query-flash {
-                    animation: flash 2s ease;
-                }
-                
-                .highlight-new {
-                    animation: highlightFlash 2s ease;
-                }
-                
-                @keyframes flash {
-                    0% { border-left-color: #ffc107; }
-                    50% { border-left-color: #ffc107; box-shadow: 0 0 15px #ffc107; }
-                    100% { border-left-color: #ffc107; }
-                }
-                
-                @keyframes highlightFlash {
-                    0% { background-color: #fff3cd; }
-                    50% { background-color: #fff3cd; }
-                    100% { background-color: transparent; }
-                }
-                
-                .pulse {
-                    animation: pulse 1.5s infinite;
-                }
-                
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                    100% { transform: scale(1); }
-                }
+                {/* --- GRID START --- */}
+                {loading ? (
+                    <div className="text-center py-5">
+                        <Spinner animation="grow" variant="primary" />
+                    </div>
+                ) : (
+                    <Row className="g-3 mb-5 pb-5 mb-lg-0 pb-lg-0"> {/* This starts the grid */}
+                        {filtered.map((q) => (
+                            <Col xs={12} md={6} lg={3} key={q.id}> {/* 12=Mobile, 6=Tablet, 3=PC (4 per row) */}
+                                <Card className="glass-card h-100 shadow-sm border-0">
+                                    <Card.Body className="d-flex flex-column">
+                                        <div className="d-flex justify-content-between mb-2">
+                                            <Badge bg={q.status === 'reviewed' ? "secondary" : "danger"} pill>
+                                                {q.status === 'reviewed' ? "Closed" : "Active"}
+                                            </Badge>
+                                            <small className="text-muted">
+                                                <Clock size={12} /> {q.timestamp.getHours()}:{q.timestamp.getMinutes()}
+                                            </small>
+                                        </div>
 
-                /* Modal Specific Styles */
-                .modal-overlay {
-                    position: fixed;
-                    top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.5);
-                    backdrop-filter: blur(4px);
-                    z-index: 9999;
-                }
-                .modal-content-custom {
-                    width: 90%;
-                    max-width: 380px;
-                    border-radius: 24px;
-                    animation: slideIn 0.3s ease-out;
-                }
-                .bg-light-danger { background: #ffebeb; color: #dc3545; }
-                .icon-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+                                        <h6 className="fw-bold mb-1 text-truncate">{q.fullName || "Anonymous"}</h6>
+                                        <p className="small text-primary fw-semibold mb-2">{q.title}</p>
+                                        <p className="small text-secondary flex-grow-1" style={{ fontSize: '0.85rem' }}>
+                                            {q.query.length > 80 ? q.query.substring(0, 80) + "..." : q.query}
+                                        </p>
 
-                @keyframes slideIn {
-                    from { transform: scale(0.9); opacity: 0; }
-                    to { transform: scale(1); opacity: 1; }
-                }
-                `}
-            </style>
+                                        <div className="d-flex gap-2 mt-3">
+                                            <Button
+                                                variant="white"
+                                                className="glass-panel flex-grow-1 btn-sm border-0 shadow-sm d-flex align-items-center justify-content-center"
+                                                onClick={() => toggleStatus(q)}
+                                            >
+                                                {q.status === "reviewed" ? <ArrowCounterclockwise /> : <Check2Circle color="green" size={18} />}
+                                            </Button>
+                                            <Button
+                                                variant="white"
+                                                className="glass-panel btn-sm border-0 text-danger shadow-sm d-flex align-items-center justify-content-center"
+                                                onClick={() => setModal({ show: true, query: q })}
+                                            >
+                                                <Trash3 size={18} />
+                                            </Button>
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                )}
+            </Container>
+            {/* Glass Modal */}
+            <Modal show={modal.show} onHide={() => setModal({ show: false, query: null })} centered contentClassName="glass-panel border-0">
+                <Modal.Body className="p-4 text-center">
+                    <h5 className="fw-bold">Remove Query?</h5>
+                    <p className="text-muted">This will permanently delete the ticket.</p>
+                    <div className="d-flex gap-2">
+                        <Button variant="light" className="w-100 rounded-pill" onClick={() => setModal({ show: false, query: null })}>Keep</Button>
+                        <Button variant="danger" className="w-100 rounded-pill" onClick={deleteQuery}>Delete</Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }

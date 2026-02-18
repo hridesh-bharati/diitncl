@@ -1,3 +1,4 @@
+// src\Components\HomePage\pages\QueryFrom.jsx
 import React, { useState } from "react";
 import { db } from "../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -11,64 +12,32 @@ export default function QueryForm() {
     title: "",
     query: "",
   });
-
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { fullName, mobile, email, title, query } = formData;
 
     if (!fullName || !mobile || !email || !title || !query) {
-      toast.error("All fields are required! ⚠️");
-      return;
+      return toast.error("All fields are required! ⚠️");
     }
 
     setLoading(true);
-
     try {
-      // 1️⃣ Save query in Firestore
-      const docRef = await addDoc(collection(db, "studentQueries"), {
+      await addDoc(collection(db, "studentQueries"), {
         ...formData,
         timestamp: serverTimestamp(),
         status: "pending",
       });
-
-      // 2️⃣ Trigger REAL Web Push Notification
-      await fetch("/api/sendPush", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName,
-          title,
-          queryId: docRef.id,
-        }),
-      });
-
-      // 3️⃣ Success UI
       toast.success("Query Sent Successfully! 🚀");
-      new Audio("/audio/ring.mp3").play().catch(() => { });
-
-      // 4️⃣ Reset form
-      setFormData({
-        fullName: "",
-        mobile: "",
-        email: "",
-        title: "",
-        query: "",
-      });
+      new Audio("/audio/ring.mp3").play().catch(() => {});
+      setFormData({ fullName: "", mobile: "", email: "", title: "", query: "" });
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Please try again!");
+      toast.error("Firebase Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -80,16 +49,13 @@ export default function QueryForm() {
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <div className="query-card shadow-lg border-0 overflow-hidden rounded-4 d-flex flex-column flex-md-row">
-
-              {/* LEFT INFO PANEL */}
-              <div
-                className="col-md-4 p-5 text-white d-none d-md-flex flex-column justify-content-center"
-                style={{ background: "linear-gradient(135deg, #6366f1, #3b82f6)" }}
-              >
+              
+              {/* Left Panel */}
+              <div className="col-md-4 p-5 text-white d-none d-md-flex flex-column justify-content-center" style={{
+                background: "linear-gradient(135deg, #6366f1, #3b82f6)"
+              }}>
                 <h2 className="fw-bold mb-3">Quick Enquiry</h2>
-                <p className="opacity-75 mb-4">
-                  Fill out the form and our team will get back to you within 24 hours.
-                </p>
+                <p className="opacity-75 mb-4">Fill out the form and our team will get back to you within 24 hours.</p>
                 <div className="d-flex flex-column gap-3">
                   <div className="d-flex align-items-center">
                     <i className="bi bi-headset fs-3 me-2"></i> Expert Support
@@ -100,7 +66,7 @@ export default function QueryForm() {
                 </div>
               </div>
 
-              {/* FORM PANEL */}
+              {/* Form Panel */}
               <div className="col-md-8 p-4 p-lg-5 bg-white">
                 <form onSubmit={handleSubmit}>
                   <div className="row g-3">
@@ -108,13 +74,7 @@ export default function QueryForm() {
                       <div className="col-md-6" key={idx}>
                         <div className="form-floating">
                           <input
-                            type={
-                              field === "email"
-                                ? "email"
-                                : field === "mobile"
-                                  ? "tel"
-                                  : "text"
-                            }
+                            type={field === "email" ? "email" : field === "mobile" ? "tel" : "text"}
                             className="form-control form-control-lg border-0 shadow-sm rounded-3"
                             name={field}
                             placeholder={field}
@@ -122,15 +82,7 @@ export default function QueryForm() {
                             onChange={handleChange}
                             required
                           />
-                          <label className="text-muted">
-                            {field === "fullName"
-                              ? "Full Name*"
-                              : field === "mobile"
-                                ? "Mobile*"
-                                : field === "email"
-                                  ? "Email*"
-                                  : "Subject / Title*"}
-                          </label>
+                          <label className="text-muted">{field === "fullName" ? "Full Name*" : field === "mobile" ? "Mobile*" : field === "email" ? "Email*" : "Subject/Title*"}</label>
                         </div>
                       </div>
                     ))}
@@ -145,34 +97,27 @@ export default function QueryForm() {
                           value={formData.query}
                           onChange={handleChange}
                           required
-                        />
-                        <label className="text-muted">
-                          How can we help you?*
-                        </label>
+                        ></textarea>
+                        <label className="text-muted">How can we help you?*</label>
                       </div>
                     </div>
                   </div>
 
                   <div className="d-flex gap-3 mt-4">
+                  
                     <button
                       type="button"
                       className="btn btn-outline-secondary btn-lg shadow-sm"
                       onClick={() =>
-                        setFormData({
-                          fullName: "",
-                          mobile: "",
-                          email: "",
-                          title: "",
-                          query: "",
-                        })
+                        setFormData({ fullName: "", mobile: "", email: "", title: "", query: "" })
                       }
                     >
                       <i className="bi bi-arrow-counterclockwise"></i>
                     </button>
-
-                    <button
+                 
+                   <button
                       type="submit"
-                      className="btn btn-primary btn-lg d-flex justify-content-center align-items-center flex-grow-1 shadow-sm"
+                      className="btn btn-primary btn-lg d-flex justify-content-center align-items-center  flex-grow-1 shadow-sm"
                       disabled={loading}
                     >
                       {loading ? (
@@ -182,6 +127,7 @@ export default function QueryForm() {
                       )}
                       Send <span className="d-none d-lg-flex">&nbsp;Message</span>
                     </button>
+
                   </div>
                 </form>
               </div>
@@ -190,17 +136,11 @@ export default function QueryForm() {
         </div>
       </div>
 
-      {/* INLINE STYLES */}
+      {/* Inline Styles */}
       <style>{`
-        .query-card {
-          transition: all 0.3s ease;
-        }
-        .query-card:hover {
-          transform: translateY(-4px);
-        }
-        .form-control:focus {
-          box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
-        }
+        .query-card { transition: all 0.3s ease; }
+        .query-card:hover { transform: translateY(-4px); }
+        .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(59,130,246,0.25); }
       `}</style>
     </section>
   );
