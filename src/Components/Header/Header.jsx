@@ -116,11 +116,10 @@ export default function Header() {
           {user ? <>
             <Button
               variant="primary"
-              className="rounded-pill d-flex align-items-center gap-2 mx-1 btn-lg"
+              className="rounded-pill  d-flex align-items-center gap-2 mx-1 btn-lg"
               onClick={() => navigate("/chat")}
             >
-              <ChatDots /> Group Chats
-            </Button>
+              <ChatDots /> IM </Button>
           </> : <> </>}
 
         </div>
@@ -129,7 +128,7 @@ export default function Header() {
       {/* --- MOBILE TOP BAR --- */}
       <header className="app-top-bar d-lg-none">
         <div className="app-top-content">
-          <div className="app-brand" onClick={() => navigate("/")}>
+          <div className="app-brand me-1" onClick={() => navigate("/")}>
             <img src="/images/icon/icon.webp" className="app-logo-mini" alt="Logo" />
             <div className="app-brand-text">
               <h1 className="m-0">DRISHTEE</h1>

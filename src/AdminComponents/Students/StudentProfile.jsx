@@ -23,13 +23,12 @@ import {
   PersonBadgeFill,
   CardHeading,
   PersonCheckFill,
-  Hash,
-  Building,
   AwardFill,
   PencilFill,
   Check2,
   X,
-  FileEarmarkPdfFill, // ✅ Added for certificate icon
+  FileEarmarkPdfFill,
+  CameraFill,
 } from "react-bootstrap-icons";
 
 import { toast } from "react-toastify";
@@ -60,6 +59,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     if (student) setFormData(student);
@@ -72,14 +72,57 @@ const ProfileContent = ({ admissions, loading, error }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 300 * 1024) {
+      toast.error("Image must be less than 300KB");
+      return;
+    }
+
+    setSelectedImage(file);
+
+    // instant preview
+    setFormData((prev) => ({
+      ...prev,
+      photoUrl: URL.createObjectURL(file),
+    }));
+  };
+
+  const uploadToCloudinary = async (file) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", "hridesh99!");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/draowpiml/image/upload",
+      {
+        method: "POST",
+        body: fd,
+      }
+    );
+
+    const data = await res.json();
+    return data.secure_url;
+  };
+
   const handleSave = async () => {
     try {
       setIsSaving(true);
 
-      await updateDoc(doc(db, "admissions", student.id), formData);
+      let updatedData = { ...formData };
+
+      if (selectedImage) {
+        const imageUrl = await uploadToCloudinary(selectedImage);
+        updatedData.photoUrl = imageUrl;
+      }
+
+      await updateDoc(doc(db, "admissions", student.id), updatedData);
 
       toast.success("Profile Updated Successfully");
       setIsEditing(false);
+      setSelectedImage(null);
     } catch (err) {
       toast.error("Update Failed");
     } finally {
@@ -88,10 +131,15 @@ const ProfileContent = ({ admissions, loading, error }) => {
   };
 
   const handleDownloadCertificate = () => {
-    // ✅ Navigate to certificate page with student data
     navigate(`/admin/students/${student.id}/certificate`, {
-      state: { studentData: student }
+      state: { studentData: student },
     });
+  };
+
+  const handleCancel = () => {
+    setFormData(student);
+    setSelectedImage(null);
+    setIsEditing(false);
   };
 
   if (loading)
@@ -123,7 +171,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
 
   return (
     <div className="min-vh-100 pb-5" style={{ backgroundColor: "#F8FAFC" }}>
-
+      
       {/* HEADER */}
       <div
         className="p-3 d-flex align-items-center text-white shadow-sm"
@@ -142,19 +190,12 @@ const ProfileContent = ({ admissions, loading, error }) => {
               <Button
                 size="sm"
                 variant="success"
-                className="me-2 d-flex align-items-center"
+                className="me-2"
                 onClick={handleSave}
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <>
-                    <Spinner
-                      animation="border"
-                      size="sm"
-                      className="me-1"
-                    />
-                    Saving...
-                  </>
+                  <Spinner animation="border" size="sm" />
                 ) : (
                   <Check2 />
                 )}
@@ -164,10 +205,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
                 size="sm"
                 variant="danger"
                 disabled={isSaving}
-                onClick={() => {
-                  setFormData(student);
-                  setIsEditing(false);
-                }}
+                onClick={handleCancel}
               >
                 <X />
               </Button>
@@ -179,72 +217,48 @@ const ProfileContent = ({ admissions, loading, error }) => {
       <Container className="mt-4">
 
         {/* PROFILE CARD */}
-        <Card
-          className="shadow-sm rounded-4 text-center p-4 mb-4"
-          style={{ borderLeft: "4px solid #0d6efd" }}
-        >
-          <img
-            src={
-              formData.photoUrl ||
-              `https://ui-avatars.com/api/?name=${formData.name}&background=1A237E&color=fff&bold=true`
-            }
-            className="rounded-circle border border-4 border-white shadow mx-auto"
-            style={{ width: 110, height: 110, objectFit: "cover" }}
-            alt={formData.name}
-          />
-
-          {/* NAME + COURSE SAME LINE */}
-          {isEditing ? (
-            <>
-              <Form.Control
-                className="mt-3 text-center fw-bold mb-2"
-                value={formData.name || ""}
-                onChange={(e) => handleChange("name", e.target.value)}
-              />
-              <Form.Control
-                className="text-center"
-                value={formData.course || ""}
-                onChange={(e) => handleChange("course", e.target.value)}
-              />
-            </>
-          ) : (
-            <h5 className="fw-bold mt-3 mb-2">
-              {safe(formData.name)}{" "}
-              <span className="fw-bold small">
-                ({safe(formData.course)})
-              </span>
-            </h5>
-          )}
-
-          {/* BADGES SIDE BY SIDE + CERTIFICATE BUTTON */}
-          <div className="d-flex justify-content-center flex-wrap gap-2 mt-2">
-
-            <Badge
-              bg={
-                formData.status === "accepted"
-                  ? "success"
-                  : formData.status === "canceled"
-                    ? "danger"
-                    : "warning"
+        <Card className="shadow-sm rounded-4 text-center p-4 mb-4">
+          <div className="position-relative d-inline-block mx-auto">
+            <img
+              src={
+                formData.photoUrl ||
+                `https://ui-avatars.com/api/?name=${formData.name}&background=1A237E&color=fff&bold=true`
               }
-              className="rounded-pill px-3 py-2"
-            >
-              {safe(formData.status).toUpperCase()}
-            </Badge>
+              className="rounded-circle border border-4 border-white shadow"
+              style={{ width: 110, height: 110, objectFit: "cover" }}
+              alt={formData.name}
+            />
 
-            {formData.regNo && (
-              <Badge
-                bg="primary"
-                className="bg-opacity-10 text-primary rounded-pill px-3 py-2"
-              > {formData.regNo}
-              </Badge>
+            {isEditing && (
+              <>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  className="d-none"
+                  id="photoUpload"
+                  onChange={handleImageChange}
+                />
+                <label
+                  htmlFor="photoUpload"
+                  className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2"
+                  style={{ cursor: "pointer" }}
+                >
+                  <CameraFill size={14} />
+                </label>
+              </>
             )}
+          </div>
 
-            {/* ✅ CERTIFICATE BUTTON - Using existing route */}
+          <h5 className="fw-bold mt-3 mb-2">
+            {safe(formData.name)} ({safe(formData.course)})
+          </h5>
 
-
+          <div className="d-flex justify-content-center gap-2 mt-2">
+            <Badge bg="primary">{safe(formData.regNo)}</Badge>
+            <Badge bg="success">{safe(formData.status)}</Badge>
           </div>
         </Card>
+
         <div className="d-flex justify-content-center">
           <Button
             size="sm"

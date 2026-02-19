@@ -10,24 +10,24 @@ import StudentCard from "./StudentCard";
 
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("pending");
 
   const handleSave = useCallback(async (id, data) => {
     try {
       await updateDoc(doc(db, "admissions", id), data);
       toast.success("Saved", { position: "top-center", autoClose: 1000 });
-    } catch (e) { 
-      toast.error(e.message); 
+    } catch (e) {
+      toast.error(e.message);
     }
   }, []);
 
   const handleDelete = useCallback(async (id) => {
     if (!window.confirm("Delete this student?")) return;
-    try { 
-      await deleteDoc(doc(db, "admissions", id)); 
-      toast.success("Deleted"); 
-    } catch (e) { 
-      toast.error("Error deleting"); 
+    try {
+      await deleteDoc(doc(db, "admissions", id));
+      toast.success("Deleted");
+    } catch (e) {
+      toast.error("Error deleting");
     }
   }, []);
 
@@ -35,12 +35,36 @@ export default function StudentList() {
     <AdmissionProvider>
       {({ admissions, loading }) => {
         const filtered = admissions
-          .filter(s => {
-            const matchSearch = !searchTerm || s.name?.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchStatus = statusFilter === "all" || (s.status || "pending") === statusFilter;
+          .filter((s) => {
+            const status = s.status || "pending";
+
+            const matchSearch =
+              !searchTerm ||
+              s.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+            let matchStatus = true;
+
+            if (statusFilter === "accepted") {
+              const percentage = s.percentage;
+
+              const hasPercentage =
+                percentage !== undefined &&
+                percentage !== null &&
+                percentage !== "" &&
+                Number(percentage) > 0;
+
+              // Accepted BUT no percentage only
+              matchStatus = status === "accepted" && !hasPercentage;
+
+            } else if (statusFilter !== "all") {
+              matchStatus = status === statusFilter;
+            }
+
             return matchSearch && matchStatus;
           })
-          .slice().reverse();
+          .slice()
+          .reverse();
+
 
         return (
           <div className="app-main-bg">
@@ -49,23 +73,23 @@ export default function StudentList() {
                 <h5 className="app-title">All Admissions</h5>
                 <span className="app-badge bg-primary text-white">{filtered.length}</span>
               </div>
-              
+
               <InputGroup className="app-search-bar mb-3">
                 <InputGroup.Text className="bg-transparent border-0">
                   <Search size={14} className="text-muted" />
                 </InputGroup.Text>
-                <Form.Control 
-                  placeholder="Search by name..." 
-                  className="app-input border-0 shadow-none" 
-                  onChange={(e) => setSearchTerm(e.target.value)} 
+                <Form.Control
+                  placeholder="Search by name..."
+                  className="app-input border-0 shadow-none"
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </InputGroup>
-              
+
               <div className="d-flex gap-2 overflow-auto no-scrollbar pb-1">
                 {['all', 'pending', 'accepted', 'canceled'].map(s => (
-                  <button 
-                    key={s} 
-                    onClick={() => setStatusFilter(s)} 
+                  <button
+                    key={s}
+                    onClick={() => setStatusFilter(s)}
                     className={`app-chip ${statusFilter === s ? 'active' : ''}`}
                   >
                     {s}
@@ -83,10 +107,10 @@ export default function StudentList() {
                 <Row className="g-3 pb-5">
                   {filtered.map(student => (
                     <Col key={student.id} xs={12} md={6} lg={4} xl={3}>
-                      <StudentCard 
-                        student={student} 
-                        onSave={handleSave} 
-                        onDelete={handleDelete} 
+                      <StudentCard
+                        student={student}
+                        onSave={handleSave}
+                        onDelete={handleDelete}
                       />
                     </Col>
                   ))}

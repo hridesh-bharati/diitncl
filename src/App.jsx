@@ -73,9 +73,9 @@ export default function App() {
 
   return (
     <div>
-       <Lock> 
+       {/* <Lock> 
          <UserSelectNone> 
-          <CopyBoard> 
+          <CopyBoard>  */}
 
       <NetworkStatus />
       <Header />
@@ -129,9 +129,9 @@ export default function App() {
         {/* ❌ 404 */}
         <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
       </Routes>
-      </CopyBoard>
+      {/* </CopyBoard>
         </UserSelectNone> 
-       </Lock>  
+       </Lock>   */}
     </div>
   );
 }

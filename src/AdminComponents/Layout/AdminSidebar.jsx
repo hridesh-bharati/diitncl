@@ -48,7 +48,7 @@ export default function AdminSidebar({ open, setOpen }) {
           </NavLink>
 
           <NavLink to="/admin/students" className="menu-link">
-            <PeopleFill /> Students
+            <PeopleFill /> New Admissions
           </NavLink>
 
           <NavLink to="/admin/gallery" className="menu-link">
