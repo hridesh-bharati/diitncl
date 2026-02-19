@@ -14,7 +14,7 @@ export default function LoadingSpinner({ fullHeight = true }) {
             <div className="spinner-logo">DIIT</div>
           </div>
         </div>
-        <p className="loading-text">Loading...</p>
+        <p className="loading-text text-dark">Loading...</p>
         {/* <p className="loading-subtext">Please wait while we fetch your data</p> */}
       </div>
     </div>
