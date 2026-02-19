@@ -1,7 +1,3 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
-
 export default defineConfig({
   plugins: [
     react(),
@@ -14,7 +10,7 @@ export default defineConfig({
         description: 'Computer Education & IT Training',
         theme_color: '#00268f',
         background_color: '#ffffff',
-        display: 'fullscreen',  
+        display: 'fullscreen',
         orientation: 'portrait',
         start_url: '/',
         icons: [
@@ -22,7 +18,7 @@ export default defineConfig({
             src: '/images/icon/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable' 
+            purpose: 'any maskable'
           },
           {
             src: '/images/icon/icon-512.png',
@@ -37,6 +33,19 @@ export default defineConfig({
       }
     })
   ],
+
+  build: {
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
+        }
+      }
+    }
+  },
+
   server: {
     host: true,
     port: 5173
