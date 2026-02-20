@@ -33,8 +33,15 @@ export default function QueryForm() {
         timestamp: serverTimestamp(),
         status: "pending",
       });
+      /* 🔔 SEND PUSH TO ADMIN */
+      await fetch("/api/sendPush", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
       toast.success("Query Sent Successfully! 🚀");
-      new Audio("/audio/ring.mp3").play().catch(() => {});
+      new Audio("/audio/ring.mp3").play().catch(() => { });
       setFormData({ fullName: "", mobile: "", email: "", title: "", query: "" });
     } catch (error) {
       toast.error("Firebase Error: " + error.message);
@@ -49,7 +56,7 @@ export default function QueryForm() {
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <div className="query-card shadow-lg border-0 overflow-hidden rounded-4 d-flex flex-column flex-md-row">
-              
+
               {/* Left Panel */}
               <div className="col-md-4 p-5 text-white d-none d-md-flex flex-column justify-content-center" style={{
                 background: "linear-gradient(135deg, #6366f1, #3b82f6)"
@@ -104,7 +111,7 @@ export default function QueryForm() {
                   </div>
 
                   <div className="d-flex gap-3 mt-4">
-                  
+
                     <button
                       type="button"
                       className="btn btn-outline-secondary btn-lg shadow-sm"
@@ -114,8 +121,8 @@ export default function QueryForm() {
                     >
                       <i className="bi bi-arrow-counterclockwise"></i>
                     </button>
-                 
-                   <button
+
+                    <button
                       type="submit"
                       className="btn btn-primary btn-lg d-flex justify-content-center align-items-center  flex-grow-1 shadow-sm"
                       disabled={loading}

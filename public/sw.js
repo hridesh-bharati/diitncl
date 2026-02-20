@@ -3,7 +3,7 @@
    CACHE + WEB PUSH
 ========================= */
 
-const CACHE_NAME = "drishtee-cache-v6";
+const CACHE_NAME = "drishtee-cache-v7";
 
 const STATIC_ASSETS = [
   "/",
@@ -30,9 +30,7 @@ self.addEventListener("push", function (event) {
     body: data.body,
     icon: "/images/icon/icon-192.png",
     badge: "/images/icon/icon-512.png",
-    data: {
-      url: "/admin/queries"
-    }
+    data: { url: "/admin/queries" }
   };
 
   event.waitUntil(
@@ -46,17 +44,16 @@ self.addEventListener("notificationclick", function (event) {
   const targetUrl = event.notification.data?.url || "/admin/queries";
 
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        for (const client of clientList) {
-          if (client.url.includes(targetUrl) && "focus" in client) {
-            return client.focus();
-          }
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(targetUrl) && "focus" in client) {
+          return client.focus();
         }
-        if (clients.openWindow) {
-          return clients.openWindow(targetUrl);
-        }
-      })
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
   );
 });
 
@@ -65,11 +62,7 @@ self.addEventListener("notificationclick", function (event) {
 ========================= */
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll(STATIC_ASSETS)
-    )
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)));
   self.skipWaiting();
 });
 
@@ -78,9 +71,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((cacheNames) =>
       Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
+          if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
         })
       )
     )
@@ -103,7 +94,7 @@ self.addEventListener("fetch", (event) => {
           });
           return response;
         })
-        .catch(() => caches.match("/index.html"));
+        .catch(() => caches.match("/index.html"))
     })
   );
 });
