@@ -19,7 +19,7 @@ function urlBase64ToUint8Array(base64String) {
 export const registerPush = async () => {
   try {
     console.log('🔔 Setting up push notifications...');
-    
+
     // Check if push is supported
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       console.log("❌ Push notifications not supported");
@@ -28,7 +28,7 @@ export const registerPush = async () => {
 
     // Get VAPID public key from environment
     const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
-    
+
     if (!vapidPublicKey) {
       console.error("❌ VAPID public key not found in environment");
       console.log("📝 Make sure VITE_VAPID_PUBLIC_KEY is set in .env");
@@ -43,16 +43,16 @@ export const registerPush = async () => {
 
     // Check permission
     let permission = Notification.permission;
-    
+
     if (permission === "denied") {
       console.log("❌ Notification permission denied");
       return false;
     }
-    
+
     if (permission === "default") {
       console.log("🔔 Requesting notification permission...");
       permission = await Notification.requestPermission();
-      
+
       if (permission !== "granted") {
         console.log("❌ Permission not granted");
         return false;
@@ -65,27 +65,26 @@ export const registerPush = async () => {
 
     if (!subscription) {
       console.log("📝 Creating new push subscription...");
-      
+
       // Convert VAPID key
       const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
-      
+
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: applicationServerKey
       });
-      
+
       console.log("✅ New subscription created");
     } else {
       console.log("✅ Using existing subscription");
     }
-
     // Save to Firestore
     const subscriptionData = subscription.toJSON();
     const endpointHash = btoa(subscription.endpoint)
       .replace(/[/+=]/g, '_')
       .substring(0, 100);
 
-    await setDoc(doc(db, "adminSubscriptions", endpointHash), {
+    await setDoc(doc(db, "pushSubscriptions", endpointHash), {
       subscription: subscriptionData,
       endpoint: subscription.endpoint,
       createdAt: new Date(),
@@ -96,9 +95,9 @@ export const registerPush = async () => {
 
     console.log("✅ Push setup complete!");
     console.log("📱 Subscription saved to Firestore");
-    
+
     return true;
-    
+
   } catch (err) {
     console.error("❌ Push registration error:", err);
     return false;
