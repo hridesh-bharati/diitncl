@@ -15,7 +15,7 @@ const makeMeta = (titlePart, description) => ({
 const metaData = {
   // 🏠 Home
   "/": {
-    title: `${BASE_TITLE} | Best IT Training Institute in Maharajganj`,
+    title: `${BASE_TITLE} | Best IT Training Institute in Nichlaul`,
     description:
       "Drishtee Computer Center offers professional IT training courses including Web Development, Designing, Banking, and Computer Languages in Nichlaul, Maharajganj.",
   },
