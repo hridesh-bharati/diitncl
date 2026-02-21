@@ -157,9 +157,7 @@ function Home() {
 
                             {/* App-style Action Button */}
                             <div className="d-grid d-lg-block">
-                                <button className="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold shadow-sm">
-                                    <Link to="/About" className="nav-link">Learn More</Link>
-                                </button>
+                             <Link to="/about" className="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold shadow-sm">Learn More</Link>
                             </div>
                         </div>
                     </div>
