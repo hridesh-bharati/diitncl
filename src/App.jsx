@@ -5,8 +5,6 @@ import { Spinner } from "react-bootstrap";
 
 // 🔒 Security & UX
 import Lock from "./Components/HomePage/LockWeb/Lock";
-import UserSelectNone from "./Components/HomePage/LockWeb/UserSelectNone";
-import CopyBoard from "./Components/HomePage/LockWeb/CopyBoard";
 
 import Header from "./Components/Header/Header";
 import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
@@ -76,8 +74,6 @@ export default function App() {
   return (
     <div>
       <Lock>
-        <UserSelectNone>
-          <CopyBoard>
 
       <NetworkStatus />
       <Header />
@@ -151,8 +147,6 @@ export default function App() {
         <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
 
       </Routes>
-      </CopyBoard>
-        </UserSelectNone>
       </Lock>
     </div>
   );
