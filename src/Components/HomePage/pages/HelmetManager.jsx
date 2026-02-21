@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
 const BASE_TITLE = "Drishtee Computer Center";
-const BASE_URL = "https://www.drishteeindia.com/"; 
+const BASE_URL = "https://www.drishteeindia.com";
 
 // Helper
 const makeMeta = (titlePart, description) => ({
@@ -11,7 +11,6 @@ const makeMeta = (titlePart, description) => ({
   description,
 });
 
-// 🔥 SEO Meta Data
 const metaData = {
   "/": {
     title: `${BASE_TITLE} | Best IT Training Institute in Maharajganj`,
@@ -24,57 +23,32 @@ const metaData = {
     "Learn about Drishtee Computer Center, our mission, vision, and expert faculty."
   ),
 
-  "/ourcourses": makeMeta(
-    "Our Courses",
+  "/courses": makeMeta(
+    "Courses",
     "Explore professional computer courses including Web Development, Designing, Banking and more."
   ),
 
-  "/branch": makeMeta(
-    "Our Branches",
-    "Find Drishtee Computer Center branches and contact details."
+  "/courses/web-development": makeMeta(
+    "Web Development Course",
+    "Learn frontend and backend web development with practical training."
   ),
 
-  "/gallery": makeMeta(
-    "Gallery",
-    "View student activities, classroom training, and campus gallery."
+  "/courses/designing": makeMeta(
+    "Designing Course",
+    "Professional graphic and web designing courses with hands-on training."
   ),
 
-  "/new-admission": makeMeta(
-    "New Admission",
-    "Apply online for admission at Drishtee Computer Center."
-  ),
-
-  "/download-certificate": makeMeta(
-    "Download Certificate",
-    "Verify and download your course completion certificate."
-  ),
-
-  "/contact-us": makeMeta(
-    "Contact Us",
-    "Contact Drishtee Computer Center for queries and support."
-  ),
-
-  "/computerlanguage": makeMeta(
-    "Computer Languages Course",
+  "/courses/computer-language": makeMeta(
+    "Computer Language Course",
     "Learn programming languages and computer fundamentals."
   ),
 
-  "/designing": makeMeta(
-    "Designing Course",
-    "Professional graphic and web designing courses."
-  ),
-
-  "/webdev": makeMeta(
-    "Web Development Course",
-    "Learn frontend and backend web development."
-  ),
-
-  "/nielet": makeMeta(
+  "/courses/nielit": makeMeta(
     "NIELIT Course",
-    "Certified NIELIT courses and training programs."
+    "Certified NIELIT courses and government-recognized training programs."
   ),
 
-  "/banking": makeMeta(
+  "/courses/banking": makeMeta(
     "Banking Course",
     "Professional banking and finance training programs."
   ),
@@ -84,6 +58,39 @@ const metaData = {
     "Access study materials and learning resources."
   ),
 
+  "/gallery": makeMeta(
+    "Gallery",
+    "View student activities, classroom training, and campus gallery."
+  ),
+
+  "/branch/nichlaul": makeMeta(
+    "Nichlaul Branch",
+    "Visit Drishtee Computer Center Nichlaul branch for professional IT training."
+  ),
+
+  "/branch/thoothibari": makeMeta(
+    "Thoothibari Branch",
+    "Visit Drishtee Computer Center Thoothibari branch for IT courses."
+  ),
+
+  "/contact-us": makeMeta(
+    "Contact Us",
+    "Contact Drishtee Computer Center for course inquiries and support."
+  ),
+
+  "/new-admission": makeMeta(
+    "New Admission",
+    "Apply online for admission at Drishtee Computer Center."
+  ),
+  "/courses/description": makeMeta(
+    "Course Description",
+    "Detailed description of courses offered at Drishtee Computer Center."
+  ),
+  "/download-certificate": makeMeta(
+    "Download Certificate",
+    "Verify and download your course completion certificate."
+  ),
+
   "/admin/*": makeMeta(
     "Admin Panel",
     "Administrative dashboard for managing students and courses."
@@ -91,7 +98,7 @@ const metaData = {
 
   "/student/*": makeMeta(
     "Student Dashboard",
-    "Student portal for accessing profile, certificates and courses."
+    "Student portal for accessing profile, certificates and enrolled courses."
   ),
 
   "*": {
@@ -100,7 +107,7 @@ const metaData = {
   },
 };
 
-// 🔥 Route Matcher
+// Route Matcher
 function getMeta(pathname) {
   const path = pathname.toLowerCase();
 
@@ -122,28 +129,35 @@ const HelmetManager = ({ children }) => {
   const { pathname } = useLocation();
   const meta = getMeta(pathname);
 
-  const fullUrl = `${BASE_URL}${pathname}`;
+  const cleanPath = pathname.startsWith("/")
+    ? pathname
+    : `/${pathname}`;
+
+  const fullUrl = `${BASE_URL}${cleanPath}`.replace(/\/+$/, "");
 
   return (
     <>
       <Helmet>
-        {/* ✅ Basic */}
+        {/* Basic */}
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
         <link rel="canonical" href={fullUrl} />
 
-        {/* ✅ Open Graph (Facebook) */}
+        {/* Open Graph */}
         <meta property="og:title" content={meta.title} />
         <meta property="og:description" content={meta.description} />
         <meta property="og:url" content={fullUrl} />
         <meta property="og:type" content="website" />
 
-        {/* ✅ Twitter */}
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={meta.title} />
         <meta name="twitter:description" content={meta.description} />
 
-        {/* ✅ Robots */}
+        <meta property="og:image" content={`${BASE_URL}/images/og-image.jpg`} />
+        <meta name="twitter:image" content={`${BASE_URL}/images/og-image.jpg`} />
+        
+        {/* Robots */}
         <meta name="robots" content="index, follow" />
       </Helmet>
 

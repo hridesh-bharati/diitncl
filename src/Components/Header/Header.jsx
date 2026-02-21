@@ -41,49 +41,87 @@ export default function Header() {
       {/* --- PC NAVBAR --- */}
       <nav className={`pc-nav small d-none d-lg-flex ${scrolled ? "pc-sticky" : ""}`}>
         <div className="pc-content">
-          <Link to="/" className="pc-logo-box">
-            <img src="/images/icon/logo.png" alt="Logo" />
-          </Link>
-          <div className="pc-menu">
-            <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
-            <Link to="/About" className={location.pathname === "/About" ? "active" : ""}>About</Link>
 
+          <Link to="/" className="pc-logo-box">
+            <img src="/images/icon/logo.png" alt="Drishtee Computer Center Logo" />
+          </Link>
+
+          <div className="pc-menu">
+
+            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+              Home
+            </Link>
+
+            <Link to="/about" className={location.pathname === "/about" ? "active" : ""}>
+              About
+            </Link>
+
+            {/* COURSES */}
             <div className="dropdown pc-dropdown">
-              <Link to="/OurCourses" className="dropdown-toggle" role="button" data-bs-toggle="dropdown">
+              <Link
+                to="/courses"
+                className={`dropdown-toggle ${location.pathname.startsWith("/courses") ? "active" : ""}`}
+                role="button"
+                data-bs-toggle="dropdown"
+              >
                 Courses
               </Link>
+
               <ul className="dropdown-menu shadow-lg border-0">
-                <li><Link className="dropdown-item" to="/OurCourses">All Computer Course</Link></li>
-                <li><Link className="dropdown-item" to="/Certificate">Computer Certificate</Link></li>
-                <li><Link className="dropdown-item" to="/ComputerLanguage">Computer Language</Link></li>
-                <li><Link className="dropdown-item" to="/Designing">Graphics Design</Link></li>
-                <li><Link className="dropdown-item" to="/WebDev">Web Development</Link></li>
-                <li><Link className="dropdown-item" to="/Nielet">NIELIT Courses</Link></li>
-                <li><Link className="dropdown-item" to="/Banking">Banking Course</Link></li>
+                <li><Link className="dropdown-item" to="/courses">All Courses</Link></li>
+                <li><Link className="dropdown-item" to="/certificate">Computer Certificate</Link></li>
+                <li><Link className="dropdown-item" to="/courses/computer-language">Computer Language</Link></li>
+                <li><Link className="dropdown-item" to="/courses/designing">Graphics Design</Link></li>
+                <li><Link className="dropdown-item" to="/courses/web-development">Web Development</Link></li>
+                <li><Link className="dropdown-item" to="/courses/nielit">NIELIT Courses</Link></li>
+                <li><Link className="dropdown-item" to="/courses/banking">Banking Course</Link></li>
               </ul>
             </div>
 
-            <Link to="/Library" className={location.pathname === "/Library" ? "active" : ""}>Library</Link>
-            <Link to="/Branch">Branch</Link>
+            <Link to="/library" className={location.pathname === "/library" ? "active" : ""}>
+              Library
+            </Link>
 
+            <Link
+              to="/branch/thoothibari"
+              className={location.pathname.startsWith("/branch") ? "active" : ""}
+            >
+              Branch
+            </Link>
+
+            {/* STUDENT ZONE */}
             <div className="dropdown pc-dropdown">
-              <Link to="/Student-Zone" className="dropdown-toggle" role="button" data-bs-toggle="dropdown">
+              <Link
+                to="#"
+                className="dropdown-toggle"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
                 Student Zone
               </Link>
+
               <ul className="dropdown-menu shadow-lg border-0">
                 <li><Link className="dropdown-item" to="/new-admission">New Admission</Link></li>
-                <li><Link className="dropdown-item" to="/Download-Certificate">Download Certificate</Link></li>
+                <li><Link className="dropdown-item" to="/download-certificate">Download Certificate</Link></li>
               </ul>
             </div>
 
-            <Link to="/Gallery">Gallery</Link>
-            <Link to="/Contact-us" className={location.pathname === "/Contact-us" ? "active" : ""}>Contact</Link>
+            <Link to="/gallery" className={location.pathname === "/gallery" ? "active" : ""}>
+              Gallery
+            </Link>
+
+            <Link to="/contact-us" className={location.pathname === "/contact-us" ? "active" : ""}>
+              Contact
+            </Link>
           </div>
 
           <div className="pc-right d-flex">
             <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
+
             {!user ? (
-              <button className="pc-btn-log ms-3" onClick={() => setShowLoginModal(true)}>Login</button>
+              <button className="pc-btn-log ms-3" onClick={() => setShowLoginModal(true)}>
+                Login
+              </button>
             ) : (
               <div className="pc-profile-dropdown dropdown ms-3">
                 <img
@@ -95,32 +133,46 @@ export default function Header() {
                   aria-expanded="false"
                   style={{ width: 40, height: 40, objectFit: "cover", cursor: "pointer" }}
                 />
-                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="pcProfileDropdown">
+                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0">
                   <li>
-                    <Link className="dropdown-item d-flex align-items-center" to={isAdmin ? "/admin" : "/student"}>
-                      <i className="bi bi-speedometer2 me-2 text-primary"></i> Dashboard
+                    <Link
+                      className="dropdown-item d-flex align-items-center"
+                      to={isAdmin ? "/admin" : "/student"}
+                    >
+                      Dashboard
                     </Link>
                   </li>
                   <li>
-                    <button className="dropdown-item d-flex align-items-center text-danger" onClick={handleLogout}>
-                      <i className="bi bi-power me-2"></i> Logout
+                    <button
+                      className="dropdown-item text-danger"
+                      onClick={handleLogout}
+                    >
+                      Logout
                     </button>
                   </li>
                 </ul>
               </div>
             )}
           </div>
-          <button className="icon-btn-circle bg-danger" onClick={() => navigate("/drishtee-computer-center/nichlaul/location")}>
+
+          {/* LOCATION BUTTON */}
+          <button
+            className="icon-btn-circle bg-danger"
+            onClick={() => navigate("/branch/nichlaul/location")}
+          >
             <i className="bi bi-geo-alt-fill"></i>
           </button>
-          {user ? <>
+
+          {/* CHAT BUTTON */}
+          {user && (
             <Button
               variant="primary"
-              className="rounded-pill  d-flex align-items-center gap-2 mx-1 btn-lg"
+              className="rounded-pill d-flex align-items-center gap-2 mx-1 btn-lg"
               onClick={() => navigate("/chat")}
             >
-              <ChatDots /> IM </Button>
-          </> : <> </>}
+              <ChatDots /> IM
+            </Button>
+          )}
 
         </div>
       </nav>
@@ -139,7 +191,7 @@ export default function Header() {
             <button className="icon-btn-circle me-2" onClick={() => setIsSearchActive(true)}>
               <i className="bi bi-search"></i>
             </button>
-            <button className="icon-btn-circle" onClick={() => navigate("/drishtee-computer-center/nichlaul/location")}>
+            <button className="icon-btn-circle" onClick={() => navigate("/branch/nichlaul/location")}>
               <i className="bi bi-geo-alt-fill"></i>
             </button>
           </div>
@@ -177,7 +229,7 @@ export default function Header() {
             {/* Quick Action Grid */}
             <div className="row g-3 mb-4 text-center">
               <div className="col-4">
-                <Link to="/Download-Certificate" onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
+                <Link to="/download-certificate" onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
                   <div className="card border-0 shadow-sm rounded-4 py-3 h-100">
                     <i className="bi bi-patch-check-fill fs-2 text-info mb-2"></i>
                     <span className="fw-semibold text-secondary small">Verify</span>
@@ -185,7 +237,7 @@ export default function Header() {
                 </Link>
               </div>
               <div className="col-4">
-                <Link to="/Library" onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
+                <Link to="/library" onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
                   <div className="card border-0 shadow-sm rounded-4 py-3 h-100">
                     <i className="bi bi-book-half fs-2 text-warning mb-2"></i>
                     <span className="fw-semibold text-secondary small">Library</span>
@@ -219,10 +271,10 @@ export default function Header() {
             {/* Nav Sections */}
             <div className="drawer-section">
               <label>Academic Hub</label>
-              <Link to="/OurCourses" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/courses" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-mortarboard-fill"></i> <span>Explore Courses</span>
               </Link>
-              <Link to="/Gallery" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/gallery" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-images"></i> <span>Campus Gallery</span>
               </Link>
               <Link to="/new-admission" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
@@ -232,14 +284,14 @@ export default function Header() {
 
             <div className="drawer-section mt-3">
               <label>Information</label>
-              <Link to="/About" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/about" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-info-circle"></i> <span>About Center</span>
               </Link>
 
-              <Link to="/Branch" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/branch/thoothibari" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-geo-alt"></i> <span>Our Branches</span>
               </Link>
-              <Link to="/Contact-us" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/contact-us" className="nav-link-mobile" onClick={() => setIsMenuOpen(false)}>
                 <i className="bi bi-envelope"></i> <span>Contact Us</span>
               </Link>
             </div>
@@ -272,6 +324,7 @@ export default function Header() {
 
       {/* --- MOBILE BOTTOM TAB BAR --- */}
       <nav className="app-tab-bar d-lg-none">
+
         <Link to="/" className={`tab-item ${location.pathname === "/" ? "active" : ""}`}>
           <div className="icon-wrapper">
             <i className={location.pathname === "/" ? "bi bi-house-door-fill" : "bi bi-house-door"}></i>
@@ -279,22 +332,28 @@ export default function Header() {
           <span>Home</span>
         </Link>
 
-        <Link to="/OurCourses" className={`tab-item ${location.pathname === "/OurCourses" ? "active" : ""}`}>
+        <Link
+          to="/courses"
+          className={`tab-item ${location.pathname.startsWith("/courses") ? "active" : ""}`}
+        >
           <div className="icon-wrapper">
-            <i className={location.pathname === "/OurCourses" ? "bi bi-mortarboard-fill" : "bi bi-mortarboard"}></i>
+            <i className={location.pathname.startsWith("/courses") ? "bi bi-mortarboard-fill" : "bi bi-mortarboard"}></i>
           </div>
           <span>Courses</span>
         </Link>
 
         <div className="tab-fab-wrapper">
-          <Link to="/Gallery" className="tab-fab">
+          <Link to="/gallery" className="tab-fab">
             <i className="bi bi-camera-fill"></i>
           </Link>
         </div>
 
-        <Link to="/Library" className={`tab-item ${location.pathname === "/Library" ? "active" : ""}`}>
+        <Link
+          to="/library"
+          className={`tab-item ${location.pathname === "/library" ? "active" : ""}`}
+        >
           <div className="icon-wrapper">
-            <i className={location.pathname === "/Library" ? "bi bi-book-half" : "bi bi-book"}></i>
+            <i className={location.pathname === "/library" ? "bi bi-book-half" : "bi bi-book"}></i>
           </div>
           <span>Library</span>
         </Link>
@@ -304,12 +363,12 @@ export default function Header() {
           className={`tab-item border-0 bg-transparent ${isMenuOpen ? "active" : ""}`}
         >
           <div className="nav-profile-frame">
-            <img src={photoUrl} alt="p" />
+            <img src={photoUrl} alt="profile" />
           </div>
           <span>Account</span>
         </button>
-      </nav>
 
+      </nav>
       {/* --- LOGIN MODAL --- */}
       {showLoginModal && (
         <div className="app-modal-container active">

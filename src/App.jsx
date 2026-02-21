@@ -85,24 +85,44 @@ export default function App() {
 
       <Routes>
         {/* 🌐 Public Routes */}
+
         <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
-        <Route path="/About" element={<HelmetManager><About /></HelmetManager>} />
-        <Route path="/OurCourses" element={<HelmetManager><OurCourses /></HelmetManager>} />
-        <Route path="/Branch" element={<HelmetManager><Branch /></HelmetManager>} />
+
+        <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
+
+        <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
+
+        <Route path="/branch/thoothibari" element={<HelmetManager><Branch /></HelmetManager>} />
+
         <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
+
         <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
-        <Route path="/drishtee-computer-center/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
-        <Route path="/Download-Certificate" element={<HelmetManager><Verification /></HelmetManager>} />
-        <Route path="/Contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
-        <Route path="/login-as-member" element={<HelmetManager><LoginForm /></HelmetManager>} />
-        <Route path="/Certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
-        <Route path="/ComputerLanguage" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
-        <Route path="/Designing" element={<HelmetManager><Designing /></HelmetManager>} />
-        <Route path="/WebDev" element={<HelmetManager><WebDev /></HelmetManager>} />
-        <Route path="/Nielet" element={<HelmetManager><Nielet /></HelmetManager>} />
-        <Route path="/Banking" element={<HelmetManager><Banking /></HelmetManager>} />
-        <Route path="/Discription" element={<HelmetManager><Discription /></HelmetManager>} />
-        <Route path="/Library" element={<HelmetManager><Library /></HelmetManager>} />
+
+        <Route path="/branch/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+        <Route path="/branch/thoothibari/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+        <Route path="/download-certificate" element={<HelmetManager><Verification /></HelmetManager>} />
+
+        <Route path="/contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
+
+        <Route path="/login" element={<HelmetManager><LoginForm /></HelmetManager>} />
+
+        <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
+
+        {/* 📚 Course Pages (Better Structure) */}
+        <Route path="/courses/computer-language" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
+
+        <Route path="/courses/designing" element={<HelmetManager><Designing /></HelmetManager>} />
+
+        <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
+
+        <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
+
+        <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
+
+        <Route path="/courses/description" element={<HelmetManager><Discription /></HelmetManager>} />
+
+        <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
+
         <Route path="/chat" element={<ChatPage />} />
 
         {/* 🔐 ADMIN BASE */}
@@ -115,20 +135,21 @@ export default function App() {
           }
         />
 
-
         {/* 🎓 STUDENT */}
         <Route
           path="/student/*"
           element={
-            loading ? null : (user && role === "student"
-              ? <StudentRoutes />
-              : <Navigate to="/" replace />)
+            loading ? null : (
+              user && role === "student"
+                ? <StudentRoutes />
+                : <Navigate to="/" replace />
+            )
           }
         />
 
-
         {/* ❌ 404 */}
         <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
+
       </Routes>
       {/* </CopyBoard>
         </UserSelectNone>
