@@ -59,63 +59,81 @@
   <meta name="theme-color" content="#00268f" />
 
   <!-- ===== STRUCTURED DATA ===== -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "EducationalOrganization",
-        "@id": "https://www.drishteeindia.com/#organization",
-        "name": "Drishtee Computer Center",
-        "url": "https://www.drishteeindia.com",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://www.drishteeindia.com/images/icon/logo.png"
-        },
-        "telephone": "+91-7276995307",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Main Road, Paragpur Road",
-          "addressLocality": "Nichlaul",
-          "addressRegion": "Uttar Pradesh",
-          "postalCode": "273304",
-          "addressCountry": "IN"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "328",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "sameAs": [
-          "https://www.facebook.com/drishteeindia/",
-        ]
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "EducationalOrganization",
+      "@id": "https://www.drishteeindia.com/#organization",
+      "name": "Drishtee Computer Center",
+      "url": "https://www.drishteeindia.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.drishteeindia.com/images/icon/logo.png"
       },
-      {
-        "@type": "Course",
-        "name": "CCC - Course on Computer Concepts",
-        "provider": {
-          "@id": "https://www.drishteeindia.com/#organization"
-        }
+      "telephone": "+91-7267995307",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Paragpur Road Nichlaul",
+        "addressLocality": "Nichlaul",
+        "addressRegion": "Uttar Pradesh",
+        "postalCode": "273304",
+        "addressCountry": "IN"
       },
-      {
-        "@type": "Course",
-        "name": "ADCA - Advanced Diploma in Computer Applications",
-        "provider": {
-          "@id": "https://www.drishteeindia.com/#organization"
-        }
+      "areaServed": [
+        "Nichlaul",
+        "Thoothibari"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "328",
+        "bestRating": "5",
+        "worstRating": "1"
       },
-      {
-        "@type": "Course",
-        "name": "Python Programming",
-        "provider": {
-          "@id": "https://www.drishteeindia.com/#organization"
-        }
-      }
-    ]
-  }
-  </script>
+      "sameAs": [
+        "https://www.facebook.com/drishteeindia/"
+      ]
+    },
+    {
+      "@type": "Course",
+      "@id": "https://www.drishteeindia.com/ccc-course",
+      "name": "CCC - Course on Computer Concepts",
+      "description": "Government recognized CCC course in Nichlaul covering MS Office, Internet, Digital Literacy and practical computer skills.",
+      "provider": {
+        "@id": "https://www.drishteeindia.com/#organization"
+      },
+      "educationalCredentialAwarded": "CCC Certificate",
+      "courseMode": "Offline",
+      "inLanguage": "en-IN"
+    },
+    {
+      "@type": "Course",
+      "@id": "https://www.drishteeindia.com/adca-course",
+      "name": "ADCA - Advanced Diploma in Computer Applications",
+      "description": "Comprehensive ADCA course in Maharajganj including Tally, MS Office, Programming basics and practical training.",
+      "provider": {
+        "@id": "https://www.drishteeindia.com/#organization"
+      },
+      "educationalCredentialAwarded": "Diploma Certificate",
+      "courseMode": "Offline",
+      "inLanguage": "en-IN"
+    },
+    {
+      "@type": "Course",
+      "@id": "https://www.drishteeindia.com/python-training",
+      "name": "Python Programming Course",
+      "description": "Professional Python training in Nichlaul with live projects, real-world coding practice and career support.",
+      "provider": {
+        "@id": "https://www.drishteeindia.com/#organization"
+      },
+      "courseMode": "Offline",
+      "inLanguage": "en-IN"
+    }
+  ]
+}
+</script>
 
 </head>
 
