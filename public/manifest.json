@@ -1,29 +1,42 @@
 {
+  "id": "/",
   "name": "Drishtee Computer Center",
   "short_name": "Drishtee",
   "lang": "en-IN",
   "dir": "ltr",
-  "start_url": "/?source=pwa",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#00268f",
   "description": "Learn programming, networking, and computer skills at Drishtee Computer Center with expert trainers and certified courses.",
+
   "icons": [
     {
+      "src": "/images/icon/icon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
       "src": "/images/icon/icon-192.png",
-      "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "/images/icon/icon-512.png",
-      "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
+
   "shortcuts": [
     {
       "name": "Courses",
@@ -52,19 +65,7 @@
       ]
     }
   ],
-  "screenshots": [
-    {
-      "src": "/images/vender/home.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "label": "Home Screen"
-    }
-  ],
-  "categories": [
-    "education",
-    "technology",
-    "training"
-  ],
-  "prefer_related_applications": false,
-  "related_applications": []
+
+  "categories": ["education", "technology"],
+  "prefer_related_applications": false
 }
