@@ -47,7 +47,6 @@ import LocationMapCard from "./Components/HomePage/pages/Location/LocationMapCar
 import LoginForm from "./Components/Header/LoginForm";
 import ChatPage from "./Components/Chats/ChatPage";
 import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
-import { registerPush } from "./push";
 
 export default function App() {
 
@@ -55,24 +54,6 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check notification permission status on app start
-    const checkNotificationStatus = async () => {
-      if (Notification.permission === 'granted') {
-        console.log('✅ Notification permission already granted');
-        // Ensure push is registered
-        await registerPush();
-      } else if (Notification.permission === 'default') {
-        console.log('🔔 Notification permission not requested yet');
-        // We'll request on user interaction
-      } else {
-        console.log('❌ Notification permission denied');
-      }
-    };
-
-    checkNotificationStatus();
-  }, []);
 
 
   useEffect(() => {

@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { db } from "../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
 
-export default function QueryForm() {
-  const [formData, setFormData] = useState({
+export default function QueryFrom() {
+  const initialState = {
     fullName: "",
     mobile: "",
     email: "",
     title: "",
     query: "",
-  });
+  };
+
+  const [formData, setFormData] = useState(initialState);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const resetForm = () => setFormData(initialState);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,52 +28,25 @@ export default function QueryForm() {
       return toast.error("All fields are required! ⚠️");
     }
 
-    setLoading(true);
     try {
-      // Save query to Firestore
+      setLoading(true);
+
+      // ✅ Save to Firestore
       await addDoc(collection(db, "studentQueries"), {
         ...formData,
         timestamp: serverTimestamp(),
         status: "pending",
       });
 
-      // Send push notification to admin
-      try {
-        const pushResponse = await fetch("/api/sendPush", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fullName, title }),
-        });
-
-        if (!pushResponse.ok) {
-          console.log("Push notification not sent, but query saved");
-        } else {
-          console.log("Push notification sent successfully");
-        }
-      } catch (pushError) {
-        console.error("Push notification error:", pushError);
-        // Don't block the user flow if push fails
-      }
-
-      // Play notification sound (if supported)
+      // ✅ Play notification sound
       try {
         const audio = new Audio("/audio/ring.mp3");
         audio.play().catch(() => {});
-      } catch (audioError) {
-        console.log("Audio play failed:", audioError);
-      }
+      } catch (err) {}
 
       toast.success("Query Sent Successfully! 🚀");
-      
-      // Reset form
-      setFormData({ 
-        fullName: "", 
-        mobile: "", 
-        email: "", 
-        title: "", 
-        query: "" 
-      });
-      
+      resetForm();
+
     } catch (error) {
       toast.error("Error: " + error.message);
     } finally {
@@ -86,11 +62,14 @@ export default function QueryForm() {
             <div className="query-card shadow-lg border-0 overflow-hidden rounded-4 d-flex flex-column flex-md-row">
 
               {/* Left Panel */}
-              <div className="col-md-4 p-5 text-white d-none d-md-flex flex-column justify-content-center" style={{
-                background: "linear-gradient(135deg, #6366f1, #3b82f6)"
-              }}>
+              <div
+                className="col-md-4 p-5 text-white d-none d-md-flex flex-column justify-content-center"
+                style={{ background: "linear-gradient(135deg, #6366f1, #3b82f6)" }}
+              >
                 <h2 className="fw-bold mb-3">Quick Enquiry</h2>
-                <p className="opacity-75 mb-4">Fill out the form and our team will get back to you within 24 hours.</p>
+                <p className="opacity-75 mb-4">
+                  Fill out the form and our team will get back to you within 24 hours.
+                </p>
                 <div className="d-flex flex-column gap-3">
                   <div className="d-flex align-items-center">
                     <i className="bi bi-headset fs-3 me-2"></i> Expert Support
@@ -110,8 +89,8 @@ export default function QueryForm() {
                       { name: "mobile", label: "Mobile*", type: "tel" },
                       { name: "email", label: "Email*", type: "email" },
                       { name: "title", label: "Subject/Title*", type: "text" }
-                    ].map((field, idx) => (
-                      <div className="col-md-6" key={idx}>
+                    ].map((field) => (
+                      <div className="col-md-6" key={field.name}>
                         <div className="form-floating">
                           <input
                             type={field.type}
@@ -137,8 +116,10 @@ export default function QueryForm() {
                           value={formData.query}
                           onChange={handleChange}
                           required
-                        ></textarea>
-                        <label className="text-muted">How can we help you?*</label>
+                        />
+                        <label className="text-muted">
+                          How can we help you?*
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -147,9 +128,7 @@ export default function QueryForm() {
                     <button
                       type="button"
                       className="btn btn-outline-secondary btn-lg shadow-sm"
-                      onClick={() =>
-                        setFormData({ fullName: "", mobile: "", email: "", title: "", query: "" })
-                      }
+                      onClick={resetForm}
                     >
                       <i className="bi bi-arrow-counterclockwise"></i>
                     </button>
@@ -179,17 +158,17 @@ export default function QueryForm() {
         </div>
       </div>
 
-      {/* Inline Styles */}
       <style>{`
-        .query-card { 
-          transition: all 0.3s ease; 
+        .query-card {
+          transition: all 0.3s ease;
           border-radius: 1rem !important;
         }
-        .query-card:hover { 
+        .query-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) !important;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1),
+                      0 10px 10px -5px rgba(0,0,0,0.04) !important;
         }
-        .form-control:focus { 
+        .form-control:focus {
           box-shadow: 0 0 0 0.25rem rgba(59,130,246,0.25) !important;
           border-color: #3b82f6 !important;
         }
