@@ -2,61 +2,119 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
-const baseTitle = "Drishtee Computer Center";
+const BASE_TITLE = "Drishtee Computer Center";
+const BASE_URL = "https://www.drishteeindia.com/"; 
 
+// Helper
 const makeMeta = (titlePart, description) => ({
-  title: `${titlePart} - ${baseTitle}`,
+  title: `${titlePart} | ${BASE_TITLE}`,
   description,
 });
 
+// 🔥 SEO Meta Data
 const metaData = {
   "/": {
-    title: `${baseTitle} | Home`,
-    description: "Welcome to Drishtee Computer Center. Learn IT skills from experts.",
+    title: `${BASE_TITLE} | Best IT Training Institute in Maharajganj`,
+    description:
+      "Drishtee Computer Center offers professional IT training courses including Web Development, Designing, Banking, and Computer Languages.",
   },
-  "/About": makeMeta("About Us", "Discover our mission, team, and journey in IT education."),
-  "/OurCourses": makeMeta("Courses", "Explore web development, networking, and other computer courses."),
-  "/Branch": makeMeta("Branches", "Find our various branch locations and contact details."),
-  "/Gallery": makeMeta("Gallery", "Take a look at our campus and student activities."),
-  "/AdmissionForm": makeMeta("Admission Form", "Apply now for professional IT training."),
-  "/Download-Certificate": makeMeta("Download Certificate", "Check and download your course completion certificates."),
-  "/Contact-us": makeMeta("Contact Us", "Reach out for inquiries, support, or feedback."),
-  "/Offers": makeMeta("Special Offers", "Check out current offers and discounts on our courses."),
-  "/CRepairing": makeMeta("Computer Repairing Course", "Learn professional computer repairing skills."),
-  "/Certificate": makeMeta("Certificate", "Information about certificates provided on course completion."),
-  "/ComputerLanguage": makeMeta("Computer Languages", "Learn programming languages and computer fundamentals."),
-  "/Designing": makeMeta("Designing Courses", "Explore graphic and web designing courses."),
-  "/WebDev": makeMeta("Web Development", "Master front-end and back-end web development skills."),
-  "/Nielet": makeMeta("Nielet", "Courses and information related to Nielet training."),
-  "/Banking": makeMeta("Banking Courses", "Professional courses focused on banking and finance."),
-  "/Discription": makeMeta("Description", "Detailed descriptions of our courses and services."),
-  "/Library": makeMeta("Library", "Access to study materials, books, and resources."),
-  "/Student-Portal/*": makeMeta("Student Portal", "Access your student dashboard and resources."),
-  "/Greating": makeMeta("Greeting", "Welcome messages and updates from Drishtee Computer Center."),
-  "/Exam": makeMeta("Exam", "Information about exams and assessments."),
-  "/Default": makeMeta("Default Page", "Default page for Drishtee Computer Center."),
-  "/Admin-Panel/*": makeMeta("Admin Panel", "Administrative dashboard and management tools."), // corrected spelling
-  "/Admin-Pannel/*": makeMeta("Admin Panel", "Administrative dashboard and management tools."), // legacy typo, just in case
+
+  "/about": makeMeta(
+    "About Us",
+    "Learn about Drishtee Computer Center, our mission, vision, and expert faculty."
+  ),
+
+  "/ourcourses": makeMeta(
+    "Our Courses",
+    "Explore professional computer courses including Web Development, Designing, Banking and more."
+  ),
+
+  "/branch": makeMeta(
+    "Our Branches",
+    "Find Drishtee Computer Center branches and contact details."
+  ),
+
+  "/gallery": makeMeta(
+    "Gallery",
+    "View student activities, classroom training, and campus gallery."
+  ),
+
+  "/new-admission": makeMeta(
+    "New Admission",
+    "Apply online for admission at Drishtee Computer Center."
+  ),
+
+  "/download-certificate": makeMeta(
+    "Download Certificate",
+    "Verify and download your course completion certificate."
+  ),
+
+  "/contact-us": makeMeta(
+    "Contact Us",
+    "Contact Drishtee Computer Center for queries and support."
+  ),
+
+  "/computerlanguage": makeMeta(
+    "Computer Languages Course",
+    "Learn programming languages and computer fundamentals."
+  ),
+
+  "/designing": makeMeta(
+    "Designing Course",
+    "Professional graphic and web designing courses."
+  ),
+
+  "/webdev": makeMeta(
+    "Web Development Course",
+    "Learn frontend and backend web development."
+  ),
+
+  "/nielet": makeMeta(
+    "NIELIT Course",
+    "Certified NIELIT courses and training programs."
+  ),
+
+  "/banking": makeMeta(
+    "Banking Course",
+    "Professional banking and finance training programs."
+  ),
+
+  "/library": makeMeta(
+    "Library",
+    "Access study materials and learning resources."
+  ),
+
+  "/admin/*": makeMeta(
+    "Admin Panel",
+    "Administrative dashboard for managing students and courses."
+  ),
+
+  "/student/*": makeMeta(
+    "Student Dashboard",
+    "Student portal for accessing profile, certificates and courses."
+  ),
+
   "*": {
-    title: `Page Not Found - ${baseTitle}`,
-    description: "Oops! This page doesn't exist.",
+    title: `Page Not Found | ${BASE_TITLE}`,
+    description: "The page you are looking for does not exist.",
   },
 };
 
-// Helper to match dynamic routes (like /Admin-Panel/xyz)
+// 🔥 Route Matcher
 function getMeta(pathname) {
-  // Exact match first
-  if (metaData[pathname]) return metaData[pathname];
-  // Wildcard segment match (e.g. "/Admin-Panel/*")
+  const path = pathname.toLowerCase();
+
+  if (metaData[path]) return metaData[path];
+
   for (const key of Object.keys(metaData)) {
     if (key.endsWith("/*")) {
       const base = key.replace("/*", "");
-      if (pathname === base || pathname.startsWith(base + "/")) {
+      if (path.startsWith(base)) {
         return metaData[key];
       }
     }
   }
-  // Fallback
+
   return metaData["*"];
 }
 
@@ -64,12 +122,31 @@ const HelmetManager = ({ children }) => {
   const { pathname } = useLocation();
   const meta = getMeta(pathname);
 
+  const fullUrl = `${BASE_URL}${pathname}`;
+
   return (
     <>
       <Helmet>
+        {/* ✅ Basic */}
         <title>{meta.title}</title>
-        {meta.description && <meta name="description" content={meta.description} />}
+        <meta name="description" content={meta.description} />
+        <link rel="canonical" href={fullUrl} />
+
+        {/* ✅ Open Graph (Facebook) */}
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
+        <meta property="og:url" content={fullUrl} />
+        <meta property="og:type" content="website" />
+
+        {/* ✅ Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={meta.title} />
+        <meta name="twitter:description" content={meta.description} />
+
+        {/* ✅ Robots */}
+        <meta name="robots" content="index, follow" />
       </Helmet>
+
       {children}
     </>
   );

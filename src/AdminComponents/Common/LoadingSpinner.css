@@ -5,7 +5,7 @@
 }
 
 .loading-container.full-height {
-  min-height: 70vh;
+  min-height: 100vh;
 }
 
 .spinner-wrapper {

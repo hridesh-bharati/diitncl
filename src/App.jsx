@@ -42,7 +42,6 @@ import { authListener, getUserRole } from "./firebase/auth";
 
 // 🧭 Fallback
 import PageNotFound from "./Components/HomePage/pages/PageNotFound";
-import HeroSection from "./Components/HomePage/Sec";
 import LocationMapCard from "./Components/HomePage/pages/Location/LocationMapCard";
 import LoginForm from "./Components/Header/LoginForm";
 import ChatPage from "./Components/Chats/ChatPage";
@@ -54,7 +53,6 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const unsubscribe = authListener(async (currentUser) => {
@@ -81,59 +79,58 @@ export default function App() {
         <UserSelectNone>
           <CopyBoard> */}
 
-            <NetworkStatus />
-            <Header />
-            <InstallPrompt />
+      <NetworkStatus />
+      <Header />
+      <InstallPrompt />
 
-            <Routes>
-              {/* 🌐 Public Routes */}
-              <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
-              <Route path="/About" element={<HelmetManager><About /></HelmetManager>} />
-              <Route path="/OurCourses" element={<HelmetManager><OurCourses /></HelmetManager>} />
-              <Route path="/Branch" element={<HelmetManager><Branch /></HelmetManager>} />
-              <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
-              <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
-              <Route path="/drishtee-computer-center/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
-              <Route path="/Download-Certificate" element={<HelmetManager><Verification /></HelmetManager>} />
-              <Route path="/Contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
-              <Route path="/login-as-member" element={<HelmetManager><LoginForm /></HelmetManager>} />
-              <Route path="/Certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
-              <Route path="/ComputerLanguage" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
-              <Route path="/Designing" element={<HelmetManager><Designing /></HelmetManager>} />
-              <Route path="/WebDev" element={<HelmetManager><WebDev /></HelmetManager>} />
-              <Route path="/Nielet" element={<HelmetManager><Nielet /></HelmetManager>} />
-              <Route path="/Banking" element={<HelmetManager><Banking /></HelmetManager>} />
-              <Route path="/Discription" element={<HelmetManager><Discription /></HelmetManager>} />
-              <Route path="/Library" element={<HelmetManager><Library /></HelmetManager>} />
-              <Route path="/HeroSection" element={<HelmetManager><HeroSection /></HelmetManager>} />
-              <Route path="/chat" element={<ChatPage />} />
+      <Routes>
+        {/* 🌐 Public Routes */}
+        <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
+        <Route path="/About" element={<HelmetManager><About /></HelmetManager>} />
+        <Route path="/OurCourses" element={<HelmetManager><OurCourses /></HelmetManager>} />
+        <Route path="/Branch" element={<HelmetManager><Branch /></HelmetManager>} />
+        <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
+        <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
+        <Route path="/drishtee-computer-center/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+        <Route path="/Download-Certificate" element={<HelmetManager><Verification /></HelmetManager>} />
+        <Route path="/Contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
+        <Route path="/login-as-member" element={<HelmetManager><LoginForm /></HelmetManager>} />
+        <Route path="/Certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
+        <Route path="/ComputerLanguage" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
+        <Route path="/Designing" element={<HelmetManager><Designing /></HelmetManager>} />
+        <Route path="/WebDev" element={<HelmetManager><WebDev /></HelmetManager>} />
+        <Route path="/Nielet" element={<HelmetManager><Nielet /></HelmetManager>} />
+        <Route path="/Banking" element={<HelmetManager><Banking /></HelmetManager>} />
+        <Route path="/Discription" element={<HelmetManager><Discription /></HelmetManager>} />
+        <Route path="/Library" element={<HelmetManager><Library /></HelmetManager>} />
+        <Route path="/chat" element={<ChatPage />} />
 
-              {/* 🔐 ADMIN BASE */}
-              <Route
-                path="/admin/*"
-                element={
-                  user && role === "admin"
-                    ? <AdminRoutes />
-                    : <Navigate to="/" replace />
-                }
-              />
-
-
-              {/* 🎓 STUDENT */}
-              <Route
-                path="/student/*"
-                element={
-                  loading ? null : (user && role === "student"
-                    ? <StudentRoutes />
-                    : <Navigate to="/" replace />)
-                }
-              />
+        {/* 🔐 ADMIN BASE */}
+        <Route
+          path="/admin/*"
+          element={
+            user && role === "admin"
+              ? <AdminRoutes />
+              : <Navigate to="/" replace />
+          }
+        />
 
 
-              {/* ❌ 404 */}
-              <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
-            </Routes>
-          {/* </CopyBoard>
+        {/* 🎓 STUDENT */}
+        <Route
+          path="/student/*"
+          element={
+            loading ? null : (user && role === "student"
+              ? <StudentRoutes />
+              : <Navigate to="/" replace />)
+          }
+        />
+
+
+        {/* ❌ 404 */}
+        <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
+      </Routes>
+      {/* </CopyBoard>
         </UserSelectNone>
       </Lock> */}
     </div>

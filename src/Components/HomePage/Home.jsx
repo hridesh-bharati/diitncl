@@ -13,6 +13,7 @@ import CardSlider from "./Cardslider";
 import Team from "./Team";
 import Testimonials from "./Testimonial";
 import HomeOffers from "./pages/offers/HomeOffers";
+import Features from "./Features"
 
 function Home() {
     const typedElement = useRef(null);
@@ -165,6 +166,7 @@ function Home() {
 
                 </div>
             </div>
+            <Features />
 
             {/* --- 4. LEADERSHIP --- */}
             <section className="py-100" style={{ backgroundColor: "#f8fafc" }}>
@@ -204,7 +206,6 @@ function Home() {
                     </div>
                 </div>
             </section>
-
             {/* --- 5. FACILITIES --- */}
             <section className="container py-100">
                 <h2 className="fw-bolder display-6 mb-4">World-Class Facilities</h2>

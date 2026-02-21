@@ -153,17 +153,25 @@ export default function Header() {
           <div className="drawer-handle"></div>
 
           {/* User Profile Card */}
-          <div className="drawer-user-card shadow-sm">
-            <div className="d-flex align-items-center gap-3">
-              <div className="user-avatar-lg">
-                <img src={photoUrl} alt="user" className="rounded-circle" />
-              </div>
-              <div className="user-details-lg">
-                <h3 className="mb-0 fs-5 fw-bold text-dark">{displayName}</h3>
-                <p className="text-muted small mb-0">{userEmail}</p>
+          <Link
+            to={isAdmin ? "/admin" : "/student"}
+            onClick={() => setIsMenuOpen(false)}
+            className="text-decoration-none"
+          >
+            <div className="drawer-user-card shadow-sm">
+              <div className="d-flex align-items-center gap-3">
+                <div className="user-avatar-lg">
+                  <img src={photoUrl} alt="user" className="rounded-circle" />
+                </div>
+                <div>
+                  <h3 className="mb-0 fs-5 fw-bold">{displayName}</h3>
+                  <span className="text-muted">
+                    Dashboard <i className="bi bi-arrow-right"></i>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
 
           <div className="drawer-body px-1">
             {/* Quick Action Grid */}
@@ -244,12 +252,9 @@ export default function Header() {
             </div>
 
             {/* Footer Actions */}
-            <div className="drawer-footer mb-4">
+            <div className="drawer-footer my-4">
               {user ? (
                 <div className="d-grid gap-2">
-                  <Link to={isAdmin ? "/admin" : "/student"} className="btn btn-primary py-3 rounded-4 shadow-sm" onClick={() => setIsMenuOpen(false)}>
-                    Go to Dashboard
-                  </Link>
                   <button onClick={handleLogout} className="btn btn-outline-danger py-3 rounded-4 border-2 fw-bold">
                     Sign Out
                   </button>

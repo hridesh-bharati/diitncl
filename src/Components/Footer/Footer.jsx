@@ -20,7 +20,7 @@ export default function Footer() {
       </div>
 
       <div className="container">
-        <div className="row g-4 mb-5">
+        <div className="row g-4 mb-5 mb-lg-0">
 
           {/* 1. BRAND ARC */}
           <div className="col-lg-4">
@@ -124,7 +124,6 @@ export default function Footer() {
         .diit-modern-footer {
           background: #fdfdff;
           position: relative;
-          padding-bottom: 30px;
           font-family: 'Outfit', sans-serif;
           overflow: hidden;
         }
