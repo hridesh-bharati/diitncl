@@ -71,7 +71,7 @@ function Home() {
                                 </Link>
 
                                 <Link
-                                    to="/login-as-member"
+                                    to="/login"
                                     className="btn btn-white bg-white fw-semibold rounded-3 flex-fill py-3" >E-Student Portal
                                 </Link>
                             </div>
