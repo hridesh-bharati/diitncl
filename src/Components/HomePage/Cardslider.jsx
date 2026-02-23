@@ -4,73 +4,77 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 export default function CardSlider() {
-    const x = `images/cardslider`
-    const slides = [
-        `${x}/android.webp`,
-        `${x}/ehack.webp`,
-        `${x}/cpp.webp`,
-        `${x}/office.webp`,
-        `${x}/js.webp`,
-        `${x}/coding.webp`,
-        `${x}/ai.webp`,
-        `${x}/tail.webp`,
-        `${x}/ppt.webp`,
-        `${x}/python.webp`,
-        `${x}/ai1.webp`,
-        `${x}/ps1.webp`,
-    ];
 
-    return (
-       <div className="p-1">
-         <div style={{ width: "100%", overflow: "hidden" }} className="about-section">
-            <Swiper
-                className="pb-5 about-card rounded-1 overflow-hidden"
-                style={{ height: "100%", width: "100%" }}
-                modules={[Pagination, Autoplay]}
-                pagination={{ clickable: true }}
-                loop={true}
-                slidesPerView={9}
-                slidesPerGroup={1}
-                autoplay={{ delay: 2000, disableOnInteraction: false }}
-                spaceBetween={10}
-                centeredSlides={false}
-                watchSlidesProgress={true}
-                grabCursor={true}
-            >
-                {slides.map((src, index) => (
-                    <SwiperSlide key={index} className="swiper-slide-custom">
-                        <img src={src} loading="lazy" alt={`Slide ${index + 1}`} className="slide-image img-fluid" />
-                    </SwiperSlide>
-                ))}
-            </Swiper>
+  const base = "images/cardslider";
 
-            <style>{`
-                .swiper-slide-custom {
-                    width: 210px !important;
-                    height: 130px !important;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border-radius: 12px;
-                    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
-                    overflow: hidden;
-                }
+  const slides = [
+    "android.avif","ehack.avif","cpp.avif","office.avif",
+    "js.avif","coding.avif","ai.avif","tail.avif",
+    "ppt.avif","python.avif","ai1.avif","ps1.avif",
+  ];
 
-                .slide-image {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 12px;
-                }
+  return (
+    <div className="py-3">
+      <Swiper
+        modules={[Pagination, Autoplay]}
+        pagination={{ clickable: true }}
+        loop={true}
+        autoplay={{ delay: 1800, disableOnInteraction: false }}
+        spaceBetween={15}
+        grabCursor={true}
 
-                .swiper-pagination-bullet {
-                    width: 15px !important;
-                    height: 6px !important;
-                    border-radius: 9px !important;
-                    background: #001297 !important;
-                }
-            `}</style>
-        </div>
-       </div>
-    );
+        breakpoints={{
+          320: { slidesPerView: 2 },
+          576: { slidesPerView: 3 },
+          768: { slidesPerView: 5 },
+          992: { slidesPerView: 5 },
+          1200: { slidesPerView: 9 },
+        }}
+
+        className="card-slider pb-5"
+      >
+        {slides.map((img, i) => (
+          <SwiperSlide key={i}>
+            <div className="slide-box">
+              <img
+                src={`${base}/${img}`}
+                alt={img.replace(".avif", "")}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      <style>{`
+        .slide-box {
+          height: 130px;
+          border-radius: 14px;
+          overflow: hidden;
+          box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+          transition: 0.3s ease;
+          background: #fff;
+        }
+
+        .slide-box:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .slide-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .swiper-pagination-bullet {
+          width: 18px;
+          height: 6px;
+          border-radius: 6px;
+          background: #001297;
+        }
+      `}</style>
+    </div>
+  );
 }

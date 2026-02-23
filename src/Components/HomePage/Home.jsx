@@ -20,7 +20,6 @@ function Home() {
     const typedInstance = useRef(null);
 
     useEffect(() => {
-
         typedInstance.current = new Typed(typedElement.current, {
             strings: [
                 "Full Stack Training",
@@ -42,14 +41,12 @@ function Home() {
         };
     }, []);
 
-
     return (
         <div className="hybrid-app-shell animate__animated animate__fadeIn">
-            {/* --- 1. PREMIUM HERO SECTION --- */}
-            <section className="hybrid-hero mt-2 pt-2 rounded-1">
+            {/* --- 1. HERO SECTION --- */}
+            <section className="hybrid-hero mt-1 pt-2 mt-lg-0 pt-lg-0 rounded-1">
                 <div className="hero-visual-layer"></div>
                 <div className="hero-overlay-gradient"></div>
-
                 <div className="container position-relative z-3">
                     <div className="row align-items-center min-vh-80">
                         <div className="col-lg-8 animate__animated animate__fadeInLeft">
@@ -64,18 +61,9 @@ function Home() {
                                 Join Drishtee India's most trusted IT Skill Hub. ISO 9001:2015 Certified excellence in education since 2007.
                             </p>
                             <div className="d-flex gap-3 mb-5 flex-nowrap">
-                                <Link
-                                    to="/new-admission"
-                                    className="btn btn-warning fw-bold rounded-3 flex-fill py-3 shadow-sm text-center"
-                                > Get Started
-                                </Link>
-
-                                <Link
-                                    to="/login"
-                                    className="btn btn-white bg-white fw-semibold rounded-3 flex-fill py-3" >E-Student Portal
-                                </Link>
+                                <Link to="/new-admission" className="btn btn-warning fw-bold rounded-3 flex-fill py-3 shadow-sm text-center"> Get Started </Link>
+                                <Link to="/login" className="btn btn-white bg-white fw-semibold rounded-3 flex-fill py-3">E-Student Portal</Link>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -93,7 +81,7 @@ function Home() {
                             { label: "LMS Login", icon: "bi-cpu-fill", link: "/login-as-member", bg: "#7C3AED" },
                             { label: "App Link", icon: "bi-phone-vibrate", link: "/", bg: "#10B981" }
                         ].map((item, i) => (
-                            <Link key={i} to={item.link} className="portal-item text-decoration-none">
+                            <Link key={i} to={item.link} className="portal-item text-decoration-none text-center">
                                 <div className="portal-icon-wrapper" style={{ '--icon-bg': item.bg }}>
                                     <i className={`bi ${item.icon}`}></i>
                                 </div>
@@ -104,46 +92,26 @@ function Home() {
                 </div>
             </div>
 
+            {/* --- 3. ABOUT SECTION --- */}
             <div className="container py-4">
                 <div className="row align-items-center g-4">
-
                     <div className="col-lg-6 order-lg-2">
                         <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-                            <img
-                                src="images/vender/stds1.webp"
-                                alt="Drishtee Education"
-                                className="img-fluid w-100 object-fit-cover"
-                                style={{ minHeight: '300px' }}
-                            />
+                            <img src="images/vender/stds1.webp" alt="Drishtee Education" className="img-fluid w-100 object-fit-cover" style={{ minHeight: '300px' }} loading="lazy" />
                         </div>
                     </div>
-
-                    {/* Content Section */}
                     <div className="col-lg-6 order-lg-1">
                         <div className="p-2">
                             <div className="text-center text-lg-start mb-3">
-                                <span className="badge rounded-pill bg-primary-subtle text-primary text-uppercase px-3 py-2 fw-bold" style={{ fontSize: '0.75rem' }}>
-                                    About Drishtee
-                                </span>
+                                <span className="badge rounded-pill bg-primary-subtle text-primary text-uppercase px-3 py-2 fw-bold" style={{ fontSize: '0.75rem' }}>About Drishtee</span>
                             </div>
+                            <h2 className="fw-bold display-6 text-primary mb-3 text-start text-lg-start" style={{ lineHeight: '1.2' }}>A Legacy of Quality <br className="d-none d-lg-block" /> Technical Education</h2>
+                            <p className="text-secondary fs-6 text-start text-lg-start mb-4">Founded in 2007, <strong>Drishtee Computer Centre</strong> has been at the forefront of the digital revolution.</p>
 
-                            <h2 className="fw-bold display-6 text-primary mb-3 text-start text-lg-start" style={{ lineHeight: '1.2' }}>
-                                A Legacy of Quality <br className="d-none d-lg-block" /> Technical Education
-                            </h2>
-
-                            <p className="text-secondary fs-6 text-start text-lg-start mb-4">
-                                Founded in 2007, <strong>Drishtee Computer Centre</strong> has been at the forefront of the digital revolution.
-                            </p>
-
-                            {/* Info Box */}
                             <div className="bg-light p-3 rounded-3 mb-4 border-start border-primary border-4 shadow-sm">
-                                <p className="text-muted mb-0 small">
-                                    <i className="bi bi-patch-check-fill text-primary me-2"></i>
-                                    ISO 9001:2015 certified. Practical knowledge over theory. Industry-designed curriculum for <strong>job-ready</strong> students.
-                                </p>
+                                <p className="text-muted mb-0 small"><i className="bi bi-patch-check-fill text-primary me-2"></i>ISO 9001:2015 certified. Practical knowledge over theory. Industry-designed curriculum.</p>
                             </div>
 
-                            {/* Features Grid - 2 columns on mobile, 2 columns on PC */}
                             <div className="row g-2 mb-4">
                                 {["Modern IT Labs", "Job Portal Access", "Free Soft Skills", "Strong Alumni Network"].map((feat, index) => (
                                     <div className="col-6" key={index}>
@@ -154,69 +122,112 @@ function Home() {
                                     </div>
                                 ))}
                             </div>
-
-                            {/* App-style Action Button */}
                             <div className="d-grid d-lg-block">
-                             <Link to="/about" className="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold shadow-sm">Learn More</Link>
+                                <Link to="/about" className="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold shadow-sm">Learn More</Link>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-            <Features />
 
+            <Features />
             {/* --- 4. LEADERSHIP --- */}
-            <section className="py-100" style={{ backgroundColor: "#f8fafc" }}>
+            <section className="py-5 bg-light">
                 <div className="container">
+                    {/* Section Heading */}
                     <div className="text-center mb-5">
-                        <h6 className="text-primary fw-bold text-uppercase">Institutional Leadership</h6>
-                        <h2 className="display-5 fw-bolder text-dark">The Minds Behind Drishtee</h2>
+                        <h6 className="text-primary fw-bold text-uppercase small">Institutional Leadership</h6>
+                        <h2 className="display-6 fw-bold text-dark">The Minds Behind Drishtee</h2>
                         <div className="mx-auto bg-warning mt-2" style={{ width: '60px', height: '4px', borderRadius: '10px' }}></div>
                     </div>
+
                     <div className="row g-4 justify-content-center">
-                        <div className="col-lg-5">
-                            <div className="visionary-card-light">
-                                <div className="visionary-image-wrapper">
-                                    <img src="/images/team/team1.png" alt="Ajay Tiwari" loading="lazy" />
-                                    <div className="visionary-badge-gold">MD</div>
-                                </div>
-                                <div className="visionary-content-light">
-                                    <h3 className="fw-bolder text-dark mb-1">Ajay Tiwari</h3>
-                                    <p className="text-primary fw-bold small mb-3">Managing Director</p>
-                                    <p className="text-muted fst-italic">"Our mission is to democratize high-end IT education."</p>
+                        {[
+                            {
+                                name: "Ajay Tiwari",
+                                role: "Managing Director",
+                                img: "/images/team/team1.avif",
+                                badge: "MD",
+                                quote: "Our mission is to democratize high-end IT education."
+                            },
+                            {
+                                name: "Santosh Singh",
+                                role: "Academic Director",
+                                img: "/images/team/team2.avif",
+                                badge: "AD",
+                                quote: "We bridge the gap between classroom and industry."
+                            }
+                        ].map((leader, index) => (
+                            <div className="col-lg-5 col-md-6" key={index}>
+                                <div className="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white">
+                                    <div className="row align-items-center g-0">
+                                        {/* Image Part */}
+                                        <div className="col-sm-4 text-center">
+                                            <div className="position-relative d-inline-block">
+                                                <img
+                                                    src={leader.img}
+                                                    alt={leader.name}
+                                                    className="img-fluid rounded-circle border border-3 border-light shadow-sm"
+                                                    style={{ width: '110px', height: '110px', objectFit: 'cover' }}
+                                                    loading="lazy"
+                                                />
+                                                <span className="position-absolute bottom-0 end-0 badge rounded-pill bg-warning text-dark fw-bold border border-white shadow-sm" style={{ fontSize: '10px' }}>
+                                                    {leader.badge}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {/* Content Part */}
+                                        <div className="col-sm-8 p-3 text-center text-sm-start">
+                                            <h5 className="fw-bold mb-0 text-dark">{leader.name}</h5>
+                                            <p className="text-primary small fw-semibold mb-2">{leader.role}</p>
+                                            <p className="text-muted fst-italic mb-0" style={{ fontSize: '0.85rem' }}>
+                                                <i className="bi bi-quote me-1"></i>{leader.quote}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-lg-5">
-                            <div className="visionary-card-light">
-                                <div className="visionary-image-wrapper">
-                                    <img src="/images/team/team2.png" alt="Santosh Singh" loading="lazy" />
-                                    <div className="visionary-badge-gold">AD</div>
-                                </div>
-                                <div className="visionary-content-light">
-                                    <h3 className="fw-bolder text-dark mb-1">Santosh Singh</h3>
-                                    <p className="text-primary fw-bold small mb-3">Academic Director</p>
-                                    <p className="text-muted fst-italic">"We bridge the gap between classroom and industry."</p>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
+
             {/* --- 5. FACILITIES --- */}
-            <section className="container py-100">
-                <h2 className="fw-bolder display-6 mb-4">World-Class Facilities</h2>
-                <div className="facility-grid">
-                    <div className="facility-item" style={{ backgroundImage: "url('/images/vender/lab.jpg')" }}>
-                        <div className="item-label">High-Tech IT Lab</div>
-                    </div>
-                    <div className="facility-item" style={{ backgroundImage: "url('/images/vender/librarypic2.jpg')" }}>
-                        <div className="item-label">Digital Library</div>
-                    </div>
-                    <div className="facility-item" style={{ backgroundImage: "url('/images/vender/std1.jpg')" }}>
-                        <div className="item-label">Smart Classrooms</div>
-                    </div>
+            <section className="container py-5">
+                <div className="d-flex align-items-center mb-4">
+                    <div className="bg-primary me-3" style={{ width: '5px', height: '35px', borderRadius: '10px' }}></div>
+                    <h2 className="fw-bolder display-6 m-0">World-Class Facilities</h2>
+                </div>
+
+                <div className="row g-3">
+                    {[
+                        { title: "High-Tech IT Lab", img: "/images/vender/lab.jpg" },
+                        { title: "Digital Library", img: "/images/vender/librarypic2.jpg" },
+                        { title: "Smart Classrooms", img: "/images/vender/std1.jpg" }
+                    ].map((item, index) => (
+                        <div key={index} className="col-md-4">
+                            <div
+                                className="rounded-4 overflow-hidden position-relative shadow-sm"
+                                style={{ height: '250px' }}
+                            >
+                                {/* Background Image */}
+                                <img
+                                    src={item.img}
+                                    alt={item.title}
+                                    className="w-100 h-100 object-fit-cover transition-all"
+                                    loading="lazy"
+                                />
+
+                                {/* Overlay Label */}
+                                <div
+                                    className="position-absolute bottom-0 start-0 w-100 p-3"
+                                    style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.8))' }}
+                                >
+                                    <h5 className="text-white fw-bold mb-0">{item.title}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </section>
 
@@ -240,12 +251,13 @@ function Home() {
                 </div>
             </section>
 
-            {/* --- 7. COURSES --- */}
+            {/* --- 7. COURSES & OFFERS --- */}
             <section className="container py-100">
                 <h2 className="display-6 fw-bolder text-center mb-2 text-primary">Job-Oriented Programs</h2>
                 <TopCourseList />
                 <div className="mt-5"><CardSlider /></div>
             </section>
+
             <HomeOffers />
             <Testimonials />
             <Team />

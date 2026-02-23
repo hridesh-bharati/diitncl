@@ -1,129 +1,56 @@
 import React, { useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "./Team.css"
 
 const Team = () => {
-  const tpath = "images/team/team";
-
-  const [hrideshData, setHrideshData] = useState({
-    name: "Hridesh Rao",
-    bio: "Frontend & MERN Stack Developer",
-    image: "",
-    repos: 0,
-  });
+  const [hridesh, setHridesh] = useState({ name: "Hridesh Rao", bio: "Frontend & MERN Stack Developer", img: "", repos: 0 });
 
   useEffect(() => {
     fetch("https://api.github.com/users/hridesh-bharati")
-      .then((res) => res.json())
-      .then((data) => {
-        setHrideshData({
-          name: data.name || "Hridesh Rao",
-          bio: data.bio || "Frontend & MERN Stack Developer",
-          image: data.avatar_url || "",
-          repos: data.public_repos || 0,
-        });
-      })
-      .catch((err) => console.error("GitHub fetch error:", err));
+      .then(res => res.json())
+      .then(d => setHridesh({ name: d.name || "Hridesh Rao", bio: d.bio || "MERN Stack Developer", img: d.avatar_url, repos: d.public_repos }))
+      .catch(() => { });
   }, []);
 
   const expertData = [
-    {
-      name: "Mr. Ajay Tiwari",
-      role: "Director",
-      bio: "Founder of DIIT with 20+ years of experience in IT and education. Leading with vision.",
-      image: `${tpath}1.png`,
-      badges: ["🎓 Education Expert", "🥇 Top Mentor"],
-      color: "#6366f1", // Indigo
-      socialLinks: { phone: "tel:+919918151032", whatsapp: "https://wa.me/919918151032", linkedin: "#" },
-    },
-    {
-      name: "Santosh Chauhan",
-      role: "Center Head",
-      bio: "Handles administrative operations, student support, and strategic decisions with dedication.",
-      image: `${tpath}2.png`,
-      badges: ["🎯 Management Pro"],
-      color: "#10b981", // Emerald
-      socialLinks: { phone: "tel:+917398889347", whatsapp: "https://wa.me/917398889347", linkedin: "#" },
-    },
-    {
-      name: "Manjesh Vishwakarma",
-      role: "Senior Accounts Executive",
-      bio: "Specialist in digital finance, business accounting, and official documentation compliance.",
-      image: `${tpath}3.png`,
-      badges: ["📈 Financial Pro"],
-      color: "#f59e0b", // Amber
-      socialLinks: { phone: "tel:+919621444858", whatsapp: "https://wa.me/919621444858", linkedin: "#" },
-    },
-    {
-      name: hrideshData.name,
-      role: "Technical Instructor",
-      bio: hrideshData.bio,
-      image: hrideshData.image,
-      repoCount: hrideshData.repos,
-      isGithub: true,
-      color: "#ec4899", // Rose
-      badges: [
-        "🚀 MERN Specialist",
-        ...(hrideshData.repos >= 20 ? ["⭐ Star Dev"] : []),
-      ],
-      socialLinks: {
-        phone: "tel:+917267995307",
-        whatsapp: "https://wa.me/917267995307",
-        linkedin: "https://www.linkedin.com/in/hridesh-bharati-95867425b/",
-        github: "https://github.com/hridesh-bharati",
-      },
-    },
+    { n: "Mr. Ajay Tiwari", r: "Director", b: "Founder & IT Expert with 20+ years experience.", i: "images/team/team1.avif", c: "#6366f1" },
+    { n: "Santosh Chauhan", r: "Center Head", b: "Operations and student support management.", i: "images/team/team2.avif", c: "#10b981" },
+    { n: "Manjesh Vishwakarma", r: "Accounts Executive", b: "Specialist in finance and business accounting.", i: "images/team/team3.avif", c: "#f59e0b" },
+    { n: hridesh.name, r: "Technical Instructor", b: hridesh.bio, i: hridesh.img, c: "#ec4899", gh: hridesh.repos }
   ];
 
   return (
-    <section className="team-section py-5" id="team">
+    <section className="py-5 bg-light" id="team">
       <div className="container">
-        <div className="text-center mb-5 animate-up">
-          <span className="badge-modern mb-2">OUR FACULTY</span>
-          <h2 className="display-5 fw-900 text-dark">
-            Meet Our <span className="text-gradient-fancy">Expert Team</span>
-          </h2>
-          <div className="divider-custom mx-auto"></div>
+        <div className="text-center mb-5">
+          <h2 className="fw-bold h1">Meet Our <span className="text-primary">Expert Team</span></h2>
+          <p className="text-muted">The pillars of Drishtee's excellence.</p>
         </div>
 
         <div className="row g-4">
-          {expertData.map((member) => (
-            <div className="col-12 col-sm-6 col-lg-3" key={member.name}>
-              <div className={`modern-member-card ${member.isGithub ? 'github-glow' : ''}`}>
-                <div className="card-top-accent" style={{ background: member.color }}></div>
-                
-                <div className="avatar-container">
-                  <div className="avatar-ring" style={{ borderColor: member.color }}></div>
-                  <img src={member.image} alt={member.name} className="member-img" />
+          {expertData.map((m, idx) => (
+            <div className="col-12 col-md-6 col-lg-3" key={idx}>
+              <div className="card h-100 border-0 shadow-sm text-center p-3 rounded-4" style={{ transition: '0.3s' }}>
+                <div className="mx-auto mb-3 position-relative" style={{ width: "110px", height: "110px" }}>
+                  <img src={m.i} alt={m.n} className="rounded-circle border" loading="lazy" width="110" height="110" style={{ objectFit: 'cover' }} />
                 </div>
 
-                <div className="member-info">
-                  <h5 className="member-name">{member.name}</h5>
-                  <p className="member-role" style={{ color: member.color }}>{member.role}</p>
-                  
-                  <div className="badge-shelf">
-                    {member.badges.map((b, i) => (
-                      <span key={i} className="mini-badge">{b}</span>
-                    ))}
+                <h5 className="fw-bold mb-0">{m.n}</h5>
+                <small className="fw-bold text-uppercase d-block mb-3" style={{ color: m.c, fontSize: '10px', letterSpacing: '1px' }}>{m.r}</small>
+
+                {/* Bio Section with Clamp */}
+                <p className="text-muted small mb-3 flex-grow-1" style={{ display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {m.b}
+                </p>
+
+                {m.gh !== undefined && (
+                  <div className="badge bg-dark mb-3 py-2 px-3 rounded-pill" style={{ fontSize: '10px' }}>
+                    <i className="bi bi-github me-1"></i> {m.gh} Repos
                   </div>
+                )}
 
-                  <p className="member-bio">{member.bio}</p>
-
-                  {member.repoCount !== undefined && (
-                    <div className="github-stat">
-                      <i className="bi bi-github me-1"></i>
-                      <span>{member.repoCount} Public Repos</span>
-                    </div>
-                  )}
-
-                  <div className="social-rack mt-4">
-                    {Object.entries(member.socialLinks).map(([key, url]) => (
-                      <a key={key} href={url} target="_blank" rel="noreferrer" className={`social-bubble ${key}`}>
-                        <i className={`bi bi-${key === 'phone' ? 'telephone' : key}`}></i>
-                      </a>
-                    ))}
-                  </div>
+                <div className="d-flex justify-content-center gap-3 pt-2 border-top">
+                  <a href="#" aria-label="Call" className="text-secondary"><i className="bi bi-telephone"></i></a>
+                  <a href="#" aria-label="WhatsApp" className="text-success"><i className="bi bi-whatsapp"></i></a>
+                  <a href="#" aria-label="LinkedIn" className="text-primary"><i className="bi bi-linkedin"></i></a>
                 </div>
               </div>
             </div>
@@ -131,6 +58,8 @@ const Team = () => {
         </div>
       </div>
 
+      {/* Mini Custom CSS for Hover Effect (Injected) */}
+      <style>{`.card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }`}</style>
     </section>
   );
 };

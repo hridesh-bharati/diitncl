@@ -33,111 +33,87 @@ const featureData = [
 
 export default function LiveCards() {
   return (
-    <div className="container-fluid py-5">
-
-      {/* Header */}
-      <div className="text-center mb-5">
-        <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">
-          POPULAR FEATURES
+    <section className="container py-5">
+      <div className="row align-items-center g-2">
+        <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3 fw-bold">
+          WHY CHOOSE DRISHTEE
         </span>
-
-        <h2 className="fw-bold mb-3">
-          Why Choose <span className="text-primary">Drishtee</span>
+        <h2 className="display-5 fw-bold">
+          Transform Your Career with <span className="text-primary">Industry-Focused</span> Learning
         </h2>
+        {/* Left Column: Content */}
+        <div className="col-lg-5 text-center text-lg-start">
 
-        <p className="text-muted mx-auto" style={{ maxWidth: 650 }}>
-          Experience learning reimagined with our cutting-edge platform designed for tomorrow's innovators
-        </p>
-
-        <div className="bg-primary mx-auto mt-3" style={{ width: 80, height: 4, borderRadius: 2 }}></div>
-      </div>
-
-      <div className="row align-items-stretch">
-
-        {/* Left Column */}
-        <div className="col-lg-6 mb-4 mb-lg-0">
-          <div className="h-100 p-4 p-lg-5 d-flex flex-column justify-content-center">
-
-            <h3 className="fw-bold mb-4">
-              Transform Your Career with Industry-Focused Learning
-            </h3>
-
-            <div className="mb-4">
-              <h6 className="fw-bold">Real-World Project Experience</h6>
-              <p className="text-muted small">
-                Gain hands-on experience with projects that simulate actual industry workflows.
-              </p>
-            </div>
-
-            <div className="mb-4">
-              <h6 className="fw-bold">Expert-Led Training</h6>
-              <p className="text-muted small">
-                Learn from certified professionals with practical experience.
-              </p>
-            </div>
-
-            <div className="mb-4">
-              <h6 className="fw-bold">Global Recognition</h6>
-              <p className="text-muted small">
-                Earn certificates recognized by top companies worldwide.
-              </p>
-            </div>
-
-            <button className="btn btn-primary btn-lg px-4 mt-3">
-              Start Your Journey Today
-            </button>
-
+          <div className="ps-lg-2">
+            {[
+              { t: "Real-World Experience", d: "Simulated workflows for practical knowledge." },
+              { t: "Expert-Led Training", d: "Learn from industry veterans and masters." },
+              { t: "Global Recognition", d: "Certificates that hold value internationally." }
+            ].map((item, i) => (
+              <div key={i} className="d-flex mb-4 align-items-start justify-content-center justify-content-lg-start">
+                <i className="bi bi-check-circle-fill text-primary me-3 fs-5"></i>
+                <div>
+                  <h6 className="fw-bold mb-1">{item.t}</h6>
+                  <p className="text-muted small mb-0">{item.d}</p>
+                </div>
+              </div>
+            ))}
           </div>
+
+          <button className="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-sm mt-3 w-100 w-lg-auto">
+            Get Started Now <i className="bi bi-arrow-right ms-2"></i>
+          </button>
         </div>
 
-        {/* Right Column */}
-        <div className="col-lg-6">
-          <div className="row g-4">
-
+        {/* Right Column: Grid Cards */}
+        <div className="col-lg-7">
+          <div className="row g-3 g-md-4">
             {featureData.map((item, index) => (
-              <div key={index} className="col-6 d-flex">
-                <div className="p-4 rounded-4 shadow-sm text-center w-100 bg-white">
+              <div key={index} className="col-6 col-sm-6 d-flex">
+                <div className="feature-hover-card p-4 rounded-4 shadow-sm text-center w-100 bg-white border border-light transition-all">
 
                   <div
                     className="mx-auto mb-3 d-flex align-items-center justify-content-center"
                     style={{
                       background: item.gradient,
-                      width: 70,
-                      height: 70,
-                      borderRadius: 18,
-                      boxShadow: `0 6px 15px ${item.colored}30`
+                      width: 65,
+                      height: 65,
+                      borderRadius: 20,
+                      boxShadow: `0 10px 20px ${item.colored}30`
                     }}
                   >
-                    <i className={item.icon} style={{ fontSize: "1.75rem", color: "#fff" }}></i>
+                    <i className={item.icon} style={{ fontSize: "1.5rem", color: "#fff" }}></i>
                   </div>
 
-                  <h6 className="fw-bold mb-2">
-                    {item.title}
-                  </h6>
-
-                  <p className="text-muted small mb-0">
+                  <h6 className="fw-extrabold text-dark mb-2">{item.title}</h6>
+                  <p className="text-muted mb-0 d-none d-md-block" style={{ fontSize: '0.8rem' }}>
                     {item.desc}
                   </p>
 
                   <div
-                    className="mx-auto mt-3"
-                    style={{
-                      height: 3,
-                      width: 40,
-                      borderRadius: 2,
-                      background: item.gradient
-                    }}
+                    className="mx-auto mt-3 d-none d-md-block"
+                    style={{ height: 3, width: 30, borderRadius: 2, background: item.gradient }}
                   ></div>
-
                 </div>
               </div>
             ))}
-
           </div>
         </div>
 
       </div>
 
-    </div>
+      <style>{`
+        .feature-hover-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .feature-hover-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+            border-color: #dee2e6 !important;
+        }
+        .fw-extrabold { font-weight: 800; }
+      `}</style>
+    </section>
   );
 }

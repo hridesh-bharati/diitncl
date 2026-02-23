@@ -1,81 +1,79 @@
-// src/Components/HomePage/pages/offers/HomeOffers.jsx
 import React, { useEffect, useState } from "react";
 import { db } from "../../../../firebase/firebase";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { Card, Spinner } from "react-bootstrap";
+import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
+import { Spinner } from "react-bootstrap";
 
 export default function HomeOffers() {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "offers"), orderBy("createdAt", "desc"));
+    // limit(3) add kiya hai taaki sirf latest 3 offers load hon (Performance boost)
+    const q = query(collection(db, "offers"), orderBy("createdAt", "desc"), limit(5));
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setOffers(data);
-        setLoading(false);
-      },
-      (err) => {
-        console.error("Error fetching offers:", err);
-        setLoading(false);
-      }
-    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setOffers(data);
+      setLoading(false);
+    }, (err) => {
+      console.error("Error:", err);
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, []);
 
-  if (loading)
-    return (
-      <div className="d-flex justify-content-center my-5">
-        <Spinner animation="border" />
-      </div>
-    );
+  if (loading) return (
+    <div className="text-center my-4"><Spinner size="sm" variant="primary" /></div>
+  );
+
+  if (offers.length === 0) return null; // Agar offer nahi hai to space kyun gherna
 
   return (
-    <div className="container my-2">
-      <div className="bg-primary-subtle border-start border-primary border-5">
-        <marquee behavior="alternate" direction="left" scrollamount="5">
-          <h3 className="pt-2 m-0 text-primary">Latest Offers</h3>
-        </marquee>
+    <section className="container my-4">
+      {/* Modern Header */}
+      <div className="d-flex align-items-center mb-3">
+        <div className="bg-danger p-1 rounded-circle me-2 pulse-red"></div>
+        <h4 className="fw-bold m-0 text-dark">Special Offers</h4>
       </div>
-      {offers.length === 0 && <p>No offers available.</p>}
 
-      {offers.map((offer) => (
-        <Card key={offer.id} className="mb-3 shadow-sm border-0">
-          <Card.Body>
-            <h5 className="fw-bold text-danger">{offer.caption}</h5>
-            <p className="text-muted">{offer.details}</p>
+      <div className="row g-3">
+        {offers.map((offer) => (
+          <div className="col-md-12" key={offer.id}>
+            <div className="offer-card-custom h-100 p-3 shadow-sm border rounded-4">
+              <div className="d-flex justify-content-between align-items-start mb-2">
+                <span className="badge rounded-pill bg-danger-subtle text-danger px-3">Limited Time</span>
+                <i className="bi bi-megaphone text-warning fs-5"></i>
+              </div>
 
-            <div className="d-flex align-items-center mt-3">
-              {offer.adminPhoto && (
-                <img
-                  src={offer.adminPhoto}
-                  alt={offer.adminName || "Admin"}
-                  width="40"
-                  height="40"
-                  className="rounded-circle me-2"
-                  style={{ objectFit: "cover" }}
-                />
-              )}
-              <div>
-                <small className="fw-bold">{offer.adminName || "Admin"}</small>
-                <br />
-                <small className="text-muted">
-                  {offer.createdAt?.toDate
-                    ? offer.createdAt.toDate().toLocaleString()
-                    : ""}
+              <h5 className="fw-bold text-dark mb-2">{offer.caption}</h5>
+              <p className="text-muted small mb-3 line-clamp-2">{offer.details}</p>
+
+              <hr className="opacity-10" />
+
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+                  <img
+                    src={offer.adminPhoto || "/default-avatar.png"}
+                    alt="admin"
+                    width="30" height="30"
+                    className="rounded-circle me-2 border"
+                  />
+                  <span className="fw-bold x-small-text text-secondary">
+                    {offer.adminName || "Drishtee"}
+                  </span>
+                </div>
+                <small className="text-muted" style={{ fontSize: '10px' }}>
+                  {offer.createdAt?.toDate ? offer.createdAt.toDate().toLocaleDateString() : ""}
                 </small>
               </div>
             </div>
-          </Card.Body>
-        </Card>
-      ))}
-    </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
