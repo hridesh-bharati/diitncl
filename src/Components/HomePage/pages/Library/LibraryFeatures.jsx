@@ -27,7 +27,7 @@ const FacilityCard = ({ title, img, description, icon, index }) => (
           <h6 className="fw-bold mb-0 text-truncate">{title}</h6>
         </div>
         <p className="text-muted mb-3 d-none d-md-block" style={{ fontSize: '0.8rem' }}>{description}</p>
-        <Link to="#!" className="btn btn-outline-primary btn-sm w-100 rounded-pill border-1 py-1" style={{ fontSize: '0.75rem' }}>View</Link>
+        <Link to="#!" className="btn btn-primary btn-sm w-100 rounded-pill border-1 py-1 pb-0" style={{ fontSize: '0.75rem' }}>View</Link>
       </div>
     </div>
   </div>
