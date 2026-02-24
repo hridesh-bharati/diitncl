@@ -95,8 +95,11 @@ const SectionHeader = ({ title, subtitle, className = "" }) => (
 );
 
 const IconBadge = ({ icon, color, size = "3" }) => (
-    <div className={`bg-${color} bg-opacity-10 text-white rounded-4 d-flex align-items-center justify-content-center`} style={{ width: '60px', height: '60px' }}>
-        <i className={`bi ${icon} fs-${size}`}></i>
+    <div
+        className={`bg-${color} bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center`}
+        style={{ width: '60px', height: '60px' }}
+    >
+        <i className={`bi ${icon} fs-${size} text-${color}`}></i>
     </div>
 );
 
@@ -158,7 +161,7 @@ function Branch() {
     }, []);
 
     return (
-       <div className="app-layout overflow-x-hidden">
+        <div className="app-layout overflow-x-hidden">
             <header className="app-header text-center">
                 <h1 className="fw-bolder display-5 mb-2">DRISHTEE</h1>
                 <p className="opacity-75 mb-3">Institute of Information Technology</p>
@@ -205,7 +208,7 @@ function Branch() {
                             <Carousel items={DATA.CAROUSELS.hero} id="heroCarousel" height={300} />
                         </AppCard>
                     </div>
-<Counter />
+                    <Counter />
 
                 </div>
 
@@ -284,7 +287,7 @@ function Branch() {
 
                 {/* Contact & Query Form */}
                 <div className="row g-4 p-0 mb-5">
-                    <div className="col-lg-5 m-0 p-0" data-aos="fade-right">
+                    <div className="col-12 m-0 p-0 my-1" data-aos="fade-right">
                         <AppCard className="p-0 h-100">
                             <SectionHeader title="Locate Us" />
                             <iframe
@@ -293,7 +296,7 @@ function Branch() {
                             />
                         </AppCard>
                     </div>
-                    <div className="col-lg-7 m-0 p-0" data-aos="fade-left">
+                    <div className="col-12 m-0 p-0 my-1" data-aos="fade-left">
                         <AppCard className="p-0 h-100">
                             <SectionHeader title="Quick Enquiry" />
                             <QueryForm />
