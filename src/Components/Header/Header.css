@@ -277,7 +277,6 @@
   box-shadow: 0 0 15px rgba(10, 40, 133, 0.05); /* Soft glow */
 }
 
-/* Icon ki size thodi stable rakhne ke liye */
 .tab-item i {
   font-size: 24px;
   position: relative;
