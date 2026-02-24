@@ -99,7 +99,7 @@ export default function Footer() {
             </div>
             <div className="col-md-6 text-md-end">
               <div className="creator-badge">
-                <span>Dev: </span>
+                <span>Design & Developed by: </span>
                 <a href="https://github.com/hridesh-bharati" className="creator-name text-decoration-none">Hridesh Bharati</a>
               </div>
             </div>

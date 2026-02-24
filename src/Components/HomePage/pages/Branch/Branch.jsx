@@ -64,12 +64,12 @@ const DATA = {
     ],
     CAROUSELS: {
         hero: [
-            { src: 'images/library/d1.jpg', alt: 'DIIT Campus' },
-            { src: 'images/library/d2.jpg', alt: 'DIIT Labs' }
+            { src: '/images/library/d1.jpg', alt: 'DIIT Campus' },
+            { src: '/images/library/d2.jpg', alt: 'DIIT Labs' }
         ],
         campus: [
-            { src: 'images/library/tdiit.webp', alt: 'Campus 1' },
-            { src: 'images/library/teacher.webp', alt: 'Campus 2' }
+            { src: '/images/library/tdiit.webp', alt: 'Campus 1' },
+            { src: '/images/library/teacher.webp', alt: 'Campus 2' }
         ]
     },
     GALLERY: ['d1', 'd2', 'd3', 'd4', 'd5', 'd6'],
@@ -255,7 +255,7 @@ function Branch() {
                     {DATA.GALLERY.map((img, i) => (
                         <div key={i} className="col-12 col-md-4" data-aos="zoom-in" data-aos-delay={i * 50}>
                             <AppCard className="overflow-hidden p-0 gallery-img">
-                                <img src={`images/library/${img}.jpg`} alt={`Campus ${i + 1}`} className="w-100" style={{ height: '200px', objectFit: 'cover' }} loading="lazy" />
+                                <img src={`/images/library/${img}.jpg`} alt={`Campus ${i + 1}`} className="w-100" style={{ height: '200px', objectFit: 'cover' }} loading="lazy" />
                             </AppCard>
                         </div>
                     ))}
