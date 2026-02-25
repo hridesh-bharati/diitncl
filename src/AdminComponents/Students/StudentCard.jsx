@@ -1,7 +1,7 @@
 // src/AdminComponents/Admissions/StudentCard.jsx
 import React, { useState, useEffect } from "react";
 import { Card, Button, Form, Badge } from "react-bootstrap";
-import { Trash, PersonCircle, Check2Circle, PencilFill, Calendar } from "react-bootstrap-icons";
+// import { Trash, PersonCircle, Check2Circle, PencilFill, Calendar } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
@@ -191,7 +191,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
             <Badge bg={studentBranch === "DIIT124" ? "primary" : "info"}
               className="bg-opacity-10 rounded-pill px-3 py-2"
               style={{ color: studentBranch === "DIIT124" ? "#0d6efd" : "#0dcaf0", fontWeight: "500" }}>
-               {BRANCH_DISPLAY[studentBranch] || studentBranch}
+              {BRANCH_DISPLAY[studentBranch] || studentBranch}
             </Badge>
           </div>
         )}
@@ -245,10 +245,14 @@ const HeaderSection = ({ student, status }) => {
           <img src={student.photoUrl} alt="" className="rounded-circle shadow-sm"
             style={{ width: "60px", height: "60px", objectFit: "cover" }} />
         ) : (
-          <div className="rounded-circle bg-light d-flex align-items-center justify-content-center"
-            style={{ width: "60px", height: "60px" }}>
-            <PersonCircle size={32} className="text-secondary" />
-          </div>
+          <Button
+            variant="success"
+            size="sm"
+            className="p-1 px-2"
+            onClick={() => setEditingRegNo(true)}
+          >
+            <i className="bi bi-pencil-fill"></i>
+          </Button>
         )}
         <div className={`position-absolute bottom-0 end-0 p-1 bg-${STATUS_COLORS[status]} rounded-circle border border-2 border-white`}
           style={{ width: "14px", height: "14px" }} />
@@ -332,7 +336,7 @@ const AcceptedView = ({
                 className="p-1 px-2"
                 onClick={() => setEditingRegNo(true)}
               >
-                <PencilFill size={12} />
+                <i className="bi bi-pencil-fill"></i>
               </Button>
 
             </div>
@@ -437,7 +441,10 @@ const AcceptedView = ({
                 onClick={onSaveFinal}
                 disabled={loading}
               >
-                {loading ? 'Saving...' : <><Check2Circle size={16} className="me-2" /> SAVE ALL CHANGES</>}
+                {loading ? 'Saving...' : <>
+                  <i className="bi bi-check2-circle me-2"></i>
+                  SAVE ALL CHANGES
+                </>}
               </Button>
             )}
           </>
@@ -465,7 +472,7 @@ const BottomActions = ({ student, onDelete, status, onStatusChange, loading, isA
       {isAdmin && (
         <Button variant="outline-danger" size="sm" className="rounded-pill border-0"
           onClick={() => onDelete(student.id)}>
-          <Trash size={18} />
+          <i className="bi bi-trash fs-5"></i>
         </Button>
       )}
     </div>

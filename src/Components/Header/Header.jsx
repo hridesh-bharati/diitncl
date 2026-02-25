@@ -6,7 +6,6 @@ import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
 import "./Header.css";
 import { Button } from "react-bootstrap";
-import { ChatDots } from "react-bootstrap-icons";
 
 export default function Header() {
   const { user, student, isAdmin, logout } = useAuth();
@@ -116,7 +115,7 @@ export default function Header() {
             </button>
             {user && (
               <Button variant="primary" className="rounded-pill d-flex align-items-center gap-2 ms-2 px-3" onClick={() => navigate("/chat")}>
-                <ChatDots /> <span>IM</span>
+                <span>IM</span>
               </Button>
             )}
           </div>
@@ -163,17 +162,16 @@ export default function Header() {
               {[
                 { to: "/download-certificate", icon: "bi-patch-check-fill", label: "Verify", color: "text-info" },
                 { to: "/library", icon: "bi-book-half", label: "Library", color: "text-warning" },
-                { to: "/chat", icon: <ChatDots className="fs-2 text-info mb-2" />, label: "Group Chat" }
-              ].map((item, idx) => (
-                <div className="col-4" key={idx}>
-                  <Link to={item.to} onClick={() => setIsMenuOpen(false)} className="text-decoration-none h-100">
-                    <div className="card border-0 shadow-sm rounded-4 py-3 h-100">
-                      {typeof item.icon === 'string' ? <i className={`bi ${item.icon} fs-2 ${item.color} mb-2`}></i> : item.icon}
-                      <span className="fw-semibold text-secondary small">{item.label}</span>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                { to: "/chat", icon: "bi-chat-dots-fill", label: "Group Chat", color: "text-info" }].map((item, idx) => (
+                  <div className="col-4" key={idx}>
+                    <Link to={item.to} onClick={() => setIsMenuOpen(false)} className="text-decoration-none h-100">
+                      <div className="card border-0 shadow-sm rounded-4 py-3 h-100">
+                        {typeof item.icon === 'string' ? <i className={`bi ${item.icon} fs-2 ${item.color} mb-2`}></i> : item.icon}
+                        <span className="fw-semibold text-secondary small">{item.label}</span>
+                      </div>
+                    </Link>
+                  </div>
+                ))}
             </div>
             <div className="drawer-section">
               <label>Academic Hub</label>

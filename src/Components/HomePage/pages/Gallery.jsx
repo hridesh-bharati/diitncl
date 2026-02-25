@@ -30,15 +30,6 @@ import {
   Modal
 } from "react-bootstrap";
 
-import {
-  Trash3,
-  PersonCircle,
-  Upload,
-  ThreeDotsVertical,
-  Chat,
-  XCircleFill
-} from "react-bootstrap-icons";
-
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -212,7 +203,7 @@ export default function PublicSocialGallery() {
               className="rounded-pill px-4 fw-bold"
               onClick={() => setShowUpload(true)}
             >
-              <Upload size={16} className="me-2" />
+              <i className="bi bi-upload me-2" style={{ fontSize: 16 }}></i>
               Post
             </Button>
           ) : (
@@ -248,7 +239,7 @@ export default function PublicSocialGallery() {
                         style={{ objectFit: "cover" }}
                       />
                     ) : (
-                      <PersonCircle size={40} className="text-secondary" />
+                      <i className="bi bi-person-circle text-secondary" style={{ fontSize: 40 }}></i>
                     )}
                     <div>
                       <div className="fw-bold">
@@ -264,7 +255,7 @@ export default function PublicSocialGallery() {
                   {(isAdmin || post.uploadedById === currentUserId) && (
                     <Dropdown align="end">
                       <Dropdown.Toggle variant="link" className="p-0 shadow-none text-dark">
-                        <ThreeDotsVertical size={18} />
+                       <i className="bi bi-three-dots-vertical" style={{ fontSize: 18 }}></i>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
                         <Dropdown.Item
@@ -273,7 +264,7 @@ export default function PublicSocialGallery() {
                             deleteDoc(doc(db, "galleryImages", post.id))
                           }
                         >
-                          <Trash3 className="me-2" />
+                          <i className="bi bi-trash3 me-2"></i>
                           Delete Post
                         </Dropdown.Item>
                       </Dropdown.Menu>
@@ -318,7 +309,7 @@ export default function PublicSocialGallery() {
 
                     {/* Comment Button */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Chat size={22} />
+                     <i className="bi bi-chat" style={{ fontSize: 22 }}></i>
                       <span style={{ fontWeight: '600', fontSize: '14px' }}>
                         {post.comments.length}
                       </span>
@@ -341,12 +332,13 @@ export default function PublicSocialGallery() {
                       <strong className="me-1">{c.userName}:</strong>
                       <span className="text-break flex-grow-1">{c.text}</span>
                       {(isAdmin || c.userId === currentUserId) && (
-                        <XCircleFill
-                          size={14}
-                          className="text-danger ms-2"
-                          style={{ cursor: "pointer", flexShrink: 0 }}
-                          onClick={() => deleteComment(post, c)}
-                        />
+                        <i className="bi bi-x-circle-fill text-danger ms-2" style={{ fontSize: 14, cursor: 'pointer', flexShrink: 0 }}
+                        
+                        onClick={() => deleteComment(post, c)}
+                        >
+                          
+                        </i>
+                        
                       )}
                     </div>
                   ))}

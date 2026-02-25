@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Card, Button, Spinner, Image, Row, Col } from "react-bootstrap";
 import { db } from "../../firebase/firebase";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
-import { Trash } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 
 export default function AllPics({ isAdmin = true }) {
@@ -57,7 +56,7 @@ export default function AllPics({ isAdmin = true }) {
                     onClick={() => deleteImg(item.id)}
                     title="Delete Image"
                   >
-                    <Trash size={14} />
+                   <i className="bi bi-trash fs-6"></i>
                   </Button>
                 )}
 

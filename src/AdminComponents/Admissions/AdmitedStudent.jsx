@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { Container, Row, Col, Spinner, Form, InputGroup } from "react-bootstrap";
-import { Search } from "react-bootstrap-icons";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { toast } from "react-toastify";
@@ -31,7 +30,7 @@ export default function AdmittedList() {
 
         const admitted = admissions
           .filter(s => s.regNo) // only admitted
-          
+
           // 🔥 Branch filter using RegNo prefix
           .filter(s => {
             if (branch === "all") return true;
@@ -82,12 +81,15 @@ export default function AdmittedList() {
               {/* 🔍 Search */}
               <InputGroup className="app-search-bar">
                 <InputGroup.Text className="bg-transparent border-0">
-                  <Search size={14} className="text-muted" />
+                  <i
+                    className="bi bi-search text-muted"
+                    style={{ fontSize: "14px" }}
+                  ></i>
                 </InputGroup.Text>
-                <Form.Control 
+                <Form.Control
                   placeholder="Search by name or Reg ID..."
                   className="app-input border-0 shadow-none"
-                  onChange={(e) => setQ(e.target.value)} 
+                  onChange={(e) => setQ(e.target.value)}
                 />
               </InputGroup>
 
@@ -102,10 +104,10 @@ export default function AdmittedList() {
                 <Row className="g-3 pb-5">
                   {admitted.map(student => (
                     <Col key={student.id} xs={12} md={6} lg={4} xl={3}>
-                      <StudentCard 
-                        student={student} 
-                        onSave={handleSave} 
-                        onDelete={handleDelete} 
+                      <StudentCard
+                        student={student}
+                        onSave={handleSave}
+                        onDelete={handleDelete}
                       />
                     </Col>
                   ))}

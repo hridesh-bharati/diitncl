@@ -12,24 +12,6 @@ import {
   Col,
   Form,
 } from "react-bootstrap";
-import {
-  ArrowLeft,
-  EnvelopeFill,
-  TelephoneFill,
-  Calendar2EventFill,
-  GeoAltFill,
-  MortarboardFill,
-  PersonFill,
-  PersonBadgeFill,
-  CardHeading,
-  PersonCheckFill,
-  AwardFill,
-  PencilFill,
-  Check2,
-  X,
-  FileEarmarkPdfFill,
-  CameraFill,
-} from "react-bootstrap-icons";
 
 import { toast } from "react-toastify";
 import { doc, updateDoc } from "firebase/firestore";
@@ -158,32 +140,36 @@ const ProfileContent = ({ admissions, loading, error }) => {
     );
 
   const fields = [
-    { label: "Father", field: "fatherName", icon: <PersonFill color="#5C6BC0" /> },
-    { label: "Mother", field: "motherName", icon: <PersonCheckFill color="#EC407A" /> },
-    { label: "Mobile", field: "mobile", icon: <TelephoneFill color="#66BB6A" /> },
-    { label: "Email", field: "email", icon: <EnvelopeFill color="#dc3545" /> },
-    { label: "Aadhar", field: "aadharNo", icon: <CardHeading color="#26A69A" /> },
-    { label: "Qualification", field: "qualification", icon: <MortarboardFill color="#FF9800" /> },
-    { label: "DOB", field: "dob", icon: <Calendar2EventFill color="#EF5350" /> },
-    { label: "Gender", field: "gender", icon: <PersonBadgeFill color="#AB47BC" /> },
-    { label: "Category", field: "category", icon: <AwardFill color="#7E57C2" /> },
+    { label: "Father", field: "fatherName", icon: "bi-person-fill", color: "#5C6BC0" },
+    { label: "Mother", field: "motherName", icon: "bi-person-check-fill", color: "#EC407A" },
+    { label: "Mobile", field: "mobile", icon: "bi-telephone-fill", color: "#66BB6A" },
+    { label: "Email", field: "email", icon: "bi-envelope-fill", color: "#dc3545" },
+    { label: "Aadhar", field: "aadharNo", icon: "bi-card-heading", color: "#26A69A" },
+    { label: "Qualification", field: "qualification", icon: "bi-mortarboard-fill", color: "#FF9800" },
+    { label: "DOB", field: "dob", icon: "bi-calendar2-event-fill", color: "#EF5350" },
+    { label: "Gender", field: "gender", icon: "bi-person-badge-fill", color: "#AB47BC" },
+    { label: "Category", field: "category", icon: "bi-award-fill", color: "#7E57C2" },
   ];
 
   return (
     <div className="min-vh-100 pb-5" style={{ backgroundColor: "#F8FAFC" }}>
-      
+
       {/* HEADER */}
       <div
         className="p-3 d-flex align-items-center text-white shadow-sm"
         style={{ background: "#1A237E", borderRadius: "0 0 20px 20px" }}
       >
-        <ArrowLeft size={24} onClick={() => navigate(-1)} role="button" />
+        <i
+          className="bi bi-arrow-left"
+          style={{ fontSize: "24px", cursor: "pointer" }}
+          onClick={() => navigate(-1)}
+        ></i>
         <span className="ms-3 fw-bold">Student Profile</span>
 
         <div className="ms-auto">
           {!isEditing ? (
             <Button size="sm" variant="light" onClick={() => setIsEditing(true)}>
-              <PencilFill /> Edit
+              <i className="bi bi-pencil-fill me-1"></i> Edit
             </Button>
           ) : (
             <div className="d-flex">
@@ -197,7 +183,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
                 {isSaving ? (
                   <Spinner animation="border" size="sm" />
                 ) : (
-                  <Check2 />
+                  <i className="bi bi-check2"></i>
                 )}
               </Button>
 
@@ -207,7 +193,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
                 disabled={isSaving}
                 onClick={handleCancel}
               >
-                <X />
+                <i className="bi bi-x"></i>
               </Button>
             </div>
           )}
@@ -243,7 +229,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
                   className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2"
                   style={{ cursor: "pointer" }}
                 >
-                  <CameraFill size={14} />
+                  <i className="bi bi-camera-fill" style={{ fontSize: "14px" }}></i>
                 </label>
               </>
             )}
@@ -266,7 +252,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
             className="rounded-pill w-100 px-3 py-2 d-flex align-items-center justify-content-center"
             onClick={handleDownloadCertificate}
           >
-            <FileEarmarkPdfFill className="me-1" />
+            <i className="bi bi-file-earmark-pdf-fill me-1"></i>
             Certificate
           </Button>
         </div>
@@ -333,7 +319,12 @@ const ProfileContent = ({ admissions, loading, error }) => {
           {fields.map((item, i) => (
             <Col xs={6} key={i}>
               <div className="bg-white p-3 rounded-4 shadow-sm">
-                <div>{item.icon}</div>
+                <div>
+                  <i
+                    className={`bi ${item.icon}`}
+                    style={{ fontSize: "18px", color: item.color }}
+                  ></i>
+                </div>
                 <div className="text-muted fw-bold small text-uppercase">
                   {item.label}
                 </div>
@@ -362,7 +353,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
           style={{ borderLeft: "4px solid #0d6efd" }}
         >
           <h6 className="fw-bold mb-3">
-            <GeoAltFill className="text-danger me-2" />
+            <i className="bi bi-geo-alt-fill text-danger me-2"></i>
             Address
           </h6>
 

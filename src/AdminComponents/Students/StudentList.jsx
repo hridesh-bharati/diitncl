@@ -1,7 +1,6 @@
 // src/AdminComponents/Admissions/StudentList.jsx
 import React, { useState, useCallback } from "react";
 import { Container, Row, Col, Spinner, Form, InputGroup } from "react-bootstrap";
-import { Search } from "react-bootstrap-icons";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { toast } from "react-toastify";
@@ -76,7 +75,10 @@ export default function StudentList() {
 
               <InputGroup className="app-search-bar mb-3">
                 <InputGroup.Text className="bg-transparent border-0">
-                  <Search size={14} className="text-muted" />
+                  <i
+                    className="bi bi-search text-muted"
+                    style={{ fontSize: "14px" }}
+                  ></i>
                 </InputGroup.Text>
                 <Form.Control
                   placeholder="Search by name..."

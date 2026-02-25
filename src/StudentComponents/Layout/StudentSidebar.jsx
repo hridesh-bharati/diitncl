@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Speedometer2, PersonCircle, Award, BoxArrowRight, List, Gear } from "react-bootstrap-icons";
 import { auth } from "../../firebase/firebase";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,10 +11,10 @@ export default function StudentSidebar({ open, setOpen }) {
 
   // DRY: Menu definition
   const menuItems = [
-    { to: "/student/dashboard", icon: Speedometer2, label: "Dashboard" },
-    { to: "/student/profile", icon: PersonCircle, label: "My Profile" },
-    { to: "/student/account", icon: Gear, label: "Account" },
-    { to: "/student/certificate", icon: Award, label: "Certificate" },
+    { to: "/student/dashboard", icon: "bi-speedometer2", label: "Dashboard" },
+    { to: "/student/profile", icon: "bi-person-circle", label: "My Profile" },
+    { to: "/student/account", icon: "bi-gear", label: "Account" },
+    { to: "/student/certificate", icon: "bi-award", label: "Certificate" },
   ];
 
   // Bootstrap Offcanvas Fix
@@ -52,7 +51,7 @@ export default function StudentSidebar({ open, setOpen }) {
           }
           onClick={() => isMobile && setOpen(false)}
         >
-          <item.icon size={22} />
+          <i className={`bi ${item.icon}`} style={{ fontSize: "22px" }}></i>
           {(!collapsed || isMobile) && <span>{item.label}</span>}
         </NavLink>
       ))}
@@ -66,7 +65,7 @@ export default function StudentSidebar({ open, setOpen }) {
         <div className="d-flex justify-content-between align-items-center mb-4">
           {!collapsed && <h5 className="sidebar-brand mb-0 text-primary fw-bold">LMS Portal</h5>}
           <button className="btn btn-sm btn-light border" onClick={() => setCollapsed(!collapsed)}>
-            <List size={20} />
+            <i className="bi bi-list" style={{ fontSize: "20px" }}></i>
           </button>
         </div>
 
@@ -76,7 +75,7 @@ export default function StudentSidebar({ open, setOpen }) {
 
         <div className="mt-auto pt-3 border-top">
           <button className={`logout-btn btn btn-danger w-100 ${collapsed ? "justify-content-center" : ""}`} onClick={handleLogout}>
-            <BoxArrowRight size={22} /> 
+            <i className="bi bi-box-arrow-right" style={{ fontSize: "22px" }}></i>
             {!collapsed && <span className="ms-2">Logout</span>}
           </button>
         </div>
@@ -95,7 +94,7 @@ export default function StudentSidebar({ open, setOpen }) {
           </nav>
           <div className="mt-auto border-top pt-3">
             <button className="btn  btn-danger w-100 border-0" onClick={handleLogout}>
-              <BoxArrowRight size={22} />
+              <i className="bi bi-box-arrow-right" style={{ fontSize: "22px" }}></i>
               <span>Logout Account</span>
             </button>
           </div>

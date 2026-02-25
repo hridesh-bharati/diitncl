@@ -2,7 +2,6 @@ import React from "react";
 import { auth } from "../../firebase/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { ShieldLock, BoxArrowRight, Envelope } from "react-bootstrap-icons";
 
 export default function AccountSettings() {
   const navigate = useNavigate();
@@ -27,16 +26,24 @@ export default function AccountSettings() {
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
-        <div className="card-header bg-white fw-bold">Account Settings</div>
+        <div className="card-header bg-white fw-bold">
+          <i className="bi bi-gear me-2"></i>
+          Account Settings
+        </div>
+
         <div className="card-body">
           {/* Email Display */}
           <div className="d-flex align-items-center mb-4">
             <div className="bg-light p-3 rounded-circle me-3">
-              <Envelope size={24} className="text-primary" />
+              <i className="bi bi-envelope fs-4 text-primary"></i>
             </div>
             <div>
-              <label className="text-muted small d-block">Email Address</label>
-              <span className="fw-bold text-dark">{user?.email || "Not Logged In"}</span>
+              <label className="text-muted small d-block">
+                Email Address
+              </label>
+              <span className="fw-bold text-dark">
+                {user?.email || "Not Logged In"}
+              </span>
             </div>
           </div>
 
@@ -45,19 +52,22 @@ export default function AccountSettings() {
           {/* Actions */}
           <div className="row g-3">
             <div className="col-md-6">
-              <button 
+              <button
                 className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2"
                 onClick={handleResetPassword}
               >
-                <ShieldLock /> Reset Password Link
+                <i className="bi bi-shield-lock"></i>
+                Reset Password Link
               </button>
             </div>
+
             <div className="col-md-6">
-              <button 
+              <button
                 className="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2"
                 onClick={handleLogout}
               >
-                <BoxArrowRight /> Logout from Account
+                <i className="bi bi-box-arrow-right"></i>
+                Logout from Account
               </button>
             </div>
           </div>

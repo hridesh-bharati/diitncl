@@ -2,20 +2,28 @@ import React, { useEffect, useState, useMemo } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Container, Card, Spinner, Row, Col } from "react-bootstrap";
-import {
-  EnvelopeFill, TelephoneFill, Calendar2EventFill, GeoAltFill,
-  MortarboardFill, AwardFill, PersonBadgeFill, CalendarCheckFill,
-  CpuFill, CodeSlash, LaptopFill, Check2Circle, PcDisplay
-} from "react-bootstrap-icons";
+// import {
+//   EnvelopeFill, TelephoneFill, Calendar2EventFill, GeoAltFill,
+//   MortarboardFill, AwardFill, PersonBadgeFill, CalendarCheckFill,
+//   CpuFill, CodeSlash, LaptopFill, Check2Circle, PcDisplay
+// } from "react-bootstrap-icons";
 
 // Sub-Component for Technical Info Tiles
-const TechTile = ({ icon: Icon, label, value, color }) => (
-  <div className="d-flex align-items-center p-3 mb-3 bg-white rounded-3 shadow-sm border-start border-4" style={{ borderColor: color }}>
-    <div className="p-2 rounded-circle me-3" style={{ backgroundColor: `${color}15`, color: color }}>
-      <Icon size={24} />
+const TechTile = ({ icon, label, value, color }) => (
+  <div
+    className="d-flex align-items-center p-3 mb-3 bg-white rounded-3 shadow-sm border-start border-4"
+    style={{ borderColor: color }}
+  >
+    <div
+      className="p-2 rounded-circle me-3"
+      style={{ backgroundColor: `${color}15`, color: color }}
+    >
+      <i className={`bi ${icon}`} style={{ fontSize: "24px" }}></i>
     </div>
     <div>
-      <small className="text-muted d-block" style={{ fontSize: '0.7rem' }}>{label}</small>
+      <small className="text-muted d-block" style={{ fontSize: "0.7rem" }}>
+        {label}
+      </small>
       <span className="fw-bold">{value || "N/A"}</span>
     </div>
   </div>
@@ -54,15 +62,15 @@ export default function Profile() {
           alt="Avatar"
         />
         <h3 className="fw-bold mb-1">{student?.name}</h3>
-        <p className="mb-0 opacity-75"><PcDisplay className="me-2" />{student?.course} Student</p>
+        <p className="mb-0 opacity-75"><i className="bi bi-pc-display me-2"></i>{student?.course} Student</p>
       </div>
 
       <Container className="mt-n4" style={{ marginTop: "-30px" }}>
         {/* Quick Stats for Computer Students */}
         <Row className="g-3 mb-4">
-          <Col md={4}><TechTile icon={CodeSlash} label="Enrolled Course" value={student?.course} color="#6610f2" /></Col>
-          <Col md={4}><TechTile icon={CpuFill} label="System Assigned" value="Lab-01 / PC-04" color="#0d6efd" /></Col>
-          <Col md={4}><TechTile icon={Check2Circle} label="Attendance" value="85%" color="#198754" /></Col>
+          <Col><TechTile icon="bi-code-slash" label="Enrolled Course" value={student?.course} color="#6610f2" /></Col>
+          <Col><TechTile icon="bi-cpu-fill" label="System Assigned" value="Lab-01 / PC-04" color="#0d6efd" /></Col>
+          <Col><TechTile icon="bi-check2-circle" label="Attendance" value="85%" color="#198754" /></Col>
         </Row>
 
         <Row>
@@ -71,7 +79,7 @@ export default function Profile() {
             <Card className="border-0 shadow-sm rounded-4 mb-4">
               <Card.Body className="p-4">
                 <h5 className="fw-bold mb-4 d-flex align-items-center">
-                  <MortarboardFill className="me-2 text-primary" /> Academic Record
+                  <i className="bi bi-mortarboard-fill me-2 text-primary"></i>Academic Record
                 </h5>
                 <Row className="g-4">
                   <InfoBox label="Roll Number" value={Number(student?.regNo?.split("/").pop())} />
@@ -85,7 +93,7 @@ export default function Profile() {
             <Card className="border-0 shadow-sm rounded-4 mb-4">
               <Card.Body className="p-4">
                 <h5 className="fw-bold mb-4 d-flex align-items-center">
-                  <PersonBadgeFill className="me-2 text-primary" /> Personal Information
+                  <i className="bi bi-person-badge-fill me-2 text-primary"></i> Personal Information
                 </h5>
                 <Row className="g-4">
                   <InfoBox label="Father's Name" value={student?.fatherName} />
@@ -94,7 +102,7 @@ export default function Profile() {
                   <InfoBox label="Mobile" value={student?.mobile} />
                   <Col md={12}>
                     <label className="text-muted small d-block mb-1">Residential Address</label>
-                    <span className="fw-bold"><GeoAltFill className="text-danger me-1" /> {student?.address}</span>
+                    <span className="fw-bold"><i className="bi bi-geo-alt-fill text-danger me-1"></i> {student?.address}</span>
                   </Col>
                 </Row>
               </Card.Body>
@@ -105,7 +113,7 @@ export default function Profile() {
           <Col lg={4}>
             <Card className="border-0 shadow-sm rounded-4 mb-4 bg-primary text-white">
               <Card.Body className="p-4">
-                <h6 className="fw-bold mb-3"><LaptopFill className="me-2" /> Skill Progress</h6>
+                <h6 className="fw-bold mb-3"><i className="bi bi-laptop-fill me-2"></i> Skill Progress</h6>
                 <ProgressBar label="Operating System" now={90} />
                 <ProgressBar label="Office Suite" now={75} />
                 <ProgressBar label="Typing Speed" now={60} />
@@ -115,7 +123,7 @@ export default function Profile() {
             <Card className="border-0 shadow-sm rounded-4 p-3 text-center">
               <div className="small text-muted mb-2">Login Verified via</div>
               <div className="fw-bold text-dark border rounded-pill py-1 bg-light">
-                <EnvelopeFill className="me-2 text-primary" />{student?.email}
+                <i className="bi bi-envelope-fill me-2 text-primary"></i>{student?.email}
               </div>
             </Card>
           </Col>

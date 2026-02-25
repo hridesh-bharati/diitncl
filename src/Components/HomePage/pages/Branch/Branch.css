@@ -30,13 +30,18 @@
 
 /* --- Floating Action Buttons --- */
 .fab-bottom {
-    position: fixed;
-    bottom: 6px;
-    left: 16px;
-    right: 16px;
-    z-index: 1050;
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  padding: 0 16px;
 }
 
+.fab-bottom .bg-white {
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.85) !important;
+}
 /* --- Call Button --- */
 .btn-app {
     background: var(--primary-gradient);
@@ -74,4 +79,105 @@
     .app-header {
         padding: 40px 15px 90px;
     }
+}
+
+/* Simple CSS Typing Animation */
+.typing-text {
+    display: inline-block;
+    color: #ffc107;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: left;
+}
+
+.typing-text::after {
+    content: '';
+    animation: typing 6s infinite;
+}
+
+@keyframes typing {
+    0%, 30% {
+        content: 'Growing.';
+    }
+    33%, 63% {
+        content: 'Faster.';
+    }
+    66%, 100% {
+        content: 'Bigger.';
+    }
+}
+
+/* Blinking cursor effect */
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: #ffc107;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}/* Simple CSS Typing Animation */
+.typing-text {
+    display: inline-block;
+    color: #ffc107;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: left;
+}
+
+.typing-text::after {
+    content: '';
+    animation: typing 6s infinite;
+}
+
+@keyframes typing {
+    0%, 30% {
+        content: 'Growing.';
+    }
+    33%, 63% {
+        content: 'Faster.';
+    }
+    66%, 100% {
+        content: 'Bigger.';
+    }
+}
+
+/* Blinking cursor effect */
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: #ffc107;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+/* Fix for Bootstrap Icons background opacity */
+.bg-primary.bg-opacity-10 {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-danger.bg-opacity-10 {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.bg-dark.bg-opacity-10 {
+    background-color: rgba(33, 37, 41, 0.1) !important;
 }

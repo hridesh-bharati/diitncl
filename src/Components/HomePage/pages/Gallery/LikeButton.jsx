@@ -1,11 +1,10 @@
 // src/components/Gallery/LikeButton.jsx
 import React, { useState } from "react";
-import { Heart, HeartFill } from "react-bootstrap-icons";
 import "./LikeButton.css";
 
-export default function LikeButton({ 
-  isLiked, 
-  count, 
+export default function LikeButton({
+  isLiked,
+  count,
   onClick,
   size = 22,
   showAnimation = true,
@@ -16,7 +15,7 @@ export default function LikeButton({
 
   const handleClick = (e) => {
     e.stopPropagation();
-    
+
     if (showAnimation) {
       setAnimate(true);
       setTimeout(() => setAnimate(false), 450);
@@ -26,7 +25,7 @@ export default function LikeButton({
     if (e.detail === 2) {
       setDoubleClick(true);
       setTimeout(() => setDoubleClick(false), 450);
-      
+
       // If double click and not liked, auto-like
       if (!isLiked) {
         onClick();
@@ -39,16 +38,18 @@ export default function LikeButton({
   // Instagram Style
   if (variant === 'instagram') {
     return (
-      <div 
+      <div
         className="instagram-like-wrapper"
         onClick={handleClick}
       >
         <span className={`instagram-like-icon ${isLiked ? 'liked' : ''} ${animate ? 'likePop' : ''} ${doubleClick ? 'double-click-like' : ''}`}>
-          {isLiked ? (
-            <HeartFill color="#ed4956" size={size} />
-          ) : (
-            <Heart size={size} />
-          )}
+          <i
+            className={`bi ${isLiked ? "bi-heart-fill" : "bi-heart"}`}
+            style={{
+              fontSize: size,
+              color: isLiked ? "#ed4956" : "inherit"
+            }}
+          ></i>
         </span>
         <span className={`instagram-like-count ${isLiked ? 'liked' : ''}`}>
           {count}
@@ -60,7 +61,7 @@ export default function LikeButton({
   // Facebook Style
   if (variant === 'facebook') {
     return (
-      <div 
+      <div
         onClick={handleClick}
         style={{
           display: 'flex',
@@ -73,12 +74,14 @@ export default function LikeButton({
           transition: 'all 0.2s ease'
         }}
       >
-        {isLiked ? (
-          <HeartFill color="#1877f2" size={size} />
-        ) : (
-          <Heart size={size} />
-        )}
-        <span style={{ 
+        <i
+          className={`bi ${isLiked ? "bi-heart-fill" : "bi-heart"}`}
+          style={{
+            fontSize: size,
+            color: isLiked ? "#ed4956" : "inherit"
+          }}
+        ></i>
+        <span style={{
           color: isLiked ? '#1877f2' : '#65676b',
           fontWeight: '600',
           fontSize: '14px'
@@ -91,7 +94,7 @@ export default function LikeButton({
 
   // Minimal Style
   return (
-    <div 
+    <div
       onClick={handleClick}
       style={{
         display: 'flex',
@@ -100,11 +103,13 @@ export default function LikeButton({
         cursor: 'pointer'
       }}
     >
-      {isLiked ? (
-        <HeartFill color="#ed4956" size={size} />
-      ) : (
-        <Heart size={size} />
-      )}
+      <i
+        className={`bi ${isLiked ? "bi-heart-fill" : "bi-heart"}`}
+        style={{
+          fontSize: size,
+          color: isLiked ? "#ed4956" : "inherit"
+        }}
+      ></i>
       <span style={{ fontWeight: '600', fontSize: '14px' }}>{count}</span>
     </div>
   );

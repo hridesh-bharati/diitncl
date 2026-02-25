@@ -1,7 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./App.css"
-import { Spinner } from "react-bootstrap";
 
 // 🔒 Security & UX
 import Lock from "./Components/HomePage/LockWeb/Lock";

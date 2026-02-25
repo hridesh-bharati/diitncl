@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import Typed from 'typed.js';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -94,19 +93,24 @@ const SectionHeader = ({ title, subtitle, className = "" }) => (
     </div>
 );
 
-const IconBadge = ({ icon, color, size = "3" }) => (
-    <div
-        className={`bg-${color} bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center`}
-        style={{ width: '60px', height: '60px' }}
-    >
-        <i className={`bi ${icon} fs-${size} text-${color}`}></i>
-    </div>
-);
+const IconBadge = ({ icon, color, size = "3" }) => {
+    // Extract color name without 'text-' prefix
+    const bgColor = color.replace('text-', '');
+    
+    return (
+        <div
+            className={`bg-${bgColor} bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center`}
+            style={{ width: '60px', height: '60px' }}
+        >
+            <i className={`bi ${icon} fs-${size} ${color}`}></i>
+        </div>
+    );
+};
 
 const FeatureCard = ({ icon, title, text, iconColor }) => (
     <AppCard className="h-100 text-center">
         <div className="d-flex">
-            <IconBadge icon={icon} color={iconColor.replace('text-', '')} />
+            <IconBadge icon={icon} color={iconColor} />
             <h5 className="fw-bold m-3">{title}</h5>
         </div>
         <p className="text-muted small ms-3">{text}</p>
@@ -115,7 +119,7 @@ const FeatureCard = ({ icon, title, text, iconColor }) => (
 
 const ProgramCard = ({ program, index }) => (
     <AppCard className="h-100">
-        <IconBadge icon={program.icon} color={program.iconColor.replace('text-', '')} />
+        <IconBadge icon={program.icon} color={program.iconColor} />
         <h5 className="fw-bold mt-3">{program.title}</h5>
         <p className="text-muted small">{program.text}</p>
         <div className="d-flex justify-content-between align-items-center mb-2">
@@ -150,14 +154,7 @@ const Carousel = ({ items, id, height = 250 }) => (
 /** MAIN COMPONENT */
 function Branch() {
     useEffect(() => {
-        const typed = new Typed('#typingAmt', {
-            strings: ['Growing.', 'Faster.', 'Bigger.'],
-            typeSpeed: 50,
-            backSpeed: 30,
-            loop: true
-        });
         AOS.init({ duration: 800, once: true, offset: 100 });
-        return () => typed.destroy();
     }, []);
 
     return (
@@ -166,7 +163,9 @@ function Branch() {
                 <h1 className="fw-bolder display-5 mb-2">DRISHTEE</h1>
                 <p className="opacity-75 mb-3">Institute of Information Technology</p>
                 <div className="d-inline-flex align-items-center bg-white bg-opacity-25 px-4 py-2 rounded-pill">
-                    <span className="small fw-medium">Drishtee is <span id="typingAmt" className="text-warning fw-bold"></span></span>
+                    <span className="small fw-medium">
+                        Drishtee is <span className="typing-text"></span><span className="typing-cursor"></span>
+                    </span>
                 </div>
             </header>
 
@@ -197,7 +196,7 @@ function Branch() {
                                 Located in the heart of Thoothibari, our center boasts modern computer labs, experienced faculty, and a nurturing learning environment that fosters talent and supports professional growth.
                             </p>
                             <div className="d-flex gap-2">
-                                <span className="badge bg-primary  text-white rounded-pill px-3 py-2">Govt. Certified</span>
+                                <span className="badge bg-primary text-white rounded-pill px-3 py-2">Govt. Certified</span>
                                 <span className="badge bg-success text-white rounded-pill px-3 py-2">ISO Certified</span>
                             </div>
                         </AppCard>
@@ -209,7 +208,6 @@ function Branch() {
                         </AppCard>
                     </div>
                     <Counter />
-
                 </div>
 
                 {/* Features */}
@@ -239,7 +237,10 @@ function Branch() {
                             <SectionHeader title="Our Learning Methodology" />
                             {DATA.METHODOLOGY.map((m, i) => (
                                 <div key={i} className="methodology-card mb-3" data-aos="fade-up" data-aos-delay={i * 100}>
-                                    <h5 className="fw-bold text-primary mb-1"><i className="bi bi-check-circle-fill me-2"></i>{m.title}</h5>
+                                    <h5 className="fw-bold text-primary mb-1">
+                                        <i className="bi bi-check-circle-fill me-2"></i>
+                                        {m.title}
+                                    </h5>
                                     <p className="text-muted mb-0">{m.description}</p>
                                 </div>
                             ))}
@@ -278,7 +279,10 @@ function Branch() {
                     {DATA.FAQS.map((f, i) => (
                         <div key={i} className="col-md-6" data-aos="fade-up" data-aos-delay={i * 100}>
                             <AppCard className="p-4 h-100">
-                                <h5 className="fw-bold text-dark mb-2"><i className="bi bi-question-circle-fill text-primary me-2"></i>{f.question}</h5>
+                                <h5 className="fw-bold text-dark mb-2">
+                                    <i className="bi bi-question-circle-fill text-primary me-2"></i>
+                                    {f.question}
+                                </h5>
                                 <p className="text-muted mb-0">{f.answer}</p>
                             </AppCard>
                         </div>
@@ -305,6 +309,7 @@ function Branch() {
                 </div>
             </main>
             <Footer />
+            
             {/* Floating Call/WhatsApp - Mobile Only */}
             <div className="fab-bottom d-block d-md-none" data-aos="fade-up" data-aos-delay="500">
                 <div className="d-flex gap-2 p-2 bg-white rounded-4">
@@ -320,11 +325,8 @@ function Branch() {
                     >
                         <i className="bi bi-whatsapp"></i>
                     </a>
-
                 </div>
             </div>
-
-
         </div>
     );
 }

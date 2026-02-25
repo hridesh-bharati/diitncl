@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { Container, Row, Col, Card, Badge, Button, Spinner, Modal } from "react-bootstrap";
-import { Trash3, Check2Circle, Inbox, Clock, ArrowCounterclockwise } from "react-bootstrap-icons";
 
 export default function AdaptiveAdminQueries() {
   const [queries, setQueries] = useState([]);
@@ -62,7 +61,7 @@ export default function AdaptiveAdminQueries() {
             <small className="text-muted">{filtered.length} active sessions</small>
           </div>
           <div className="bg-primary text-white p-2 rounded-3 shadow">
-            <Inbox size={24} />
+            <i className="bi bi-inbox fs-4"></i>
           </div>
         </div>
 
@@ -97,7 +96,7 @@ export default function AdaptiveAdminQueries() {
                         {q.status === 'reviewed' ? "Closed" : "Active"}
                       </Badge>
                       <small className="text-muted">
-                        <Clock size={12} /> {q.timestamp.getHours()}:{q.timestamp.getMinutes()}
+                        <i className="bi bi-clock me-1" style={{ fontSize: "12px" }}></i> {q.timestamp.getHours()}:{q.timestamp.getMinutes()}
                       </small>
                     </div>
 
@@ -114,8 +113,8 @@ export default function AdaptiveAdminQueries() {
                         onClick={() => toggleStatus(q)}
                       >
                         {q.status === "reviewed"
-                          ? <ArrowCounterclockwise />
-                          : <Check2Circle color="green" size={18} />
+                          ? <i className="bi bi-arrow-counterclockwise fs-5"></i>
+                          : <i className="bi bi-check2-circle text-success fs-5"></i>
                         }
                       </Button>
 
@@ -124,7 +123,7 @@ export default function AdaptiveAdminQueries() {
                         className="glass-panel btn-sm border-0 text-danger shadow-sm d-flex align-items-center justify-content-center"
                         onClick={() => setModal({ show: true, query: q })}
                       >
-                        <Trash3 size={18} />
+                        <i className="bi bi-trash fs-5"></i>
                       </Button>
                     </div>
 
