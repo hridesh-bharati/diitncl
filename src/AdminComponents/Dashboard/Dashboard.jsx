@@ -66,43 +66,56 @@ export default function Dashboard() {
           </Col>
         ))}
       </Row>
+<div className="full-width-card border-0 shadow-sm">
+  <div className="p-3 d-flex justify-content-between align-items-center bg-white">
+    <h6 className="fw-800 m-0 text-dark">Recent Admissions (Top 5)</h6>
+    <Link to="/admin/admitted-student-list" className="small fw-bold text-decoration-none">View All</Link>
+  </div>
 
-      <div className="full-width-card border-0 shadow-sm">
-        <div className="p-3 d-flex justify-content-between align-items-center bg-white">
-          <h6 className="fw-800 m-0 text-dark">Recent Admissions (Top 5)</h6>
-          <Link to="/admin/admitted-student-list" className="small fw-bold text-decoration-none">View All</Link>
-        </div>
-        <div className="scroll-area">
-          <Table hover className="table-premium mb-0 border-0">
-            <thead className="bg-light">
-              <tr>
-                <th className="border-0 ps-3 small text-muted fw-600">STUDENT</th>
-                <th className="border-0 pe-3 text-end small text-muted fw-600">DATE</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map(s => (
-                <tr key={s.id} onClick={() => navigate(`/admin/students/${s.id}`)} style={{ cursor: 'pointer' }} className="border-0">
-                  <td className="border-0 ps-3">
-                    <div className="d-flex align-items-center gap-2">
-                      <div className="avatar-circle">
-                        {s.photoUrl ? <img src={s.photoUrl} alt="" className="w-100 h-100 rounded-2" style={{ objectFit: 'cover' }} /> : s.name?.charAt(0)}
-                      </div>
-                      <div className="d-flex flex-column">
-                        <span className="fw-700 text-dark" style={{ fontSize: '13px' }}>{s.name}</span>
-                        <span className="text-muted" style={{ fontSize: '10px', marginTop: '-2px' }}>{s.course}</span>
-                      </div>
+  <div className="scroll-area">
+    <Table hover className="table-premium mb-0 border-0">
+      <thead className="bg-light">
+        <tr>
+          <th className="border-0 ps-3 small text-muted fw-600">STUDENT</th>
+          <th className="border-0 pe-3 text-end small text-muted fw-600">DATE</th>
+        </tr>
+      </thead>
+      <tbody>
+        {students.map(s => {
+          // Derive branch from regNo
+          let branch = "Unknown";
+          let branchColor = "secondary";
+          if (s.regNo?.startsWith("DIIT124")) { branch = "Main"; branchColor = "primary"; }
+          else if (s.regNo?.startsWith("DIIT125")) { branch = "East"; branchColor = "success"; }
+
+          return (
+            <tr key={s.id} onClick={() => navigate(`/admin/students/${s.id}`)} style={{ cursor: 'pointer' }} className="border-0">
+              <td className="border-0 ps-3">
+                <div className="d-flex align-items-center gap-2">
+                  <div className="avatar-circle">
+                    {s.photoUrl ? <img src={s.photoUrl} alt="" className="w-100 h-100 rounded-2" style={{ objectFit: 'cover' }} /> : s.name?.charAt(0)}
+                  </div>
+                  <div className="d-flex flex-column">
+                    <div className="d-flex align-items-center gap-1">
+                      <span className="fw-700 text-dark" style={{ fontSize: '13px' }}>{s.name}</span>
+                      <Badge bg={branchColor} className="fw-bold py-0 px-1" style={{ fontSize: '9px', borderRadius: '4px' }}>
+                        {branch}
+                      </Badge>
                     </div>
-                  </td>
-                  <td className="border-0 pe-3 text-end text-muted" style={{ fontSize: '11px' }}>
-                    {s.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      </div>
+                    <span className="text-muted" style={{ fontSize: '10px', marginTop: '-2px' }}>{s.course}</span>
+                  </div>
+                </div>
+              </td>
+              <td className="border-0 pe-3 text-end text-muted" style={{ fontSize: '11px' }}>
+                {s.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  </div>
+</div>
 
       <div className="mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3 px-1">
