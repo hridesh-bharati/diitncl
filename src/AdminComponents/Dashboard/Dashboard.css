@@ -12,7 +12,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* TOP CARDS: VALUE TOP, CAPTION BOTTOM */
+/* TOP CARDS */
 .stat-card {
   position: relative;
   border-radius: var(--card-curve);
@@ -27,26 +27,16 @@
   transition: transform 0.2s ease;
   cursor: pointer;
 }
-
 .stat-card:hover { transform: translateY(-3px); }
 
 .watermark-icon {
   position: absolute;
-  right: -10px;
-  bottom: -15px;
-  font-size: 70px;
-  opacity: 0.15;
-  transform: rotate(-10deg);
-  z-index: 1;
+  right: -10px; bottom: -15px;
+  font-size: 70px; opacity: 0.15;
+  transform: rotate(-10deg); z-index: 1;
 }
 
-.content-on-top {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
+.content-on-top { position: relative; z-index: 2; display: flex; align-items: center; width: 100%; }
 
 .icon-badge-glow {
   width: 45px; height: 45px;
@@ -57,7 +47,6 @@
   backdrop-filter: blur(4px);
 }
 
-.stat-info-text { display: flex; flex-direction: column; }
 .stat-info-text h3 { font-size: 26px; font-weight: 800; margin: 0; line-height: 1; }
 .stat-info-text p { font-size: 11px; font-weight: 700; margin-top: 4px; text-transform: uppercase; opacity: 0.8; }
 
@@ -70,23 +59,13 @@
   overflow: hidden;
 }
 
-.scroll-area {
-  max-height: 280px; 
-  overflow-y: auto;
-}
-
-.scroll-area::-webkit-scrollbar { width: 5px; }
+.scroll-area { max-height: 280px; overflow-y: auto; }
+.scroll-area::-webkit-scrollbar { width: 4px; }
 .scroll-area::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 10px; }
 
-.table-premium thead th {
-  background: #f8fafc;
-  padding: 12px 20px;
-  font-size: 11px;
-  color: #64748b;
-  position: sticky; top: 0; z-index: 5;
-}
-
-.table-premium td { padding: 12px 20px; border-top: 1px solid #f1f5f9; }
+.table-premium td, .table-premium th { border: none !important; }
+.table-premium tr { border-bottom: 1px solid #f1f5f9 !important; }
+.table-premium tr:last-child { border-bottom: none !important; }
 
 .avatar-circle {
   width: 36px; height: 36px; border-radius: 10px;
@@ -106,17 +85,10 @@
   cursor: pointer;
   height: 100%;
 }
-
 .enquiry-card:hover {
   border-color: #0ea5e9;
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(14, 165, 233, 0.1);
 }
 
-.enquiry-icon-sm {
-  width: 32px; height: 32px;
-  background: #f0f9ff;
-  color: #0ea5e9;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-}
+.text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
