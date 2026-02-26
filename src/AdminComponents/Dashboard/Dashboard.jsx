@@ -92,7 +92,7 @@ export default function Dashboard() {
           <Link to="/admin/admitted-student-list" className="small fw-bold text-decoration-none">View All</Link>
         </div>
 
-        <div className="scroll-area">
+        <div className="scroll-area border-top">
           <Table hover className="table-premium mb-0 border-0">
             <thead className="bg-light">
               <tr>
