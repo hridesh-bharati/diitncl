@@ -100,7 +100,7 @@ export default function StudentList() {
 
               {/* 🚀 Filter Buttons */}
               <div className="d-flex gap-2 overflow-auto scroll-hide pb-1">
-                {["all", "pending", "accepted", "done", "canceled"].map((s) => (
+                {["all", "pending", "accepted", "canceled"].map((s) => (
                   <Button
                     key={s}
                     variant={statusFilter === s ? "primary" : "white"}
