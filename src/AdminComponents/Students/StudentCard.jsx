@@ -8,7 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 
-const STATUS_COLORS = { accepted: "success", canceled: "danger", pending: "warning" };
+const STATUS_COLORS = { accepted: "success", canceled: "danger", pending: "warning", done: "primary" };
 const BRANCH_DISPLAY = { DIIT124: "Main Branch", DIIT125: "East Branch" };
 
 const StudentCard = React.memo(({ student, onSave, onDelete }) => {
@@ -25,7 +25,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
   const [editingRegNo, setEditingRegNo] = useState(false);
 
   useEffect(() => {
-    setPercent(student.percentage || "");
+    setPercent(student.percentage ?? "");
     setIssDate(student.issueDate || "");
     setAdmissionDate(student.admissionDate || "");
     setRegNumber("");
@@ -35,10 +35,11 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
 
   const status = student.status || "pending";
   const isAccepted = status === "accepted";
-  const canSaveFinal = (percent !== student.percentage ||
-    issDate !== student.issueDate ||
-    admissionDate !== student.admissionDate) &&
-    (percent && issDate && admissionDate);
+  const canSaveFinal =
+    (Number(percent) !== Number(student.percentage) ||
+      issDate !== student.issueDate ||
+      admissionDate !== student.admissionDate) &&
+    (percent !== "" && issDate && admissionDate);
   const regNo = student.regNo;
   const studentBranch = student.branch || student.centerCode;
   const studentCourse = student.course;
@@ -172,6 +173,24 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
     }
   };
 
+  const handleMarkDone = async () => {
+    if (!isAdmin) return;
+    if (!percent || Number(percent) <= 0) {
+      toast.warning("Enter percentage first");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onSave(student.id, { status: "done" });
+      toast.success("Student marked as Done ✅");
+    } catch {
+      toast.error("Failed to update status");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isAdmin) {
     return (
       <Card className="border-0 shadow-sm rounded-4 mb-3">
@@ -185,7 +204,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
   return (
     <Card className="border-0 mb-4 mb-lg-0 shadow-sm rounded-4 overflow-hidden">
       <Card.Body className="p-3">
-        <HeaderSection student={student} status={status} />
+        <HeaderSection student={student} status={status} setEditingRegNo={setEditingRegNo} />
         {studentBranch && (
           <div className="mb-2">
             <Badge bg={studentBranch === "DIIT124" ? "primary" : "info"}
@@ -198,6 +217,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
         <div className="rounded-4">
           {isAccepted ? (
             <AcceptedView
+              student={student}
               regNumber={regNumber}
               setRegNumber={setRegNumber}
               percent={percent}
@@ -207,6 +227,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
               admissionDate={admissionDate}
               setAdmissionDate={setAdmissionDate}
               canSaveFinal={canSaveFinal}
+              onMarkDone={handleMarkDone}
               onGenerateRegNo={handleGenerateRegNo}
               onSaveFinal={handleSaveFinal}
               loading={loading}
@@ -236,7 +257,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
   );
 });
 
-const HeaderSection = ({ student, status }) => {
+const HeaderSection = ({ student, status, setEditingRegNo }) => {
   const studentBranch = student.branch || student.centerCode;
   return (
     <div className="d-flex align-items-center gap-3 mb-3">
@@ -262,8 +283,10 @@ const HeaderSection = ({ student, status }) => {
         <div className="text-muted small mb-1">{student.course}</div>
       </div>
       <div className="text-end">
-        {student.percentage &&
-          <div className="text-success fw-bolder h5 mb-0">{student.percentage}%</div>
+        {student.percentage !== undefined &&
+          <div className="text-success fw-bolder h5 mb-0">
+            {student.percentage}%
+          </div>
         }
       </div>
     </div>
@@ -271,9 +294,10 @@ const HeaderSection = ({ student, status }) => {
 };
 
 const AcceptedView = ({
+  student,
   regNumber, setRegNumber, percent, setPercent,
   issDate, setIssDate, admissionDate, setAdmissionDate,
-  canSaveFinal, onGenerateRegNo, onSaveFinal, loading,
+  canSaveFinal, onGenerateRegNo, onSaveFinal, onMarkDone, loading,
   checkingDuplicate, isDuplicate, isValidDigit,
   regNo, studentBranch, studentCourse, editingRegNo, setEditingRegNo
 }) => (
@@ -447,6 +471,18 @@ const AcceptedView = ({
                 </>}
               </Button>
             )}
+
+              {Number(percent) > 0 && status !== "done" && (
+              <Button
+                variant="primary"
+                size="sm"
+                className="w-100 rounded-pill fw-bold shadow-sm py-2 mt-2"
+                onClick={onMarkDone}
+                disabled={loading}
+              >
+                {loading ? "Updating..." : "MARK AS DONE"}
+              </Button>
+            )}
           </>
         )}
       </div>
@@ -514,7 +550,7 @@ const ReadOnlyView = ({ student, status }) => {
         <Badge bg={STATUS_COLORS[status]} className="px-3 py-2 rounded-pill">
           {status.toUpperCase()}
         </Badge>
-        {student.percentage && (
+        {student.percentage !== undefined && (
           <div className="mt-2">
             <small className="text-muted">Marks: </small>
             <strong className="text-success">{student.percentage}%</strong>
