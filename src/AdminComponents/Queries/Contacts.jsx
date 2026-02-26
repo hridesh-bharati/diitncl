@@ -1,134 +1,111 @@
-// src/AdminComponents/Queries/Contacts.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { db } from "../../firebase/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Container, Row, Col, Card, Badge, Button, Spinner, Modal } from "react-bootstrap";
+import { Container, Row, Col, Badge, Button, Spinner, Modal } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 export default function AdaptiveAdminQueries() {
-  const [queries, setQueries] = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
-  const [modal, setModal] = useState({ show: false, query: null });
+  const [modal, setModal] = useState(null);
 
-  /* ===============================
-     🔴 REALTIME QUERY LISTENER
-  =============================== */
+  // 🔄 Realtime Listener (Optimized Map)
   useEffect(() => {
     const q = query(collection(db, "studentQueries"), orderBy("timestamp", "desc"));
-
-    const unsub = onSnapshot(q, snapshot => {
-      const docs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate() || new Date()
-      }));
-
-      setQueries(docs);
+    return onSnapshot(q, (snap) => {
+      setData(snap.docs.map(d => ({ 
+        id: d.id, 
+        ...d.data(), 
+        dt: d.data().timestamp?.toDate() 
+      })));
       setLoading(false);
-    });
-
-    return () => unsub();
+    }, () => toast.error("Sync Error"));
   }, []);
 
-  /* ===============================
-     STATUS + DELETE
-  =============================== */
-  const toggleStatus = async (q) => {
-    await updateDoc(doc(db, "studentQueries", q.id), {
-      status: q.status === "reviewed" ? "pending" : "reviewed"
-    });
+  // 🎯 Logic: Memoized Filter & Formatter
+  const filtered = useMemo(() => 
+    data.filter(d => filter === "all" || (filter === "pending" ? d.status !== "reviewed" : d.status === "reviewed")),
+    [data, filter]
+  );
+
+  const fmt = d => d?.toLocaleString("en-IN", { 
+    day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true 
+  }) || "Syncing...";
+
+  // ⚡ Actions
+  const handleToggle = async (q) => {
+    try {
+      await updateDoc(doc(db, "studentQueries", q.id), { status: q.status === "reviewed" ? "pending" : "reviewed" });
+    } catch { toast.error("Update failed"); }
   };
 
-  const deleteQuery = async () => {
-    await deleteDoc(doc(db, "studentQueries", modal.query.id));
-    setModal({ show: false, query: null });
+  const handleRemove = async () => {
+    try {
+      await deleteDoc(doc(db, "studentQueries", modal.id));
+      toast.success("Deleted");
+    } catch { toast.error("Delete failed"); }
+    setModal(null);
   };
-
-  const filtered = queries.filter(q => {
-    if (filter === "pending" && q.status === "reviewed") return false;
-    if (filter === "reviewed" && q.status !== "reviewed") return false;
-    return true;
-  });
 
   return (
-    <div className="win11-bg py-4 px-1">
-      <Container fluid="lg">
-
-        {/* Header */}
+    <div className="win11-bg py-4 px-2 min-vh-100">
+      <Container>
+        {/* Header Section */}
         <div className="glass-panel p-4 mb-4 d-flex justify-content-between align-items-center shadow-sm">
           <div>
-            <h3 className="fw-bold mb-0">Query Dashboard</h3>
-            <small className="text-muted">{filtered.length} active sessions</small>
+            <h5 className="fw-bold mb-0 text-dark">Query Inbox</h5>
+            <small className="text-primary fw-bold uppercase">{filtered.length} Requests Found</small>
           </div>
-          <div className="bg-primary text-white p-2 rounded-3 shadow">
-            <i className="bi bi-inbox fs-4"></i>
+          <div className="bg-primary bg-opacity-10 p-2 rounded-circle text-primary">
+            <i className="bi bi-chat-square-dots-fill fs-4"></i>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="glass-panel p-2 mb-4 d-flex gap-2 overflow-auto">
+        {/* Filter Pills */}
+        <div className="glass-panel p-2 mb-4 d-flex gap-2 overflow-auto scroll-hide">
           {["all", "pending", "reviewed"].map(f => (
-            <Button
-              key={f}
-              variant={filter === f ? "primary" : "light"}
+            <Button key={f}
+              variant={filter === f ? "primary" : "white"}
               onClick={() => setFilter(f)}
-              className="rounded-pill px-4 flex-grow-1 flex-lg-grow-0"
-              style={{ minWidth: '100px' }}
+              className="rounded-pill px-4 border-0 shadow-sm fw-bold small text-uppercase flex-grow-1 flex-md-grow-0"
             >
-              {f === "all" ? "All" : f === "pending" ? "New" : "Solved"}
+              {f === "pending" ? "New" : f === "reviewed" ? "Solved" : "All"}
             </Button>
           ))}
         </div>
 
-        {/* Queries Grid */}
+        {/* Grid Content */}
         {loading ? (
-          <div className="text-center py-5">
-            <Spinner animation="grow" variant="primary" />
-          </div>
+          <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>
         ) : (
-          <Row className="g-3 mb-5 pb-5 mb-lg-0 pb-lg-0">
+          <Row className="g-3">
+            {filtered.length === 0 && <p className="text-center text-muted py-5">No queries found for this filter.</p>}
             {filtered.map((q) => (
-              <Col xs={12} md={6} lg={3} key={q.id}>
-                <Card className="glass-card h-100 shadow-sm border-0">
-                  <Card.Body className="d-flex flex-column">
-                    <div className="d-flex justify-content-between mb-2">
-                      <Badge bg={q.status === 'reviewed' ? "secondary" : "danger"} pill>
-                        {q.status === 'reviewed' ? "Closed" : "Active"}
-                      </Badge>
-                      <small className="text-muted">
-                        <i className="bi bi-clock me-1" style={{ fontSize: "12px" }}></i> {q.timestamp.getHours()}:{q.timestamp.getMinutes()}
-                      </small>
-                    </div>
+              <Col xs={12} md={6} lg={4} key={q.id}>
+                <div className="glass-card p-4 h-100 d-flex flex-column border-0 shadow-sm transition-all hover-up">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <small className="text-muted fw-bold" style={{ fontSize: '11px' }}>{fmt(q.dt)}</small>
+                    <Badge bg={q.status === "reviewed" ? "success" : "danger"} className="rounded-pill">
+                      {q.status === "reviewed" ? "SOLVED" : "NEW"}
+                    </Badge>
+                  </div>
 
-                    <h6 className="fw-bold mb-1 text-truncate">{q.fullName || "Anonymous"}</h6>
-                    <p className="small text-primary fw-semibold mb-2">{q.title}</p>
-                    <p className="small text-secondary flex-grow-1" style={{ fontSize: '0.85rem' }}>
-                      {q.query.length > 80 ? q.query.substring(0, 80) + "..." : q.query}
-                    </p>
+                  <h6 className="fw-bold text-dark mb-1">{q.fullName || "Anonymous User"}</h6>
+                  <p className="text-primary small fw-bold mb-2">{q.title || "Support Request"}</p>
+                  <p className="text-muted small flex-grow-1 mb-4 overflow-hidden" style={{ lineHeight: '1.5' }}>
+                    {q.query}
+                  </p>
 
-                    <div className="d-flex gap-2 mt-3">
-                      <Button
-                        variant="white"
-                        className="glass-panel flex-grow-1 btn-sm border-0 shadow-sm d-flex align-items-center justify-content-center"
-                        onClick={() => toggleStatus(q)}
-                      >
-                        {q.status === "reviewed"
-                          ? <i className="bi bi-arrow-counterclockwise fs-5"></i>
-                          : <i className="bi bi-check2-circle text-success fs-5"></i>
-                        }
-                      </Button>
-
-                      <Button
-                        variant="white"
-                        className="glass-panel btn-sm border-0 text-danger shadow-sm d-flex align-items-center justify-content-center"
-                        onClick={() => setModal({ show: true, query: q })}
-                      >
-                        <i className="bi bi-trash fs-5"></i>
-                      </Button>
-                    </div>
-
-                  </Card.Body>
-                </Card>
+                  <div className="d-flex gap-2 mt-auto">
+                    <Button variant="light" className="flex-grow-1 rounded-4 border-0 text-primary fw-bold" onClick={() => handleToggle(q)}>
+                      {q.status === "reviewed" ? "REOPEN" : "RESOLVE"}
+                    </Button>
+                    <Button variant="light" className="rounded-4 border-0 text-danger px-3" onClick={() => setModal(q)}>
+                      <i className="bi bi-trash3-fill"></i>
+                    </Button>
+                  </div>
+                </div>
               </Col>
             ))}
           </Row>
@@ -136,30 +113,14 @@ export default function AdaptiveAdminQueries() {
       </Container>
 
       {/* Delete Modal */}
-      <Modal
-        show={modal.show}
-        onHide={() => setModal({ show: false, query: null })}
-        centered
-        contentClassName="glass-panel border-0"
-      >
-        <Modal.Body className="p-4 text-center">
-          <h5 className="fw-bold">Remove Query?</h5>
-          <p className="text-muted">This will permanently delete the ticket.</p>
+      <Modal show={!!modal} onHide={() => setModal(null)} centered contentClassName="border-0 shadow">
+        <Modal.Body className="glass-panel text-center p-4 rounded-4">
+          <div className="display-6 text-danger mb-3"><i className="bi bi-exclamation-octagon"></i></div>
+          <h6 className="fw-bold">Permanently Delete?</h6>
+          <p className="small text-muted mb-4">You cannot undo this action.</p>
           <div className="d-flex gap-2">
-            <Button
-              variant="light"
-              className="w-100 rounded-pill"
-              onClick={() => setModal({ show: false, query: null })}
-            >
-              Keep
-            </Button>
-            <Button
-              variant="danger"
-              className="w-100 rounded-pill"
-              onClick={deleteQuery}
-            >
-              Delete
-            </Button>
+            <Button variant="light" className="w-100 rounded-pill border-0" onClick={() => setModal(null)}>KEEP</Button>
+            <Button variant="danger" className="w-100 rounded-pill shadow-sm fw-bold" onClick={handleRemove}>DELETE</Button>
           </div>
         </Modal.Body>
       </Modal>

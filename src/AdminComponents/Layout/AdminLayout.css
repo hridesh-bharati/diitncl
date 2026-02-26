@@ -8,23 +8,68 @@
   background: #f4f6fb;
 }
 
-/* Top bar */
 .admin-topbar {
   display: flex;
   align-items: center;
-  padding: 12px 15px;
-  background: #fff;
+  padding: 0 15px;
+  background: white;
+  height: 60px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* Content */
 .admin-content {
-  padding: 0px;
+  padding: 0;
 }
 
-/* Mobile fix */
-@media (max-width: 991px) {
-  .admin-main {
-    margin-left: 0;
+/* Icons & Badges */
+.top-notify-icon {
+  width: 34px;
+  height: 34px;
+  background: #f8fafc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 15px;
+  color: #64748b;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid #f1f5f9;
+}
+
+.top-notify-icon:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.top-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 10px;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+@media (max-width: 576px) {
+  .admin-topbar h6 {
+    font-size: 14px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

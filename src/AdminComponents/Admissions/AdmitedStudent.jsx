@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { Container, Row, Col, Spinner, Form, InputGroup } from "react-bootstrap";
+import { Container, Row, Col, Badge, Button, Spinner, Form, InputGroup } from "react-bootstrap";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { toast } from "react-toastify";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 import StudentCard from "../Students/StudentCard";
-
 export default function AdmittedList() {
   const [q, setQ] = useState("");
   const [branch, setBranch] = useState("all");
@@ -56,66 +55,78 @@ export default function AdmittedList() {
           });
 
         return (
-          <div className="app-main-bg mb-4">
-            <div className="app-sticky-header">
+          <div className="win11-bg py-4 px-2 min-vh-100">
+            <Container fluid="lg">
 
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="app-title">Admitted Students</h5>
-                <span className="app-badge">{admitted.length}</span>
+              {/* 🧊 Header & Search Section (Sticky-Glass) */}
+              <div className="glass-panel p-4 mb-4 shadow-sm border-0 sticky-top top-0 z-3">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h4 className="fw-bold mb-0 text-dark">Admitted Students</h4>
+                    <small className="text-primary fw-bold text-uppercase ls-1">
+                      {admitted.length} Students Enrolled
+                    </small>
+                  </div>
+                  <div className="bg-primary text-white p-3 rounded-circle shadow-sm">
+                    <i className="bi bi-people-fill"></i>
+                  </div>
+                </div>
+
+                {/* 🚀 Branch Filter Chips */}
+                <div className="d-flex gap-2 mb-3 overflow-auto pb-2 scroll-hide">
+                  {["all", "Main", "East"].map(b => (
+                    <Button
+                      key={b}
+                      variant={branch === b ? "primary" : "white"}
+                      onClick={() => setBranch(b)}
+                      className={`rounded-pill px-4 border-0 shadow-sm fw-bold small text-uppercase ${branch !== b && 'text-muted'}`}
+                    >
+                      {b} {b !== "all" ? "Branch" : ""}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* 🔍 Premium Search Bar */}
+                <InputGroup className="bg-white rounded-pill shadow-sm overflow-hidden border border-white">
+                  <InputGroup.Text className="bg-white border-0 ps-4">
+                    <i className="bi bi-search text-primary"></i>
+                  </InputGroup.Text>
+                  <Form.Control
+                    placeholder="Search by student name or Registration ID..."
+                    className="border-0 shadow-none py-2 fw-medium text-secondary"
+                    onChange={(e) => setQ(e.target.value)}
+                  />
+                </InputGroup>
               </div>
 
-              {/* 🔥 Branch Filter Buttons */}
-              <div className="d-flex gap-2 mb-3">
-                {["all", "Main", "East"].map(b => (
-                  <button
-                    key={b}
-                    onClick={() => setBranch(b)}
-                    className={`app-chip ${branch === b ? "active" : ""}`}
-                  >
-                    {b} {b === "Main" && "Branch"}
-                    {b === "East" && "Branch"}
-                  </button>
-                ))}
-              </div>
-
-              {/* 🔍 Search */}
-              <InputGroup className="app-search-bar">
-                <InputGroup.Text className="bg-transparent border-0">
-                  <i
-                    className="bi bi-search text-muted"
-                    style={{ fontSize: "14px" }}
-                  ></i>
-                </InputGroup.Text>
-                <Form.Control
-                  placeholder="Search by name or Reg ID..."
-                  className="app-input border-0 shadow-none"
-                  onChange={(e) => setQ(e.target.value)}
-                />
-              </InputGroup>
-
-            </div>
-
-            <Container fluid className="px-3 pt-3">
+              {/* 📋 Students Grid Content */}
               {loading ? (
-                <div className="app-loader">
-                  <Spinner size="sm" variant="primary" />
+                <div className="text-center py-5">
+                  <Spinner animation="grow" variant="primary" />
                 </div>
               ) : (
-                <Row className="g-3 pb-5">
+                <Row className="g-3">
                   {admitted.map(student => (
                     <Col key={student.id} xs={12} md={6} lg={4} xl={3}>
-                      <StudentCard
-                        student={student}
-                        onSave={handleSave}
-                        onDelete={handleDelete}
-                      />
+                      {/* StudentCard component me bhi glass-card class ensure karein */}
+                      <div className="glass-card h-100 transition-all hover-up border-0">
+                        <StudentCard
+                          student={student}
+                          onSave={handleSave}
+                          onDelete={handleDelete}
+                        />
+                      </div>
                     </Col>
                   ))}
 
+                  {/* Empty State */}
                   {admitted.length === 0 && (
-                    <div className="text-center text-muted py-5 w-100">
-                      No students found
-                    </div>
+                    <Col xs={12}>
+                      <div className="glass-panel text-center py-5">
+                        <i className="bi bi-person-exclamation display-4 text-muted mb-3 d-block"></i>
+                        <h6 className="text-muted fw-bold">No students found for this filter</h6>
+                      </div>
+                    </Col>
                   )}
                 </Row>
               )}

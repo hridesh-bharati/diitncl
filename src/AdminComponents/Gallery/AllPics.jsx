@@ -1,6 +1,5 @@
-// src\AdminComponents\Gallery\AllPics.jsx
 import React, { useState, useEffect } from "react";
-import { Card, Button, Spinner, Image, Row, Col } from "react-bootstrap";
+import { Row, Col, Spinner, Image, Button } from "react-bootstrap";
 import { db } from "../../firebase/firebase";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
@@ -11,75 +10,63 @@ export default function AllPics({ isAdmin = true }) {
 
   useEffect(() => {
     const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"));
-    const unsub = onSnapshot(q, snapshot => {
-      setGallery(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    return onSnapshot(q, snap => {
+      setGallery(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
-    return () => unsub();
   }, []);
 
   const deleteImg = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this image?")) return;
+    if (!window.confirm("Delete image?")) return;
     try {
       await deleteDoc(doc(db, "galleryImages", id));
-      toast.success("Image removed");
+      toast.success("Removed");
     } catch {
-      toast.error("Delete failed");
+      toast.error("Failed");
     }
   };
 
-  return (
-    <Card className="p-3 shadow-sm rounded-4 pb-5 pb-lg-0">
-      <h5 className="mb-4 fw-bold">Gallery</h5>
+  if (loading) return <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>;
 
-      {loading ? (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" variant="primary" />
-        </div>
-      ) : (
-        <Row className="g-3 pb-5 pb-lg-0">
-          {gallery.map(item => (
-            <Col key={item.id} xs={12} sm={6} md={4} lg={3}>
-              <div className="position-relative rounded-4 shadow-sm overflow-hidden">
+  return (
+    <div className="p-2">
+      <h4 className="fw-900 mb-4" style={{ fontFamily: 'Arial Black' }}>GALLERY</h4>
+
+      <Row className="g-3">
+        {gallery.map(item => (
+          <Col key={item.id} xs={12} sm={6} md={4} lg={3}>
+            <div className="position-relative group">
+              <div className="overflow-hidden rounded-4 shadow-sm border bg-white p-1">
                 <Image
                   src={item.url}
-                  fluid
-                  style={{ height: '200px', objectFit: 'cover', width: '100%' }}
+                  className="rounded-3 w-100"
+                  style={{ height: '160px', objectFit: 'cover' }}
                 />
-
-                {/* Admin delete button */}
-                {isAdmin && (
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    className="position-absolute top-0 end-0 rounded-pill m-2 py-0 px-2"
-                    onClick={() => deleteImg(item.id)}
-                    title="Delete Image"
-                  >
-                   <i className="bi bi-trash fs-6"></i>
-                  </Button>
-                )}
-
-                {/* Card footer: Likes & Date */}
-                <Card className="position-relative mt-2 border-0 shadow-none">
-                  <Card.Body className="p-2 d-flex justify-content-between align-items-center">
-                    <span className="fw-bold" style={{ fontSize: '0.9rem' }}>
-                      {item.likes?.length || 0} Likes
-                    </span>
-                    <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-                      {item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : ""}
-                    </span>
-                  </Card.Body>
-                </Card>
+                <div className="p-2 d-flex justify-content-between align-items-center">
+                  <span className="small fw-bold">❤️ {item.likes?.length || 0}</span>
+                  <span className="text-muted" style={{ fontSize: '10px' }}>
+                    {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : ""}
+                  </span>
+                </div>
               </div>
-            </Col>
-          ))}
-        </Row>
-      )}
 
-      {gallery.length === 0 && !loading && (
-        <div className="text-center py-4 text-muted">No images in the gallery yet.</div>
-      )}
-    </Card>
+              {/* Minimal Delete Button */}
+              {isAdmin && (
+                <Button
+                  variant="dark"
+                  onClick={() => deleteImg(item.id)}
+                  className="position-absolute top-0 end-0 m-2 rounded-circle opacity-75 shadow-sm border-0 d-flex align-items-center justify-content-center"
+                  style={{ width: '28px', height: '28px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+                >
+                  <i className="bi bi-trash" style={{ fontSize: '12px' }}></i>
+                </Button>
+              )}
+            </div>
+          </Col>
+        ))}
+      </Row>
+
+      {!gallery.length && <div className="text-center py-5 text-muted">No images found.</div>}
+    </div>
   );
 }
