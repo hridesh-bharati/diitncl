@@ -1,11 +1,21 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-
+import purgeCss from "vite-plugin-purgecss";
 export default defineConfig({
   plugins: [
     react(),
-
+    purgeCss({
+      content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+      safelist: {
+        greedy: [
+          /Toastify/,
+          /swiper/,
+          /aos/,
+          /recharts/
+        ]
+      }
+    }),
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: "auto",

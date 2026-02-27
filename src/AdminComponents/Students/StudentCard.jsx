@@ -1,7 +1,7 @@
 // src/AdminComponents/Admissions/StudentCard.jsx
+
 import React, { useState, useEffect } from "react";
 import { Card, Button, Form, Badge } from "react-bootstrap";
-// import { Trash, PersonCircle, Check2Circle, PencilFill, Calendar } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
@@ -35,6 +35,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
 
   const status = student.status || "pending";
   const isAccepted = status === "accepted";
+  const isDone = status === "done";
   const canSaveFinal =
     (Number(percent) !== Number(student.percentage) ||
       issDate !== student.issueDate ||
@@ -43,6 +44,14 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
   const regNo = student.regNo;
   const studentBranch = student.branch || student.centerCode;
   const studentCourse = student.course;
+
+  // Check if all required fields are filled for marking as done
+  const canMarkAsDone =
+    isAccepted &&
+    (regNo || student.regNo) &&
+    Number(percent || student.percentage) > 0 &&
+    (admissionDate || student.admissionDate) &&
+    (issDate || student.issueDate);
 
   // Extract current reg number digits
   useEffect(() => {
@@ -146,7 +155,9 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
     setLoading(true);
     try {
       const data = { status: newStatus };
-      if (newStatus === "accepted") data.admissionDate = new Date().toISOString().split('T')[0];
+      if (newStatus === "accepted") {
+        data.admissionDate = new Date().toISOString().split('T')[0];
+      }
       await onSave(student.id, data);
       toast.success(`✅ Status updated to ${newStatus}`);
     } catch {
@@ -175,14 +186,26 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
 
   const handleMarkDone = async () => {
     if (!isAdmin) return;
-    if (!percent || Number(percent) <= 0) {
-      toast.warning("Enter percentage first");
-      return;
-    }
+
+    const finalPercentage = Number(percent || student.percentage);
+    const finalAdmissionDate = admissionDate || student.admissionDate;
+    const finalIssueDate = issDate || student.issueDate;
+
+    if (!student.regNo) return toast.warning("Generate registration number first");
+    if (!finalPercentage || finalPercentage <= 0) return toast.warning("Enter percentage first");
+    if (!finalAdmissionDate) return toast.warning("Enter admission date first");
+    if (!finalIssueDate) return toast.warning("Enter issue date first");
 
     setLoading(true);
     try {
-      await onSave(student.id, { status: "done" });
+      // 🔥 Auto save latest data before done
+      await onSave(student.id, {
+        percentage: finalPercentage,
+        admissionDate: finalAdmissionDate,
+        issueDate: finalIssueDate,
+        status: "done"
+      });
+
       toast.success("Student marked as Done ✅");
     } catch {
       toast.error("Failed to update status");
@@ -215,7 +238,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
           </div>
         )}
         <div className="rounded-4">
-          {isAccepted ? (
+          {isAccepted || isDone ? (
             <AcceptedView
               student={student}
               regNumber={regNumber}
@@ -239,6 +262,8 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
               studentCourse={studentCourse}
               editingRegNo={editingRegNo}
               setEditingRegNo={setEditingRegNo}
+              canMarkAsDone={canMarkAsDone}
+              isDone={isDone}
             />
           ) : (
             <PendingView />
@@ -297,17 +322,20 @@ const AcceptedView = ({
   student,
   regNumber, setRegNumber, percent, setPercent,
   issDate, setIssDate, admissionDate, setAdmissionDate,
-  canSaveFinal, onGenerateRegNo, onSaveFinal, onMarkDone, loading,
+  canSaveFinal, onMarkDone, onGenerateRegNo, onSaveFinal, loading,
   checkingDuplicate, isDuplicate, isValidDigit,
-  regNo, studentBranch, studentCourse, editingRegNo, setEditingRegNo
+  regNo, studentBranch, studentCourse, editingRegNo, setEditingRegNo,
+  canMarkAsDone, isDone
 }) => (
   <>
-    {!regNo ? (
+    {!regNo && !isDone ? (
+      // Show regNo generation UI only for accepted students without regNo
       <div className="bg-white p-2 rounded-3 shadow-sm">
         <div className="mb-2">
           <small className="text-muted">
             Branch: <strong className="text-primary">{studentBranch} ({BRANCH_DISPLAY[studentBranch] || studentBranch})</strong>
           </small>
+          <Badge bg="success" className="ms-2 rounded-pill">Approved</Badge>
         </div>
 
         <Form.Control
@@ -332,7 +360,7 @@ const AcceptedView = ({
           onClick={onGenerateRegNo}
           disabled={!regNumber.trim() || !studentBranch || loading || isDuplicate || checkingDuplicate || !isValidDigit}
         >
-          {loading ? 'Generating...' : 'GENERATE'}
+          {loading ? 'Generating...' : 'GENERATE REGISTRATION NUMBER'}
         </Button>
 
         {checkingDuplicate && (
@@ -347,80 +375,84 @@ const AcceptedView = ({
       </div>
     ) : (
       <div className="d-flex flex-column gap-3">
-        <div className="bg-light p-3 rounded-3">
-          {!editingRegNo ? (
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <small className="text-muted d-block mb-1">Registration Number:</small>
-                <strong className="text-primary fs-6">{regNo}</strong>
+        {/* Registration Number Section - Show for both accepted and done */}
+        {(regNo || isDone) && (
+          <div className="bg-light p-3 rounded-3">
+            {!editingRegNo ? (
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <small className="text-muted d-block mb-1">Registration Number:</small>
+                  <strong className="text-primary fs-6">{regNo || student.regNo}</strong>
+                </div>
+                {!isDone && (
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="p-1 px-2"
+                    onClick={() => setEditingRegNo(true)}
+                  >
+                    <i className="bi bi-pencil-fill"></i>
+                  </Button>
+                )}
               </div>
-              <Button
-                variant="success"
-                size="sm"
-                className="p-1 px-2"
-                onClick={() => setEditingRegNo(true)}
-              >
-                <i className="bi bi-pencil-fill"></i>
-              </Button>
-
-            </div>
-          ) : (
-            // ✅ EDIT MODE
-            <div className="mt-2">
-              <small className="text-muted d-block mb-1">Edit Registration Number:</small>
-              <Form.Control
-                size="sm"
-                placeholder="Enter new number (Digits Only)"
-                value={regNumber}
-                onChange={e => {
-                  const val = e.target.value.replace(/[^0-9]/g, '');
-                  setRegNumber(val);
-                }}
-                className={`mb-2 ${!isValidDigit && regNumber ? 'is-invalid' : ''}`}
-              />
-
-              {!isValidDigit && regNumber && (
-                <small className="text-danger d-block mb-2">Only digits allowed</small>
-              )}
-
-              <div className="d-flex gap-2">
-                <Button
+            ) : (
+              // EDIT MODE - Only for accepted (not done)
+              <div className="mt-2">
+                <small className="text-muted d-block mb-1">Edit Registration Number:</small>
+                <Form.Control
                   size="sm"
-                  variant="success"
-                  className="flex-grow-1 rounded-pill fw-bold py-2"
-                  onClick={onGenerateRegNo}
-                  disabled={!regNumber.trim() || loading || isDuplicate || checkingDuplicate || !isValidDigit}
-                >
-                  {loading ? 'Updating...' : 'UPDATE'}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  className="rounded-pill py-2 px-3"
-                  onClick={() => {
-                    setEditingRegNo(false);
-                    setRegNumber('');
+                  placeholder="Enter new number (Digits Only)"
+                  value={regNumber}
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setRegNumber(val);
                   }}
-                >
-                  Cancel
-                </Button>
+                  className={`mb-2 ${!isValidDigit && regNumber ? 'is-invalid' : ''}`}
+                />
+
+                {!isValidDigit && regNumber && (
+                  <small className="text-danger d-block mb-2">Only digits allowed</small>
+                )}
+
+                <div className="d-flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="success"
+                    className="flex-grow-1 rounded-pill fw-bold py-2"
+                    onClick={onGenerateRegNo}
+                    disabled={!regNumber.trim() || loading || isDuplicate || checkingDuplicate || !isValidDigit}
+                  >
+                    {loading ? 'Updating...' : 'UPDATE'}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline-secondary"
+                    className="rounded-pill py-2 px-3"
+                    onClick={() => {
+                      setEditingRegNo(false);
+                      setRegNumber('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+
+                {checkingDuplicate && (
+                  <small className="text-muted d-block mt-2">Checking availability...</small>
+                )}
+                {!checkingDuplicate && isDuplicate && (
+                  <small className="text-danger d-block mt-2">Reg no {regNumber} already exists!</small>
+                )}
+                {!checkingDuplicate && !isDuplicate && regNumber && isValidDigit && (
+                  <small className="text-success d-block mt-2">Available</small>
+                )}
               </div>
+            )}
+          </div>
+        )}
 
-              {checkingDuplicate && (
-                <small className="text-muted d-block mt-2">Checking availability...</small>
-              )}
-              {!checkingDuplicate && isDuplicate && (
-                <small className="text-danger d-block mt-2">Reg no {regNumber} already exists!</small>
-              )}
-              {!checkingDuplicate && !isDuplicate && regNumber && isValidDigit && (
-                <small className="text-success d-block mt-2">Available</small>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* PERCENTAGE, ISSUE DATE & ADMISSION DATE SECTION - SIRF TAB JAB EDIT MODE NA HO */}
-        {!editingRegNo && (
+        {/* PERCENTAGE, ISSUE DATE & ADMISSION DATE SECTION - Hide for done students */}
+        {!isDone && (
           <>
             <div className="row g-2">
               <div className="col-12">
@@ -454,9 +486,9 @@ const AcceptedView = ({
                   className="border-0 shadow-sm rounded-3 py-2"
                 />
               </div>
-
             </div>
 
+            {/* SAVE ALL CHANGES BUTTON */}
             {canSaveFinal && (
               <Button
                 variant="success"
@@ -465,25 +497,62 @@ const AcceptedView = ({
                 onClick={onSaveFinal}
                 disabled={loading}
               >
-                {loading ? 'Saving...' : <>
-                  <i className="bi bi-check2-circle me-2"></i>
-                  SAVE ALL CHANGES
-                </>}
+                {loading ? 'Saving...' : (
+                  <>
+                    <i className="bi bi-check2-circle me-2"></i>
+                    SAVE ALL CHANGES
+                  </>
+                )}
               </Button>
             )}
 
-              {Number(percent) > 0 && status !== "done" && (
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-100 rounded-pill fw-bold shadow-sm py-2 mt-2"
-                onClick={onMarkDone}
-                disabled={loading}
-              >
-                {loading ? "Updating..." : "MARK AS DONE"}
-              </Button>
+            {/* MARK AS DONE BUTTON - Only for accepted students */}
+            {student.status === "accepted" && !editingRegNo && (
+              <>
+                {/* Show requirements status */}
+                <div className="mt-2 small">
+                  {!student.regNo && <div className="text-warning">⚠️ Registration number required</div>}
+                  {Number(student.percentage) <= 0 && (
+                    <div className="text-warning">⚠️ Percentage required</div>
+                  )}
+                  {!student.admissionDate && <div className="text-warning">⚠️ Admission date required</div>}
+                  {!student.issueDate && <div className="text-warning">⚠️ Issue date required</div>}
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="w-100 rounded-pill fw-bold shadow-sm py-2 mt-2"
+                  onClick={onMarkDone}
+                  disabled={loading || !canMarkAsDone}
+                >
+                  {loading ? "Updating..." : (
+                    <>
+                      <i className="bi bi-check2-all me-2"></i>
+                      MARK AS DONE
+                    </>
+                  )}
+                </Button>
+
+                {/* Show success message when all requirements are met */}
+                {canMarkAsDone && (
+                  <small className="text-success d-block text-center mt-1">
+                    ✅ All requirements fulfilled - Ready to mark as done
+                  </small>
+                )}
+              </>
             )}
           </>
+        )}
+
+        {/* Show done badge for completed students */}
+        {isDone && (
+          <div className="text-center mt-2">
+            <Badge bg="primary" className="px-3 py-2 rounded-pill">
+              <i className="bi bi-check2-circle me-1"></i>
+              Admission Complete
+            </Badge>
+          </div>
         )}
       </div>
     )}
@@ -531,7 +600,7 @@ const ReadOnlyView = ({ student, status }) => {
   const studentBranch = student.branch || student.centerCode;
   return (
     <>
-      <HeaderSection student={student} status={status} />
+      <HeaderSection student={student} status={status} setEditingRegNo={() => { }} />
       {student.regNo && (
         <div className="mt-2 mb-2">
           <Badge bg="primary" className="bg-opacity-10 text-primary rounded-pill px-3 py-2">
