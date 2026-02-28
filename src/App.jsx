@@ -72,7 +72,7 @@ export default function App() {
 
   return (
     <div>
-       <Lock> 
+       {/* <Lock>  */}
 
       <NetworkStatus />
       <Header />
@@ -146,7 +146,7 @@ export default function App() {
         <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
 
       </Routes>
-     </Lock> 
+     {/* </Lock>  */}
     </div>
   );
 }

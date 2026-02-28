@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+// Hooks
+import useTypingEffect from '../../../../hooks/useTypingEffect.js'; 
+
 // Components
 import Footer from '../../../Footer/Footer';
 import QueryForm from '../QueryFrom';
@@ -10,6 +13,8 @@ import "./Branch.css";
 
 /** DATA */
 const DATA = {
+    TYPING_WORDS: ["Growing", "Faster", "Bigger"],
+    
     STATS: [
         { label: "Students", value: "1500+" },
         { label: "Courses", value: "12+" },
@@ -94,9 +99,7 @@ const SectionHeader = ({ title, subtitle, className = "" }) => (
 );
 
 const IconBadge = ({ icon, color, size = "3" }) => {
-    // Extract color name without 'text-' prefix
     const bgColor = color.replace('text-', '');
-    
     return (
         <div
             className={`bg-${bgColor} bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center`}
@@ -123,7 +126,7 @@ const ProgramCard = ({ program, index }) => (
         <h5 className="fw-bold mt-3">{program.title}</h5>
         <p className="text-muted small">{program.text}</p>
         <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="badge bg-primary bg-opacity-10 text-white px-3 py-2 rounded-pill">{program.duration}</span>
+            <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">{program.duration}</span>
             <span className="fw-bold text-dark">{program.fee}</span>
         </div>
         <button className="btn btn-outline-primary btn-sm w-100 mb-2" data-bs-toggle="collapse" data-bs-target={`#programDetails${index}`}>View Details</button>
@@ -157,6 +160,9 @@ function Branch() {
         AOS.init({ duration: 800, once: true, offset: 100 });
     }, []);
 
+    // ✅ Using the DRY Hook
+    const typingText = useTypingEffect(DATA.TYPING_WORDS);
+
     return (
         <div className="app-layout overflow-x-hidden">
             <header className="app-header text-center">
@@ -164,7 +170,7 @@ function Branch() {
                 <p className="opacity-75 mb-3">Institute of Information Technology</p>
                 <div className="d-inline-flex align-items-center bg-white bg-opacity-25 px-4 py-2 rounded-pill">
                     <span className="small fw-medium">
-                        Drishtee is <span className="typing-text"></span><span className="typing-cursor"></span>
+                        Drishtee is <span className="typing-text ms-1">{typingText}</span>
                     </span>
                 </div>
             </header>
@@ -174,7 +180,7 @@ function Branch() {
                 <div className="row g-3 px-2">
                     {DATA.STATS.map((s, i) => (
                         <div key={i} className="col-6 col-md-3" data-aos="fade-up" data-aos-delay={i * 100}>
-                            <AppCard className="text-center py-4 stat-card">
+                            <AppCard className="text-center py-4">
                                 <h3 className="fw-bold text-primary mb-1">{s.value}</h3>
                                 <div className="text-muted small">{s.label}</div>
                             </AppCard>
@@ -187,17 +193,17 @@ function Branch() {
                 {/* Hero & Welcome */}
                 <div className="row g-4 mb-5">
                     <div className="col-lg-6" data-aos="fade-right">
-                        <AppCard className="p-4">
+                        <AppCard className="p-4 h-100">
                             <h3 className="fw-bold mb-3">Welcome to <span className="text-primary">Drishtee</span></h3>
-                            <p className="text-dark mb-3" data-aos="fade-up" data-aos-delay="400">
-                                Drishtee Institute of Technology, founded in 2018, is recognized as one of the top technical computer institutes in the region. Our mission is to empower students with practical, job-ready skills through innovative teaching and an industry-aligned curriculum.
+                            <p className="text-dark mb-3">
+                                Drishtee Institute of Technology, founded in 2018, is recognized as one of the top technical computer institutes in the region.
                             </p>
-                            <p className="text-dark" data-aos="fade-up" data-aos-delay="600">
-                                Located in the heart of Thoothibari, our center boasts modern computer labs, experienced faculty, and a nurturing learning environment that fosters talent and supports professional growth.
+                            <p className="text-dark mb-4">
+                                Located in the heart of Thoothibari, our center boasts modern computer labs and experienced faculty.
                             </p>
                             <div className="d-flex gap-2">
-                                <span className="badge bg-primary text-white rounded-pill px-3 py-2">Govt. Certified</span>
-                                <span className="badge bg-success text-white rounded-pill px-3 py-2">ISO Certified</span>
+                                <span className="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">Govt. Certified</span>
+                                <span className="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">ISO Certified</span>
                             </div>
                         </AppCard>
                     </div>
@@ -207,11 +213,12 @@ function Branch() {
                             <Carousel items={DATA.CAROUSELS.hero} id="heroCarousel" height={300} />
                         </AppCard>
                     </div>
-                    <Counter />
                 </div>
+                
+                <Counter />
 
                 {/* Features */}
-                <SectionHeader title="Why Choose Drishtee?" subtitle="Discover our edge in tech education" className="text-center" />
+                <SectionHeader title="Why Choose Drishtee?" subtitle="Discover our edge in tech education" className="text-center mt-5" />
                 <div className="row g-4 mb-5">
                     {DATA.FEATURES.map((f, i) => (
                         <div className="col-md-4" key={i} data-aos="fade-up" data-aos-delay={i * 100}>
@@ -236,12 +243,12 @@ function Branch() {
                         <AppCard className="p-4">
                             <SectionHeader title="Our Learning Methodology" />
                             {DATA.METHODOLOGY.map((m, i) => (
-                                <div key={i} className="methodology-card mb-3" data-aos="fade-up" data-aos-delay={i * 100}>
-                                    <h5 className="fw-bold text-primary mb-1">
+                                <div key={i} className="mb-3">
+                                    <h6 className="fw-bold text-primary mb-1">
                                         <i className="bi bi-check-circle-fill me-2"></i>
                                         {m.title}
-                                    </h5>
-                                    <p className="text-muted mb-0">{m.description}</p>
+                                    </h6>
+                                    <p className="text-muted small mb-0">{m.description}</p>
                                 </div>
                             ))}
                         </AppCard>
@@ -253,67 +260,32 @@ function Branch() {
                     </div>
                 </div>
 
-                {/* Gallery */}
-                <SectionHeader title="Campus Gallery" subtitle="Life at Drishtee" className="text-center" />
-                <div className="row g-3 mb-5">
-                    {DATA.GALLERY.map((img, i) => (
-                        <div key={i} className="col-12 col-md-4" data-aos="zoom-in" data-aos-delay={i * 50}>
-                            <AppCard className="overflow-hidden p-0 gallery-img">
-                                <img src={`/images/library/${img}.jpg`} alt={`Campus ${i + 1}`} className="w-100" style={{ height: '200px', objectFit: 'cover' }} loading="lazy" />
-                            </AppCard>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Additional Sections */}
-                {DATA.SECTIONS.map((s, i) => (
-                    <AppCard key={i} className="p-4 mb-4" data-aos="fade-up">
-                        <h4 className="fw-bold text-primary mb-2">{s.title}</h4>
-                        <p className="text-dark mb-0">{s.content}</p>
-                    </AppCard>
-                ))}
-
-                {/* FAQ */}
-                <SectionHeader title="FAQs" className="text-center" />
+                {/* Contact & Form */}
                 <div className="row g-4 mb-5">
-                    {DATA.FAQS.map((f, i) => (
-                        <div key={i} className="col-md-6" data-aos="fade-up" data-aos-delay={i * 100}>
-                            <AppCard className="p-4 h-100">
-                                <h5 className="fw-bold text-dark mb-2">
-                                    <i className="bi bi-question-circle-fill text-primary me-2"></i>
-                                    {f.question}
-                                </h5>
-                                <p className="text-muted mb-0">{f.answer}</p>
-                            </AppCard>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Contact & Query Form */}
-                <div className="row g-4 p-0 mb-5">
-                    <div className="col-12 m-0 p-0 my-1" data-aos="fade-right">
-                        <AppCard className="p-0 h-100">
+                    <div className="col-lg-7" data-aos="fade-right">
+                        <AppCard className="p-3">
                             <SectionHeader title="Locate Us" />
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3541.3484879661028!2d83.69061145032624!3d27.427248144117375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39942392249c9073%3A0x6b62ef81415149dd!2sDrishtee%20Institute%20of%20Information%20Technology!5e0!3m2!1sen!2sin!4v1696133570458!5m2!1sen!2sin"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3550.463375841444!2d83.6931283!3d27.1420138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399415849495689b%3A0x6a06692224097475!2sDrishtee%20Institute%20of%20Information%20Technology!5e0!3m2!1sen!2sin!4v1710000000000"
                                 width="100%" height="400" className="rounded-4" style={{ border: 0 }} allowFullScreen loading="lazy" title="Drishtee Location"
                             />
                         </AppCard>
                     </div>
-                    <div className="col-12 m-0 p-0 my-1" data-aos="fade-left">
-                        <AppCard className="p-0 h-100">
+                    <div className="col-lg-5" data-aos="fade-left">
+                        <AppCard className="p-4 h-100">
                             <SectionHeader title="Quick Enquiry" />
                             <QueryForm />
                         </AppCard>
                     </div>
                 </div>
             </main>
+
             <Footer />
             
-            {/* Floating Call/WhatsApp - Mobile Only */}
-            <div className="fab-bottom d-block d-md-none" data-aos="fade-up" data-aos-delay="500">
-                <div className="d-flex gap-2 p-2 bg-white rounded-4">
-                    <a href="tel:+917398889347" className="btn btn-primary btn-app flex-grow-1 d-flex justify-content-center align-items-center">
+            {/* Floating Action Bar */}
+            <div className="fab-bottom d-block d-md-none">
+                <div className="d-flex gap-2 p-2 bg-white rounded-4 shadow-lg">
+                    <a href="tel:+917398889347" className="btn btn-app flex-grow-1 d-flex justify-content-center align-items-center">
                         <i className="bi bi-telephone-fill me-2"></i> Call Now
                     </a>
                     <a
@@ -321,9 +293,9 @@ function Branch() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-whatsapp d-flex justify-content-center align-items-center"
-                        style={{ width: "60px" }}
+                        style={{ width: "64px" }}
                     >
-                        <i className="bi bi-whatsapp"></i>
+                        <i className="bi bi-whatsapp fs-4"></i>
                     </a>
                 </div>
             </div>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useTypingEffect from "../../hooks/useTypingEffect";
 
 const GlobleSearchBox = ({ routes = [], onSelect }) => {
-  /* ================= PLACEHOLDER TYPING ================= */
+  /* ================= PLACEHOLDER DATA ================= */
   const placeholders = [
     "Search courses...",
     "Search students...",
@@ -10,41 +11,12 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
     "Search DIIT services..."
   ];
 
-  const [placeholder, setPlaceholder] = useState("");
-  const [pIndex, setPIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
   /* ================= SEARCH STATE ================= */
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
-  /* ================= PLACEHOLDER ANIMATION ================= */
-  useEffect(() => {
-    if (query) return;
-
-    const current = placeholders[pIndex];
-    let timer;
-
-    if (!isDeleting && charIndex < current.length) {
-      timer = setTimeout(() => {
-        setPlaceholder(current.slice(0, charIndex + 1));
-        setCharIndex((p) => p + 1);
-      }, 70);
-    } else if (isDeleting && charIndex > 0) {
-      timer = setTimeout(() => {
-        setPlaceholder(current.slice(0, charIndex - 1));
-        setCharIndex((p) => p - 1);
-      }, 40);
-    } else if (!isDeleting && charIndex === current.length) {
-      timer = setTimeout(() => setIsDeleting(true), 900);
-    } else if (isDeleting && charIndex === 0) {
-      setIsDeleting(false);
-      setPIndex((p) => (p + 1) % placeholders.length);
-    }
-
-    return () => clearTimeout(timer);
-  }, [charIndex, isDeleting, pIndex, query]);
+  /* ================= DRY TYPING HOOK ================= */
+  const dynamicPlaceholder = useTypingEffect(placeholders, 70, 40, 1000);
 
   /* ================= FILTER ROUTES ================= */
   const filteredRoutes = routes
@@ -53,12 +25,10 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
       r.label?.toLowerCase().includes(query.toLowerCase())
     );
 
-  /* ================= SELECT HANDLER ================= */
+  /* ================= HANDLERS ================= */
   const handleSelect = (path) => {
     setQuery("");
     navigate(path);
-
-    // ✅ close mobile search overlay
     if (onSelect) onSelect();
   };
 
@@ -69,23 +39,20 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
   };
 
   return (
-    <div className="app-search-wrapper">
-      {/* ===== INPUT ===== */}
+    <div className="app-search-wrapper ms-1">
+      {/* ===== INPUT (CHOTA KIA) ===== */}
       <div className="app-search-input">
         <i className="bi bi-search"></i>
         <input
           type="search"
           value={query}
-          placeholder={placeholder}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            if (!e.target.value) setCharIndex(0);
-          }}
+          placeholder={query ? "" : dynamicPlaceholder}
+          onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
         />
       </div>
 
-      {/* ===== APP STYLE LIST ===== */}
+      {/* ===== SEARCH RESULTS LIST ===== */}
       {query && (
         <div className="app-search-list">
           {filteredRoutes.length > 0 ? (
@@ -95,13 +62,8 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
                 .indexOf(query.toLowerCase());
 
               const before = route.label.slice(0, matchIndex);
-              const match = route.label.slice(
-                matchIndex,
-                matchIndex + query.length
-              );
-              const after = route.label.slice(
-                matchIndex + query.length
-              );
+              const match = route.label.slice(matchIndex, matchIndex + query.length);
+              const after = route.label.slice(matchIndex + query.length);
 
               return (
                 <div
@@ -119,10 +81,7 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
                       <span>{match}</span>
                       {after}
                     </div>
-
-                    {route.desc && (
-                      <div className="subtitle">{route.desc}</div>
-                    )}
+                    {route.desc && <div className="subtitle">{route.desc}</div>}
                   </div>
 
                   <i className="bi bi-chevron-right arrow"></i>
@@ -138,7 +97,7 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
         </div>
       )}
 
-      {/* ===== CSS ===== */}
+      {/* ===== CSS - SAB CHOTA KIA ===== */}
       <style>{`
         .app-search-wrapper {
           position: relative;
@@ -146,114 +105,130 @@ const GlobleSearchBox = ({ routes = [], onSelect }) => {
           z-index: 3000;
         }
 
-        .app-search-input {
-          position: relative;
+        /* INPUT - CHOTA KIA */
+        .app-search-input input {
+          width: 100%;
+          height: 34px; /* Pehle 38 tha */
+          padding: 0 8px 0 32px; /* Kam kia */
+          border-radius: 30px;
+          border: 1px solid #e2e8f0;
+          font-size: 12px; /* Chota font */
+          background: #f8fafc;
+          outline: none;
+          transition: all 0.2s ease;
         }
 
         .app-search-input i {
           position: absolute;
-          left: 12px;
+          left: 10px; /* Adjust kia */
           top: 50%;
           transform: translateY(-50%);
           color: #94a3b8;
-          font-size: 14px;
+          font-size: 12px; /* Chota icon */
         }
 
-        .app-search-input input {
-          width: 100%;
-          height: 38px;
-          padding: 0 12px 0 36px;
-          border-radius: 999px;
-          border: 1px solid #e2e8f0;
-          font-size: 13px;
-          background: rgba(255,255,255,0.95);
-          backdrop-filter: blur(8px);
-          outline: none;
+        .app-search-input input:focus {
+          border-color: #0a2885;
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(10, 40, 133, 0.08);
         }
 
-        /* ===== LIST ===== */
+        /* RESULTS LIST - CHOTA KIA */
         .app-search-list {
           position: absolute;
           top: 100%;
           left: 0;
-          width: 100%;
-          margin-top: 8px;
-          background: rgba(255,255,255,0.98);
-          backdrop-filter: blur(14px);
-          border-radius: 18px;
-          box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-          max-height: 280px;
+          right: 0;
+          margin-top: 4px; /* Kam kia */
+          background: white;
+          border-radius: 14px; /* Chota radius */
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          max-height: 250px;
           overflow-y: auto;
-          animation: slideUp 0.25s ease;
+          animation: slideUp 0.2s ease;
         }
 
         .app-search-item {
           display: flex;
           align-items: center;
-          gap: 14px;
-          padding: 14px 16px;
+          gap: 10px; /* Kam kia */
+          padding: 8px 12px; /* Bahut chota kia */
           cursor: pointer;
-        }
-
-        .app-search-item:active {
-          background: #f1f5ff;
-          transform: scale(0.98);
+          transition: background 0.2s;
         }
 
         .app-search-icon {
-          width: 42px;
-          height: 42px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, #0a2885, #3b82f6);
+          width: 28px; /* Pehle 42 tha */
+          height: 28px; /* Pehle 42 tha */
+          border-radius: 8px; /* Chota radius */
+          background: #0a2885;
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
-          font-size: 18px;
+          font-size: 12px; /* Chota icon */
           flex-shrink: 0;
         }
 
-        .app-search-text {
-          flex: 1;
-        }
-
         .app-search-text .title {
-          font-size: 14px;
-          font-weight: 700;
+          font-size: 12px; /* Pehle 14 tha */
+          font-weight: 600;
           color: #1e293b;
+          line-height: 1.3;
         }
 
         .app-search-text .title span {
-          color: #2563eb;
+          color: #0a2885;
+          font-weight: 700;
         }
 
         .app-search-text .subtitle {
-          font-size: 11px;
+          font-size: 10px; /* Pehle 11 tha */
           color: #64748b;
           margin-top: 2px;
         }
 
         .arrow {
-          font-size: 18px;
+          font-size: 14px; /* Chota */
           color: #94a3b8;
         }
 
         .app-search-empty {
-          padding: 28px;
+          padding: 16px; /* Pehle 28 tha */
           text-align: center;
           color: #94a3b8;
-          font-size: 13px;
+          font-size: 12px;
         }
 
         .app-search-empty i {
-          font-size: 26px;
-          margin-bottom: 8px;
+          font-size: 20px; /* Pehle 26 tha */
+          margin-bottom: 4px;
           display: block;
         }
 
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(8px); }
+          from { opacity: 0; transform: translateY(4px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile me aur chota */
+        @media (max-width: 768px) {
+          .app-search-input input {
+            height: 32px;
+            font-size: 11px;
+            padding: 0 6px 0 28px;
+          }
+          
+          .app-search-input i {
+            left: 8px;
+            font-size: 11px;
+          }
+          
+          .app-search-icon {
+            width: 24px;
+            height: 24px;
+            font-size: 10px;
+          }
         }
       `}</style>
     </div>

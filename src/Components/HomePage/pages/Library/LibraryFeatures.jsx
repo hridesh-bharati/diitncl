@@ -4,10 +4,10 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const facilities = [
-  { title: 'Meeting Rooms', img: 'images/vender/meeting-room.jpg', description: 'Private spaces for discussions.', icon: 'fas fa-users' },
-  { title: 'Reading Hall', img: 'images/vender/reading-hall.jpg', description: 'Quiet zone for deep focus.', icon: 'fas fa-book-open' },
-  { title: 'Cafeteria', img: 'images/vender/cefeteria.jpg', description: 'Fresh meals to recharge.', icon: 'fas fa-coffee' },
-  { title: 'Digital Library', img: 'images/vender/onlineclass.jpg', description: 'Access e-books and lectures.', icon: 'fas fa-laptop' },
+  { title: 'Meeting Rooms', img: 'images/vender/meeting-room.webp', description: 'Private spaces for discussions.', icon: 'fas fa-users' },
+  { title: 'Reading Hall', img: 'images/vender/reading-hall.webp', description: 'Quiet zone for deep focus.', icon: 'fas fa-book-open' },
+  { title: 'Cafeteria', img: 'images/vender/cefeteria.webp', description: 'Fresh meals to recharge.', icon: 'fas fa-coffee' },
+  { title: 'Digital Library', img: 'images/vender/onlineclass.webp', description: 'Access e-books and lectures.', icon: 'fas fa-laptop' },
 ];
 
 const amenities = [

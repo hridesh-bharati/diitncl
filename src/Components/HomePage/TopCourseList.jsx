@@ -16,7 +16,7 @@ export default function TopCourseList() {
       <div className="container">
         <header className="d-flex justify-content-between align-items-center mb-4 px-2">
           <h2 className="h5 fw-bold mb-0 text-dark">Trending Programs</h2>
-          <Link to="/OurCourses" className="small fw-bold text-decoration-none text-primary">
+          <Link to="/courses" className="small fw-bold text-decoration-none text-primary">
             View All <i className="bi bi-arrow-right-short"></i>
           </Link>
         </header>
@@ -40,7 +40,7 @@ export default function TopCourseList() {
                   <span className="text-muted" style={{ fontSize: '10px' }}>
                     <i className="bi bi-clock me-1"></i>{c.dur}
                   </span>
-                  <Link to="/OurCourses" className="bg-light text-dark rounded-3 p-1 px-2 text-decoration-none" aria-label="Course Link">
+                  <Link to="/courses" className="bg-light text-dark rounded-3 p-1 px-2 text-decoration-none" aria-label="Course Link">
                     <i className="bi bi-arrow-right small"></i>
                   </Link>
                 </div>

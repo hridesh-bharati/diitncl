@@ -102,7 +102,7 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= STATS ================= */}
-      <section className="container mt-n5 position-relative">
+      <section className="container mt-5 position-relative">
         <div className="row g-3 justify-content-center">
           {STATS.map((s, i) => (
             <div key={i} className="col-6 col-md-3" data-aos="zoom-in">
@@ -117,7 +117,7 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= ABOUT ================= */}
-      <section className="container mt-5" data-aos="fade-up">
+      <section className="container my-3" data-aos="fade-up">
         <div className="bg-white rounded-5 p-4 p-md-5 shadow-sm">
           <h3 className="fw-bold mb-3 text-primary">
             About Drishtee Library
@@ -134,7 +134,7 @@ export default function DrishteeLibrary() {
       {/* ================= WHY DRISHTEE ================= */}
       <section className="container" data-aos="fade-up">
         <div className="bg-white rounded-5 p-4 p-md-5 shadow-sm">
-          <h4 className="fw-bold ">
+          <h4 className="fw-bold text-primary">
             Why Choose Drishtee?
           </h4>
 
@@ -156,28 +156,6 @@ export default function DrishteeLibrary() {
           </p>
         </div>
       </section>
-
-
-      {/* ================= GALLERY ================= */}
-      {/* <section className="container mt-5">
-        <h5 className="fw-bold mb-3" data-aos="fade-right">
-          Inside the Library
-        </h5>
-
-        <div className="row g-3">
-          {["3.jpg", "1.jpg", "2.jpg"].map((img, i) => (
-            <div key={i} className="col-md-4" data-aos="zoom-in">
-              <img
-                src={`/images/library/${img}`}
-                className="w-100 rounded-4 shadow-sm"
-                style={{ height: 220, objectFit: "cover" }}
-                alt=""
-              />
-            </div>
-          ))}
-        </div>
-      </section> */}
-
       <LibraryFeatures />
       {/* ================= TESTIMONIALS ================= */}
       <section className="container mt-5">

@@ -58,7 +58,7 @@ export default function Header() {
       {/* --- PC NAVBAR --- */}
       <nav className={`pc-nav d-none d-lg-flex ${scrolled ? "pc-sticky" : ""}`} aria-label="Main Navigation">
         <div className="pc-content">
-          <Link to="/" className="pc-logo-box">
+          <Link to="/" className="pc-logo-box me-1">
             <img src="/images/icon/logo.png" alt="Drishtee Logo" />
           </Link>
 
@@ -98,9 +98,9 @@ export default function Header() {
             <GlobleSearchBox routes={RouteLinks} placeholder="Search anything..." />
 
             {!user ? (
-              <button className="pc-btn-log ms-3" onClick={() => setShowLoginModal(true)}>Login</button>
+              <button className="pc-btn-log " onClick={() => setShowLoginModal(true)}>Login</button>
             ) : (
-              <div className="pc-profile-dropdown dropdown ms-3">
+              <div className="pc-profile-dropdown dropdown ">
                 <img src={userData.photo} className="pc-profile-pic" alt="Profile" data-bs-toggle="dropdown" />
                 <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0">
                   <li><Link className="dropdown-item" to={userData.dashboard}>Dashboard</Link></li>
@@ -110,14 +110,15 @@ export default function Header() {
               </div>
             )}
 
-            <button className="icon-btn-circle bg-danger ms-3" onClick={() => navigate("/branch/nichlaul/location")} title="Our Location">
-              <i className="bi bi-geo-alt-fill"></i>
-            </button>
             {user && (
-              <Button variant="primary" className="rounded-pill d-flex align-items-center gap-2 ms-2 px-3" onClick={() => navigate("/chat")}>
+              <Button variant="primary" className="rounded-pill d-flex align-items-center gap-2" onClick={() => navigate("/chat")}>
                 <span>IM</span>
               </Button>
             )}
+
+            <button className="icon-btn-circle text-danger " onClick={() => navigate("/branch/nichlaul/location")} title="Our Location">
+              <i className="bi bi-geo-alt-fill"></i>
+            </button>
           </div>
         </div>
       </nav>
