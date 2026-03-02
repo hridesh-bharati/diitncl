@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Form, Card } from "react-bootstrap";
 import AdmissionProvider from "../../../../AdminComponents/Admissions/AdmissionProvider";
 import StudentCertificate from "../../../../AdminComponents/Certificate/StudentCertificate";
-import Captcha from "./Captcha"; 
+import Captcha from "./Captcha";
 
 const STYLES = {
   card: {
@@ -41,42 +41,45 @@ export default function Verification() {
   return (
     <AdmissionProvider>
       {({ admissions, loading }) => {
-       
+
         if (!studentId) {
           return (
             <div className="min-vh-100 d-flex align-items-center justify-content-center bg-primary-subtle p-3">
-              <Card style={{ ...STYLES.card, maxWidth: "440px" }} className="w-100 m-auto">
-                <Card.Body className="p-4 p-md-5">
+              <div className="bg-white rounded-4 shadow-sm" style={{ ...STYLES.card, maxWidth: "440px" }}>
+                <div className="p-4 p-md-5">
                   <HeaderSection title="Verify Certificate" subtitle="Secure student record verification" />
 
-                  <Form onSubmit={(e) => { e.preventDefault(); handleSearch(admissions); }} className="d-flex flex-column gap-4">
-                    <Form.Group>
-                      <Form.Label className="ms-2 small fw-bold text-muted">REGISTRATION NUMBER</Form.Label>
-                      <Form.Control
-                        style={{ borderRadius: "16px", padding: "14px 20px" }}
+                  <form
+                    onSubmit={(e) => { e.preventDefault(); handleSearch(admissions); }}
+                    className="d-flex flex-column gap-4"
+                  >
+                    <div>
+                      <label className="ms-2 small fw-bold text-muted">REGISTRATION NUMBER</label>
+                      <input
+                        type="text"
+                        className="form-control rounded-3"
                         placeholder="Ex: DIIT124/ADCA/921"
                         value={regNo}
                         onChange={(e) => setRegNo(e.target.value)}
+                        style={{ padding: "14px 20px" }}
                       />
-                    </Form.Group>
+                    </div>
 
-                    {/* ✅ CAPTCHA - Case Sensitive! */}
                     <Captcha onVerify={setCaptchaVerified} />
 
-                    <Button
+                    <button
                       type="submit"
-                      variant={captchaVerified ? "primary" : "secondary"}
-                      disabled={!captchaVerified}
+                      className={`btn w-100 shadow-sm border-0 ${captchaVerified ? "btn-primary" : "btn-secondary"
+                        }`}
                       style={STYLES.button}
-                      className="shadow-sm border-0"
+                      disabled={!captchaVerified}
                     >
                       {captchaVerified ? "Check Status" : "Verify Captcha First"}
-                    </Button>
-                  </Form>
-
+                    </button>
+                  </form>
                   {error && <div className="mt-3 text-danger text-center small fw-medium">{error}</div>}
-                </Card.Body>
-              </Card>
+                </div>
+              </div>
             </div>
           );
         }
@@ -100,9 +103,13 @@ const HeaderSection = ({ title, subtitle }) => (
 const ResultScreen = ({ student, onBack }) => (
   <div className="bg-light min-vh-100">
     <div className="p-3 border-bottom d-flex align-items-center bg-white shadow-sm">
-      <Button variant="link" className="text-dark p-0 me-3" onClick={onBack}>
+      <button
+        type="button"
+        className="btn btn-link text-dark p-0 me-3"
+        onClick={onBack}
+      >
         <i className="bi bi-chevron-left fs-4"></i>
-      </Button>
+      </button>
       <h6 className="m-0 fw-bold text-uppercase" style={{ letterSpacing: "1px" }}>Verification Result</h6>
     </div>
     <div className="w-100">
