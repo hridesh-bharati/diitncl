@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-import {
-    FaUser, FaCamera, FaSpinner, FaBuilding, FaMapMarkerAlt,
-    FaCheckCircle, FaEnvelope, FaPrint, FaHome, FaPhoneAlt
-} from "react-icons/fa";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
+
+// Bootstrap Icons CSS
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const BRANCHES = [
     { id: "DIIT124", name: "DIIT124 - Main Branch" },
@@ -49,7 +48,7 @@ const INITIAL_STATE = {
     post: "",
     thana: "",
     qualification: "",
-    admissionDate: getTodayInputFormat() // ✅ default today
+    admissionDate: getTodayInputFormat()
 };
 
 export default function AdmissionForm() {
@@ -69,49 +68,6 @@ export default function AdmissionForm() {
         }
 
         setForm(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handlePincodeChange = async (e) => {
-        const pin = e.target.value;
-        setForm(prev => ({ ...prev, pincode: pin }));
-
-        if (pin.length === 6) {
-            try {
-                const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
-                const data = await res.json();
-
-                if (data[0].Status === "Success") {
-                    const info = data[0].PostOffice[0];
-                    setForm(prev => ({
-                        ...prev,
-                        state: info.State,
-                        city: info.District,
-                        village: info.Name,
-                        post: info.Name,
-                        thana: info.Block || info.District
-                    }));
-                    toast.success("Location updated from pincode!");
-                } else {
-                    toast.error("Invalid Pincode");
-                }
-            } catch (err) {
-                toast.error("Pincode API Error");
-            }
-        }
-    };
-
-    const handleAutoAddress = (e) => {
-        if (e.target.checked) {
-            const { village, post, thana, city, state, pincode } = form;
-
-            if (!village || !pincode) {
-                toast.warning("Please fill pincode first!");
-                return;
-            }
-
-            const fullAddr = `Vill: ${village}, PO: ${post}, PS: ${thana}, Dist: ${city}, State: ${state} - ${pincode}`;
-            setForm(prev => ({ ...prev, address: fullAddr }));
-        }
     };
 
     const uploadImg = async (file) => {
@@ -142,6 +98,20 @@ export default function AdmissionForm() {
         }
     };
 
+    const handleAutoAddress = (e) => {
+        if (e.target.checked) {
+            const { village, post, thana, city, state, pincode } = form;
+
+            if (!village || !pincode) {
+                toast.warning("Please fill village and pincode first!");
+                return;
+            }
+
+            const fullAddr = `Vill: ${village}, PO: ${post}, PS: ${thana}, Dist: ${city}, State: ${state} - ${pincode}`;
+            setForm(prev => ({ ...prev, address: fullAddr }));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -165,7 +135,6 @@ export default function AdmissionForm() {
         setLoading(true);
 
         try {
-            // ✅ Format dates before saving
             const formattedAdmissionDate = formatToDDMMYY(form.admissionDate);
             const formattedDob = form.dob ? formatToDDMMYY(form.dob) : "";
 
@@ -180,7 +149,6 @@ export default function AdmissionForm() {
 
             await addDoc(collection(db, "admissions"), finalData);
 
-            // Set submitted data for receipt
             setSubmittedData({
                 ...form,
                 admissionDate: formattedAdmissionDate,
@@ -302,10 +270,10 @@ export default function AdmissionForm() {
 
                 <div className="text-center mt-4 no-print d-flex justify-content-center gap-3">
                     <button onClick={() => window.print()} className="btn btn-dark px-4">
-                        <FaPrint className="me-2" /> PRINT SLIP
+                        <i className="bi bi-printer me-2"></i> PRINT SLIP
                     </button>
                     <button onClick={() => window.location.reload()} className="btn btn-outline-primary px-4">
-                        <FaHome className="me-2" /> NEW ADMISSION
+                        <i className="bi bi-house-door me-2"></i> NEW ADMISSION
                     </button>
                 </div>
             </div>
@@ -332,7 +300,7 @@ export default function AdmissionForm() {
                     <div className="card-body p-4 p-lg-5">
                         <form onSubmit={handleSubmit}>
                             {/* SECTION I - CENTER & COURSE SELECTION */}
-                            <SectionHeading icon={<FaBuilding />} title="I. CENTER & COURSE SELECTION" />
+                            <SectionHeading icon={<i className="bi bi-building"></i>} title="I. CENTER & COURSE SELECTION" />
                             <div className="row g-4 mb-5">
                                 <div className="col-lg-8">
                                     <div className="row g-3">
@@ -387,7 +355,7 @@ export default function AdmissionForm() {
                                             alt="User"
                                         />
                                         <label className="upload-icon shadow">
-                                            {imgLoading ? <FaSpinner className="spin" /> : <FaCamera />}
+                                            {imgLoading ? <i className="bi bi-arrow-repeat spin"></i> : <i className="bi bi-camera"></i>}
                                             <input
                                                 type="file"
                                                 hidden
@@ -401,7 +369,7 @@ export default function AdmissionForm() {
                             </div>
 
                             {/* SECTION II - PERSONAL DETAILS */}
-                            <SectionHeading icon={<FaUser />} title="II. PERSONAL DETAILS" />
+                            <SectionHeading icon={<i className="bi bi-person"></i>} title="II. PERSONAL DETAILS" />
                             <div className="row g-3 mb-5">
                                 <div className="col-md-4">
                                     <label className="gov-label">Student Full Name *</label>
@@ -507,12 +475,12 @@ export default function AdmissionForm() {
                             </div>
 
                             {/* SECTION III - CONTACT DETAILS */}
-                            <SectionHeading icon={<FaPhoneAlt />} title="III. CONTACT INFORMATION" />
+                            <SectionHeading icon={<i className="bi bi-telephone"></i>} title="III. CONTACT INFORMATION" />
                             <div className="row g-3 mb-5">
                                 <div className="col-md-6">
                                     <label className="gov-label">Mobile Number *</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-light"><FaPhoneAlt className="text-muted" /></span>
+                                        <span className="input-group-text bg-light"><i className="bi bi-telephone text-muted"></i></span>
                                         <input
                                             type="text"
                                             className="form-control gov-input"
@@ -528,7 +496,7 @@ export default function AdmissionForm() {
                                 <div className="col-md-6">
                                     <label className="gov-label">Email Address *</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-light"><FaEnvelope className="text-muted" /></span>
+                                        <span className="input-group-text bg-light"><i className="bi bi-envelope text-muted"></i></span>
                                         <input
                                             type="email"
                                             className="form-control gov-input"
@@ -543,7 +511,7 @@ export default function AdmissionForm() {
                             </div>
 
                             {/* SECTION IV - ADDRESS DETAILS */}
-                            <SectionHeading icon={<FaMapMarkerAlt />} title="IV. ADDRESS DETAILS" />
+                            <SectionHeading icon={<i className="bi bi-geo-alt"></i>} title="IV. ADDRESS DETAILS" />
                             <div className="row g-3 mb-5">
                                 <div className="col-md-3">
                                     <label className="gov-label">Pincode *</label>
@@ -552,9 +520,9 @@ export default function AdmissionForm() {
                                         className="form-control gov-input highlight-box"
                                         name="pincode"
                                         value={form.pincode}
-                                        onChange={handlePincodeChange}
+                                        onChange={handleChange}
                                         maxLength="6"
-                                        placeholder="Type Pincode..."
+                                        placeholder="Enter Pincode"
                                         required
                                     />
                                 </div>
@@ -666,9 +634,9 @@ export default function AdmissionForm() {
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <><FaSpinner className="spin me-2" /> PROCESSING...</>
+                                    <><i className="bi bi-arrow-repeat spin me-2"></i> PROCESSING...</>
                                 ) : (
-                                    <><FaCheckCircle className="me-2" /> FINALIZE ADMISSION</>
+                                    <><i className="bi bi-check-circle me-2"></i> FINALIZE ADMISSION</>
                                 )}
                             </button>
                         </form>
