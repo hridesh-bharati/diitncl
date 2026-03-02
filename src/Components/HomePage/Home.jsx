@@ -6,7 +6,7 @@ import "./Home.css";
 // Components
 import TopCourseList from "./TopCourseList";
 import Footer from "../Footer/Footer";
-import QueryForm from "./pages/QueryFrom";
+import QuickSupport from "./pages/About/QuickSupport";
 import NoticeBoard from "../HelperCmp/FeaturesUpdate/NoticeBoard";
 import TimeTable from "../HelperCmp/FeaturesUpdate/TimeTable";
 import CardSlider from "./Cardslider";
@@ -189,7 +189,7 @@ function Home() {
                             <h4 className="fw-bold text-dark">Quick Enquiry</h4>
                             <p className="text-muted small">Fill out the form below to get a call back.</p>
                         </div>
-                        <QueryForm />
+                        <QuickSupport />
                     </div>
                 </div>
             </section>

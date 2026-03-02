@@ -1,190 +1,166 @@
 import React, { Suspense, lazy, memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Modal } from "react-bootstrap";
 
-// Lazy Components
+// --- Lazy Loading All Heavy/External Components ---
 const Team = lazy(() => import("../../Team"));
+const Footer = lazy(() => import("../../../../Components/Footer/Footer"));
+const ScrollUp = lazy(() => import("../../../HelperCmp/Scroller/ScrollUp"));
 
-// --- CONFIG & DATA ---
-const EST_YEAR = "2007";
-const THEME = { primary: "#0a2885", secondary: "#157ed2", success: "#10B981" };
+const THEME = {
+  googleBlue: "#1a73e8", paytmBlue: "#00baf2",
+  darkText: "#202124", deepBlue: "#002e6e"
+};
 
-const IMPACT_STATS = [
-  { value: 1500, suffix: "+", label: "Students", icon: "bi-people-fill", color: THEME.primary, bg: "rgba(10, 40, 133, 0.08)" },
-  { value: 95, suffix: "%", label: "Placement", icon: "bi-graph-up-arrow", color: THEME.success, bg: "rgba(16, 185, 129, 0.08)" },
-  { value: 30, suffix: "+", label: "Courses", icon: "bi-pc-display", color: "#F59E0B", bg: "rgba(245, 158, 11, 0.08)" },
-  { value: 24, suffix: "/7", label: "Lab Access", icon: "bi-clock-fill", color: "#EC4899", bg: "rgba(236, 72, 153, 0.08)" }
+const STATS = [
+  { val: 1500, sfx: "+", lbl: "Students", icon: "bi-people", c: THEME.googleBlue },
+  { val: 95, sfx: "%", lbl: "Success Rate", icon: "bi-award", c: "#10b981" },
+  { val: 30, sfx: "+", lbl: "Programs", icon: "bi-laptop", c: "#f59e0b" },
+  { val: 24, sfx: "/7", lbl: "Support", icon: "bi-headset", c: "#ec4899" }
 ];
 
-const CERT_DATA = [
-  { title: "Drishtee Society", img: "images/thumbnails/Certificate3.png", desc: "ISO 9001 : 2008" },
-  { title: "NIELIT", img: "images/thumbnails/Certificate2.png", desc: "Govt. of India Accredited" },
-  { title: "Society Reg.", img: "images/thumbnails/Certificate1.png", desc: "Reg No 72/2013" },
-  { title: "Algol Trust", img: "images/thumbnails/Certificate4.png", desc: "University Partner" },
+const PHILOSOPHY = [
+  { t: "Practical Learning", d: "More time on labs than books.", c: THEME.googleBlue },
+  { t: "Certified Faculty", d: "Industry experts with 10+ years exp.", c: "#34a853" },
+  { t: "Placement Cell", d: "Dedicated team for your career growth.", c: "#fbbc04" }
 ];
 
-// --- REUSABLE SUB-COMPONENTS ---
-
-const SectionHeader = ({ title, subtitle }) => (
-  <div className="text-center mb-5">
-    <h2 className="fw-bold" style={{ color: THEME.primary }}>{title}</h2>
-    <hr className="mx-auto border-2 border-primary" style={{ width: '50px' }} />
-    <p className="text-muted small">{subtitle}</p>
-  </div>
-);
+// Reusable Loader
+const SectionLoader = () => <div className="text-center p-5"><div className="spinner-border text-primary spinner-border-sm"></div></div>;
 
 const CounterBox = ({ value, suffix, label, icon, color }) => (
-  <div className="col text-center">
-    <div className="p-3 rounded-4 bg-white shadow-sm h-100 border-bottom border-3" style={{ borderColor: color }}>
-      <i className={`bi ${icon} fs-3 mb-2 d-block`} style={{ color }}></i>
-      <h3 className="fw-bold mb-0">{value}{suffix}</h3>
-      <small className="text-muted fw-bold text-uppercase" style={{ fontSize: '10px' }}>{label}</small>
+  <div className="col">
+    <div className="h-100 p-4 rounded-4 border-0 shadow-sm transition hover-lift bg-white text-center">
+      <div className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+        style={{ width: '60px', height: '60px', backgroundColor: `${color}15` }}>
+        <i className={`bi ${icon} fs-3`} style={{ color }}></i>
+      </div>
+      <h2 className="fw-bold mb-1 mt-2" style={{ color: THEME.darkText }}>{value}{suffix}</h2>
+      <p className="text-muted small fw-medium mb-0">{label}</p>
     </div>
   </div>
 );
 
-// --- MAIN COMPONENTS ---
-
-const Certificate = () => {
-  const [modal, setModal] = useState({ show: false, img: "" });
-  return (
-    <section className="py-5 bg-light">
-      <div className="container">
-        <SectionHeader title="Our Accreditations" subtitle="Verified & Government Recognized Certifications" />
-        <div className="row g-3">
-          {CERT_DATA.map((c, i) => (
-            <div key={i} className="col-md-6 col-lg-3" onClick={() => setModal({ show: true, img: c.img })}>
-              <div className="d-flex align-items-center p-3 rounded-4 shadow-sm bg-white hover-top cursor-pointer">
-                <img src={c.img} alt={c.title} width="50" className="rounded me-3 shadow-sm" />
-                <div className="overflow-hidden">
-                  <div className="fw-bold text-truncate" style={{ fontSize: '14px' }}>{c.title}</div>
-                  <small className="text-muted d-block text-truncate">{c.desc}</small>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <Modal show={modal.show} onHide={() => setModal({ show: false, img: "" })} centered>
-        <Modal.Body className="p-0 border-0 shadow-lg"><img src={modal.img} alt="Cert" className="w-100 rounded" /></Modal.Body>
-      </Modal>
-    </section>
-  );
-};
-
 const About = () => {
-  const [counts, setCounts] = useState(IMPACT_STATS.map(() => 0));
+  const [counts, setCounts] = useState(STATS.map(() => 0));
 
   useEffect(() => {
-    IMPACT_STATS.forEach((stat, i) => {
+    STATS.forEach((s, i) => {
       let start = 0;
-      const end = stat.value;
-      if (start === end) return;
-      let timer = setInterval(() => {
-        start += Math.ceil(end / 50);
-        if (start >= end) {
-          setCounts(prev => { const nc = [...prev]; nc[i] = end; return nc; });
+      const timer = setInterval(() => {
+        start += Math.ceil(s.val / 30);
+        if (start >= s.val) {
+          setCounts(p => { const n = [...p]; n[i] = s.val; return n; });
           clearInterval(timer);
         } else {
-          setCounts(prev => { const nc = [...prev]; nc[i] = start; return nc; });
+          setCounts(p => { const n = [...p]; n[i] = start; return n; });
         }
-      }, 40);
+      }, 50);
     });
+    window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="bg-white overflow-hidden">
-      {/* Hero Section */}
-      <section className="container py-5 mt-md-4">
-        <div className="row g-5 align-items-center">
-          <div className="col-lg-7">
-            <span className="badge bg-primary rounded-pill px-3 py-2 mb-3 shadow-sm">📍 Nichlaul, Maharajganj</span>
-            <h1 className="display-4 fw-bold mb-3" style={{ color: THEME.primary }}>Drishtee Computer Institute</h1>
-            <p className="lead text-secondary mb-4">Empowering Rural India through Digital Literacy Since {EST_YEAR}</p>
-            <div className="text-muted mb-4" style={{ textAlign: 'justify', lineHeight: '1.8' }}>
-              Welcome to Eastern UP's premier IT hub. We bridge the digital divide with the philosophy of <em>"Shining India through Skilled India"</em>. Our student-centric approach ensures you don't just get a certificate, but a career.
-            </div>
-            <div className="d-flex align-items-center gap-2 flex-wrap">
-              <Link
-                to="/new-admission"
-                className="btn btn-primary rounded-pill px-4 py-2 shadow-sm"
-              >
-                Apply Now
-              </Link>
+    <div className="bg-white position-relative" style={{ fontFamily: "'Google Sans', Roboto, sans-serif" }}>
 
-              <Link
-                to="/contact-us"
-                className="btn btn-outline-primary rounded-pill px-4 py-2"
-              >
-                Contact Us
-              </Link>
+      {/* Hero Section */}
+      <div className="position-absolute top-0 end-0 translate-middle-y opacity-25 d-none d-lg-block"
+        style={{ width: '400px', height: '400px', background: `radial-gradient(circle, ${THEME.googleBlue} 0%, transparent 70%)` }}></div>
+
+      <section className="container py-5 position-relative">
+        <div className="row g-5 align-items-center pt-lg-5">
+          <div className="col-lg-6">
+            <span className="badge rounded-pill bg-light text-primary px-3 py-2 border mb-3">
+              <i className="bi bi-shield-check me-1"></i> ISO 9001:2008 Certified
+            </span>
+            <h1 className="display-3 fw-bold mb-4" style={{ color: THEME.darkText, letterSpacing: '-1px' }}>
+              We build the <span style={{ color: THEME.googleBlue }}>future</span> of digital India.
+            </h1>
+            <p className="fs-5 text-secondary mb-5">Drishtee Computer Institute is bridging the digital divide since 2007. Trusted by 15,000+ students.</p>
+            <div className="d-flex gap-3">
+              <Link to="/new-admission" className="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold border-0" style={{ backgroundColor: THEME.googleBlue }}>Apply Now</Link>
+              <Link to="/contact-us" className="btn btn-outline-dark btn-lg rounded-pill px-4 fw-bold">Learn More</Link>
             </div>
           </div>
-          <div className="col-lg-5 position-relative">
-            <img src="/images/vender/homepic.webp" alt="Campus" className="img-fluid rounded-5 shadow-lg border" />
-            <div className="position-absolute bottom-0 start-0 m-3 p-3 bg-white rounded-4 shadow-sm border ">
-              <div className="d-flex align-items-center gap-2">
-                <i className="bi bi-patch-check-fill text-success fs-4"></i>
-                <small className="fw-bold">NIELIT ACCREDITED<br /><span className="text-muted">DIIT0124</span></small>
+
+          <div className="col-lg-6 text-center">
+            <div className="position-relative p-4 d-inline-block">
+              <div className="floating-img shadow-lg rounded-5 overflow-hidden border">
+                <img src="/images/vender/homepic.webp" alt="Campus" className="img-fluid" style={{ maxHeight: '450px' }} />
+              </div>
+              <div className="position-absolute top-0 start-0 translate-middle-x mt-5 d-none d-md-block shadow-lg p-3 bg-white rounded-4 border animate-float glass-card">
+                <div className="d-flex align-items-center gap-3 text-start">
+                  <div className="bg-success rounded-circle p-2 text-white"><i className="bi bi-check-lg"></i></div>
+                  <div className="fw-bold small">NIELIT Accredited<div className="text-muted fw-normal">DIIT0124</div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Counters Strip */}
-      <div className="bg-light py-5 border-top">
+      {/* Stats Section */}
+      <section className="py-5 my-5 bg-light">
         <div className="container">
-          <div className="row row-cols-2 row-cols-md-4 g-4">
-            {IMPACT_STATS.map((s, i) => (
-              <CounterBox key={i} {...s} value={counts[i]} />
+          <div className="row row-cols-2 row-cols-lg-4 g-4">
+            {STATS.map((s, i) => (
+              <CounterBox key={i} value={counts[i]} suffix={s.sfx} label={s.lbl} icon={s.icon} color={s.c} />
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Philosophy */}
+      {/* Philosophy Section */}
       <section className="container py-5">
         <div className="row g-5 align-items-center">
-          <div className="col-md-6 order-2 order-md-1"><img src="/images/vender/office.jpg" alt="Office" className="img-fluid rounded-4 shadow" /></div>
-          <div className="col-md-6 order-1 order-md-2">
-            <h2 className="fw-bold mb-4" style={{ color: THEME.primary }}>Our Excellence</h2>
-            <p className="text-muted">Our teaching methodology combines theoretical knowledge with extensive practical exposure. We operate on three pillars:</p>
-            <div className="row g-3">
-              {["Quality Education", "Affordability", "Placement Success"].map((item, i) => (
-                <div key={i} className="col-12 d-flex align-items-center gap-2">
-                  <i className="bi bi-check-circle-fill text-success fs-5"></i>
-                  <span className="fw-semibold text-secondary">{item}</span>
-                </div>
-              ))}
+          <div className="col-md-6 text-center">
+            <img src="/images/vender/office.jpg" alt="Office" className="img-fluid rounded-5 shadow-sm border p-2 bg-light" />
+          </div>
+          <div className="col-md-6 ps-lg-5">
+            <h6 className="text-primary fw-bold text-uppercase mb-2">Our Philosophy</h6>
+            <h2 className="fw-bold mb-4 display-6">Quality Education for Everyone.</h2>
+            {PHILOSOPHY.map((item, i) => (
+              <div key={i} className="d-flex gap-3 mb-4">
+                <i className="bi bi-check-circle-fill fs-5" style={{ color: item.c }}></i>
+                <div><h5 className="fw-bold mb-1">{item.t}</h5><p className="text-muted small mb-0">{item.d}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Blue CTA Section */}
+      <section className="container py-5 mb-5">
+        <div className="rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${THEME.deepBlue} 0%, ${THEME.paytmBlue} 100%)` }}>
+          <div className="position-absolute top-0 start-0 w-100 h-100 opacity-10"
+            style={{ background: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
+          <div className="position-relative z-1 text-white">
+            <h2 className="display-5 fw-bold mb-4">Ready to start your journey?</h2>
+            <p className="opacity-75 mb-5 fs-5 mx-auto" style={{ maxWidth: '600px' }}>Join the most advanced computer institute in Nichlaul.</p>
+            <div className="d-flex justify-content-center gap-3">
+              <Link to="/contact" className="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary shadow">Enquire Now</Link>
+              <Link to="/courses" className="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold border-2">View Courses</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Accreditation Section */}
-      <Certificate />
-
-      {/* CTA */}
-      <section className="container py-5">
-        <div className="p-5 rounded-5 text-white text-center shadow-lg" style={{ background: `linear-gradient(45deg, ${THEME.primary}, ${THEME.secondary})` }}>
-          <h2 className="fw-bold mb-3">Begin Your IT Career Journey</h2>
-          <p className="opacity-75 mb-4">Visit our campus today for a free career counseling session.</p>
-          <div className="d-flex justify-content-center gap-3 flex-wrap">
-            <Link to="/contact" className="btn btn-warning btn-lg rounded-pill px-5 fw-bold text-dark shadow">Enquire Now</Link>
-            <Link to="/OurCourses" className="btn btn-outline-light btn-lg rounded-pill px-4">Browse Courses</Link>
-          </div>
-        </div>
-      </section>
-      {/* Lazy Sections */}
-      <Suspense fallback={<div className="text-center p-5 spinner-border text-primary" />}>
-        <Team />
+      {/* --- ALL LAZY COMPONENTS IN ONE SUSPENSE BATCH --- */}
+      <Suspense fallback={<SectionLoader />}>
+        <section className="py-5 bg-white">
+          <Team />
+        </section>
+        <ScrollUp />
+        <Footer />
       </Suspense>
 
       <style>{`
-        .hover-top:hover { transform: translateY(-5px); transition: 0.3s; }
-        .cursor-pointer { cursor: pointer; }
-        .transition { transition: 0.3s ease-in-out; }
+        .hover-lift:hover { transform: translateY(-10px); transition: 0.3s ease; }
+        .hover-lift, .floating-img { transition: 0.3s ease; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); z-index: 10; }
+        .animate-float { animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .btn-lg { padding: 0.8rem 2.5rem; font-size: 1rem; }
       `}</style>
     </div>
   );

@@ -1,9 +1,9 @@
-// src\Components\Certificate\StudentCertificateWrapper.jsx
+// src/Components/Certificate/StudentCertificateWrapper.jsx
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { Spinner, Alert } from "react-bootstrap";
-import StudentCertificate from "../../AdminComponents/Certificate/StudentCertificate"; // Admin certificate
+import { Spinner, Alert, ProgressBar } from "react-bootstrap";
+import StudentCertificate from "../../AdminComponents/Certificate/StudentCertificate";
 
 export default function CertificateWrapper() {
   const [student, setStudent] = useState(null);
@@ -11,7 +11,7 @@ export default function CertificateWrapper() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let unsubscribe = () => {};
+    let unsubscribe = () => { };
 
     const initListener = async () => {
       try {
@@ -25,20 +25,25 @@ export default function CertificateWrapper() {
         const userEmail = user.email.trim().toLowerCase();
         const q = query(collection(db, "admissions"), where("email", "==", userEmail));
 
-        unsubscribe = onSnapshot(q, snapshot => {
-          if (!snapshot.empty) {
-            const docData = snapshot.docs[0].data();
-            setStudent({ id: snapshot.docs[0].id, ...docData });
-            setError(null);
-          } else {
-            setError("No admission record found for this email.");
+        unsubscribe = onSnapshot(
+          q,
+          (snapshot) => {
+            if (!snapshot.empty) {
+              const docData = snapshot.docs[0].data();
+              setStudent({ id: snapshot.docs[0].id, ...docData });
+              setError(null);
+            } else {
+              setError("No admission record found for this email.");
+              setStudent(null);
+            }
+            setLoading(false);
+          },
+          (err) => {
+            console.error(err);
+            setError("Failed to fetch data from server.");
+            setLoading(false);
           }
-          setLoading(false);
-        }, err => {
-          console.error(err);
-          setError("Failed to fetch data from server.");
-          setLoading(false);
-        });
+        );
       } catch (err) {
         console.error(err);
         setError("An unexpected error occurred.");
@@ -69,27 +74,64 @@ export default function CertificateWrapper() {
 
   if (!student) return null;
 
-  // ===== Status logic =====
-  const hasMarks = student.percentage !== undefined && student.percentage !== "";
-  const hasDate = student.issueDate !== undefined && student.issueDate !== "";
+  // ===== FIXED STATUS LOGIC =====
+  const hasMarks = student.percentage && student.percentage !== "";
+  const hasDate = student.issueDate && student.issueDate !== "";
 
+  // Check if certificate is disabled FIRST - this overrides everything
+  if (student.certificateDisabled === true) {
+    return (
+      <div className="container py-4">
+        <div
+          className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto"
+          style={{ maxWidth: "850px" }}
+        >
+          <div className="card-body p-4 p-md-5 bg-white text-center">
+            <h4 className="fw-bold mb-3 text-danger">Certificate Disabled</h4>
+            <p className="text-muted mb-4">
+              The certificate has been disabled by the administrator.
+              Please contact the admin for more information.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if certificate is issued (has URL or marks+date) and NOT disabled
   const isIssued = student.certificateUrl || (hasMarks && hasDate);
 
-  // ===== RENDER =====
+  // For "in-process", calculate progress based on missing fields
+  const progress = (() => {
+    let p = 0;
+    if (hasMarks) p += 50;
+    if (hasDate) p += 50;
+    return p;
+  })();
+
   return (
     <div>
       {isIssued ? (
-        // Issued → Render Admin-style certificate
         <StudentCertificate student={student} />
+
       ) : (
-        // In-process → Show template progress
         <div className="container py-4">
-          <div className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto" style={{ maxWidth: "850px" }}>
+          <div
+            className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto"
+            style={{ maxWidth: "850px" }}
+          >
             <div className="card-body p-4 p-md-5 bg-white text-center">
               <h4 className="fw-bold mb-3">Your Certificate is being processed</h4>
-              <p className="text-muted mb-4">Please wait until the admin verifies your marks and releases the certificate.</p>
+              <p className="text-muted mb-4">
+                Please wait until the admin verifies your marks and releases the certificate.
+              </p>
               <div className="progress rounded-pill mb-3" style={{ height: "14px", background: "#f0f0f0" }}>
-                <div className="progress-bar progress-bar-striped progress-bar-animated bg-primary" style={{ width: "60%" }}></div>
+                <div
+                  className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                  style={{ width: `${progress}%` }}
+                >
+                  {progress}%
+                </div>
               </div>
             </div>
           </div>

@@ -1,35 +1,11 @@
-// src/pages/Gallery/PublicSocialGallery.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  updateDoc,
-  doc,
-  limit,
-  addDoc,
-  serverTimestamp,
-  deleteDoc,
-  arrayUnion,
-  arrayRemove
+import { 
+  collection, query, orderBy, onSnapshot, updateDoc, 
+  doc, limit, addDoc, serverTimestamp, deleteDoc, 
+  arrayUnion, arrayRemove 
 } from "firebase/firestore";
-
-import {
-  Container,
-  Card,
-  Button,
-  Form,
-  Spinner,
-  InputGroup,
-  Dropdown,
-  Row,
-  Col,
-  Modal
-} from "react-bootstrap";
-
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -38,415 +14,194 @@ import LikeButton from "./Gallery/LikeButton";
 
 export default function PublicSocialGallery() {
   const { user, isAdmin, isLoggedIn, displayName, photoURL } = useAuth();
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [myId, setMyId] = useState("");
   const [comment, setComment] = useState({});
   const [showUpload, setShowUpload] = useState(false);
+  
+  // Upload States
   const [file, setFile] = useState(null);
-  const [title, setTitle] = useState("");
   const [preview, setPreview] = useState("");
+  const [title, setTitle] = useState("");
   const [uploading, setUploading] = useState(false);
 
   const currentUserId = user?.uid || myId;
   const navigate = useNavigate();
 
-  // Guest ID Generate
   useEffect(() => {
-    let id = localStorage.getItem("gallery_user_id") || uuidv4();
+    const id = localStorage.getItem("gallery_user_id") || uuidv4();
     localStorage.setItem("gallery_user_id", id);
     setMyId(id);
-  }, []);
 
-  // Fetch Posts
-  useEffect(() => {
-    const q = query(
-      collection(db, "galleryImages"),
-      orderBy("createdAt", "desc"),
-      limit(20)
-    );
-
+    const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(40));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
+      setPosts(snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
         likes: doc.data().likes || [],
-        comments: doc.data().comments || [],
-        downloadCount: doc.data().downloadCount || 0
-      }));
-      setPosts(data);
+        comments: doc.data().comments || []
+      })));
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
-  // Like
-  const handleLike = async (post) => {
-    const docRef = doc(db, "galleryImages", post.id);
-
-    if (post.likes.includes(currentUserId)) {
-      await updateDoc(docRef, {
-        likes: arrayRemove(currentUserId)
-      });
-    } else {
-      await updateDoc(docRef, {
-        likes: arrayUnion(currentUserId)
-      });
+  // DELETE POST WITH CONFIRMATION
+  const handleDeletePost = async (postId) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await deleteDoc(doc(db, "galleryImages", postId));
+        toast.success("Post delete ho gayi");
+      } catch (err) {
+        toast.error("Delete fail ho gaya");
+      }
     }
   };
 
-  // Comment Add
-  const handleComment = async (post) => {
-    const text = comment[post.id]?.trim();
-    if (!text) return;
-
-    const newComment = {
-      text,
-      userId: currentUserId,
-      userName: displayName || "Guest",
-      userPhoto: photoURL || "",
-      createdAt: new Date().toISOString(),
-      commentId: uuidv4()
-    };
-
-    await updateDoc(doc(db, "galleryImages", post.id), {
-      comments: arrayUnion(newComment)
-    });
-
-    setComment({ ...comment, [post.id]: "" });
-  };
-
-  // Comment Delete
-  const deleteComment = async (post, commentObj) => {
-    await updateDoc(doc(db, "galleryImages", post.id), {
-      comments: arrayRemove(commentObj)
-    });
-  };
-
-  // Upload
-  const uploadToCloudinary = async () => {
-    if (!file || !title.trim())
-      return toast.error("File and title required");
-
-    if (!file.type.startsWith("image/"))
-      return toast.error("Only image allowed");
-
-    if (file.size > 2 * 1024 * 1024)
-      return toast.error("Max 2MB allowed");
-
+  const handleUpload = async () => {
+    if (!file || !title.trim()) return toast.error("File & Title required");
     setUploading(true);
-
     try {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("upload_preset", "hridesh99!");
-
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/draowpiml/image/upload",
-        { method: "POST", body: fd }
-      );
-
+      const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { method: "POST", body: fd });
       const data = await res.json();
 
       await addDoc(collection(db, "galleryImages"), {
-        url: data.secure_url,
-        title: title.trim(),
-        uploadedBy: displayName || "Guest",
-        uploadedById: currentUserId,
-        userPhoto: photoURL || "",
-        createdAt: serverTimestamp(),
-        likes: [],
-        comments: [],
-        downloadCount: 0
+        url: data.secure_url, title: title.trim(),
+        uploadedBy: displayName || "Guest", uploadedById: currentUserId,
+        userPhoto: photoURL || "", createdAt: serverTimestamp(),
+        likes: [], comments: [], downloadCount: 0
       });
 
-      toast.success("Post shared!");
-      setShowUpload(false);
-      setFile(null);
-      setTitle("");
-      setPreview("");
-    } catch {
-      toast.error("Upload failed");
-    } finally {
-      setUploading(false);
-    }
+      toast.success("Shared!");
+      setShowUpload(false); setFile(null); setTitle(""); setPreview("");
+    } catch (err) { toast.error("Failed!"); } finally { setUploading(false); }
   };
 
-  const formatTime = (date) => {
-    const diff = (new Date() - new Date(date)) / 1000;
-    if (diff < 60) return "Just now";
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    return new Date(date).toLocaleDateString();
-  };
-
-  if (loading)
-    return (
-      <div className="text-center py-5">
-        <Spinner animation="border" variant="danger" />
-      </div>
-    );
+  if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-danger"></div></div>;
 
   return (
-    <div className="win11-bg p-3">
-
-      {/* HEADER */}
-      <div className="bg-white border-bottom py-2 shadow-sm glass-panel">
-        <Container className="d-flex justify-content-between align-items-center">
-          <h4 className="fw-bold text-danger mb-0">Gallery</h4>
+    <div className="bg-light min-vh-100 pb-5">
+      <header className="bg-white border-bottom sticky-top shadow-sm py-2 px-3 z-index-1000">
+        <div className="container d-flex justify-content-between align-items-center">
+          <h4 className="fw-bold text-danger m-0">Drishtee Feed</h4>
           {isLoggedIn ? (
-            <Button
-              variant="danger"
-              size="sm"
-              className="rounded-pill px-4 fw-bold"
-              onClick={() => setShowUpload(true)}
-            >
-              <i className="bi bi-upload me-2" style={{ fontSize: 16 }}></i>
-              Post
-            </Button>
+            <button className="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" onClick={() => setShowUpload(true)}>+ Post</button>
           ) : (
-            <Button
-              variant="primary"
-              size="sm"
-              className="rounded-pill px-4 fw-bold"
-              onClick={() => navigate("/login-as-member")}
-            >
-              🔐 Login to Post
-            </Button>
+            <button className="btn btn-primary rounded-pill px-4 fw-bold" onClick={() => navigate("/login")}>Login</button>
           )}
-        </Container>
-      </div>
+        </div>
+      </header>
 
-      {/* FEED */}
-      <Container className="m-0 p-0 mt-2 mb-5">
-        <Row className="g-4 pb-5 justify-content-center">
+      <main className="container mt-4">
+        <div className="row g-4">
           {posts.map((post) => (
-            <Col key={post.id} xs={12} md={8} lg={6}>
-              <Card className="glass-card shadow-sm overflow-hidden">
-
-                {/* Header - User Info */}
-                <Card.Body className="d-flex justify-content-between align-items-center pb-0">
+            <div key={post.id} className="col-12 col-lg-6">
+              <article className="card border-0 shadow-sm rounded-4 overflow-hidden h-100 bg-white">
+                
+                <div className="p-3 d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center gap-2">
-                    {post.userPhoto ? (
-                      <img
-                        src={post.userPhoto}
-                        alt=""
-                        className="rounded-circle"
-                        width="40"
-                        height="40"
-                        style={{ objectFit: "cover" }}
-                      />
-                    ) : (
-                      <i className="bi bi-person-circle text-secondary" style={{ fontSize: 40 }}></i>
-                    )}
-                    <div>
-                      <div className="fw-bold">
-                        {post.uploadedBy}
-                      </div>
-                      <div className="text-muted" style={{ fontSize: 12 }}>
-                        {formatTime(post.createdAt)}
-                      </div>
+                    <img src={post.userPhoto || `https://ui-avatars.com/api/?name=${post.uploadedBy}`} className="rounded-circle border" width="35" height="35" alt="" />
+                    <div className="lh-1">
+                      <div className="fw-bold small">{post.uploadedBy}</div>
+                      <small className="text-muted extra-small">{new Date(post.createdAt).toLocaleDateString()}</small>
                     </div>
                   </div>
-
-                  {/* Delete Option - Only Admin/Uploader */}
                   {(isAdmin || post.uploadedById === currentUserId) && (
-                    <Dropdown align="end">
-                      <Dropdown.Toggle variant="link" className="p-0 shadow-none text-dark">
-                       <i className="bi bi-three-dots-vertical" style={{ fontSize: 18 }}></i>
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item
-                          className="text-danger"
-                          onClick={() =>
-                            deleteDoc(doc(db, "galleryImages", post.id))
-                          }
-                        >
-                          <i className="bi bi-trash3 me-2"></i>
-                          Delete Post
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+                    <button className="btn btn-sm text-danger border-0 p-0" onClick={() => handleDeletePost(post.id)}>
+                      <i className="bi bi-trash3 fs-6"></i>
+                    </button>
                   )}
-                </Card.Body>
-
-                {/* Image */}
-                <div className="px-3 pt-2">
-                  <img
-                    src={post.url}
-                    alt={post.title}
-                    loading="lazy"
-                    style={{
-                      width: "100%",
-                      maxHeight: "500px",
-                      objectFit: "contain",
-                      background: "#0a0a0a",
-                      borderRadius: "12px",
-                      cursor: "pointer"
-                    }}
-                    onDoubleClick={() => handleLike(post)}
-                  />
                 </div>
 
-                {/* Title */}
-                <Card.Body className="pb-0">
-                  <div className="fw-bold fs-6 mb-2">{post.title}</div>
-                </Card.Body>
+                <div className="bg-dark d-flex align-items-center justify-content-center post-img-container">
+                  <img src={post.url} className="img-fluid" alt={post.title} onDoubleClick={() => {
+                    const ref = doc(db, "galleryImages", post.id);
+                    updateDoc(ref, { likes: post.likes.includes(currentUserId) ? arrayRemove(currentUserId) : arrayUnion(currentUserId) });
+                  }} />
+                </div>
 
-                {/* ACTIONS - LIKE, COMMENT, DOWNLOAD */}
-                <Card.Body className="py-2">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-
-                    {/* Like Button */}
-                    <LikeButton
-                      isLiked={post.likes.includes(currentUserId)}
-                      count={post.likes.length}
-                      onClick={() => handleLike(post)}
-                      size={22}
-                    />
-
-                    {/* Comment Button */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                     <i className="bi bi-chat" style={{ fontSize: 22 }}></i>
-                      <span style={{ fontWeight: '600', fontSize: '14px' }}>
-                        {post.comments.length}
-                      </span>
-                    </div>
-
-                    {/* Download Button */}
-                    <DownloadButton
-                      imageUrl={post.url}
-                      imageId={post.id}
-                      filename={`${post.uploadedBy}-${post.title}`}
-                    />
-
+                <div className="p-3">
+                  <h6 className="fw-bold mb-3">{post.title}</h6>
+                  
+                  <div className="d-flex align-items-center gap-4 mb-3">
+                    <LikeButton isLiked={post.likes.includes(currentUserId)} count={post.likes.length} onClick={() => {
+                      const ref = doc(db, "galleryImages", post.id);
+                      updateDoc(ref, { likes: post.likes.includes(currentUserId) ? arrayRemove(currentUserId) : arrayUnion(currentUserId) });
+                    }} />
+                    <div className="d-flex align-items-center gap-1 small fw-bold"><i className="bi bi-chat fs-5"></i> {post.comments.length}</div>
+                    <DownloadButton imageUrl={post.url} filename={post.title} />
                   </div>
-                </Card.Body>
 
-                {/* Comments Section */}
-                <Card.Body className="pt-0">
-                  {post.comments.map((c) => (
-                    <div key={c.commentId} className="small mb-2 d-flex align-items-start">
-                      <strong className="me-1">{c.userName}:</strong>
-                      <span className="text-break flex-grow-1">{c.text}</span>
-                      {(isAdmin || c.userId === currentUserId) && (
-                        <i className="bi bi-x-circle-fill text-danger ms-2" style={{ fontSize: 14, cursor: 'pointer', flexShrink: 0 }}
-                        
-                        onClick={() => deleteComment(post, c)}
-                        >
-                          
-                        </i>
-                        
-                      )}
-                    </div>
-                  ))}
+                  <div className="comments-area mb-3">
+                    {post.comments.slice(-2).map((c) => (
+                      <div key={c.commentId} className="extra-small mb-1 d-flex align-items-start gap-2">
+                        <div className="flex-grow-1 text-break">
+                          <span className="fw-bold me-1 text-dark">{c.userName}:</span>
+                          <span className="text-secondary">{c.text}</span>
+                        </div>
+                        {/* COMMENT DELETE WITH CONFIRMATION */}
+                        {(isAdmin || c.userId === currentUserId) && (
+                          <i className="bi bi-x-circle-fill text-danger opacity-50" 
+                             style={{cursor:'pointer', fontSize: 11}} 
+                             onClick={() => {
+                               if(window.confirm("Ye comment delete karein?")) {
+                                 updateDoc(doc(db, "galleryImages", post.id), { comments: arrayRemove(c) });
+                               }
+                             }}></i>
+                        )}
+                      </div>
+                    ))}
+                  </div>
 
-                  {/* Add Comment */}
-                  <Form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleComment(post);
-                    }}
-                  >
-                    <InputGroup className="mt-2">
-                      <Form.Control
-                        placeholder="Write a comment..."
-                        value={comment[post.id] || ""}
-                        onChange={(e) =>
-                          setComment({
-                            ...comment,
-                            [post.id]: e.target.value
-                          })
-                        }
-                        size="sm"
-                        className="rounded-pill border-0 bg-light"
-                      />
-                      <Button
-                        type="submit"
-                        variant="danger"
-                        className="rounded-pill px-4 fw-bold shadow-sm"
-                        disabled={!comment[post.id]?.trim()}
-                        size="sm"
-                      >
-                        Post
-                      </Button>
-                    </InputGroup>
-                  </Form>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </Container>
-
-      {/* UPLOAD MODAL */}
-      <Modal show={showUpload} onHide={() => setShowUpload(false)} centered className="glass-panel">
-        <Modal.Header closeButton className="border-0 pb-0">
-          <Modal.Title className="fw-bold">Create New Post</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="pt-2 glass-panel">
-          <Form.Group className="mb-3">
-            <Form.Label className="small fw-bold text-muted">Select Image</Form.Label>
-            <Form.Control
-              type="file"
-              accept="image/*"
-              className="py-2"
-              onChange={(e) => {
-                const selected = e.target.files[0];
-                setFile(selected);
-                if (selected) {
-                  setPreview(URL.createObjectURL(selected));
-                }
-              }}
-            />
-            <Form.Text className="text-muted">Max size: 2MB</Form.Text>
-          </Form.Group>
-
-          {preview && (
-            <div className="mb-3">
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-100 rounded-3"
-                style={{ maxHeight: 250, objectFit: "contain", background: "#f8f9fa" }}
-              />
+                  <form className="d-flex gap-2" onSubmit={(e) => {
+                    e.preventDefault();
+                    const text = comment[post.id]?.trim();
+                    if(!text) return;
+                    updateDoc(doc(db, "galleryImages", post.id), {
+                      comments: arrayUnion({ text, userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4(), createdAt: new Date().toISOString() })
+                    });
+                    setComment({...comment, [post.id]: ""});
+                  }}>
+                    <input className="form-control form-control-sm border-0 bg-light rounded-pill px-3" placeholder="Write a comment..." value={comment[post.id] || ""} onChange={(e) => setComment({...comment, [post.id]: e.target.value})} />
+                    <button className="btn btn-sm btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" style={{width: 30, height: 30}} type="submit" disabled={!comment[post.id]}><i className="bi bi-send-fill" style={{fontSize: 12}}></i></button>
+                  </form>
+                </div>
+              </article>
             </div>
-          )}
+          ))}
+        </div>
+      </main>
 
-          <Form.Group>
-            <Form.Label className="small fw-bold text-muted">Title</Form.Label>
-            <Form.Control
-              placeholder="Enter image title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="py-2"
-            />
-          </Form.Group>
-        </Modal.Body>
+      {showUpload && (
+        <div className="custom-modal-overlay p-3">
+          <div className="bg-white p-4 rounded-4 shadow-lg w-100" style={{ maxWidth: '400px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="fw-bold m-0">Create Post</h5>
+              <button className="btn-close" onClick={() => setShowUpload(false)}></button>
+            </div>
+            <input type="file" className="form-control mb-3" accept="image/*" onChange={(e) => {
+              const f = e.target.files[0]; setFile(f);
+              if(f) setPreview(URL.createObjectURL(f));
+            }} />
+            {preview && <img src={preview} className="w-100 rounded-3 mb-3 border" style={{ maxHeight: '180px', objectFit: 'contain' }} alt="" />}
+            <input className="form-control mb-4" placeholder="Caption/Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <button className="btn btn-danger w-100 rounded-pill fw-bold py-2" onClick={handleUpload} disabled={uploading}>{uploading ? "Posting..." : "Post Now"}</button>
+          </div>
+        </div>
+      )}
 
-        <Modal.Footer className="border-0 pt-0">
-          <Button variant="light" onClick={() => setShowUpload(false)} className="px-4 rounded-pill">
-            Cancel
-          </Button>
-          <Button
-            variant="danger"
-            onClick={uploadToCloudinary}
-            disabled={uploading || !file || !title.trim()}
-            className="px-4 rounded-pill"
-          >
-            {uploading ? (
-              <>
-                <Spinner size="sm" className="me-2" />
-                Posting...
-              </>
-            ) : (
-              "Post"
-            )}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <style>{`
+        .post-img-container { height: 400px; overflow: hidden; }
+        .post-img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+        .extra-small { font-size: 11px; }
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10001; }
+        @media (max-width: 992px) { .post-img-container { height: 320px; } }
+      `}</style>
     </div>
   );
 }

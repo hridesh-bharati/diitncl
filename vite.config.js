@@ -12,7 +12,9 @@ export default defineConfig({
           /Toastify/,
           /swiper/,
           /aos/,
-          /recharts/
+          /recharts/,
+          /^bi-/,
+          /^bi$/
         ]
       }
     }),

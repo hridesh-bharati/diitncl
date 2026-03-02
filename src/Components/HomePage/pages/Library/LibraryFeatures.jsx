@@ -1,7 +1,5 @@
-import React, { useEffect } from 'react';
-import { Link, Links } from 'react-router-dom';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const facilities = [
   { title: 'Meeting Rooms', img: 'images/vender/meeting-room.webp', description: 'Private spaces for discussions.', icon: 'fas fa-users' },
@@ -16,9 +14,8 @@ const amenities = [
   'Pantry Access', 'Clean Washrooms'
 ];
 
-const FacilityCard = ({ title, img, description, icon, index }) => (
-  // Mobile: 6 (2 per row), Tablet/PC: 3 (4 per row)
-  <div className="col-6 col-lg-3 mb-3" data-aos="fade-up" data-aos-delay={index * 50}>
+const FacilityCard = ({ title, img, description, icon }) => (
+  <div className="col-6 col-lg-3 mb-3">
     <div className="card border-0 shadow-sm rounded-4 overflow-hidden h-100 transition-hover">
       <img src={img} className="card-img-top" alt={title} style={{ height: '140px', objectFit: 'cover' }} />
       <div className="card-body p-3 text-center text-lg-start">
@@ -34,13 +31,9 @@ const FacilityCard = ({ title, img, description, icon, index }) => (
 );
 
 const LibraryFeatures = () => {
-  useEffect(() => {
-    AOS.init({ duration: 600, once: true });
-  }, []);
-
   return (
-    <div className="bg-light min-vh-100">
-      {/* Header: PC par center align, Mobile par left */}
+    <div className="bg-light min-vh-100 py-5 d-lg-none">
+      {/* Header */}
       <div className="bg-primary text-white pt-4 pb-5 px-4 rounded-bottom-lg-0 shadow-sm mt-3">
         <div className="container text-center text-lg-start py-lg-4">
           <div className="row align-items-center">
@@ -60,12 +53,12 @@ const LibraryFeatures = () => {
       <div className="container" style={{ marginTop: '-30px' }}>
         {/* Facilities Grid */}
         <div className="row g-3 px-1">
-          {facilities.map((f, i) => <FacilityCard key={i} {...f} index={i} />)}
+          {facilities.map((f, i) => <FacilityCard key={i} {...f} />)}
         </div>
 
-        {/* Library Banner Section: PC par side-by-side, Mobile par stacked */}
+        {/* Library Banner Section */}
         <div className="row align-items-center my-5 g-4">
-          <div className="col-lg-6" data-aos="fade-right">
+          <div className="col-lg-6">
             <div className="rounded-5 overflow-hidden shadow-lg border-4 border-white" style={{ height: '350px' }}>
               <img
                 src="images/vender/librarypic2.jpg"
@@ -76,7 +69,7 @@ const LibraryFeatures = () => {
             </div>
           </div>
 
-          <div className="col-lg-6" data-aos="fade-left">
+          <div className="col-lg-6">
             <div className="bg-white rounded-5 shadow-sm p-4 p-lg-5">
               <div className="d-flex align-items-center mb-4">
                 <div className="bg-primary rounded-pill me-3" style={{ width: '6px', height: '30px' }}></div>
@@ -100,8 +93,6 @@ const LibraryFeatures = () => {
         </div>
       </div>
 
-      {/* Padding for bottom button on mobile */}
-      <div className="py-5 d-lg-none"></div>
     </div>
   );
 };

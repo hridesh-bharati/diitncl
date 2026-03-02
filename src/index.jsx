@@ -30,7 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             draggable
             theme="colored"
           />
-          
+
         </BrowserRouter>
       </HelmetProvider>
     </AuthProvider>

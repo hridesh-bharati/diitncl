@@ -1,135 +1,63 @@
-import React from "react";
+import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { FiHome, FiSearch, FiChevronRight } from "react-icons/fi";
 
-/* 🔍 Paytm Style SearchBox */
-const SearchBox = ({ searchQuery, setSearchQuery }) => (
-  <div className="search-wrapper w-100">
-    <div className="paytm-search d-flex align-items-center gap-2 px-3 py-2 shadow-sm">
-      <FiSearch className="text-secondary" size={18} />
-      <input
-        type="text"
-        className="form-control border-0 p-0 bg-transparent"
-        placeholder="Search for courses, subjects..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-    </div>
-  </div>
-);
-
-/* 📚 Paytm Style CourseNav */
 const CourseNav = ({ data, searchQuery, setSearchQuery }) => {
   return (
-    <div className="paytm-nav-card container-fluid mb-4">
+    <div className="paytm-nav-card p-3 p-md-4 bg-white rounded-4 border-bottom-blue shadow-sm mb-4 container-fluid">
       <div className="row align-items-center g-3">
-        {/* Left: Branding & Breadcrumbs */}
+        {/* Left: Branding */}
         <div className="col-12 col-md-6">
-          <div className="breadcrumb-paytm mb-1">
-            <Link to="/" className="paytm-home">
+          <nav className="d-flex align-items-center gap-1 text-uppercase fw-bold text-muted mb-1 small tracking-wider">
+            <Link to="/" className="text-decoration-none text-paytm-blue d-flex align-items-center gap-1">
               <FiHome /> Home
             </Link>
-            <FiChevronRight size={12} className="mx-1" />
-            <span>{data} Courses</span>
-          </div>
-          
-          <h2 className="paytm-heading">
+            <FiChevronRight size={12} />
+            <span>{data}</span>
+          </nav>
+          <h2 className="fw-800 text-paytm-dark m-0 fs-1-5">
             {data} <span className="text-paytm-blue">List</span>
           </h2>
         </div>
 
-        {/* Right: Modern Search */}
-        <div className="col-12 col-md-6 col-lg-4 ms-auto">
-          <SearchBox
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-          />
+        {/* Right: Search */}
+        <div className="col-12 col-md-5 col-lg-4 ms-auto">
+          <div className="search-box d-flex align-items-center gap-2 px-3 py-2 rounded-3 border bg-light-soft transition-all">
+            <FiSearch className="text-secondary" size={18} />
+            <input
+              type="text"
+              className="form-control border-0 p-0 bg-transparent shadow-none small fw-medium text-paytm-dark"
+              placeholder="Search courses..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
       <style>{`
-        /* ================= PAYTM THEME COLORS ================= */
-        :root {
-          --paytm-blue: #00BAF2;
-          --paytm-dark: #002970;
-          --paytm-bg: #F5F7FA;
-          --paytm-light-blue: #EBF8FF;
+        .text-paytm-blue { color: #00BAF2; }
+        .text-paytm-dark { color: #002970; }
+        .bg-light-soft { background: #F0F3F8; border-color: #E8EEF3; }
+        .border-bottom-blue { border-bottom: 4px solid #00BAF2; }
+        .fw-800 { font-weight: 800; }
+        .tracking-wider { letter-spacing: 0.5px; font-size: 0.7rem; }
+        
+        .search-box:focus-within { 
+          background: #fff; 
+          border-color: #00BAF2; 
+          box-shadow: 0 0 0 3px rgba(0, 186, 242, 0.1); 
         }
 
-        .paytm-nav-card {
-          padding: 1.5rem 2rem;
-          background: #ffffff;
-          border-radius: 16px;
-          border-bottom: 4px solid var(--paytm-blue);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        @media (min-width: 768px) { .fs-1-5 { font-size: 1.75rem; } }
+        @media (max-width: 767px) { 
+           .paytm-nav-card { border-radius: 0; margin-left: -12px; margin-right: -12px; }
+           .fs-1-5 { font-size: 1.35rem; }
         }
-
-        /* ================= BREADCRUMBS ================= */
-        .breadcrumb-paytm {
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          color: #8B98A5;
-          display: flex;
-          align-items: center;
-        }
-
-        .paytm-home {
-          color: var(--paytm-blue);
-          text-decoration: none;
-        }
-
-        /* ================= HEADING ================= */
-        .paytm-heading {
-          font-weight: 800;
-          color: var(--paytm-dark);
-          margin: 0;
-          font-size: 1.75rem;
-        }
-
-        .text-paytm-blue {
-          color: var(--paytm-blue);
-        }
-
-        /* ================= SEARCH BOX (PAYTM STYLE) ================= */
-        .paytm-search {
-          background: #F0F3F8 !important;
-          border-radius: 12px; /* Paytm uses slightly square-rounded corners for inputs */
-          border: 1px solid #E8EEF3;
-          transition: all 0.3s ease;
-        }
-
-        .paytm-search:focus-within {
-          background: #ffffff !important;
-          border-color: var(--paytm-blue);
-          box-shadow: 0 0 0 3px rgba(0, 186, 242, 0.1) !important;
-        }
-
-        .paytm-search input {
-          box-shadow: none !important;
-          font-size: 0.9rem;
-          font-weight: 500;
-          color: var(--paytm-dark);
-        }
-
-        .paytm-search input::placeholder {
-          color: #A9B6C3;
-        }
-
-        /* ================= RESPONSIVE ================= */
-        @media (max-width: 768px) {
-          .paytm-nav-card {
-            padding: 1rem;
-            border-radius: 0; /* Mobile view typically goes full width */
-          }
-          .paytm-heading {
-            font-size: 1.4rem;
-          }
-        }
+        .transition-all { transition: all 0.2s ease-in-out; }
       `}</style>
     </div>
   );
 };
 
-export default CourseNav;
+export default memo(CourseNav);

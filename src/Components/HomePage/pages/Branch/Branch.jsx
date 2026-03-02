@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 
 // Hooks
-import useTypingEffect from '../../../../hooks/useTypingEffect.js'; 
+import useTypingEffect from '../../../../hooks/useTypingEffect.js';
 
 // Components
 import Footer from '../../../Footer/Footer';
-import QueryForm from '../QueryFrom';
+import QueryForm from '../About/QuickSupport.jsx';
 import Counter from "./Counter"
 import "./Branch.css";
+
 
 /** DATA */
 const DATA = {
     TYPING_WORDS: ["Growing", "Faster", "Bigger"],
-    
+
     STATS: [
         { label: "Students", value: "1500+" },
         { label: "Courses", value: "12+" },
@@ -157,9 +156,24 @@ const Carousel = ({ items, id, height = 250 }) => (
 /** MAIN COMPONENT */
 function Branch() {
     useEffect(() => {
-        AOS.init({ duration: 800, once: true, offset: 100 });
-    }, []);
+        const observer = new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("show");
+                        observer.unobserve(entry.target); // 👈 important
+                    }
+                });
+            },
+            { threshold: 0.2 }
+        );
 
+        document.querySelectorAll(".fade-up, .fade-left, .fade-right")
+            .forEach((el) => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, []);
+    
     // ✅ Using the DRY Hook
     const typingText = useTypingEffect(DATA.TYPING_WORDS);
 
@@ -179,7 +193,7 @@ function Branch() {
             <div className="container overlap-container">
                 <div className="row g-3 px-2">
                     {DATA.STATS.map((s, i) => (
-                        <div key={i} className="col-6 col-md-3" data-aos="fade-up" data-aos-delay={i * 100}>
+                        <div key={i} className="col-6 col-md-3 fade-up"  >
                             <AppCard className="text-center py-4">
                                 <h3 className="fw-bold text-primary mb-1">{s.value}</h3>
                                 <div className="text-muted small">{s.label}</div>
@@ -192,7 +206,7 @@ function Branch() {
             <main className="container py-5">
                 {/* Hero & Welcome */}
                 <div className="row g-4 mb-5">
-                    <div className="col-lg-6" data-aos="fade-right">
+                    <div className="col-lg-6 fade-right">
                         <AppCard className="p-4 h-100">
                             <h3 className="fw-bold mb-3">Welcome to <span className="text-primary">Drishtee</span></h3>
                             <p className="text-dark mb-3">
@@ -208,20 +222,20 @@ function Branch() {
                         </AppCard>
                     </div>
 
-                    <div className="col-lg-6" data-aos="fade-left">
+                    <div className="col-lg-6 fade-left">
                         <AppCard className="p-2 overflow-hidden">
                             <Carousel items={DATA.CAROUSELS.hero} id="heroCarousel" height={300} />
                         </AppCard>
                     </div>
                 </div>
-                
+
                 <Counter />
 
                 {/* Features */}
                 <SectionHeader title="Why Choose Drishtee?" subtitle="Discover our edge in tech education" className="text-center mt-5" />
                 <div className="row g-4 mb-5">
                     {DATA.FEATURES.map((f, i) => (
-                        <div className="col-md-4" key={i} data-aos="fade-up" data-aos-delay={i * 100}>
+                        <div className="col-md-4 fade-up" key={i} >
                             <FeatureCard {...f} />
                         </div>
                     ))}
@@ -231,7 +245,7 @@ function Branch() {
                 <SectionHeader title="Learning Programs" subtitle="Industry-focused courses" className="text-center" />
                 <div className="row g-4 mb-5">
                     {DATA.PROGRAMS.map((p, i) => (
-                        <div className="col-md-4" key={i} data-aos="fade-up" data-aos-delay={i * 100}>
+                        <div className="col-md-4 fade-up" key={i} >
                             <ProgramCard program={p} index={i} />
                         </div>
                     ))}
@@ -239,7 +253,7 @@ function Branch() {
 
                 {/* Methodology */}
                 <div className="row g-4 mb-5 align-items-center">
-                    <div className="col-lg-6" data-aos="fade-right">
+                    <div className="col-lg-6 fade-right">
                         <AppCard className="p-4">
                             <SectionHeader title="Our Learning Methodology" />
                             {DATA.METHODOLOGY.map((m, i) => (
@@ -253,7 +267,7 @@ function Branch() {
                             ))}
                         </AppCard>
                     </div>
-                    <div className="col-lg-6" data-aos="fade-left">
+                    <div className="col-lg-6 fade-left"  >
                         <AppCard className="p-2 overflow-hidden">
                             <Carousel items={DATA.CAROUSELS.campus} id="campusCarousel" height={350} />
                         </AppCard>
@@ -262,7 +276,7 @@ function Branch() {
 
                 {/* Contact & Form */}
                 <div className="row g-4 mb-5">
-                    <div className="col-lg-7" data-aos="fade-right">
+                    <div className="col-lg-7 fade-right"  >
                         <AppCard className="p-3">
                             <SectionHeader title="Locate Us" />
                             <iframe
@@ -271,7 +285,7 @@ function Branch() {
                             />
                         </AppCard>
                     </div>
-                    <div className="col-lg-5" data-aos="fade-left">
+                    <div className="col-lg-5 fade-left">
                         <AppCard className="p-4 h-100">
                             <SectionHeader title="Quick Enquiry" />
                             <QueryForm />
@@ -281,7 +295,7 @@ function Branch() {
             </main>
 
             <Footer />
-            
+
             {/* Floating Action Bar */}
             <div className="fab-bottom d-block d-md-none">
                 <div className="d-flex gap-2 p-2 bg-white rounded-4 shadow-lg">

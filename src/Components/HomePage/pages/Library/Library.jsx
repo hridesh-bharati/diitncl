@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import AOS from "aos";
 import CountdownTimer from "./Counter";
 import ScrollUp from "../../../HelperCmp/Scroller/ScrollUp";
-import QueryForm from "../QueryFrom";
+import QueryForm from "../About/QuickSupport";
 import LibraryFeatures from "./LibraryFeatures"
 /* ================= DATA ================= */
 
@@ -185,7 +185,7 @@ export default function DrishteeLibrary() {
           </p>
           <CountdownTimer />
         </div>
-        <QueryForm />
+        <QuickSupport />
       </section>
 
       <ScrollUp />

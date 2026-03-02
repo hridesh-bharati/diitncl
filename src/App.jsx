@@ -1,57 +1,58 @@
 import { Route, Routes, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import "./App.css"
+import { useEffect, useState, lazy, Suspense } from "react";
+import "./App.css";
 
-// 🔒 Security & UX
+// 🚀 Core Components (Turant load honge bina loading ke)
 import Lock from "./Components/HomePage/LockWeb/Lock";
-
 import Header from "./Components/Header/Header";
-import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
 import NetworkStatus from "./Components/HomePage/LockWeb/NetworkStatus";
+import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
 import HelmetManager from "./Components/HomePage/pages/HelmetManager";
-
-// 🌐 Public Pages
-import Home from "./Components/HomePage/Home";
-import About from "./Components/HomePage/pages/About/About";
-import OurCourses from "./Components/HomePage/pages/Course/OurCourses";
-import Branch from "./Components/HomePage/pages/Branch/Branch";
-import Gallery from "./Components/HomePage/pages/Gallery";
-import AdmissionForm from "./AdminComponents/Admissions/AdmissionForm";
-import Verification from "./Components/HomePage/pages/Verification/Verification";
-import QueryForm from "./Components/HomePage/pages/QueryFrom";
-import Certificate from "./Components/HomePage/pages/Course/Ceritificate";
-import ComputerLanguage from "./Components/HomePage/pages/Course/ComputerLanguage";
-import Designing from "./Components/HomePage/pages/Course/Designing";
-import WebDev from "./Components/HomePage/pages/Course/WebDev";
-import Nielet from "./Components/HomePage/pages/Course/Nielet";
-import Banking from "./Components/HomePage/pages/Course/Banking";
-import Discription from "./Components/HomePage/pages/Course/Discription";
-import Library from "./Components/HomePage/pages/Library/Library";
-
-
-// 🧑‍💻 Dashboards
-import StudentRoutes from "./StudentComponents/StudentRoutes";
-
-import AdminRoutes from "./AdminComponents/AdminRoutes";
-
-// 🔒 Firebase
-import { authListener, getUserRole } from "./firebase/auth";
-
-// 🧭 Fallback
-import PageNotFound from "./Components/HomePage/pages/PageNotFound";
-import LocationMapCard from "./Components/HomePage/pages/Location/LocationMapCard";
-import LoginForm from "./Components/Header/LoginForm";
-import ChatPage from "./Components/Chats/ChatPage";
 import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
+// 🔥 Firebase Auth Logic
+import { authListener, getUserRole } from "./firebase/auth";
+
+// 🌐 Dynamic Lazy Loading (Optimized for Vite/Webpack)
+const Home = lazy(() => import("./Components/HomePage/Home"));
+const About = lazy(() => import("./Components/HomePage/pages/About/About"));
+const OurCourses = lazy(() => import("./Components/HomePage/pages/Course/OurCourses"));
+const Branch = lazy(() => import("./Components/HomePage/pages/Branch/Branch"));
+const Gallery = lazy(() => import("./Components/HomePage/pages/Gallery"));
+const AdmissionForm = lazy(() => import("./AdminComponents/Admissions/AdmissionForm"));
+const Verification = lazy(() => import("./Components/HomePage/pages/Verification/Verification"));
+const QuickSupport = lazy(() => import("./Components/HomePage/pages/About/QuickSupport"));
+const LocationMapCard = lazy(() => import("./Components/HomePage/pages/Location/LocationMapCard"));
+const LoginForm = lazy(() => import("./Components/Header/LoginForm"));
+const Library = lazy(() => import("./Components/HomePage/pages/Library/Library"));
+const ChatPage = lazy(() => import("./Components/Chats/ChatPage"));
+
+// 📚 Course Sections
+const ComputerLanguage = lazy(() => import("./Components/HomePage/pages/Course/ComputerLanguage"));
+const Designing = lazy(() => import("./Components/HomePage/pages/Course/Designing"));
+const WebDev = lazy(() => import("./Components/HomePage/pages/Course/WebDev"));
+const Nielet = lazy(() => import("./Components/HomePage/pages/Course/Nielet"));
+const Banking = lazy(() => import("./Components/HomePage/pages/Course/Banking"));
+const Certificate = lazy(() => import("./Components/HomePage/pages/Course/Ceritificate"));
+
+// ⚖️ Legal & Info Pages
+const Discription = lazy(() => import("./Components/HomePage/pages/About/Discription"));
+const FAQ = lazy(() => import("./Components/HomePage/pages/About/FAQ"));
+const PrivacyPolicy = lazy(() => import("./Components/HomePage/pages/About/PrivacyPolicy"));
+const Term = lazy(() => import("./Components/HomePage/pages/About/Terms"));
+
+// 🧑‍💻 Protected Dashboards
+const AdminRoutes = lazy(() => import("./AdminComponents/AdminRoutes"));
+const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
+const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
+
 export default function App() {
-
-
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 🛡️ Single Listener for better performance
     const unsubscribe = authListener(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -63,90 +64,63 @@ export default function App() {
       }
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
-  if (loading) {
-    return (<LoadingSpinner />);
-  }
+
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div>
-       {/* <Lock>  */}
-
+    <>
+      {/* <Lock> */}
       <NetworkStatus />
       <Header />
       <InstallPrompt />
 
-      <Routes>
-        {/* 🌐 Public Routes */}
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          {/* --- PUBLIC ROUTES --- */}
+          <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
+          <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
+          <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
+          <Route path="/branch/thoothibari" element={<HelmetManager><Branch /></HelmetManager>} />
+          <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
+          <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
+          <Route path="/branch/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+          <Route path="/branch/thoothibari/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+          <Route path="/download-certificate" element={<HelmetManager><Verification /></HelmetManager>} />
+          <Route path="/contact-us" element={<HelmetManager><QuickSupport /></HelmetManager>} />
+          <Route path="/login" element={<HelmetManager><LoginForm /></HelmetManager>} />
+          <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
+          <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
+          <Route path="/chat" element={<ChatPage />} />
 
-        <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
+          {/* --- COURSE ROUTES --- */}
+          <Route path="/courses/computer-language" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
+          <Route path="/courses/designing" element={<HelmetManager><Designing /></HelmetManager>} />
+          <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
+          <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
+          <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
 
-        <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
+          {/* --- LEGAL ROUTES (Sitemap Sync) --- */}
+          <Route path="/terms" element={<HelmetManager><Term /></HelmetManager>} />
+          <Route path="/privacy-policy" element={<HelmetManager><PrivacyPolicy /></HelmetManager>} />
+          <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
+          <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
 
-        <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
+          {/* --- DASHBOARDS (Protected) --- */}
+          <Route
+            path="/admin/*"
+            element={user && role === "admin" ? <AdminRoutes /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/student/*"
+            element={user && role === "student" ? <StudentRoutes /> : <Navigate to="/login" replace />}
+          />
 
-        <Route path="/branch/thoothibari" element={<HelmetManager><Branch /></HelmetManager>} />
-
-        <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
-
-        <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
-
-        <Route path="/branch/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
-        <Route path="/branch/thoothibari/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
-        <Route path="/download-certificate" element={<HelmetManager><Verification /></HelmetManager>} />
-
-        <Route path="/contact-us" element={<HelmetManager><QueryForm /></HelmetManager>} />
-
-        <Route path="/login" element={<HelmetManager><LoginForm /></HelmetManager>} />
-
-        <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
-
-        {/* 📚 Course Pages (Better Structure) */}
-        <Route path="/courses/computer-language" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
-
-        <Route path="/courses/designing" element={<HelmetManager><Designing /></HelmetManager>} />
-
-        <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
-
-        <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
-
-        <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
-
-        <Route path="/courses/description" element={<HelmetManager><Discription /></HelmetManager>} />
-
-        <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
-
-        <Route path="/chat" element={<ChatPage />} />
-
-        {/* 🔐 ADMIN BASE */}
-        <Route
-          path="/admin/*"
-          element={
-            user && role === "admin"
-              ? <AdminRoutes />
-              : <Navigate to="/" replace />
-          }
-        />
-
-        {/* 🎓 STUDENT */}
-        <Route
-          path="/student/*"
-          element={
-            loading ? null : (
-              user && role === "student"
-                ? <StudentRoutes />
-                : <Navigate to="/" replace />
-            )
-          }
-        />
-
-        {/* ❌ 404 */}
-        <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
-
-      </Routes>
-     {/* </Lock>  */}
-    </div>
+          <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
+        </Routes>
+      </Suspense>
+      {/* </Lock> */}
+    </>
   );
 }

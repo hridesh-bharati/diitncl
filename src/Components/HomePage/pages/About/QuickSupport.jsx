@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { db } from "../../../firebase/firebase";
+import { db } from "../../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
 
-const QueryForm = () => {
+const QuickSupport = () => {
   const init = { fullName: "", mobile: "", email: "", title: "", query: "" };
   const [formData, setFormData] = useState(init);
   const [loading, setLoading] = useState(false);
@@ -24,6 +24,8 @@ const QueryForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="row g-4 p-4">
+      <h1 className="text-dark text-center fw-bolder">Quick Support</h1>
+      <hr className="text-primary"/>
       {[
         { n: "fullName", l: "Full Name", t: "text", i: "person" },
         { n: "mobile", l: "Mobile Number", t: "tel", i: "phone" },
@@ -67,4 +69,4 @@ const QueryForm = () => {
   );
 };
 
-export default QueryForm;
+export default QuickSupport;

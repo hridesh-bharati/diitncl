@@ -153,30 +153,30 @@ export default function LoginForm({ isAdminView, onSuccess }) {
   };
 
   // Forgot Password Logic
-const forgotPassword = async () => {
-  if (!email) return toast.error("Please enter your email address");
+  const forgotPassword = async () => {
+    if (!email) return toast.error("Please enter your email address");
 
-  const trimmedEmail = email.toLowerCase().trim();
-  
-  // Admin check: Only allow reset link if email is in the admin list
-  if (isAdminView && !ADMIN_ALLOWED_EMAILS.includes(trimmedEmail)) {
-    console.log("Admin emails:", ADMIN_ALLOWED_EMAILS);
-    console.log("Attempted email:", trimmedEmail);
-    return toast.error("This email is not authorized as an Admin.");
-  }
+    const trimmedEmail = email.toLowerCase().trim();
 
-  setLoading(true);
-  try {
-    await sendPasswordResetEmail(auth, trimmedEmail);
-    toast.success("Password reset link sent! Check your inbox.");
-    setIsForgot(false);
-  } catch (err) {
-    console.error("Reset error:", err);
-    toast.error(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    // Admin check: Only allow reset link if email is in the admin list
+    if (isAdminView && !ADMIN_ALLOWED_EMAILS.includes(trimmedEmail)) {
+      console.log("Admin emails:", ADMIN_ALLOWED_EMAILS);
+      console.log("Attempted email:", trimmedEmail);
+      return toast.error("This email is not authorized as an Admin.");
+    }
+
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, trimmedEmail);
+      toast.success("Password reset link sent! Check your inbox.");
+      setIsForgot(false);
+    } catch (err) {
+      console.error("Reset error:", err);
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="container d-flex justify-content-center my-3 align-items-center" style={{ minHeight: "50vh" }}>
       <div className="card shadow-lg p-3 rounded-4" style={{ maxWidth: "400px", width: "100%" }}>

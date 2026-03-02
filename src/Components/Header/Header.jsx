@@ -5,7 +5,6 @@ import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
 import "./Header.css";
-import { Button } from "react-bootstrap";
 
 export default function Header() {
   const { user, student, isAdmin, logout } = useAuth();
@@ -111,9 +110,12 @@ export default function Header() {
             )}
 
             {user && (
-              <Button variant="primary" className="rounded-pill d-flex align-items-center gap-2" onClick={() => navigate("/chat")}>
+              <button
+                className="btn btn-primary rounded-pill d-flex align-items-center gap-2"
+                onClick={() => navigate("/chat")}
+              >
                 <span>IM</span>
-              </Button>
+              </button>
             )}
 
             <button className="icon-btn-circle text-danger " onClick={() => navigate("/branch/nichlaul/location")} title="Our Location">
