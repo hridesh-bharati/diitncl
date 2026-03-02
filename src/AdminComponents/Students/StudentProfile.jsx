@@ -8,8 +8,7 @@ import AdmissionProvider from "../Admissions/AdmissionProvider";
 
 const safe = (val) => (val && val !== "undefined" && val !== "" ? val : "—");
 
-// --- REUSABLE MINI COMPONENTS ---
-
+// --- MINI COMPONENTS ---
 const InfoRow = ({ label, value, isEditing, onChange, type = "text", icon, color }) => (
   <Col xs={12} md={6} className="mb-3">
     <div className="d-flex align-items-center p-2 rounded-4">
@@ -22,8 +21,13 @@ const InfoRow = ({ label, value, isEditing, onChange, type = "text", icon, color
       <div className="flex-grow-1">
         <small className="text-muted d-block fw-bold text-uppercase" style={{ fontSize: '10px' }}>{label}</small>
         {isEditing ? (
-          <Form.Control size="sm" type={type} className="border-0 glass-panel bg-white mt-1 shadow-none" 
-                        value={value || ""} onChange={(e) => onChange(e.target.value)} />
+          <Form.Control 
+            size="sm" 
+            type={type} 
+            className="border-0 glass-panel bg-white mt-1 shadow-none" 
+            value={value || ""} 
+            onChange={(e) => onChange(e.target.value)} 
+          />
         ) : (
           <span className="fw-bold text-dark">{safe(value)}</span>
         )}
@@ -38,8 +42,13 @@ const StatBox = ({ label, value, icon, colorClass, isEditing, onChange, type = "
       <i className={`bi ${icon} ${colorClass} fs-4 mb-1 d-block`}></i>
       <small className="text-muted fw-bold d-block" style={{ fontSize: '9px' }}>{label}</small>
       {isEditing ? (
-        <Form.Control size="sm" type={type} className="mt-1 border-0 text-center bg-white p-0 shadow-none small" 
-                      value={value || ""} onChange={(e) => onChange(e.target.value)} />
+        <Form.Control 
+          size="sm" 
+          type={type} 
+          className="mt-1 border-0 text-center bg-white p-0 shadow-none small" 
+          value={value || ""} 
+          onChange={(e) => onChange(e.target.value)} 
+        />
       ) : (
         <span className="fw-bold text-dark small">{safe(value)}</span>
       )}
@@ -47,8 +56,7 @@ const StatBox = ({ label, value, icon, colorClass, isEditing, onChange, type = "
   </Col>
 );
 
-// --- MAIN CONTENT COMPONENT ---
-
+// --- PROFILE CONTENT ---
 const ProfileContent = ({ admissions, loading, error }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -60,7 +68,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => { if (student) setFormData(student); }, [student]);
-
   useEffect(() => {
     return () => { if (formData.photoUrl?.startsWith('blob:')) URL.revokeObjectURL(formData.photoUrl); };
   }, [formData.photoUrl]);
@@ -105,9 +112,10 @@ const ProfileContent = ({ admissions, loading, error }) => {
   if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center win11-bg"><Spinner animation="grow" variant="primary" /></div>;
   if (error || !student) return <div className="win11-bg vh-100 d-flex flex-column align-items-center justify-content-center p-5"><h5 className="glass-panel p-4">Not Found</h5><Button onClick={() => navigate(-1)}>Back</Button></div>;
 
+  // --- FIELDS ARRAY ---
   const fields = [
     { label: "Father Name", key: "fatherName", icon: "bi-person-badge-fill", color: "#3F51B5" },
-    { label: "Mother Name", key: "motherName", icon: "bi-heart-fill", color: "#E91E63" },
+    { label: "Mother Name", key: "motherName", icon: "bi-person-badge-fill", color: "#E91E63" },
     { label: "Mobile", key: "mobile", icon: "bi-telephone-fill", color: "#4CAF50" },
     { label: "Email", key: "email", icon: "bi-envelope-at-fill", color: "#F44336" },
     { label: "Aadhar No", key: "aadharNo", icon: "bi-fingerprint", color: "#009688" },
@@ -118,11 +126,14 @@ const ProfileContent = ({ admissions, loading, error }) => {
   ];
 
   return (
-    <div className="win11-bg min-vh-100 pb-5">
-      {/* NATIVE APP BAR */}
-      <div className="glass-panel p-3 d-flex align-items-center justify-content-between sticky-top mx-2 mt-2 shadow-sm border-0" style={{ zIndex: 1050 }}>
+    <div className="win11-bg min-vh-100 pb-5 p-lg-2">
+
+      {/* APP BAR */}
+      <div className="glass-panel p-3 d-flex align-items-center justify-content-between mx-2  shadow-sm border-0">
         <div className="d-flex align-items-center">
-          <Button variant="light" className="rounded-circle p-2 me-3 border-0 shadow-sm" onClick={() => navigate(-1)}><i className="bi bi-chevron-left fw-bold"></i></Button>
+          <Button variant="light" className="rounded-circle p-2 me-3 border-0 shadow-sm" onClick={() => navigate(-1)}>
+            <i className="bi bi-chevron-left fw-bold"></i>
+          </Button>
           <h6 className="mb-0 fw-bold text-primary">Student Profile</h6>
         </div>
         <div className="d-flex gap-2">
@@ -141,10 +152,14 @@ const ProfileContent = ({ admissions, loading, error }) => {
         {/* HERO CARD */}
         <div className="glass-card p-4 mb-4 border-0 text-center">
           <div className="position-relative d-inline-block mx-auto mb-3">
-            <img src={formData.photoUrl || `https://ui-avatars.com/api/?name=${formData.name}&background=000075&color=fff&bold=true`} className="rounded-circle border border-4 border-white shadow-lg" style={{ width: 130, height: 130, objectFit: "cover" }} alt="Avatar" />
+            <img src={formData.photoUrl || `https://ui-avatars.com/api/?name=${formData.name}&background=000075&color=fff&bold=true`} 
+                 className="rounded-circle border border-4 border-white shadow-lg" 
+                 style={{ width: 130, height: 130, objectFit: "cover" }} 
+                 alt="Avatar" />
             {isEditing && (
               <label htmlFor="pInp" className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 border border-2 border-white shadow" style={{ cursor: "pointer" }}>
-                <i className="bi bi-camera-fill"></i><input type="file" id="pInp" hidden onChange={handleImageChange} accept="image/*" />
+                <i className="bi bi-camera-fill"></i>
+                <input type="file" id="pInp" hidden onChange={handleImageChange} accept="image/*" />
               </label>
             )}
           </div>
@@ -158,9 +173,9 @@ const ProfileContent = ({ admissions, loading, error }) => {
 
         {/* ACADEMIC STATS */}
         <Row className="g-3 mb-4">
-          <StatBox label="PERCENTAGE" value={formData.percentage + "%"} icon="bi-graph-up-arrow" colorClass="text-success" isEditing={isEditing} onChange={(val) => handleChange("percentage", val)} />
-          <StatBox label="ADMISSION" value={formData.admissionDate} icon="bi-calendar-check" colorClass="text-primary" isEditing={isEditing} onChange={(val) => handleChange("admissionDate", val)} type="date" />
-          <StatBox label="ISSUE DATE" value={formData.issueDate} icon="bi-award" colorClass="text-warning" isEditing={isEditing} onChange={(val) => handleChange("issueDate", val)} type="date" />
+          <StatBox label="PERCENTAGE" value={formData.percentage || ""} icon="bi-graph-up-arrow" colorClass="text-success" isEditing={isEditing} onChange={(val) => handleChange("percentage", val)} />
+          <StatBox label="ADMISSION" value={formData.admissionDate || ""} icon="bi-calendar-check" colorClass="text-primary" isEditing={isEditing} onChange={(val) => handleChange("admissionDate", val)} type="date" />
+          <StatBox label="ISSUE DATE" value={formData.issueDate || ""} icon="bi-award" colorClass="text-warning" isEditing={isEditing} onChange={(val) => handleChange("issueDate", val)} type="date" />
         </Row>
 
         {/* PERSONAL INFO */}
@@ -180,12 +195,18 @@ const ProfileContent = ({ admissions, loading, error }) => {
             {["village", "post", "thana", "city", "state", "pincode"].map((key) => (
               <Col xs={6} md={4} key={key}>
                 <small className="text-muted d-block fw-bold text-uppercase" style={{ fontSize: '9px' }}>{key}</small>
-                {isEditing ? <Form.Control size="sm" className="border-0 glass-panel bg-white mt-1 p-1 shadow-none" value={formData[key] || ""} onChange={(e) => handleChange(key, e.target.value)} /> : <span className="fw-bold text-dark small">{safe(formData[key])}</span>}
+                {isEditing ? 
+                  <Form.Control size="sm" className="border-0 glass-panel bg-white mt-1 p-1 shadow-none" value={formData[key] || ""} onChange={(e) => handleChange(key, e.target.value)} /> 
+                  : <span className="fw-bold text-dark small">{safe(formData[key])}</span>
+                }
               </Col>
             ))}
             <Col xs={12} className="mt-3 pt-3 border-top">
               <small className="text-muted d-block fw-bold text-uppercase" style={{ fontSize: '9px' }}>Full Address</small>
-              {isEditing ? <Form.Control as="textarea" rows={2} className="border-0 glass-panel bg-white mt-1 shadow-none" value={formData.address || ""} onChange={(e) => handleChange("address", e.target.value)} /> : <p className="small text-dark fw-medium mb-0 mt-1">{safe(formData.address)}</p>}
+              {isEditing ? 
+                <Form.Control as="textarea" rows={2} className="border-0 glass-panel bg-white mt-1 shadow-none" value={formData.address || ""} onChange={(e) => handleChange("address", e.target.value)} /> 
+                : <p className="small text-dark fw-medium mb-0 mt-1">{safe(formData.address)}</p>
+              }
             </Col>
           </Row>
         </div>
@@ -194,8 +215,13 @@ const ProfileContent = ({ admissions, loading, error }) => {
         <div className="glass-card p-3 mb-5 border-0 shadow-sm">
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center">
-              <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'}`}><i className={`bi ${formData.certificateDisabled ? 'bi-shield-slash' : 'bi-shield-check'} fs-4`}></i></div>
-              <div><h6 className="fw-bold mb-0">Certificate Portal</h6><small className="text-muted">{formData.certificateDisabled ? 'Locked' : 'Active'}</small></div>
+              <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'}`}>
+                <i className={`bi ${formData.certificateDisabled ? 'bi-shield-slash' : 'bi-shield-check'} fs-4`}></i>
+              </div>
+              <div>
+                <h6 className="fw-bold mb-0">Certificate Portal</h6>
+                <small className="text-muted">{formData.certificateDisabled ? 'Locked' : 'Active'}</small>
+              </div>
             </div>
             <div className="form-check form-switch fs-3">
               <input className="form-check-input shadow-none" type="checkbox" checked={!formData.certificateDisabled} onChange={async () => {
