@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../../firebase/firebase";
 import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
-import { Spinner } from "react-bootstrap";
 
 export default function HomeOffers() {
   const [offers, setOffers] = useState([]);
@@ -27,7 +26,7 @@ export default function HomeOffers() {
   }, []);
 
   if (loading) return (
-    <div className="text-center my-4"><Spinner size="sm" variant="primary" /></div>
+    <div className="text-center my-4"><p>Loading...</p></div>
   );
 
   if (offers.length === 0) return null; // Agar offer nahi hai to space kyun gherna

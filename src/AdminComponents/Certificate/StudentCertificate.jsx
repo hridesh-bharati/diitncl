@@ -1,7 +1,6 @@
 // src\AdminComponents\Certificate\StudentCertificate.jsx
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, Spinner, Image, Alert } from "react-bootstrap";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import html2pdf from "html2pdf.js";
@@ -27,13 +26,13 @@ const formatDate = (dateString) => {
         if (isNaN(date.getTime())) return dateString;
 
         const day = date.getDate().toString().padStart(2, "0");
-        
+
         // Full Month Names for "JANUARY" instead of "JAN"
         const monthNames = [
             "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
             "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
         ];
-        
+
         const month = monthNames[date.getMonth()];
         const year = date.getFullYear();
 
@@ -77,16 +76,16 @@ const getCourseData = (courseName) => {
     let fixedHours = "";
 
     if (durationMonths === 18) {
-        fixedHours = "720 Hrs."; 
+        fixedHours = "720 Hrs.";
     } else if (durationMonths === 15) {
-        fixedHours = "580 Hrs."; 
+        fixedHours = "580 Hrs.";
     } else if (durationMonths === 12) {
-        fixedHours = "480 Hrs."; 
+        fixedHours = "480 Hrs.";
     } else if (durationMonths === 6) {
-        fixedHours = "230 Hrs."; 
+        fixedHours = "230 Hrs.";
     } else if (durationMonths === 3) {
-        fixedHours = "120 Hrs."; 
-    }else {
+        fixedHours = "120 Hrs.";
+    } else {
         // Fallback formula
         fixedHours = `${durationMonths * 40} Hrs.`;
     }
@@ -94,7 +93,7 @@ const getCourseData = (courseName) => {
     return {
         fullName: found.description?.split('-')[0]?.trim() || found.name,
         duration: `${found.duration} Months`,
-        hours: fixedHours, 
+        hours: fixedHours,
         modules: found.subjects?.map(s => s.name) || []
     };
 };
@@ -115,10 +114,10 @@ const HeaderSection = ({ student }) => (
             </div>
             <div>
                 <div className="certificate-photo-container ms-4">
-                    <Image
+                    <img
                         src={student.photoUrl}
-                        alt="Student"
                         className="certificate-photo"
+                        alt="Student"
                         crossOrigin="anonymous"
                         onError={(e) => { e.target.src = "/images/icon/icon.webp"; }}
                     />
@@ -257,7 +256,7 @@ const CertificateContent = ({ student }) => {
 export default function StudentCertificate({ student: propStudent }) {
     const { id } = useParams();
     const navigate = useNavigate();
-    
+
     const [student, setStudent] = useState(propStudent || null);
     const [loading, setLoading] = useState(!propStudent);
     const [error, setError] = useState(null);
@@ -276,12 +275,12 @@ export default function StudentCertificate({ student: propStudent }) {
             try {
                 setLoading(true);
                 console.log("🔍 Fetching student with ID:", id);
-                
+
                 const docRef = doc(db, "admissions", id);
                 const docSnap = await getDoc(docRef);
-                
+
                 console.log("📄 Document exists?", docSnap.exists());
-                
+
                 if (docSnap.exists()) {
                     const studentData = { id: docSnap.id, ...docSnap.data() };
                     console.log("✅ Student found:", studentData.name);
@@ -319,18 +318,18 @@ export default function StudentCertificate({ student: propStudent }) {
                 margin: 0,
                 filename: `certificate_${student?.name || 'student'}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true, 
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
                     allowTaint: false,
                     logging: false,
-                    width: 1123, 
-                    height: 794 
+                    width: 1123,
+                    height: 794
                 },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: [297, 210], 
-                    orientation: 'landscape' 
+                jsPDF: {
+                    unit: 'mm',
+                    format: [297, 210],
+                    orientation: 'landscape'
                 }
             })
             .from(printResult)
@@ -348,8 +347,7 @@ export default function StudentCertificate({ student: propStudent }) {
     if (loading) {
         return (
             <div className="d-flex flex-column align-items-center justify-content-center min-vh-100">
-                <Spinner animation="border" variant="primary" className="mb-3" style={{ width: "3rem", height: "3rem" }} />
-                <p className="text-muted">Loading certificate...</p>
+                <div className="spinner-border text-primary" style={{ width: "3rem", height: "3rem" }}></div>                <p className="text-muted">Loading certificate...</p>
             </div>
         );
     }
@@ -358,19 +356,19 @@ export default function StudentCertificate({ student: propStudent }) {
     if (error === "STUDENT_NOT_FOUND") {
         return (
             <div className="container mt-5">
-                <Alert variant="warning" className="text-center p-5">
-                    <Alert.Heading className="mb-4">🔍 Student Not Found</Alert.Heading>
+                <div className="alert alert-warning text-center p-5">
+                    <h4 className="alert-heading mb-4">🔍 Student Not Found</h4>
                     <p className="mb-3">No record found with ID: <strong>{id}</strong></p>
                     <p className="mb-4 text-muted small">Check if the ID is correct or the student exists in database</p>
                     <div className="d-flex gap-3 justify-content-center">
-                        <Button variant="outline-warning" onClick={() => navigate(-1)} size="lg">
+                        <button onClick={() => navigate(-1)} size="lg">
                             ← Go Back
-                        </Button>
-                        <Button variant="warning" onClick={() => window.location.reload()} size="lg">
+                        </button>
+                        <button onClick={() => window.location.reload()} size="lg">
                             🔄 Try Again
-                        </Button>
+                        </button>
                     </div>
-                </Alert>
+                </div>
             </div>
         );
     }
@@ -379,18 +377,18 @@ export default function StudentCertificate({ student: propStudent }) {
     if (error) {
         return (
             <div className="container mt-5">
-                <Alert variant="danger" className="text-center p-5">
-                    <Alert.Heading className="mb-4">⚠️ Error Loading Certificate</Alert.Heading>
+                <div variant="danger" className="text-center p-5">
+                    <h1 className="mb-4">⚠️ Error Loading Certificate</h1>
                     <p className="mb-4">{error}</p>
                     <div className="d-flex gap-3 justify-content-center">
-                        <Button variant="outline-danger" onClick={() => navigate(-1)} size="lg">
+                        <button variant="outline-danger" onClick={() => navigate(-1)} size="lg">
                             ← Go Back
-                        </Button>
-                        <Button variant="danger" onClick={() => window.location.reload()} size="lg">
+                        </button>
+                        <button variant="danger" onClick={() => window.location.reload()} size="lg">
                             🔄 Retry
-                        </Button>
+                        </button>
                     </div>
-                </Alert>
+                </div>
             </div>
         );
     }
@@ -401,9 +399,9 @@ export default function StudentCertificate({ student: propStudent }) {
             <div className="container mt-5">
                 <Alert variant="info" className="text-center p-5">
                     <Alert.Heading className="mb-4">📄 No Data Available</Alert.Heading>
-                    <Button variant="outline-info" onClick={() => navigate(-1)} size="lg">
+                    <button variant="outline-info" onClick={() => navigate(-1)} size="lg">
                         ← Go Back
-                    </Button>
+                    </button>
                 </Alert>
             </div>
         );
@@ -413,13 +411,13 @@ export default function StudentCertificate({ student: propStudent }) {
     return (
         <div className="bg-white min-vh-100">
             <div className="p-3 d-flex justify-content-between border-bottom bg-white no-print">
-                <Button variant="light" onClick={() => navigate(-1)}>
+                <button onClick={() => navigate(-1)}>
                     ← Back
-                </Button>
+                </button>
                 <div className="d-flex">
-                    <Button variant="primary" onClick={downloadPDF}>
-                      Download
-                    </Button>
+                    <button className="btn btn-primary" onClick={downloadPDF}>
+                        Download
+                    </button>
                 </div>
             </div>
             <div className="d-flex justify-content-center py-4" style={{ overflowX: "auto" }}>

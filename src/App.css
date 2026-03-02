@@ -1,9 +1,7 @@
 .Toastify__toast-container {
   z-index: 999999 !important;
 }
-.bg-primary {
-  background: rgb(0, 0, 117) !important;
-}
+
 
 /* Windows 11 Acrylic Glass Effect */
 .glass-panel {

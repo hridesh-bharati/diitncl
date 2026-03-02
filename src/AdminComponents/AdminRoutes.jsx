@@ -12,6 +12,7 @@ import Contacts from "./Queries/Contacts";
 import AllPics from "./Gallery/AllPics";
 import CreateOffer from "./Offers/CreateOffer";
 import DeleteOffer from "./Offers/DeleteOffer";
+import VisitorCount from "./Dashboard/VisitorCount";
 
 export default function AdminRoutes() {
   return (
@@ -30,6 +31,7 @@ export default function AdminRoutes() {
         <Route path="clients-contacts" element={<Contacts />} />
         <Route path="clients-contacts/:id" element={<Contacts />} />
         <Route path="admin-list" element={<AdminList />} />
+        <Route path="visiters-list" element={<VisitorCount />} />
 
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>

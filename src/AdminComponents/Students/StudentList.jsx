@@ -1,9 +1,6 @@
 // src/AdminComponents/Students/StudentList.jsx
-import React, { useState, useCallback, useMemo } from "react";
-import { Container, Row, Col, Spinner, Form, InputGroup, Button } from "react-bootstrap";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
-import { toast } from "react-toastify";
+
+import React, { useState, useMemo } from "react";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 import StudentCard from "./StudentCard";
 
@@ -11,177 +8,116 @@ export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("pending");
 
-  // ✅ SAVE WITH AUTO DONE LOGIC
-  const handleSave = useCallback(async (id, data) => {
-    try {
-      const updatePayload = { ...data };
-      await updateDoc(doc(db, "admissions", id), updatePayload);
-
-      toast.success("Saved", {
-        position: "top-center",
-        autoClose: 1000
-      });
-    } catch (e) {
-      toast.error(e.message);
-    }
-  }, []);
-
-  // ❌ DELETE STUDENT
-  const handleDelete = useCallback(async (id) => {
-    if (!window.confirm("Delete this student permanently?")) return;
-
-    try {
-      await deleteDoc(doc(db, "admissions", id));
-      toast.success("Deleted Successfully");
-    } catch (e) {
-      toast.error("Error deleting student");
-    }
-  }, []);
-
   return (
     <AdmissionProvider>
-      {({ admissions, loading }) => {
-        
-        // 🔍 OPTIMIZED FILTERING (using useMemo for performance)
+      {({ admissions = [], loading }) => {
+        // 🔹 Filtered & searched admissions
         const filtered = useMemo(() => {
-          if (!admissions) return [];
-          
+          const term = searchTerm.trim().toLowerCase();
+
           return admissions
             .filter((s) => {
               const status = s.status || "pending";
-              const hasRegNo = !!s.regNo;
-              const normalizedSearch = searchTerm.trim().toLowerCase();
-              
+              const matchStatus = statusFilter === "all" || status === statusFilter;
+
               const matchSearch =
-                !normalizedSearch ||
-                s.name?.toLowerCase().includes(normalizedSearch) ||
-                s.regNo?.toLowerCase().includes(normalizedSearch);
+                !term ||
+                s.name?.toLowerCase().includes(term) ||
+                s.regNo?.toLowerCase().includes(term);
 
-              let matchStatus = false;
-
-              if (statusFilter === "all") {
-                matchStatus = true;
-              } else if (statusFilter === "pending") {
-                // ✅ Pending tab mein wo bhi dikhao jo accepted hain par RegNo nahi hai
-                matchStatus = (status === "pending") || (status === "accepted" && !hasRegNo);
-              } else {
-                matchStatus = status === statusFilter;
-              }
-
-              return matchSearch && matchStatus;
+              return matchStatus && matchSearch;
             })
             .slice()
             .reverse();
         }, [admissions, searchTerm, statusFilter]);
 
-        // 📊 EXPORT TO CSV FUNCTION
-        const handleExport = () => {
-          if (filtered.length === 0) return toast.info("No data to export");
-          
-          const headers = ["Name", "RegNo", "Course", "Status", "Mobile"];
-          const csvContent = [
-            headers.join(","),
-            ...filtered.map(s => `"${s.name}","${s.regNo || 'N/A'}","${s.course}","${s.status}","${s.mobile}"`)
-          ].join("\n");
+        // 🔹 CSV Export
+        const handleExportCSV = () => {
+          if (!filtered.length) return;
 
-          const blob = new Blob([csvContent], { type: "text/csv" });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `Students_${statusFilter}_${new Date().toLocaleDateString()}.csv`;
-          a.click();
+          const headers = [
+            "Name", "Course", "Reg No", "Branch", "Status", "Percentage", "Admission Date",
+            "Issue Date", "Mobile", "Email", "Father Name", "Mother Name", "Aadhar No",
+            "Qualification", "DOB", "Gender", "Category", "Village", "Post", "Thana",
+            "City", "State", "Pincode", "Address", "Photo URL"
+          ];
+
+          const rows = filtered.map((s) => [
+            s.name || "", s.course || "", s.regNo || "", s.branch || s.centerCode || "",
+            s.status || "", s.percentage || "", s.admissionDate || "", s.issueDate || "",
+            s.mobile || "", s.email || "", s.fatherName || "", s.motherName || "",
+            s.aadharNo || "", s.qualification || "", s.dob || "", s.gender || "",
+            s.category || "", s.village || "", s.post || "", s.thana || "",
+            s.city || "", s.state || "", s.pincode || "", s.address || "", s.photoUrl || ""
+          ]);
+
+          const csvContent = [headers, ...rows]
+            .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(","))
+            .join("\n");
+
+          const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `students_${statusFilter}.csv`;
+          link.click();
         };
 
         return (
-          <div className="win11-bg min-vh-100">
-            {/* 🧊 Sticky Glass Header */}
-            <div className="glass-panel p-4 mb-4 shadow-sm border-0 sticky-top z-3">
-              <div className="d-flex justify-content-between align-items-center mb-3 px-1">
-                <div>
-                  <h5 className="fw-bold mb-0 text-dark">Admissions Panel</h5>
-                  <small className="text-primary fw-bold text-uppercase" style={{ fontSize: "10px", letterSpacing: "1px" }}>
-                    {filtered.length} Applications Found
-                  </small>
-                </div>
-                <div className="d-flex gap-2">
-                   <Button variant="light" size="sm" className="rounded-pill shadow-sm px-3" onClick={handleExport}>
-                      <i className="bi bi-download me-1"></i> Export
-                   </Button>
-                   <div className="bg-primary text-white p-2 px-3 rounded-pill shadow-sm fw-bold">
-                    {filtered.length}
-                  </div>
-                </div>
-              </div>
+          <div className="container-fluid py-4">
+            {/* 🔹 Header Section */}
+            <div className="mb-4">
+              <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-3">
 
-              {/* 🔍 Search Input */}
-              <InputGroup className="bg-white rounded-pill shadow-sm overflow-hidden border border-white mb-3">
-                <InputGroup.Text className="bg-white border-0 ps-4">
-                  <i className="bi bi-search text-primary" style={{ fontSize: 14 }}></i>
-                </InputGroup.Text>
-                <Form.Control
-                  value={searchTerm}
-                  placeholder="Search by name or registration number..."
-                  className="border-0 shadow-none py-2 fw-medium text-secondary"
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </InputGroup>
-
-              {/* 🚀 Filter Tabs - REMOVED "done" */}
-              <div className="d-flex gap-2 overflow-auto scroll-hide pb-1">
-                {["all", "pending", "accepted", "canceled"].map((s) => (
-                  <Button
-                    key={s}
-                    variant={statusFilter === s ? "primary" : "white"}
-                    onClick={() => setStatusFilter(s)}
-                    className={`rounded-pill px-4 border-0 shadow-sm fw-bold small text-uppercase ${
-                      statusFilter !== s && "text-muted"
-                    }`}
+                {/* Left: Title + Export (50%) */}
+                <div className="d-flex justify-content-start align-items-center gap-3 w-100 w-lg-50">
+                  <h5 className="fw-bold mb-0 text-nowrap">Admissions ({filtered.length})</h5>
+                  <button
+                    onClick={handleExportCSV}
+                    className="btn btn-sm btn-success rounded-pill px-3 shadow-sm d-flex align-items-center gap-1"
                   >
-                    {s}
-                  </Button>
-                ))}
+                    <i className="bi bi-file-earmark-arrow-up"></i> Export CSV
+                  </button>
+                </div>
+
+                {/* Right: Status Filters (50%) */}
+                <div className="d-flex gap-1 overflow-auto pb-1 w-100 w-lg-50 justify-content-lg-end" style={{ whiteSpace: "nowrap" }}>
+                  {["all", "pending", "accepted", "done", "canceled"].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setStatusFilter(s)}
+                      className={`btn btn-sm rounded-pill px-3 fw-medium ${statusFilter === s ? "btn-primary shadow-sm" : "btn-outline-secondary"
+                        }`}
+                    >
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
               </div>
             </div>
+            {/* 🔹 Search */}
+            <input
+              type="text"
+              className="form-control mb-4"
+              placeholder="Search by name or Reg No..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
 
-            {/* 📋 Cards Section */}
-            <Container fluid className="px-3 pt-2">
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="grow" variant="primary" size="sm" />
-                </div>
-              ) : (
-                <Row className="g-3 pb-5">
-                  {filtered.map((student) => (
-                    <Col key={student.id} xs={12} md={6} lg={4} xl={3}>
-                      <div className="glass-card h-100 transition-all hover-up">
-                        <StudentCard
-                          student={student}
-                          onSave={handleSave}
-                          onDelete={handleDelete}
-                        />
-                      </div>
-                    </Col>
-                  ))}
-
-                  {/* Empty State */}
-                  {filtered.length === 0 && (
-                    <Col xs={12}>
-                      <div className="glass-panel text-center py-5 mt-3">
-                        <i className="bi bi-folder2-open display-4 text-muted mb-3 d-block"></i>
-                        <h6 className="text-muted fw-bold">No results matching your criteria</h6>
-                        <Button 
-                          variant="link" 
-                          className="text-decoration-none" 
-                          onClick={() => {setSearchTerm(""); setStatusFilter("all");}}
-                        >
-                          Clear all filters
-                        </Button>
-                      </div>
-                    </Col>
-                  )}
-                </Row>
-              )}
-            </Container>
+            {/* 🔹 Content */}
+            {loading ? (
+              <div className="text-center py-5">Loading...</div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-5 text-muted">No students found</div>
+            ) : (
+              <div className="row g-3">
+                {filtered.map((student) => (
+                  <div key={student.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
+                    <StudentCard student={student} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         );
       }}

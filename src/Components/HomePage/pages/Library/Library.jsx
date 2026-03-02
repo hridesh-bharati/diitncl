@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
-import AOS from "aos";
+import React, { useEffect, useRef } from "react";
 import CountdownTimer from "./Counter";
 import ScrollUp from "../../../HelperCmp/Scroller/ScrollUp";
-import QueryForm from "../About/QuickSupport";
+import QuickSupport from "../About/QuickSupport";
 import LibraryFeatures from "./LibraryFeatures"
+
 /* ================= DATA ================= */
 
 const STATS = [
@@ -31,13 +31,33 @@ const TESTIMONIALS = [
   },
 ];
 
+/* ================= CUSTOM HOOK FOR SCROLL ANIMATION ================= */
+const useScrollAnimation = () => {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('show');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    const elements = document.querySelectorAll('.fade-up, .fade-left, .fade-right, .zoom-in');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+};
+
 /* ================= COMPONENT ================= */
 
 export default function DrishteeLibrary() {
-
-  useEffect(() => {
-    AOS.init({ duration: 900, once: true, easing: "ease-out-cubic" });
-  }, []);
+  useScrollAnimation();
 
   return (
     <div className="bg-light overflow-hidden">
@@ -51,7 +71,6 @@ export default function DrishteeLibrary() {
           style={{ objectFit: "cover" }}
         />
 
-
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
@@ -63,32 +82,28 @@ export default function DrishteeLibrary() {
         <div className="position-relative h-100 d-flex align-items-center">
           <div className="container text-white position-relative bottom-0">
             <span
-              className="badge bg-warning text-dark rounded-pill px-3 py-2  mb-3"
-              data-aos="fade-down"
+              className="badge bg-warning text-dark rounded-pill px-3 py-2 mb-3 fade-down"
             >
               Open 24 × 7
             </span>
 
             <h1
-              className="display-4 fw-bold mb-3"
-              data-aos="fade-up"
+              className="display-4 fw-bold mb-3 fade-up"
             >
               Drishtee Digital Library
             </h1>
 
             <p
-              className="opacity-75 col-lg-6"
-              data-aos="fade-up"
-              data-aos-delay="150"
+              className="opacity-75 col-lg-6 fade-up"
+              style={{ transitionDelay: '150ms' }}
             >
               A modern, silent and secure study space designed for serious
               aspirants preparing for competitive exams.
             </p>
 
             <div
-              className="d-flex gap-3 mt-4"
-              data-aos="fade-up"
-              data-aos-delay="300"
+              className="d-flex gap-3 mt-4 fade-up"
+              style={{ transitionDelay: '300ms' }}
             >
               <button className="btn btn-primary btn-lg rounded-pill px-4">
                 Reserve Seat
@@ -105,7 +120,7 @@ export default function DrishteeLibrary() {
       <section className="container mt-5 position-relative">
         <div className="row g-3 justify-content-center">
           {STATS.map((s, i) => (
-            <div key={i} className="col-6 col-md-3" data-aos="zoom-in">
+            <div key={i} className="col-6 col-md-3 zoom-in" style={{ transitionDelay: `${i * 100}ms` }}>
               <div className="bg-white rounded-4 p-4 shadow-sm text-center">
                 <i className={`bi ${s.icon} fs-2 text-primary mb-2`} />
                 <h5 className="fw-bold mb-0">{s.value}</h5>
@@ -117,7 +132,7 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= ABOUT ================= */}
-      <section className="container my-3" data-aos="fade-up">
+      <section className="container my-3 fade-up">
         <div className="bg-white rounded-5 p-4 p-md-5 shadow-sm">
           <h3 className="fw-bold mb-3 text-primary">
             About Drishtee Library
@@ -132,7 +147,7 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= WHY DRISHTEE ================= */}
-      <section className="container" data-aos="fade-up">
+      <section className="container fade-up">
         <div className="bg-white rounded-5 p-4 p-md-5 shadow-sm">
           <h4 className="fw-bold text-primary">
             Why Choose Drishtee?
@@ -156,16 +171,18 @@ export default function DrishteeLibrary() {
           </p>
         </div>
       </section>
+      
       <LibraryFeatures />
+      
       {/* ================= TESTIMONIALS ================= */}
       <section className="container mt-5">
-        <h5 className="fw-bold mb-4" data-aos="fade-right">
+        <h5 className="fw-bold mb-4 fade-right">
           Student Experiences
         </h5>
 
         <div className="row g-4">
           {TESTIMONIALS.map((t, i) => (
-            <div key={i} className="col-md-4" data-aos="fade-up">
+            <div key={i} className="col-md-4 fade-up" style={{ transitionDelay: `${i * 150}ms` }}>
               <div className="bg-white rounded-4 p-4 shadow-sm h-100">
                 <p className="text-muted mb-3">“{t.text}”</p>
                 <h6 className="fw-bold mb-0">{t.name}</h6>
@@ -177,7 +194,7 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="container-fluid mt-5 mb-5" data-aos="fade-up">
+      <section className="container-fluid mt-5 mb-5 fade-up">
         <div className="text-center mb-4">
           <h4 className="fw-bold">Reserve Your Study Seat</h4>
           <p className="text-muted">
