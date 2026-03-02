@@ -1,2 +1,3 @@
 node_modules/
 *.local
+gsc-analytics/service-account-key.json
