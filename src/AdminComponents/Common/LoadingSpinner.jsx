@@ -1,6 +1,5 @@
 import React from "react";
 import "./LoadingSpinner.css";
-
 export default function LoadingSpinner({ fullHeight = true }) {
   return (
     <div className={`loading-container ${fullHeight ? 'full-height' : ''}`}>
