@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Button, Form, Card } from "react-bootstrap";
 import AdmissionProvider from "../../../../AdminComponents/Admissions/AdmissionProvider";
 import StudentCertificate from "../../../../AdminComponents/Certificate/StudentCertificate";
 import Captcha from "./Captcha";
