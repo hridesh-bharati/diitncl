@@ -596,7 +596,7 @@ export default function AdmissionForm() {
                                             onChange={handleAutoAddress}
                                         />
                                         <label className="form-check-label fw-bold text-primary small" htmlFor="syncAddr">
-                                            Auto-Generate Complete Address from above fields
+                                            Auto Complete Address from above fields
                                         </label>
                                     </div>
                                     <textarea

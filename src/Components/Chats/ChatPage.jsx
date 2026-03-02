@@ -14,77 +14,40 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "../../contexts/AuthContext";
-import { Modal } from "react-bootstrap";
-import { IoSend, IoClose } from "react-icons/io5";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 // ----------------------- MEMBER CARD -----------------------
 const MemberCard = ({ member, onClick }) => (
-  <div style={{ textAlign: "center", cursor: "pointer" }} onClick={() => onClick(member)}>
-    <div
-      style={{
-        width: 60,
-        height: 60,
-        borderRadius: "50%",
-        padding: 2,
-        background: "linear-gradient(45deg, #007bff, #0056b3)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        boxShadow: "0 2px 5px rgba(0,0,0,0.15)",
-      }}
-    >
+  <div className="text-center me-2" style={{ cursor: "pointer" }} onClick={() => onClick(member)}>
+    <div className="rounded-circle border border-primary d-flex justify-content-center align-items-center p-1 shadow-sm" style={{ width: 60, height: 60 }}>
       <img
         src={member.photoURL || `https://ui-avatars.com/api/?name=${member.name}&background=fff&color=007bff`}
         alt={member.name}
-        style={{ width: 54, height: 54, borderRadius: "50%", objectFit: "cover" }}
+        className="rounded-circle"
+        style={{ width: 54, height: 54, objectFit: "cover" }}
       />
     </div>
-    <div
-      style={{
-        fontSize: 12,
-        maxWidth: 60,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        marginTop: 4,
-      }}
-    >
-      {member.name}
-    </div>
+    <div className="text-truncate" style={{ maxWidth: 60, fontSize: 12 }}>{member.name}</div>
   </div>
 );
 
 // ----------------------- MESSAGE -----------------------
 const Message = ({ msg, isMe, isAdmin, onEdit, onDelete }) => (
-  <div style={{ display: "flex", justifyContent: isMe ? "flex-end" : "flex-start", marginBottom: 8 }}>
+  <div className={`d-flex mb-2 ${isMe ? "justify-content-end" : "justify-content-start"}`}>
     {!isMe && msg.senderPhoto && (
-      <img
-        src={msg.senderPhoto}
-        alt=""
-        style={{ width: 35, height: 35, borderRadius: "50%", objectFit: "cover", marginRight: 5 }}
-      />
+      <img src={msg.senderPhoto} alt="" className="rounded-circle me-2" style={{ width: 35, height: 35, objectFit: "cover" }} />
     )}
-    <div style={{ maxWidth: "70%", position: "relative" }}>
-      <div
-        style={{
-          background: isMe ? "#007bff" : "#fff",
-          color: isMe ? "#fff" : "#000",
-          borderRadius: 15,
-          padding: "10px 12px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+    <div style={{ maxWidth: "70%" }}>
+      <div className={`p-2 rounded-3 shadow ${isMe ? "bg-primary text-white" : "bg-white text-dark"}`}>
+        <div className="d-flex justify-content-between align-items-center mb-1">
           <strong>{msg.senderName}</strong>
-          <div style={{ display: "flex", gap: 5 }}>
-            {isMe && <FiEdit2 style={{ cursor: "pointer" }} onClick={() => onEdit(msg)} />}
-            {(isMe || isAdmin) && <FiTrash2 style={{ cursor: "pointer" }} onClick={() => onDelete(msg)} />}
+          <div className="d-flex gap-2">
+            {isMe && <i className="bi bi-pencil-fill" style={{ cursor: "pointer" }} onClick={() => onEdit(msg)}></i>}
+            {(isMe || isAdmin) && <i className="bi bi-trash-fill" style={{ cursor: "pointer" }} onClick={() => onDelete(msg)}></i>}
           </div>
         </div>
         <div>{msg.message}</div>
-        {msg.edited && <span style={{ fontSize: 10, color: "#555" }}> (edited) </span>}
-        <div style={{ fontSize: 10, color: "#777", textAlign: "right" }}>
+        {msg.edited && <span className="text-muted" style={{ fontSize: 10 }}> (edited) </span>}
+        <div className="text-end text-muted" style={{ fontSize: 10 }}>
           {msg.timestamp?.toDate?.()?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </div>
@@ -116,8 +79,8 @@ export default function ChatPage() {
         photoURL: d.data().photoURL || d.data().photoUrl || null,
         role: d.data().role || "user",
       }));
-      setMembers((prev) => {
-        const students = prev.filter((m) => m.role === "student");
+      setMembers(prev => {
+        const students = prev.filter(m => m.role === "student");
         return [...students, ...users].sort((a, b) => a.name.localeCompare(b.name));
       });
     });
@@ -132,8 +95,8 @@ export default function ChatPage() {
         role: "student",
         branch: d.data().branch || "N/A",
       }));
-      setMembers((prev) => {
-        const users = prev.filter((m) => m.role !== "student");
+      setMembers(prev => {
+        const users = prev.filter(m => m.role !== "student");
         return [...users, ...students].sort((a, b) => a.name.localeCompare(b.name));
       });
     });
@@ -148,7 +111,7 @@ export default function ChatPage() {
   useEffect(() => {
     const q = query(collection(db, "chats"), orderBy("timestamp", "asc"));
     const unsubscribe = onSnapshot(q, (snap) => {
-      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
     return () => unsubscribe();
@@ -208,7 +171,7 @@ export default function ChatPage() {
     if (!selectedMember || !window.confirm(`Delete ${selectedMember.name}?`)) return;
     try {
       await deleteDoc(doc(db, "admissions", selectedMember.uid));
-      setMembers((prev) => prev.filter((m) => m.uid !== selectedMember.uid));
+      setMembers(prev => prev.filter(m => m.uid !== selectedMember.uid));
       setShowProfileModal(false);
       setSelectedMember(null);
     } catch (err) {
@@ -218,71 +181,81 @@ export default function ChatPage() {
 
   // ------------------- RENDER MEMBERS -------------------
   const renderMembers = () => {
-    // Only admins see students
-    const membersToShow = isAdmin
-      ? members
-      : members.filter((m) => m.role === "admin");
-
-    return membersToShow.map((m) => <MemberCard key={m.uid} member={m} onClick={openProfileModal} />);
+    const membersToShow = isAdmin ? members : members.filter(m => m.role === "admin");
+    return membersToShow.map(m => <MemberCard key={m.uid} member={m} onClick={openProfileModal} />);
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "linear-gradient(to bottom, #f5f5f5, #e0e0e0)" }}>
+    <div className="d-flex flex-column vh-100 bg-light">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", padding: 10, backgroundColor: "#075E54", color: "#fff", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}>
-        <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#fff", fontSize: 18, marginRight: 10 }}>←</button>
-        <h3 style={{ flexGrow: 1, margin: 0 }}>Drishtee Member Chat</h3>
-        <img src={photoURL || `https://ui-avatars.com/api/?name=${displayName}&background=075E54&color=fff`} alt="avatar" style={{ width: 35, height: 35, borderRadius: "50%", objectFit: "cover", marginLeft: 5 }} />
+      <div className="d-flex align-items-center p-2 bg-success text-white shadow-sm">
+        <button className="btn btn-link text-white p-0 me-2" onClick={() => navigate(-1)}>
+          <i className="bi bi-arrow-left"></i>
+        </button>
+        <h5 className="flex-grow-1 m-0">Drishtee Member Chat</h5>
+        <img src={photoURL || `https://ui-avatars.com/api/?name=${displayName}&background=075E54&color=fff`} alt="avatar" className="rounded-circle" style={{ width: 35, height: 35, objectFit: "cover" }} />
       </div>
 
       {/* Members */}
-      <div style={{ display: "flex", overflowX: "auto", padding: "10px 5px", gap: 12, background: "#fff", borderBottom: "1px solid #ddd" }}>
-        {renderMembers()}
-      </div>
+      <div className="d-flex overflow-auto p-2 bg-white border-bottom">{renderMembers()}</div>
 
       {/* Messages */}
-      <div style={{ flexGrow: 1, overflowY: "auto", padding: 10, display: "flex", flexDirection: "column" }}>
-        {messages.map((msg) => (
-          <Message
-            key={msg.id}
-            msg={msg}
-            isMe={msg.senderId === user.uid}
-            isAdmin={isAdmin}
-            onEdit={handleEditMessage}
-            onDelete={handleDeleteMessage}
-          />
+      <div className="flex-grow-1 overflow-auto p-2 d-flex flex-column">
+        {messages.map(msg => (
+          <Message key={msg.id} msg={msg} isMe={msg.senderId === user.uid} isAdmin={isAdmin} onEdit={handleEditMessage} onDelete={handleDeleteMessage} />
         ))}
         <div ref={messagesEndRef}></div>
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSendMessage} style={{ display: "flex", padding: 10, paddingBottom: window.innerWidth <= 768 ? 110 : 10, background: "#f9f9f9", borderTop: "1px solid #ddd", alignItems: "center" }}>
+      <form className="d-flex p-2 border-top bg-white" onSubmit={handleSendMessage}>
         <input
           type="text"
+          className="form-control rounded-pill me-2"
           placeholder="Type a message..."
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          style={{ flexGrow: 1, borderRadius: 50, padding: "10px 15px", border: "1px solid #ccc", marginRight: 8, outline: "none" }}
+          onChange={e => setNewMessage(e.target.value)}
           disabled={!user}
         />
-        <button type="submit" style={{ background: "#007bff", border: "none", borderRadius: "50%", width: 45, height: 45, display: "flex", justifyContent: "center", alignItems: "center", color: "#fff", fontSize: 20 }}>
-          <IoSend />
+        <button type="submit" className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style={{ width: 45, height: 45 }}>
+          <i className="bi bi-send-fill"></i>
         </button>
       </form>
 
       {/* Profile Modal */}
-      <Modal show={showProfileModal} onHide={() => setShowProfileModal(false)} centered>
-        <div style={{ padding: 20, textAlign: "center" }}>
-          <IoClose style={{ position: "absolute", top: 15, right: 15, fontSize: 24, cursor: "pointer" }} onClick={() => setShowProfileModal(false)} />
-          <img src={selectedMember?.photoURL || `https://ui-avatars.com/api/?name=${selectedMember?.name}&background=007bff&color=fff`} alt="" style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", marginBottom: 10 }} />
-          <h3>{selectedMember?.name}</h3>
-          <p><strong>Role:</strong> {selectedMember?.role}</p>
-          {isAdmin && selectedMember?.role === "student" && <p><strong>Branch:</strong> {selectedMember?.branch}</p>}
-          {isAdmin && selectedMember?.role === "student" && (
-            <button onClick={handleDeleteStudent} style={{ background: "#ff4d4f", color: "#fff", border: "none", padding: "8px 15px", borderRadius: 8, marginTop: 10 }}>Delete Student</button>
-          )}
-        </div>
-      </Modal>
+      {showProfileModal && (
+        <>
+          <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+            <div className="modal-dialog modal-dialog-centered" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Profile</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowProfileModal(false)}></button>
+                </div>
+                <div className="modal-body text-center">
+                  <img
+                    src={selectedMember?.photoURL || `https://ui-avatars.com/api/?name=${selectedMember?.name}&background=007bff&color=fff`}
+                    alt=""
+                    className="rounded-circle mb-3"
+                    style={{ width: 120, height: 120, objectFit: "cover" }}
+                  />
+                  <h5>{selectedMember?.name}</h5>
+                  <p><strong>Role:</strong> {selectedMember?.role}</p>
+                  {isAdmin && selectedMember?.role === "student" && <p><strong>Branch:</strong> {selectedMember?.branch}</p>}
+                </div>
+                {isAdmin && selectedMember?.role === "student" && (
+                  <div className="modal-footer justify-content-center">
+                    <button type="button" className="btn btn-danger" onClick={handleDeleteStudent}>
+                      Delete Student
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show" onClick={() => setShowProfileModal(false)}></div>
+        </>
+      )}
     </div>
   );
 }
