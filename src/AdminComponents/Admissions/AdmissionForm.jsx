@@ -279,7 +279,7 @@ export default function AdmissionForm() {
 
     // ===================== FORM VIEW =====================
     return (
-        <div className="admission-bg pt-4 pb-5">
+        <div className="admission-bg pt-2 pb-5 mb-5">
             <div className="container">
                 <div className="admission-card shadow-lg bg-white">
                     <div className="gov-header p-3 p-md-4 text-center">

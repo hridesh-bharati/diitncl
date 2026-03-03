@@ -65,11 +65,11 @@ export default function Header() {
             <Link to="/" className={isActive("/")}>Home</Link>
             <Link to="/about" className={isActive("/about")}>About</Link>
 
-            <div className="dropdown pc-dropdown">
+            <div className="dropdown pc-dropdown dropdown-toggle ">
               <Link to="/courses" className={`dropdown-toggle ${location.pathname.startsWith("/courses") ? "active" : ""}`} data-bs-toggle="dropdown">
                 Courses
               </Link>
-              <ul className="dropdown-menu shadow-lg border-0">
+              <ul className="dropdown-menu  shadow-lg border-0">
                 {courseLinks.map((link) => (
                   <li key={link.to}><Link className="dropdown-item" to={link.to}>{link.label}</Link></li>
                 ))}

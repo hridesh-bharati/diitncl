@@ -1,5 +1,8 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
+
+
+
 import "./App.css";
 
 // 🚀 Core Components (Turant load honge bina loading ke)
@@ -12,6 +15,8 @@ import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
 // 🔥 Firebase Auth Logic
 import { authListener, getUserRole } from "./firebase/auth";
+import { db } from "./firebase/firebase"; 
+import { doc, setDoc, increment } from "firebase/firestore";
 
 // 🌐 Dynamic Lazy Loading (Optimized for Vite/Webpack)
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -66,6 +71,33 @@ export default function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+  const trackVisit = async () => {
+    // 1. Check karo ki kya isi session mein count ho chuka hai?
+    const hasVisited = sessionStorage.getItem("drishtee_visitor");  // ✅ Smart session check
+
+    if (!hasVisited) {
+      const ref = doc(db, "stats", "visitors");
+      try {
+        // 2. Sirf 'count' field bhejna hai (Rules allow only this)  // ✅ Rules compliant
+        await setDoc(ref, { 
+          count: increment(1) 
+        }, { merge: true });
+        
+        // 3. Session set karein taki page refresh par count na badhe  // ✅ Duplicate prevention
+        sessionStorage.setItem("drishtee_visitor", "true");
+        console.log("🚀 New visitor tracked successfully!");
+      } catch (error) {
+        // Agar permission error aaye toh check karein rules mein visitors allow hai ya nahi  // ✅ Debug ready
+        console.error("Firebase Tracking Error:", error);
+      }
+    }
+  };
+
+  trackVisit();
+}, []);
+
 
   if (loading) return <LoadingSpinner />;
 
