@@ -4,9 +4,6 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 
-// Bootstrap Icons CSS
-import "bootstrap-icons/font/bootstrap-icons.css";
-
 const BRANCHES = [
     { id: "DIIT124", name: "DIIT124 - Main Branch" },
     { id: "DIIT125", name: "DIIT125 - East Branch" }

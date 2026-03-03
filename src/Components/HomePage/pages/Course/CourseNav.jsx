@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
-import { FiHome, FiSearch, FiChevronRight } from "react-icons/fi";
 
 const CourseNav = ({ data, searchQuery, setSearchQuery }) => {
   return (
@@ -10,9 +9,9 @@ const CourseNav = ({ data, searchQuery, setSearchQuery }) => {
         <div className="col-12 col-md-6">
           <nav className="d-flex align-items-center gap-1 text-uppercase fw-bold text-muted mb-1 small tracking-wider">
             <Link to="/" className="text-decoration-none text-paytm-blue d-flex align-items-center gap-1">
-              <FiHome /> Home
+              <i className="bi bi-house-door-fill"></i> Home
             </Link>
-            <FiChevronRight size={12} />
+            <i className="bi bi-chevron-right" style={{ fontSize: '12px' }}></i>
             <span>{data}</span>
           </nav>
           <h2 className="fw-800 text-paytm-dark m-0 fs-1-5">
@@ -23,7 +22,7 @@ const CourseNav = ({ data, searchQuery, setSearchQuery }) => {
         {/* Right: Search */}
         <div className="col-12 col-md-5 col-lg-4 ms-auto">
           <div className="search-box d-flex align-items-center gap-2 px-3 py-2 rounded-3 border bg-light-soft transition-all">
-            <FiSearch className="text-secondary" size={18} />
+            <i className="bi bi-search text-secondary" style={{ fontSize: '18px' }}></i>
             <input
               type="text"
               className="form-control border-0 p-0 bg-transparent shadow-none small fw-medium text-paytm-dark"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../../firebase/firebase";
-import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 export default function AdminList() {
@@ -23,18 +23,6 @@ export default function AdminList() {
 
   useEffect(() => { fetchAdmins(); }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Remove this admin access?")) {
-      try {
-        await deleteDoc(doc(db, "users", id));
-        setAdmins(admins.filter(a => a.id !== id));
-        toast.success("Admin removed");
-      } catch (err) {
-        toast.error("Delete failed");
-      }
-    }
-  };
-
   if (loading) return (
     <div className="d-flex justify-content-center p-5">
       <div className="spinner-border text-primary" role="status"></div>
@@ -56,7 +44,7 @@ export default function AdminList() {
             <div className="card border-0 shadow-sm rounded-4">
               <div className="card-body p-3">
                 <div className="d-flex align-items-center">
-                  
+
                   {/* Avatar Section */}
                   <div className="flex-shrink-0">
                     {admin.photoURL ? (
@@ -78,30 +66,19 @@ export default function AdminList() {
                   <div className="ms-3 flex-grow-1 overflow-hidden">
                     <h6 className="mb-0 fw-bold text-dark text-truncate">{admin.name || "N/A"}</h6>
                     <small className="text-muted d-block text-truncate mb-1">{admin.email}</small>
-                    
+
                     {/* Phone Number with Click-to-Call */}
                     {admin.phone ? (
                       <a href={`tel:${admin.phone}`} className="text-decoration-none d-flex align-items-center">
-                         <small className="fw-medium text-primary">
-                           <i className="bi bi-telephone-fill me-1" style={{fontSize: '0.8rem'}}></i>
-                           {admin.phone}
-                         </small>
+                        <small className="fw-medium text-primary">
+                          <i className="bi bi-telephone-fill me-1" style={{fontSize: '0.8rem'}}></i>
+                          {admin.phone}
+                        </small>
                       </a>
                     ) : (
                       <small className="text-muted italic small text-opacity-50">No phone number</small>
                     )}
                   </div>
-
-                  {/* Action Section */}
-                  {/* <div className="ms-2">
-                    <button 
-                      onClick={() => handleDelete(admin.id)}
-                      className="btn btn-light btn-sm rounded-circle text-danger p-2"
-                      title="Delete Admin"
-                    >
-                      <i className="bi bi-trash3-fill"></i>
-                    </button>
-                  </div> */}
 
                 </div>
 

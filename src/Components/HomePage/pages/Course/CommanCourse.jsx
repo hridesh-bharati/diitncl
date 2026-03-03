@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { FiClock, FiLayers, FiChevronRight, FiCheckCircle, FiPlus, FiMinus } from "react-icons/fi";
 import CourseNav from "./CourseNav";
 import { staticCourses } from "./courseData";
 
@@ -21,11 +20,13 @@ const CourseCard = React.memo(({ course, themeColor }) => {
         <div className="p-4 text-white" style={{ background: `linear-gradient(135deg, ${themeColor} 0%, ${themeColor}dd 100%)` }}>
           <div className="d-flex justify-content-between align-items-start">
             <div className="d-flex align-items-center">
-              <div className="bg-white bg-opacity-25 rounded-3 p-2 d-flex shadow-sm"><FiLayers size={28} /></div>
+              <div className="bg-white bg-opacity-25 rounded-3 p-2 d-flex shadow-sm">
+                <i className="bi bi-layers" style={{ fontSize: '28px' }}></i>
+              </div>
               <h4 className="ms-3 mb-0 fw-bold fs-pc-name">{course.name}</h4>
             </div>
             <div className="bg-white text-dark px-3 py-1 rounded-pill fw-bold small shadow-sm fs-pc-duration">
-              <FiClock className="me-1" /> {course.duration} Mo
+              <i className="bi bi-clock me-1"></i> {course.duration} Mo
             </div>
           </div>
           <p className="mt-3 mb-0 opacity-90 fw-medium fs-pc-desc min-h-3">{course.description}</p>
@@ -41,7 +42,7 @@ const CourseCard = React.memo(({ course, themeColor }) => {
             {subjects.map((sub) => (
               <div key={sub.id} className="col">
                 <div className="subject-tag d-flex align-items-center h-100 bg-light rounded-3 p-2 border border-white shadow-sm">
-                  <FiCheckCircle className="text-success me-2 flex-shrink-0" size={14} />
+                  <i className="bi bi-check-circle-fill text-success me-2 flex-shrink-0" style={{ fontSize: '14px' }}></i>
                   <span className="text-dark fw-medium text-truncate small">{sub.name}</span>
                 </div>
               </div>
@@ -50,13 +51,15 @@ const CourseCard = React.memo(({ course, themeColor }) => {
 
           {course.subjects.length > 8 && (
             <button onClick={() => setShowAll(!showAll)} className="btn btn-sm text-primary fw-bold p-0 mb-4 border-0 bg-transparent d-flex align-items-center">
-              {showAll ? <><FiMinus className="me-1"/> Less</> : <><FiPlus className="me-1"/> View All</>}
+              {showAll ? <><i className="bi bi-dash me-1"></i> Less</> : <><i className="bi bi-plus me-1"></i> View All</>}
             </button>
           )}
 
           <Link to="/new-admission" className="btn w-100 rounded-3 py-3 fw-bold d-flex align-items-center justify-content-between text-white border-0 shadow-sm jio-btn-hover mt-auto" style={{ backgroundColor: themeColor }}>
             <span className="ps-2 fs-pc-btn">Enroll Now</span>
-            <div className="bg-black bg-opacity-10 rounded-circle p-1 d-flex"><FiChevronRight size={22} /></div>
+            <div className="bg-black bg-opacity-10 rounded-circle p-1 d-flex">
+              <i className="bi bi-chevron-right" style={{ fontSize: '22px' }}></i>
+            </div>
           </Link>
         </div>
       </div>

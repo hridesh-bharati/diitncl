@@ -1,14 +1,7 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { Container, Card, Spinner, Row, Col } from "react-bootstrap";
-// import {
-//   EnvelopeFill, TelephoneFill, Calendar2EventFill, GeoAltFill,
-//   MortarboardFill, AwardFill, PersonBadgeFill, CalendarCheckFill,
-//   CpuFill, CodeSlash, LaptopFill, Check2Circle, PcDisplay
-// } from "react-bootstrap-icons";
 
-// Sub-Component for Technical Info Tiles
 const TechTile = ({ icon, label, value, color }) => (
   <div
     className="d-flex align-items-center p-3 mb-3 bg-white rounded-3 shadow-sm border-start border-4"
@@ -38,23 +31,43 @@ export default function Profile() {
     const fetchProfile = async () => {
       if (user?.email) {
         try {
-          const q = query(collection(db, "admissions"), where("email", "==", user.email.toLowerCase()));
+          const q = query(
+            collection(db, "admissions"),
+            where("email", "==", user.email.toLowerCase())
+          );
           const snap = await getDocs(q);
           if (!snap.empty) {
             setStudent({ id: snap.docs[0].id, ...snap.docs[0].data() });
           }
-        } catch (err) { console.error(err); } finally { setLoading(false); }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
       }
     };
     fetchProfile();
   }, [user]);
 
-  if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><Spinner animation="border" variant="primary" /></div>;
+  if (loading)
+    return (
+      <div className="vh-100 d-flex justify-content-center align-items-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
 
   return (
     <div className="min-vh-100 pb-5" style={{ backgroundColor: "#f0f2f5" }}>
       {/* Profile Header */}
-      <div className="p-5 text-white text-center" style={{ background: "linear-gradient(135deg, #004a77 0%, #0072b1 100%)", borderRadius: "0 0 50px 50px" }}>
+      <div
+        className="p-5 text-white text-center"
+        style={{
+          background: "linear-gradient(135deg, #004a77 0%, #0072b1 100%)",
+          borderRadius: "0 0 50px 50px",
+        }}
+      >
         <img
           src={student?.photoUrl || ` `}
           className="rounded-circle border border-4 border-white shadow-lg mb-3"
@@ -62,73 +75,86 @@ export default function Profile() {
           alt="Avatar"
         />
         <h3 className="fw-bold mb-1">{student?.name}</h3>
-        <p className="mb-0 opacity-75"><i className="bi bi-pc-display me-2"></i>{student?.course} Student</p>
+        <p className="mb-0 opacity-75">
+          <i className="bi bi-pc-display me-2"></i>
+          {student?.course} Student
+        </p>
       </div>
 
-      <Container className="mt-n4" style={{ marginTop: "-30px" }}>
-        {/* Quick Stats for Computer Students */}
-        <Row className="g-3 mb-4">
-          <Col><TechTile icon="bi-code-slash" label="Enrolled Course" value={student?.course} color="#6610f2" /></Col>
-          <Col><TechTile icon="bi-cpu-fill" label="System Assigned" value="Lab-01 / PC-04" color="#0d6efd" /></Col>
-          <Col><TechTile icon="bi-check2-circle" label="Attendance" value="85%" color="#198754" /></Col>
-        </Row>
+      <div className="container mt-n4" style={{ marginTop: "-30px" }}>
+        {/* Quick Stats */}
+        <div className="row g-3 mb-4">
+          <div className="col-md-4">
+            <TechTile icon="bi-code-slash" label="Enrolled Course" value={student?.course} color="#6610f2" />
+          </div>
+          <div className="col-md-4">
+            <TechTile icon="bi-cpu-fill" label="System Assigned" value="Lab-01 / PC-04" color="#0d6efd" />
+          </div>
+          <div className="col-md-4">
+            <TechTile icon="bi-check2-circle" label="Attendance" value="85%" color="#198754" />
+          </div>
+        </div>
 
-        <Row>
+        <div className="row">
           {/* Main Academic Info */}
-          <Col lg={8}>
-            <Card className="border-0 shadow-sm rounded-4 mb-4">
-              <Card.Body className="p-4">
+          <div className="col-lg-8">
+            <div className="card border-0 shadow-sm rounded-4 mb-4">
+              <div className="card-body p-4">
                 <h5 className="fw-bold mb-4 d-flex align-items-center">
-                  <i className="bi bi-mortarboard-fill me-2 text-primary"></i>Academic Record
+                  <i className="bi bi-mortarboard-fill me-2 text-primary"></i> Academic Record
                 </h5>
-                <Row className="g-4">
+                <div className="row g-4">
                   <InfoBox label="Roll Number" value={Number(student?.regNo?.split("/").pop())} />
                   <InfoBox label="Registration No" value={student?.regNo} />
                   <InfoBox label="Admission Date" value={student?.admissionDate} />
                   <InfoBox label="Batch Timing" value={student?.batchTime || "10:00 AM - 12:00 PM"} />
-                </Row>
-              </Card.Body>
-            </Card>
+                </div>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-sm rounded-4 mb-4">
-              <Card.Body className="p-4">
+            <div className="card border-0 shadow-sm rounded-4 mb-4">
+              <div className="card-body p-4">
                 <h5 className="fw-bold mb-4 d-flex align-items-center">
                   <i className="bi bi-person-badge-fill me-2 text-primary"></i> Personal Information
                 </h5>
-                <Row className="g-4">
+                <div className="row g-4">
                   <InfoBox label="Father's Name" value={student?.fatherName} />
                   <InfoBox label="Mother's Name" value={student?.motherName} />
                   <InfoBox label="Date of Birth" value={student?.dob} />
                   <InfoBox label="Mobile" value={student?.mobile} />
-                  <Col md={12}>
+                  <div className="col-md-12">
                     <label className="text-muted small d-block mb-1">Residential Address</label>
-                    <span className="fw-bold"><i className="bi bi-geo-alt-fill text-danger me-1"></i> {student?.address}</span>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Col>
+                    <span className="fw-bold">
+                      <i className="bi bi-geo-alt-fill text-danger me-1"></i> {student?.address}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Sidebar Info */}
-          <Col lg={4}>
-            <Card className="border-0 shadow-sm rounded-4 mb-4 bg-primary text-white">
-              <Card.Body className="p-4">
-                <h6 className="fw-bold mb-3"><i className="bi bi-laptop-fill me-2"></i> Skill Progress</h6>
+          <div className="col-lg-4">
+            <div className="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white">
+              <div className="card-body p-4">
+                <h6 className="fw-bold mb-3">
+                  <i className="bi bi-laptop-fill me-2"></i> Skill Progress
+                </h6>
                 <ProgressBar label="Operating System" now={90} />
                 <ProgressBar label="Office Suite" now={75} />
                 <ProgressBar label="Typing Speed" now={60} />
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-sm rounded-4 p-3 text-center">
+            <div className="card border-0 shadow-sm rounded-4 p-3 text-center">
               <div className="small text-muted mb-2">Login Verified via</div>
               <div className="fw-bold text-dark border rounded-pill py-1 bg-light">
                 <i className="bi bi-envelope-fill me-2 text-primary"></i>{student?.email}
               </div>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -136,10 +162,12 @@ export default function Profile() {
 // Helper Components
 function InfoBox({ label, value }) {
   return (
-    <Col md={6}>
-      <label className="text-muted small d-block mb-1 text-uppercase fw-bold" style={{ fontSize: '0.65rem' }}>{label}</label>
+    <div className="col-md-6">
+      <label className="text-muted small d-block mb-1 text-uppercase fw-bold" style={{ fontSize: '0.65rem' }}>
+        {label}
+      </label>
       <span className="fw-bold text-dark">{value || "—"}</span>
-    </Col>
+    </div>
   );
 }
 

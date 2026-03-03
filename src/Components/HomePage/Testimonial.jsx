@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 const testimonials = [
   { name: "Rohit Kumar", img: "images/testimonial/testimonial1.avif", text: "Drishtee Computer Center transformed my understanding of technology.", rating: 5 },

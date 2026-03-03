@@ -1,8 +1,6 @@
-// src/Components/Certificate/StudentCertificateWrapper.jsx
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { Spinner, Alert, ProgressBar } from "react-bootstrap";
 import StudentCertificate from "../../AdminComponents/Certificate/StudentCertificate";
 
 export default function CertificateWrapper() {
@@ -11,7 +9,7 @@ export default function CertificateWrapper() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let unsubscribe = () => { };
+    let unsubscribe = () => {};
 
     const initListener = async () => {
       try {
@@ -58,7 +56,9 @@ export default function CertificateWrapper() {
   if (loading) {
     return (
       <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
-        <Spinner animation="border" variant="primary" />
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
         <h6 className="mt-3 text-muted fw-bold">Verifying Credentials...</h6>
       </div>
     );
@@ -67,25 +67,21 @@ export default function CertificateWrapper() {
   if (error) {
     return (
       <div className="container py-5 text-center">
-        <Alert variant="danger">{error}</Alert>
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
       </div>
     );
   }
 
   if (!student) return null;
 
-  // ===== FIXED STATUS LOGIC =====
   const hasMarks = student.percentage && student.percentage !== "";
   const hasDate = student.issueDate && student.issueDate !== "";
-
-  // Check if certificate is disabled FIRST - this overrides everything
   if (student.certificateDisabled === true) {
     return (
       <div className="container py-4">
-        <div
-          className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto"
-          style={{ maxWidth: "850px" }}
-        >
+        <div className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto" style={{ maxWidth: "850px" }}>
           <div className="card-body p-4 p-md-5 bg-white text-center">
             <h4 className="fw-bold mb-3 text-danger">Certificate Disabled</h4>
             <p className="text-muted mb-4">
@@ -98,10 +94,7 @@ export default function CertificateWrapper() {
     );
   }
 
-  // Check if certificate is issued (has URL or marks+date) and NOT disabled
   const isIssued = student.certificateUrl || (hasMarks && hasDate);
-
-  // For "in-process", calculate progress based on missing fields
   const progress = (() => {
     let p = 0;
     if (hasMarks) p += 50;
@@ -113,13 +106,9 @@ export default function CertificateWrapper() {
     <div>
       {isIssued ? (
         <StudentCertificate student={student} />
-
       ) : (
         <div className="container py-4">
-          <div
-            className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto"
-            style={{ maxWidth: "850px" }}
-          >
+          <div className="card border-0 shadow-lg rounded-4 overflow-hidden mx-auto" style={{ maxWidth: "850px" }}>
             <div className="card-body p-4 p-md-5 bg-white text-center">
               <h4 className="fw-bold mb-3">Your Certificate is being processed</h4>
               <p className="text-muted mb-4">
@@ -128,7 +117,11 @@ export default function CertificateWrapper() {
               <div className="progress rounded-pill mb-3" style={{ height: "14px", background: "#f0f0f0" }}>
                 <div
                   className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                  role="progressbar"
                   style={{ width: `${progress}%` }}
+                  aria-valuenow={progress}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
                 >
                   {progress}%
                 </div>

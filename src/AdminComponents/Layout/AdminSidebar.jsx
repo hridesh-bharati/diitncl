@@ -12,7 +12,7 @@ const MENU_ITEMS = [
   { path: "/admin/delete-offers", label: "All Offers", icon: "bi-tags-fill" },
   { path: "/admin/clients-contacts", label: "Inbox", icon: "bi-chat-dots-fill" },
   { path: "/admin/admin-list", label: "Admin List", icon: "bi-lock-fill" },
-{ path: "/admin/visiters-list", label: "Visitor List", icon: "bi-people-fill" },
+  { path: "/admin/visiters-list", label: "Visitor List", icon: "bi-people-fill" },
 ];
 
 export default function AdminSidebar({ open, setOpen }) {
