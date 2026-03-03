@@ -245,9 +245,7 @@ export default function ChatPage() {
                 </div>
                 {isAdmin && selectedMember?.role === "student" && (
                   <div className="modal-footer justify-content-center">
-                    <button type="button" className="btn btn-danger" onClick={handleDeleteStudent}>
-                      Delete Student
-                    </button>
+                    <button type="button" className="btn btn-danger" onClick={handleDeleteStudent}>Delete Student</button>
                   </div>
                 )}
               </div>
