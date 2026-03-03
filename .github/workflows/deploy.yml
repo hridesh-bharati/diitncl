@@ -60,10 +60,10 @@ jobs:
           git add package.json package-lock.json
           git commit -m "ci: version bump [skip ci]" || echo "No changes to commit"
           git push origin main --follow-tags
-          
+
       # 8️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
