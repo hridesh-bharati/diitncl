@@ -34,7 +34,7 @@ export default function AdminSidebar({ open, setOpen }) {
                 Admin Console
               </span>
             </div>
-            <button className="btn btn-light rounded-circle p-0 d-lg-none shadow-sm"
+            <button className="btn btn-light rounded-circle p-0 py-5 mt-5 d-lg-none shadow-sm"
               style={{ width: '32px', height: '32px' }}
               onClick={handleClose}>
               <i className="bi bi-x"></i>

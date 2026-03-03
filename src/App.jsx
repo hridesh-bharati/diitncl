@@ -15,7 +15,7 @@ import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
 // 🔥 Firebase Auth Logic
 import { authListener, getUserRole } from "./firebase/auth";
-import { db } from "./firebase/firebase"; 
+import { db } from "./firebase/firebase";
 import { doc, setDoc, increment } from "firebase/firestore";
 
 // 🌐 Dynamic Lazy Loading (Optimized for Vite/Webpack)
@@ -73,30 +73,30 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-  const trackVisit = async () => {
-    // 1. Check karo ki kya isi session mein count ho chuka hai?
-    const hasVisited = sessionStorage.getItem("drishtee_visitor");  // ✅ Smart session check
+    const trackVisit = async () => {
+      // 1. Check karo ki kya isi session mein count ho chuka hai?
+      const hasVisited = sessionStorage.getItem("drishtee_visitor");  // ✅ Smart session check
 
-    if (!hasVisited) {
-      const ref = doc(db, "stats", "visitors");
-      try {
-        // 2. Sirf 'count' field bhejna hai (Rules allow only this)  // ✅ Rules compliant
-        await setDoc(ref, { 
-          count: increment(1) 
-        }, { merge: true });
-        
-        // 3. Session set karein taki page refresh par count na badhe  // ✅ Duplicate prevention
-        sessionStorage.setItem("drishtee_visitor", "true");
-        console.log("🚀 New visitor tracked successfully!");
-      } catch (error) {
-        // Agar permission error aaye toh check karein rules mein visitors allow hai ya nahi  // ✅ Debug ready
-        console.error("Firebase Tracking Error:", error);
+      if (!hasVisited) {
+        const ref = doc(db, "stats", "visitors");
+        try {
+          // 2. Sirf 'count' field bhejna hai (Rules allow only this)  // ✅ Rules compliant
+          await setDoc(ref, {
+            count: increment(1)
+          }, { merge: true });
+
+          // 3. Session set karein taki page refresh par count na badhe  // ✅ Duplicate prevention
+          sessionStorage.setItem("drishtee_visitor", "true");
+          console.log("🚀 New visitor tracked successfully!");
+        } catch (error) {
+          // Agar permission error aaye toh check karein rules mein visitors allow hai ya nahi  // ✅ Debug ready
+          console.error("Firebase Tracking Error:", error);
+        }
       }
-    }
-  };
+    };
 
-  trackVisit();
-}, []);
+    trackVisit();
+  }, []);
 
 
   if (loading) return <LoadingSpinner />;
@@ -108,7 +108,7 @@ export default function App() {
       <Header />
       <InstallPrompt />
 
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<p className="my-5 ms-auto p-5 text-center  w-100 text-muted">Loading...</p>}>
         <Routes>
           {/* --- PUBLIC ROUTES --- */}
           <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />

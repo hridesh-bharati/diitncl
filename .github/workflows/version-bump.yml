@@ -1,0 +1,38 @@
+name: Auto Bump Version
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Git Identity Config
+        run: |
+          git config --local user.email "hridesh027@gmail.com"
+          git config --local user.name "hridesh-bharati"
+
+      - name: Bump version automatically
+        run: |
+          npm version patch -m "ci: bump version to %s [skip ci]"
+
+      - name: Push version bump to GitHub
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
