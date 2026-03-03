@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Disallow Private Areas
+Disallow: /admin/
+Disallow: /student/
+Disallow: /login
+Disallow: /chat
+
+# Allow Important Pages
+Allow: /courses/
+Allow: /about
+Allow: /contact-us
+Allow: /gallery
+Allow: /library
+Allow: /new-admission
+
+# Sitemap Location
+Sitemap: https://www.drishteeindia.com/sitemap.xml
