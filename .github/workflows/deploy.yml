@@ -50,13 +50,17 @@ jobs:
       - name: Build Vite PWA
         run: npm run build
 
-      # 7️⃣ Commit & push version bump + build artifacts
+     # 7️⃣ Commit & push version bump
       - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Remote URL ko token ke saath set karein taaki push permission mile
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git add package.json package-lock.json
-          git commit -m "ci: version bump after build [skip ci]" || echo "No changes to commit"
+          git commit -m "ci: version bump [skip ci]" || echo "No changes to commit"
           git push origin main --follow-tags
-
+          
       # 8️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v6
