@@ -1,0 +1,66 @@
+name: Build & Deploy PWA
+
+on:
+  push:
+    branches:
+      - main
+    # ignore version bump commits to prevent loops
+    paths-ignore:
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  build-deploy:
+    # Skip workflow if commit message already contains bump
+    if: "!contains(github.event.head_commit.message, 'ci: bump version')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      # 2️⃣ Setup Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # 3️⃣ Git Identity
+      - name: Configure Git
+        run: |
+          git config --local user.email "hridesh027@gmail.com"
+          git config --local user.name "hridesh-bharati"
+
+      # 4️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 5️⃣ Auto bump version
+      - name: Bump version
+        run: |
+          npm version patch -m "ci: bump version to %s [skip ci]"
+
+      # 6️⃣ Build production
+      - name: Build Vite PWA
+        run: npm run build
+
+      # 7️⃣ Commit & push version bump + build artifacts
+      - name: Push changes
+        run: |
+          git add package.json package-lock.json
+          git commit -m "ci: version bump after build [skip ci]" || echo "No changes to commit"
+          git push origin main --follow-tags
+
+      # 8️⃣ Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          keep_history: true

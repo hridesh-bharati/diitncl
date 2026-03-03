@@ -82,11 +82,11 @@ export default function PublicSocialGallery() {
     } catch (err) { toast.error("Failed!"); } finally { setUploading(false); }
   };
 
-  if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-danger"></div></div>;
+  if (loading) return <p className="my-5 ms-auto p-5 text-center w-100 text-muted">Loading...</p>;
 
   return (
-    <div className="bg-light min-vh-100 pb-5">
-      <header className="bg-white border-bottom sticky-top shadow-sm py-2 px-3 z-index-1000">
+    <div className="bg-light min-vh-100 pb-5 mb-5 mb-lg-0">
+      <header className="bg-white border-bottom shadow-sm py-2 px-3 z-index-1000">
         <div className="container d-flex justify-content-between align-items-center">
           <h4 className="fw-bold text-danger m-0">Drishtee Feed</h4>
           {isLoggedIn ? (

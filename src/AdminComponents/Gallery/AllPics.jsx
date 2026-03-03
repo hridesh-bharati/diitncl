@@ -28,12 +28,12 @@ export default function AllPics({ isAdmin = true }) {
   if (loading) return <div className="text-center py-5"><p>Loading...</p></div>;
 
   return (
-    <div className="p-2">
+    <div className="p-2 mb-5 pb-5">
       <h4 className="fw-900 mb-4" style={{ fontFamily: 'Arial Black' }}>GALLERY</h4>
 
       <div className="row g-3">
         {gallery.map(item => (
-          <div key={item.id} className="col col-sm-6 col-md-4 col-lg-3" >
+          <div key={item.id} className="col-12 col-sm-6 col-md-4">
             <div className="position-relative group">
               <div className="overflow-hidden rounded-4 shadow-sm border bg-white p-1">
                 <img

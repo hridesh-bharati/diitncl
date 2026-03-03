@@ -25,18 +25,21 @@ export default function AdminSidebar({ open, setOpen }) {
 
       <aside className={`ios-sidebar position-fixed top-0 start-0 vh-100 ${open ? "open" : ""}`}>
         <div className="d-flex flex-column h-100">
-
           {/* Header */}
-          <div className="p-4 pt-5 d-flex align-items-center justify-content-between">
+          <div className="p-3 d-flex align-items-center justify-content-between">
             <div className="lh-sm">
-              <span className="d-block h4 fw-bold mb-0 tracking-tight text-dark">Drishtee</span>
-              <span className="small text-uppercase fw-bold text-muted opacity-50" style={{ fontSize: '10px', letterSpacing: '1px' }}>
+              <span className="d-block h5 fw-bold mb-0 text-dark">Drishtee</span>
+              <span className="small text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>
                 Admin Console
               </span>
             </div>
-            <button className="btn btn-light rounded-circle p-0 py-5 mt-5 d-lg-none shadow-sm"
+
+            {/* Close button only on mobile */}
+            <button
+              className="btn btn-light rounded-circle shadow-sm p-1"
               style={{ width: '32px', height: '32px' }}
-              onClick={handleClose}>
+              onClick={handleClose}
+            >
               <i className="bi bi-x"></i>
             </button>
           </div>
