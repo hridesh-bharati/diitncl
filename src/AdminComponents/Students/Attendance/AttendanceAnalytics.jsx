@@ -8,7 +8,6 @@ import {
 import { Doughnut } from "react-chartjs-2";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase/firebase";
-
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AttendanceAnalytics() {
@@ -47,7 +46,7 @@ export default function AttendanceAnalytics() {
 
   return (
     <div className="container py-4">
-      <h4>Attendance Analytics</h4>
+      <h4> Attendance Analytics </h4>
       <div style={{ maxWidth: "400px" }}>
         <Doughnut data={data} />
       </div>
