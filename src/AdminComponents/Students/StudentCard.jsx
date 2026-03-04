@@ -212,7 +212,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
                   className={`form-control border-0 ${isDuplicate ? 'is-invalid' : ''}`}
                   style={{ background: "#fff" }}
                   value={regNumber}
-                  placeholder="Enter last digits..."
+                  placeholder="Enter reg no..."
                   onChange={e => setRegNumber(e.target.value.replace(/[^0-9]/g, ""))}
                 />
               </div>
