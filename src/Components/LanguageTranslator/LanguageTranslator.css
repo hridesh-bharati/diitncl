@@ -1,103 +1,92 @@
-/* Shared Transitions & Utility */
-.gt-overlay, .gt-sheet, .gt-row {
-  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        .gt-overlay {
+          position: fixed; inset: 0; background: rgba(11, 20, 26, 0.5);
+          display: flex; align-items: flex-end; visibility: hidden;
+          opacity: 0; transition: .3s; z-index: 10000;
+        }
+        .gt-overlay.active { visibility: visible; opacity: 1; }
 
-.gt-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(11, 20, 26, 0.5);
-  display: flex;
-  align-items: flex-end;
-  visibility: hidden;
-  opacity: 0;
-  z-index: 10000;
-}
+        .gt-sheet {
+          width: 100%; background: #fff; border-radius: 24px 24px 0 0;
+          max-height: 85vh; transform: translateY(100%);
+          transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex; flex-direction: column;
+        }
+        .gt-overlay.active .gt-sheet { transform: translateY(0); }
 
-.gt-overlay.active {
-  visibility: visible;
-  opacity: 1;
-}
+        .gt-drag-handle {
+          width: 40px; height: 4px; background: #e9edef;
+          border-radius: 2px; margin: 12px auto 0;
+        }
 
-.gt-sheet {
-  width: 100%;
-  background: #fff;
-  border-radius: 24px 24px 0 0;
-  max-height: 85vh;
-  transform: translateY(100%);
-  display: flex;
-  flex-direction: column;
-}
+        .gt-header {
+          display: flex; align-items: center; gap: 20px;
+        }
 
-.gt-overlay.active .gt-sheet {
-  transform: translateY(0);
-}
+        .gt-close-btn { background: none; border: none; font-size: 22px; color: #3b4a54; }
 
-.gt-drag-handle {
-  width: 40px;
-  height: 4px;
-  background: #e9edef;
-  border-radius: 2px;
-  margin: 12px auto 0;
-}
+        .gt-body { overflow-y: auto; padding-bottom: 20px; }
 
-.gt-header, .gt-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
+        .gt-row { padding: 14px 24px; cursor: pointer; transition: .2s; }
+        .gt-row:active { background: #f0f2f5; }
+        .selected-bg { background: #f8f9fa; }
 
-.gt-close-btn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  color: #3b4a54;
-}
+        .gt-left { display: flex; align-items: center; gap: 24px; }
 
-.gt-body {
-  overflow-y: auto;
-  padding-bottom: 20px;
-}
+        .gt-radio {
+          width: 20px; height: 20px; border: 2px solid #667781;
+          border-radius: 50%; display: grid; place-items: center; flex-shrink: 0;
+        }
+        .gt-radio.active { border-color: #008069; }
+        .gt-radio-inner { width: 11px; height: 11px; background: #008069; border-radius: 50%; }
 
-.gt-row {
-  padding: 14px 24px;
-  cursor: pointer;
-}
+        .native { font-size: 16px; color: #111b21; }
+        .english { font-size: 13px; color: #667781; }
 
-.gt-row:active, .selected-bg {
-  background: #f0f2f5;
-}
+        /* Google UI Hiding */
+        body { top: 0 !important; }
+        .skiptranslate, #goog-gt-tt, .goog-te-banner-frame { display: none !important; }
 
-.gt-radio {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #667781;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-}
-
-.gt-radio.active {
-  border-color: #008069;
-}
-
-.gt-radio-inner {
-  width: 11px;
-  height: 11px;
-  background: #008069;
-  border-radius: 50%;
-}
-
-.native { font-size: 16px; color: #111b21; }
-.english { font-size: 13px; color: #667781; }
-
-
-/* Hide Google UI Elements */
-body { top: 0 !important; }
-.skiptranslate, #goog-gt-tt, .goog-te-banner-frame, 
-.goog-te-balloon-frame, .goog-te-gadget-simple, 
-[class*="VIpgJd-ZVi9od"] {
+        @media(min-width:768px){
+          .gt-overlay { align-items:center; justify-content:center; }
+          .gt-sheet { width:400px; border-radius:16px; }
+          .gt-drag-handle { display: none; }
+        }
+        /* ............................................ */
+        
+/* ------------ Google Translate Widget Cleanup ------------ */
+#goog-gt-tt,
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+.goog-te-gadget-simple,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:link,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:visited,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:hover,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:active,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-yAWNEb-hvhgNd-IuizWc,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd img {
   display: none !important;
   visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
 }
+
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
+  position: absolute;
+  bottom: 0 !important;
+}
+
+.goog-te-gadget {
+  height: 1rem !important;
+  color: transparent !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  margin: 4px 0;
+  padding: 2px 1px;
+  width: 100%;
+  border: 0;
+}
+
