@@ -1,7 +1,7 @@
-// src/AdminComponents/Admissions/AdmissionProvider.jsx
 import { useEffect, useState, useMemo } from "react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
+import { toast } from "react-toastify";
 
 export default function AdmissionProvider({ children }) {
   const [admissions, setAdmissions] = useState([]);
@@ -33,7 +33,38 @@ export default function AdmissionProvider({ children }) {
     };
   }, []);
 
-  const value = useMemo(() => ({ admissions, loading, error }), [admissions, loading, error]);
+  // 🔹 Naya Update Function (Jo tum missing tha)
+  const updateAdmission = async (id, updatedData) => {
+    try {
+      const docRef = doc(db, "admissions", id);
+      await updateDoc(docRef, updatedData);
+      // Toast yahan se handle karne ki zaroorat nahi, Card mein laga hua hai
+    } catch (err) {
+      console.error("Update Error:", err);
+      toast.error("Database update failed");
+      throw err;
+    }
+  };
+
+  // 🔹 Naya Delete Function (Jo missing tha)
+  const deleteAdmission = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this student?")) return;
+    try {
+      await deleteDoc(doc(db, "admissions", id));
+      toast.success("Student record deleted");
+    } catch (err) {
+      toast.error("Delete failed");
+    }
+  };
+
+  // 🔹 In functions ko 'value' mein add karna zaroori hai
+  const value = useMemo(() => ({ 
+    admissions, 
+    loading, 
+    error, 
+    updateAdmission, 
+    deleteAdmission 
+  }), [admissions, loading, error]);
 
   return typeof children === "function" ? children(value) : children;
 }

@@ -10,7 +10,7 @@ export default function StudentList() {
 
   return (
     <AdmissionProvider>
-      {({ admissions = [], loading }) => {
+      {({ admissions = [], loading, updateAdmission, deleteAdmission }) => {
         // 🔹 Filtered & searched admissions
         const filtered = useMemo(() => {
           const term = searchTerm.trim().toLowerCase();
@@ -113,7 +113,11 @@ export default function StudentList() {
               <div className="row g-3">
                 {filtered.map((student) => (
                   <div key={student.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
-                    <StudentCard student={student} />
+                    <StudentCard
+                      student={student}
+                      onSave={updateAdmission}
+                      onDelete={deleteAdmission}
+                    />
                   </div>
                 ))}
               </div>

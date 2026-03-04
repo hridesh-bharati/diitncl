@@ -6,6 +6,10 @@ const MENU_ITEMS = [
   { path: "/admin", label: "Dashboard", icon: "bi-grid-1x2-fill", end: true },
   { path: "/admin/admitted-student-list", label: "Admitted", icon: "bi-shield-check" },
   { path: "/admin/students", label: "Admissions", icon: "bi-person-plus-fill" },
+  { path: "/admin/students/active-student-attendance", label: "Attendance", icon: "bi-person-plus-fill" },
+  { path: "/admin/students/active-student-attendance-summary", label: "Attendance Summary", icon: "bi-person-plus-fill" },
+
+
   { path: "/admin/gallery", label: "Upload Media", icon: "bi-cloud-arrow-up-fill" },
   { path: "/admin/all-images", label: "Gallery", icon: "bi-images" },
   { path: "/admin/new-offers", label: "Promotions", icon: "bi-megaphone-fill" },

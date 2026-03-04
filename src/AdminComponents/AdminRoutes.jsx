@@ -13,6 +13,8 @@ import AllPics from "./Gallery/AllPics";
 import CreateOffer from "./Offers/CreateOffer";
 import DeleteOffer from "./Offers/DeleteOffer";
 import VisitorCount from "./Dashboard/VisitorCount";
+import ActiveStudentsAttendance from "./Attendance/ActiveStudentsAttendance";
+import AttendanceSummary from "./Attendance/AttendanceSummary";
 
 export default function AdminRoutes() {
   return (
@@ -23,6 +25,10 @@ export default function AdminRoutes() {
         <Route path="students" element={<StudentList />} />
         <Route path="students/:id" element={<StudentProfile />} />
         <Route path="students/:id/certificate" element={<StudentCertificate />} />
+        <Route path="students/active-student-attendance" element={<ActiveStudentsAttendance />} />
+        <Route path="students/active-student-attendance-summary" element={<AttendanceSummary />} />
+
+
         <Route path="gallery" element={<AdminGalleryUpload />} />
         <Route path="all-images" element={<AllPics />} />
         <Route path="new-offers" element={<CreateOffer />} />
