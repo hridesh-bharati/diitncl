@@ -88,7 +88,7 @@ export default function AttendanceMark() {
         return (
           <div className="container pt-1 mb-5 pb-5" >
 
-            {/* MODAL */}
+            {/* --- MODAL ---*/}
             {unmarkedList.length > 0 && (
               <div className="modal d-block" style={{ background: "rgba(0,0,0,0.6)" }}>
                 <div className="modal-dialog modal-dialog-centered">
