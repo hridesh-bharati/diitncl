@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
-import './LanguageTranslator.css'
-const getDeviceLanguage = () => {
-  const lang = navigator.language || navigator.userLanguage || "en";
-  return lang.split("-")[0];
-};
+import { useEffect, useState, useCallback } from "react";
+import './LanguageTranslator.css';
 
 const LANGUAGES = [
   { code: "device", native: "Device Language", english: "Use device language (Recommended)" },
@@ -25,6 +21,21 @@ export default function GoogleTranslateButton() {
   const [open, setOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState(localStorage.getItem("appLang") || "device");
 
+  const getTargetCode = (code) => {
+    if (code !== "device") return code;
+    return (navigator.language || navigator.userLanguage || "en").split("-")[0];
+  };
+
+  const updateGoogleCombo = useCallback((langCode) => {
+    const select = document.querySelector(".goog-te-combo");
+    if (select) {
+      select.value = getTargetCode(langCode);
+      select.dispatchEvent(new Event("change"));
+      return true;
+    }
+    return false;
+  }, []);
+
   useEffect(() => {
     if (window.__gtLoaded) return;
     window.__gtLoaded = true;
@@ -34,75 +45,49 @@ export default function GoogleTranslateButton() {
         { pageLanguage: "en", autoDisplay: false },
         "google_translate_element"
       );
-      applySavedLanguage();
+      
+      const interval = setInterval(() => {
+        if (updateGoogleCombo(selectedLang)) clearInterval(interval);
+      }, 400);
     };
 
     const script = document.createElement("script");
     script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     script.async = true;
     document.body.appendChild(script);
-  }, []);
+  }, [selectedLang, updateGoogleCombo]);
 
-  // Prevent background scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
-  const applySavedLanguage = () => {
-    const saved = localStorage.getItem("appLang") || "device";
-    const interval = setInterval(() => {
-      const select = document.querySelector(".goog-te-combo");
-      if (select) {
-        let finalLang = saved === "device" ? getDeviceLanguage() : saved;
-        select.value = finalLang;
-        select.dispatchEvent(new Event("change"));
-        clearInterval(interval);
-      }
-    }, 400);
-  };
-
   const changeLanguage = (lang) => {
-    const select = document.querySelector(".goog-te-combo");
-    if (!select) return;
-
-    let finalLang = lang === "device" ? getDeviceLanguage() : lang;
-    select.value = finalLang;
-    select.dispatchEvent(new Event("change"));
-
-    localStorage.setItem("appLang", lang);
-    setSelectedLang(lang);
-    setOpen(false);
+    if (updateGoogleCombo(lang)) {
+      localStorage.setItem("appLang", lang);
+      setSelectedLang(lang);
+      setOpen(false);
+    }
   };
 
   return (
     <>
       <div id="google_translate_element" style={{ display: "none" }} />
 
-      {/* Trigger - Protected from translation */}
-      <button
-        className="notranslate btn border-0 text-muted d-flex align-items-center gap-2"
-        onClick={() => setOpen(true)}
-        translate="no"
-      >
+      <button className="notranslate btn border-0 d-flex align-items-center" onClick={() => setOpen(true)}>
         <i className="bi bi-translate fs-2 text-primary"></i>
-        {/* App Language */}
       </button>
 
-      {/* Overlay */}
       <div className={`gt-overlay ${open ? "active" : ""}`} onClick={() => setOpen(false)}>
         <div className="gt-sheet" onClick={(e) => e.stopPropagation()}>
+          <div className="gt-drag-handle" />
           
-          <div className="gt-drag-handle"></div>
-
-          {/* Header - Protected */}
-          <div className="gt-header notranslate mt-5 pt-5 ps-4" translate="no">
+          <div className="gt-header notranslate mt-5 ps-4" translate="no">
             <button className="gt-close-btn" onClick={() => setOpen(false)}>
               <i className="bi bi-arrow-left"></i>
             </button>
             <h6 className="m-0 fw-bold">App Language</h6>
           </div>
 
-          {/* Language List */}
           <div className="gt-body notranslate" translate="no">
             {LANGUAGES.map((lang) => (
               <div
@@ -111,11 +96,11 @@ export default function GoogleTranslateButton() {
                 onClick={() => changeLanguage(lang.code)}
               >
                 <div className="gt-left">
-                  <div className={`gt-radio ${selectedLang === lang.code ? "active" : ""}`}>
+                  <div className={`gt-radio text-start ${selectedLang === lang.code ? "active" : ""}`}>
                     {selectedLang === lang.code && <div className="gt-radio-inner" />}
                   </div>
                   <div>
-                    <div className="native">{lang.native}</div>
+                    <div className="native text-start">{lang.native}</div>
                     <div className="english">{lang.english}</div>
                   </div>
                 </div>
@@ -124,7 +109,6 @@ export default function GoogleTranslateButton() {
           </div>
         </div>
       </div>
-
     </>
   );
 }
