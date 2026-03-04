@@ -39,8 +39,9 @@ export default function VisitorCount() {
           ) : (
             <>
               <h1 className="display-3 fw-bold text-primary">
-                {count.toLocaleString()} {/* Numbers ko comma format mein dikhane ke liye */}
+                {count.toLocaleString()}
               </h1>
+              <div className="small fs-6">From 03 MARCH 2026</div>
               <p className="text-success mb-0">
                 <i className="bi bi-check-circle-fill me-1"></i>
                 Real-time Sync Active

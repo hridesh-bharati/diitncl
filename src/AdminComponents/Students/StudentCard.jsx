@@ -256,7 +256,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
                   padding: "10px 14px"
                 }}
                 value={regNumber}
-                placeholder="Digits only"
+                placeholder="Uniquee no..."
                 onChange={e =>
                   setRegNumber(e.target.value.replace(/[^0-9]/g, ""))
                 }

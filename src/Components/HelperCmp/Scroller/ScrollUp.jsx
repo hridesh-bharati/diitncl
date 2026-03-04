@@ -46,7 +46,7 @@ function ScrollUp() {
                 style={{
                     bottom: '100px',
                     right: '10px',
-                    zIndex: 9999,
+                    zIndex: 99,
                     borderRadius: '50%',
                     width: '50px',
                     height: '50px',

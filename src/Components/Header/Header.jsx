@@ -5,6 +5,7 @@ import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
 import "./Header.css";
+import LanguageTranslator from "../LanguageTranslator/LanguageTranslator";
 
 export default function Header() {
   const { user, student, isAdmin, logout } = useAuth();
@@ -91,6 +92,7 @@ export default function Header() {
 
             <Link to="/gallery" className={isActive("/gallery")}>Gallery</Link>
             <Link to="/contact-us" className={isActive("/contact-us")}>Contact</Link>
+
           </div>
 
           <div className="pc-right d-flex align-items-center">
@@ -121,6 +123,10 @@ export default function Header() {
             <button className="icon-btn-circle text-danger " onClick={() => navigate("/branch/nichlaul/location")} title="Our Location">
               <i className="bi bi-geo-alt-fill"></i>
             </button>
+            {/* <div className="bg-dark">
+              <LanguageTranslator />
+            </div> */}
+
           </div>
         </div>
       </nav>
@@ -158,24 +164,69 @@ export default function Header() {
                 </div>
               </div>
             </div>
+
           </Link>
+          
 
           <div className="drawer-body px-1">
-            <div className="row g-3 mb-4 text-center">
-              {[
-                { to: "/download-certificate", icon: "bi-patch-check-fill", label: "Verify", color: "text-info" },
-                { to: "/library", icon: "bi-book-half", label: "Library", color: "text-warning" },
-                { to: "/chat", icon: "bi-chat-dots-fill", label: "Group Chat", color: "text-info" }].map((item, idx) => (
-                  <div className="col-4" key={idx}>
-                    <Link to={item.to} onClick={() => setIsMenuOpen(false)} className="text-decoration-none h-100">
-                      <div className="card border-0 shadow-sm rounded-4 py-3 h-100">
-                        {typeof item.icon === 'string' ? <i className={`bi ${item.icon} fs-2 ${item.color} mb-2`}></i> : item.icon}
-                        <span className="fw-semibold text-secondary small">{item.label}</span>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-            </div>
+        
+ <div className="row g-3 mb-4 text-center">
+  {[
+    { 
+      to: "/download-certificate", 
+      icon: "bi-patch-check-fill", 
+      label: "Verify", 
+      color: "text-warning", 
+      bg: "#fff9e6" // Light Yellow
+    },
+    { 
+      to: "/chat", 
+      icon: "bi-chat-dots-fill", 
+      label: "Group Chat", 
+      color: "text-success", 
+      bg: "#e6fcf5" // Light Green
+    },
+    { 
+      custom: true,
+      component: <LanguageTranslator />, // Sirf icon return karega ye
+      label: "Language",
+      color: "text-primary",
+      bg: "#eef2ff" // Light Blue
+    }
+  ].map((item, idx) => (
+    <div className="col-4" key={idx}>
+      {item.custom ? (
+        <div 
+          className="card border-0 shadow-sm rounded-4 py-3 h-100 d-flex align-items-center justify-content-center"
+          style={{ backgroundColor: item.bg }}
+        >
+          {/* Translator component ab sirf icon button hona chahiye */}
+          {item.component}
+          <span className="fw-semibold text-secondary small mt-1 notranslate" translate="no">
+            {item.label}
+          </span>
+        </div>
+      ) : (
+        <Link
+          to={item.to}
+          onClick={() => setIsMenuOpen(false)}
+          className="text-decoration-none h-100"
+        >
+          <div 
+            className="card border-0 shadow-sm rounded-4 py-3 h-100 d-flex flex-column align-items-center justify-content-center"
+            style={{ backgroundColor: item.bg }}
+          >
+            <i className={`bi ${item.icon} fs-2 ${item.color} mb-1`}></i>
+            <span className="fw-semibold text-secondary small">
+              {item.label}
+            </span>
+          </div>
+        </Link>
+      )}
+    </div>
+  ))}
+</div>
+
             <div className="drawer-section">
               <label>Academic Hub</label>
               {[

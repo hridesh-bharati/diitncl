@@ -143,7 +143,7 @@ export default function LoginForm({ isAdminView, onSuccess }) {
 
   return (
     <div className="container d-flex justify-content-center my-3 align-items-center" style={{ minHeight: "50vh" }}>
-      <div className="card shadow-lg p-4 border-0 rounded-4 w-100" style={{ maxWidth: "400px" }}>
+      <div className="card p-4 border-0 rounded-4 w-100" style={{ maxWidth: "400px" }}>
         <h3 className="text-center fw-bold mb-4">
           {isForgot ? "Reset Password" : isSignup ? `${isAdminView ? "Admin" : "Student"} Signup` : `${isAdminView ? "Admin" : "Student"} Login`}
         </h3>

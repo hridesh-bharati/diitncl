@@ -22,7 +22,7 @@ const Team = () => {
         <h2 className="fw-bold mb-4">Meet Our <span className="text-primary">Experts</span></h2>
         <div className="row g-3">
           {team.map((m, i) => (
-            <div className="col-6 col-md-3" key={i}>
+            <div className="col-12 col-md-3" key={i}>
               <div className="card h-100 border-0 shadow-sm rounded-4 t-card bg-white overflow-hidden p-3">
                 <div className="mx-auto mb-2 rounded-circle p-1" style={{ background: m.g, width: 80, height: 80 }}>
                   <img src={m.i} alt="" className="rounded-circle w-100 h-100 border border-2 border-white object-fit-cover" />
