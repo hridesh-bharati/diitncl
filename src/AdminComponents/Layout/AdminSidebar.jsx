@@ -4,6 +4,7 @@ import "./AdminSidebar.css";
 
 const MENU_ITEMS = [
   { path: "/admin", label: "Dashboard", icon: "bi-grid-1x2-fill", end: true },
+  { path: "/admin/students", label: "New Admissions", icon: "bi-person-fill" },
   { path: "/admin/admitted-student-list", label: "Admitted", icon: "bi-shield-check" },
 
   { path: "/admin/gallery", label: "Upload Media", icon: "bi-cloud-arrow-up-fill" },
@@ -115,15 +116,7 @@ export default function AdminSidebar({ open, setOpen }) {
                   data-bs-parent="#studentAccordion"
                 >
                   <div className="accordion-body p-2">
-
-                    <NavLink
-                      to="/admin/students"
-                      className="nav-link small px-3 py-2 rounded-3"
-                      onClick={handleClose}
-                    >
-                     New Admissions
-                    </NavLink>
-
+ 
                     <NavLink
                       to="/admin/students/attendance"
                       className="nav-link small px-3 py-2 rounded-3"
