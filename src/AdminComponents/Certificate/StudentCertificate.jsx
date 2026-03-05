@@ -137,7 +137,7 @@ const StudentInfoSection = ({ student, courseData, grade }) => (
         <p className="certificate-awarded-to d-inline pt-2">
             <span className="certificate-body-text">This certificate is awarded to Mr/Miss</span>
             <span className="certificate-name text-uppercase">
-                {" "}{student.name} S/O {student.fatherName || "FATHER_NAME"}
+                {student.name} {student.gender === "Female" ? "D/O" : "S/O"} {student.fatherName || ""}
             </span>
         </p>
         <p className="p-0 m-0">
