@@ -2,77 +2,77 @@ import React, { useRef, useEffect, useState } from 'react';
 
 const base = "images/cardslider";
 const slides = ["android.avif", "ehack.avif", "cpp.avif", "office.avif", "js.avif", "coding.avif", "ai.avif", "tail.avif", "ppt.avif", "python.avif", "ai1.avif", "ps1.avif"];
-const SLIDE_WIDTH = 200; // Slide width + gap
+const SLIDE_WIDTH = 195; // 180px width + 15px gap
 
 export default function CardSlider() {
   const sliderRef = useRef(null);
   const [activeDot, setActiveDot] = useState(0);
 
-  // Auto-play logic
+  // Reusable scroll function
+  const scrollTo = (index) => {
+    sliderRef.current?.scrollTo({ left: index * SLIDE_WIDTH, behavior: 'smooth' });
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       if (!sliderRef.current) return;
-      
       const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
       
-      // Infinite Loop Check: Agar end ke paas pahunch gaye toh smoothly reset
-      if (scrollLeft + clientWidth >= scrollWidth - 50) {
-        sliderRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        sliderRef.current.scrollBy({ left: SLIDE_WIDTH, behavior: 'smooth' });
-      }
-    }, 2000);
-
+      // Reset if at end, else scroll next
+      const nextPos = (scrollLeft + clientWidth >= scrollWidth - 10) ? 0 : scrollLeft + SLIDE_WIDTH;
+      sliderRef.current.scrollTo({ left: nextPos, behavior: 'smooth' });
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
 
-  // Update Dot on scroll (Manual or Auto)
-  const syncDot = (e) => {
+  const onScroll = (e) => {
     const index = Math.round(e.target.scrollLeft / SLIDE_WIDTH) % slides.length;
-    setActiveDot(index);
+    if (activeDot !== index) setActiveDot(index);
+  };
+
+  // Common Styles to keep JSX clean (DRY)
+  const cardStyle = {
+    flex: '0 0 180px',
+    height: '130px',
+    borderRadius: '14px',
+    overflow: 'hidden',
+    boxShadow: '0 6px 14px rgba(0,0,0,0.08)',
+    background: '#fff',
+    scrollSnapAlign: 'start'
   };
 
   return (
-    <div className="py-3" style={{ width: '100%', overflow: 'hidden' }}>
-      {/* Slider Container */}
+    <div className="py-3 w-100 overflow-hidden container">
+      <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+      
       <div 
         ref={sliderRef}
-        onScroll={syncDot}
-        className="hide-scrollbar"
-        style={{
-          display: 'flex',
-          gap: '15px',
-          overflowX: 'auto',
-          scrollSnapType: 'x mandatory',
-          scrollBehavior: 'smooth',
-          padding: '10px 15px'
-        }}
+        onScroll={onScroll}
+        className="hide-scrollbar d-flex"
+        style={{ gap: '15px', overflowX: 'auto', scrollSnapType: 'x mandatory', scrollBehavior: 'smooth', padding: '10px 15px' }}
       >
-        <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
-        
+        {/* Infinite mapping logic optimized */}
         {[...slides, ...slides].map((img, i) => (
-          <div key={i} style={{ flex: '0 0 180px', scrollSnapAlign: 'start' }}>
-            <div style={{
-              height: '130px', borderRadius: '14px', overflow: 'hidden',
-              boxShadow: '0 6px 14px rgba(0,0,0,0.08)', background: '#fff'
-            }}>
-              <img src={`${base}/${img}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-            </div>
+          <div key={i} style={cardStyle}>
+            <img src={`${base}/${img}`} alt="" className="w-100 h-100 object-fit-cover" loading="lazy" />
           </div>
         ))}
       </div>
 
-      {/* Dots */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
+      {/* Optimized Dots Section */}
+      <div className="d-flex justify-content-center gap-2 mt-3">
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => sliderRef.current?.scrollTo({ left: i * SLIDE_WIDTH, behavior: 'smooth' })}
+            onClick={() => scrollTo(i)}
+            className="border-0 p-0"
             style={{
               width: i === activeDot ? '28px' : '10px',
-              height: '6px', borderRadius: '6px', border: 'none',
+              height: '6px', 
+              borderRadius: '6px',
               background: i === activeDot ? '#001297' : '#d1d5db',
-              transition: '0.3s', cursor: 'pointer', padding: 0
+              transition: '0.3s', 
+              cursor: 'pointer'
             }}
           />
         ))}

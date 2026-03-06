@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore"; // Imports added
+import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 
@@ -12,20 +12,20 @@ const InfoRow = ({ label, value, isEditing, onChange, type = "text", icon, color
   <div className="col-12 col-md-6 mb-3">
     <div className="d-flex align-items-center p-2 rounded-4">
       {icon && (
-        <div className="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" 
-             style={{ width: '45px', height: '45px', backgroundColor: `${color}15`, border: `1px solid ${color}35` }}>
+        <div className="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
+          style={{ width: '45px', height: '45px', backgroundColor: `${color}15`, border: `1px solid ${color}35` }}>
           <i className={`bi ${icon} fs-5`} style={{ color }}></i>
         </div>
       )}
       <div className="flex-grow-1">
         <small className="text-muted d-block fw-bold text-uppercase" style={{ fontSize: '10px' }}>{label}</small>
         {isEditing ? (
-          <input 
-            type={type} 
-            className="form-control form-control-sm border-0 bg-white mt-1 shadow-none" 
+          <input
+            type={type}
+            className="form-control form-control-sm border-0 bg-white mt-1 shadow-none"
             style={{ backgroundColor: 'rgba(255,255,255,0.8)', borderBottom: `2px solid ${color}` }}
-            value={value || ""} 
-            onChange={(e) => onChange(e.target.value)} 
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
           />
         ) : (
           <span className="fw-bold text-dark">{safe(value)}</span>
@@ -41,11 +41,11 @@ const StatBox = ({ label, value, icon, colorClass, isEditing, onChange, type = "
       <i className={`bi ${icon} ${colorClass} fs-4 mb-1 d-block`}></i>
       <small className="text-muted fw-bold d-block" style={{ fontSize: '9px' }}>{label}</small>
       {isEditing ? (
-        <input 
-          type={type} 
-          className="form-control form-control-sm mt-1 border-0 text-center bg-white p-0 shadow-none small" 
-          value={value || ""} 
-          onChange={(e) => onChange(e.target.value)} 
+        <input
+          type={type}
+          className="form-control form-control-sm mt-1 border-0 text-center bg-white p-0 shadow-none small"
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
         />
       ) : (
         <span className="fw-bold text-dark small">{safe(value)}</span>
@@ -66,7 +66,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => { if (student) setFormData(student); }, [student]);
-  
+
   useEffect(() => {
     return () => { if (formData.photoUrl?.startsWith('blob:')) URL.revokeObjectURL(formData.photoUrl); };
   }, [formData.photoUrl]);
@@ -90,7 +90,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
       setIsSaving(true);
       let updatedData = { ...formData };
 
-      // 🔥 Duplicate RegNo Check
       if (formData.regNo && formData.regNo !== student.regNo) {
         const q = query(collection(db, "admissions"), where("regNo", "==", formData.regNo.trim()));
         const snap = await getDocs(q);
@@ -136,7 +135,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
   );
 
   const fields = [
-    { label: "Registration No", key: "regNo", icon: "bi-card-list", color: "#000000" }, // Added here
+    { label: "Registration No", key: "regNo", icon: "bi-card-list", color: "#000000" },
     { label: "Father Name", key: "fatherName", icon: "bi-person-badge-fill", color: "#3F51B5" },
     { label: "Mother Name", key: "motherName", icon: "bi-person-badge-fill", color: "#E91E63" },
     { label: "Mobile", key: "mobile", icon: "bi-telephone-fill", color: "#4CAF50" },
@@ -150,6 +149,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
 
   return (
     <div className="win11-bg min-vh-100 pb-5 p-lg-2">
+      {/* HEADER SECTION */}
       <div className="glass-panel p-3 d-flex align-items-center justify-content-between mx-2 shadow-sm border-0 bg-white bg-opacity-75" style={{ backdropFilter: 'blur(10px)', borderRadius: '15px' }}>
         <div className="d-flex align-items-center">
           <button className="btn btn-light rounded-circle p-2 me-3 border-0 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '35px', height: '35px' }} onClick={() => navigate(-1)}>
@@ -175,10 +175,10 @@ const ProfileContent = ({ admissions, loading, error }) => {
         {/* HERO CARD */}
         <div className="glass-card p-4 mb-4 border-0 text-center bg-white bg-opacity-50 rounded-4 shadow-sm">
           <div className="position-relative d-inline-block mx-auto mb-3">
-            <img src={formData.photoUrl || `https://ui-avatars.com/api/?name=${formData.name}&background=000075&color=fff&bold=true`} 
-                 className="rounded-circle border border-4 border-white shadow-lg" 
-                 style={{ width: 130, height: 130, objectFit: "cover" }} 
-                 alt="Avatar" />
+            <img src={formData.photoUrl || `https://ui-avatars.com/api/?name=${formData.name}&background=000075&color=fff&bold=true`}
+              className="rounded-circle border border-4 border-white shadow-lg"
+              style={{ width: 130, height: 130, objectFit: "cover" }}
+              alt="Avatar" />
             {isEditing && (
               <label htmlFor="pInp" className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 border border-2 border-white shadow" style={{ cursor: "pointer", width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <i className="bi bi-camera-fill"></i>
@@ -189,12 +189,33 @@ const ProfileContent = ({ admissions, loading, error }) => {
           <h3 className="fw-bold mb-1" style={{ color: "rgb(0, 0, 117)" }}>{safe(formData.name)}</h3>
           <p className="text-secondary fw-medium fs-5 mb-3">{safe(formData.course)}</p>
           <div className="d-flex justify-content-center gap-2">
-            {/* Displaying Real-time RegNo update */}
             <span className="badge rounded-pill bg-primary px-3 py-2 shadow-sm">ID: {safe(formData.regNo)}</span>
             <span className="badge rounded-pill bg-white text-dark border px-3 py-2 shadow-sm">{safe(formData.status)}</span>
           </div>
         </div>
 
+        {/* GET CERTIFICATE BUTTON */}
+        <div className="mb-4">
+          <button
+            className="btn btn-dark w-100 py-3 rounded-4 shadow-sm border-0 d-flex align-items-center justify-content-center gap-2"
+            disabled={formData.certificateDisabled}
+            onClick={() => navigate(`/admin/students/${id}/certificate`)}
+            style={{
+              background: formData.certificateDisabled
+                ? '#e9ecef'
+                : 'linear-gradient(45deg, #1e3a8a, #3b82f6)',
+              color: formData.certificateDisabled ? '#adb5bd' : '#fff',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <i className={`bi ${formData.certificateDisabled ? 'bi-lock-fill' : 'bi-patch-check-fill'} fs-5`}></i>
+            <span className="fw-bold">
+              {formData.certificateDisabled ? 'CERTIFICATE PORTAL LOCKED' : 'VIEW STUDENT CERTIFICATE'}
+            </span>
+          </button>
+        </div>
+
+        {/* STATS SECTION */}
         <div className="row g-3 mb-4">
           <StatBox label="PERCENTAGE" value={formData.percentage} icon="bi-graph-up-arrow" colorClass="text-success" isEditing={isEditing} onChange={(val) => handleChange("percentage", val)} />
           <StatBox label="ADMISSION" value={formData.admissionDate} icon="bi-calendar-check" colorClass="text-primary" isEditing={isEditing} onChange={(val) => handleChange("admissionDate", val)} type="date" />
@@ -216,40 +237,53 @@ const ProfileContent = ({ admissions, loading, error }) => {
             {["village", "post", "thana", "city", "state", "pincode"].map((key) => (
               <div className="col-6 col-md-4" key={key}>
                 <small className="text-muted d-block fw-bold text-uppercase" style={{ fontSize: '9px' }}>{key}</small>
-                {isEditing ? 
-                  <input className="form-control form-control-sm border-0 bg-white mt-1 p-1 shadow-none" value={formData[key] || ""} onChange={(e) => handleChange(key, e.target.value)} /> 
+                {isEditing ?
+                  <input className="form-control form-control-sm border-0 bg-white mt-1 p-1 shadow-none" value={formData[key] || ""} onChange={(e) => handleChange(key, e.target.value)} />
                   : <span className="fw-bold text-dark small">{safe(formData[key])}</span>
                 }
               </div>
             ))}
             <div className="col-12 mt-3 pt-3 border-top">
               <small className="text-muted d-block fw-bold text-uppercase" style={{ fontSize: '9px' }}>Full Address</small>
-              {isEditing ? 
-                <textarea rows={2} className="form-control border-0 bg-white mt-1 shadow-none" value={formData.address || ""} onChange={(e) => handleChange("address", e.target.value)} /> 
+              {isEditing ?
+                <textarea rows={2} className="form-control border-0 bg-white mt-1 shadow-none" value={formData.address || ""} onChange={(e) => handleChange("address", e.target.value)} />
                 : <p className="small text-dark fw-medium mb-0 mt-1">{safe(formData.address)}</p>
               }
             </div>
           </div>
         </div>
 
+        {/* PORTAL ACCESS CONTROL */}
         <div className="glass-card p-3 mb-5 border-0 shadow-sm bg-white bg-opacity-50 rounded-4">
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center">
-              <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-danger text-success'}`}>
+              <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'}`}>
                 <i className={`bi ${formData.certificateDisabled ? 'bi-shield-slash' : 'bi-shield-check'} fs-4`}></i>
               </div>
               <div>
                 <h6 className="fw-bold mb-0">Certificate Portal</h6>
-                <small className="text-muted">{formData.certificateDisabled ? 'Locked' : 'Active'}</small>
+                <small className="text-muted">{formData.certificateDisabled ? 'Locked (Access Denied)' : 'Active (Access Granted)'}</small>
               </div>
             </div>
             <div className="form-check form-switch fs-3">
-              <input className="form-check-input shadow-none" type="checkbox" role="switch" checked={!formData.certificateDisabled} onChange={async () => {
-                const ns = !formData.certificateDisabled;
-                await updateDoc(doc(db, "admissions", student.id), { certificateDisabled: ns });
-                setFormData(p => ({ ...p, certificateDisabled: ns }));
-                toast.info("Status Updated");
-              }} />
+              <input
+                className="form-check-input shadow-none"
+                type="checkbox"
+                role="switch"
+                checked={!formData.certificateDisabled}
+                onChange={async () => {
+                  const newState = !formData.certificateDisabled;
+                  try {
+                    await updateDoc(doc(db, "admissions", student.id), {
+                      certificateDisabled: newState
+                    });
+                    setFormData(p => ({ ...p, certificateDisabled: newState }));
+                    toast.info(newState ? "Certificate Disabled" : "Certificate Enabled");
+                  } catch (err) {
+                    toast.error("Update failed");
+                  }
+                }}
+              />
             </div>
           </div>
         </div>

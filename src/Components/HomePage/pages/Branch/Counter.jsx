@@ -1,100 +1,57 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const statsData = [
-  { value: 1500, suffix: "+", label: "Students Trained", bg: "#EEF2FF", color: "#4338CA" },
-  { value: 95, suffix: "%", label: "Placement Rate", bg: "#ECFDF5", color: "#047857" },
-  { value: 20, suffix: "+", label: "Industry Partners", bg: "#E0F2FE", color: "#0369A1" },
-  { value: 15, suffix: "+", label: "Certified Courses", bg: "#FEF2F2", color: "#B91C1C" },
-  { value: 10, suffix: "+", label: "Faculties", bg: "#FFF7ED", color: "#C2410C" },
-  { value: 4.9, suffix: "★", label: "Rating", isFloat: true, bg: "#FAF5FF", color: "#7C3AED" }
+const stats = [
+  { val: 1500, suf: "+", lbl: "Students", bg: "primary" },
+  { val: 95, suf: "%", lbl: "Placement", bg: "success" },
+  { val: 20, suf: "+", lbl: "Partners", bg: "info" },
+  { val: 15, suf: "+", lbl: "Courses", bg: "danger" },
+  { val: 10, suf: "+", lbl: "Faculties", bg: "warning" },
+  { val: 4.9, suf: "★", lbl: "Rating", bg: "secondary", isF: true }
 ];
 
-function useCountUp(target, isFloat, start) {
-  const [count, setCount] = useState(0);
+export default function Counter() {
+  const [counts, setCounts] = useState(stats.map(() => 0));
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
-    if (!start) return;
-
-    let current = 0;
-    const end = Number(target);
-    const step = end / 60;
-
-    const timer = setInterval(() => {
-      current += step;
-      if (current >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(isFloat ? current.toFixed(1) : Math.floor(current));
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, [target, isFloat, start]);
-
-  return count;
-}
-
-function useInView(ref) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => e.isIntersecting && setVisible(true),
-      { threshold: 0.4 }
-    );
-    ref.current && obs.observe(ref.current);
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setInView(true), { threshold: 0.5 });
+    if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
-  return visible;
-}
+  useEffect(() => {
+    if (!inView) return;
+    const duration = 1500;
+    const steps = 30;
+    const interval = duration / steps;
 
-export default function Counter() {
+    const timer = setInterval(() => {
+      setCounts(prev => prev.map((c, i) => {
+        if (c < stats[i].val) {
+          const inc = stats[i].val / steps;
+          return Math.min(c + inc, stats[i].val);
+        }
+        return c;
+      }));
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [inView]);
+
   return (
-    <div className="container my-4">
-      <div className="row g-3 justify-content-center">
-        {statsData.map((item) => {
-          const ref = useRef(null);
-          const inView = useInView(ref);
-          const count = useCountUp(item.value, item.isFloat, inView);
-
-          return (
-            <div
-              key={item.label}
-              ref={ref}
-              className="col-6 col-md-4 col-lg-2"
-              style={{
-                transform: inView ? "translateY(0)" : "translateY(20px)",
-                opacity: inView ? 1 : 0,
-                transition: "0.4s ease"
-              }}
-            >
-              <div
-                className="rounded-4 text-center p-3 h-100"
-                style={{
-                  background: item.bg,
-                  boxShadow: "0 6px 18px rgba(0,0,0,.08)"
-                }}
-              >
-                <h3
-                  className="fw-bold mb-1"
-                  style={{
-                    color: item.color,
-                    textShadow: "0 2px 6px rgba(0,0,0,.15)"
-                  }}
-                >
-                  {count}
-                  <span className={item.suffix === "★" ? "ms-1 text-warning" : ""}>
-                    {item.suffix}
-                  </span>
-                </h3>
-
-                <small className="text-muted">{item.label}</small>
-              </div>
+    <div className="container py-2" ref={ref}>
+      <div className="row g-2 g-md-3">
+        {stats.map((s, i) => (
+          <div key={i} className="col-4 col-md-2">
+            <div className={`p-3 text-center rounded-4 shadow-sm bg-white border-bottom border-4 border-${s.bg}`}>
+              <h3 className={`fw-bold mb-0 text-${s.bg} h4`}>
+                {s.isF ? counts[i].toFixed(1) : Math.floor(counts[i])}{s.suf}
+              </h3>
+              <div className="text-muted" style={{fontSize: '10px'}}>{s.lbl}</div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

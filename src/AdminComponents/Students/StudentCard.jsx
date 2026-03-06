@@ -1,5 +1,5 @@
-// src/AdminComponents/Admissions/StudentCard.jsx
-import React, { useState, useEffect } from "react";
+// src\AdminComponents\Students\StudentCard.jsx
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
@@ -21,62 +21,69 @@ const BRANCH_DISPLAY = {
 const StudentCard = React.memo(({ student, onSave, onDelete }) => {
   const { isAdmin } = useAuth();
 
+  // States
   const [regNumber, setRegNumber] = useState("");
   const [percent, setPercent] = useState("");
   const [issDate, setIssDate] = useState("");
   const [admissionDate, setAdmissionDate] = useState("");
   const [loading, setLoading] = useState(false);
-  const [checkingDuplicate, setCheckingDuplicate] = useState(false);
   const [isDuplicate, setIsDuplicate] = useState(false);
-  const [isValidDigit, setIsValidDigit] = useState(false);
   const [editingRegNo, setEditingRegNo] = useState(false);
+  const [showRegInput, setShowRegInput] = useState(false); 
+  const [isEditingFinal, setIsEditingFinal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false); // Naya state for Reject confirmation
+
+  // --- STRICT STATUS LOGIC ---
+  const status = useMemo(() => {
+    if (student.status === "canceled") return "canceled";
+    if (student.regNo && student.issueDate) return "done";
+    if (student.regNo) return "accepted";
+    return "pending";
+  }, [student.status, student.regNo, student.issueDate]);
+
+  const isPending = status === "pending";
+  const isAccepted = status === "accepted";
+  const isDone = status === "done";
+  const isCanceled = status === "canceled";
+
+  const studentBranch = student.branch || student.centerCode;
+  const studentCourse = student.course || "General";
+  const isValidDigit = /^\d{1,8}$/.test(regNumber.trim());
+
+  const avatarUrl = useMemo(() => {
+    if (student.photoUrl) return student.photoUrl;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || "Student")}&background=random&length=2`;
+  }, [student.photoUrl, student.name]);
 
   useEffect(() => {
     setPercent(student.percentage ?? "");
     setIssDate(student.issueDate || "");
     setAdmissionDate(student.admissionDate || "");
-    
-    // Feature: Extract existing regNo for editing
-    if (student.regNo) {
-      const parts = student.regNo.split("/");
-      setRegNumber(parts[parts.length - 1]);
-    } else {
-      setRegNumber("");
-    }
-    setIsDuplicate(false);
+    setRegNumber(student.regNo ? student.regNo.split("/").pop() : "");
     setEditingRegNo(false);
+    setShowRegInput(false); 
+    setIsEditingFinal(false);
+    setIsDuplicate(false);
+    setShowDeleteConfirm(false);
+    setShowRejectConfirm(false); // Reset reject confirm on student change
   }, [student]);
 
-  const status = student.status || "pending";
-  const isAccepted = status === "accepted";
-  const isDone = status === "done";
-  const studentBranch = student.branch || student.centerCode;
-  const studentCourse = student.course;
-
-  useEffect(() => {
-    setIsValidDigit(/^\d+$/.test(regNumber.trim()));
-  }, [regNumber]);
-
-  // Feature: Duplicate Check logic across the same branch
-  const checkDuplicateRegNo = async (branch, regNum) => {
+  const checkDuplicateRegNo = useCallback(async (branch, regNum) => {
     if (!branch || !regNum) return false;
-    const q = query(collection(db, "admissions"), where("regNo", "!=", null));
-    const snapshot = await getDocs(q);
-
-    let duplicate = false;
-    snapshot.docs.forEach(doc => {
-      if (doc.id === student.id) return; // Ignore current student
-      const data = doc.data();
-      const existingRegNo = data.regNo;
-      const existingBranch = data.branch || data.centerCode;
-
-      if (existingRegNo && existingBranch === branch) {
-        // Match only the numeric part at the end
-        if (existingRegNo.endsWith(`/${regNum}`)) duplicate = true;
+    try {
+      const q = query(collection(db, "admissions"), where("branch", "==", branch));
+      const snapshot = await getDocs(q);
+      for (const doc of snapshot.docs) {
+        if (doc.id === student.id) continue;
+        const existingRegNo = doc.data().regNo;
+        if (existingRegNo && existingRegNo.endsWith(`/${regNum}`)) return true;
       }
-    });
-    return duplicate;
-  };
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }, [student.id]);
 
   useEffect(() => {
     const check = async () => {
@@ -84,34 +91,24 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
         setIsDuplicate(false);
         return;
       }
-      setCheckingDuplicate(true);
       const duplicate = await checkDuplicateRegNo(studentBranch, regNumber.trim());
       setIsDuplicate(duplicate);
-      setCheckingDuplicate(false);
     };
-
     const timer = setTimeout(check, 600);
     return () => clearTimeout(timer);
-  }, [regNumber, studentBranch, isValidDigit]);
+  }, [regNumber, studentBranch, isValidDigit, checkDuplicateRegNo]);
 
-  const handleGenerateRegNo = async () => {
-    if (!isAdmin) return toast.error("Admin only");
-    if (!isValidDigit) return toast.error("Digits only");
-    if (isDuplicate) return toast.error("Reg No already in use");
+  const handleApproveClick = () => {
+    setShowRegInput(true);
+  };
 
+  const handleStatusChange = async (newStatus) => {
+    if (!isAdmin) return;
     setLoading(true);
     try {
-      const courseCode = studentCourse.replace(/\s+/g, "").toUpperCase();
-      const finalRegNo = `${studentBranch}/${courseCode}/${regNumber.trim()}`;
-
-      await onSave(student.id, {
-        regNo: finalRegNo,
-        branch: studentBranch,
-        centerCode: studentBranch
-      });
-
-      toast.success("Registration Saved");
-      setEditingRegNo(false);
+      await onSave(student.id, { status: newStatus });
+      toast.success(`Application ${newStatus}`);
+      setShowRejectConfirm(false);
     } catch {
       toast.error("Update failed");
     } finally {
@@ -119,22 +116,31 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
     }
   };
 
-  const handleStatusChange = async newStatus => {
-    if (!isAdmin) return;
+  const handleGenerateRegNo = async () => {
+    if (!isAdmin || !isValidDigit || isDuplicate) return;
     setLoading(true);
     try {
-      await onSave(student.id, { status: newStatus });
-      toast.success(`Status updated to ${newStatus}`);
+      const courseCode = (studentCourse || "CRS").toString().replace(/\s+/g, "").toUpperCase().slice(0, 10);
+      await onSave(student.id, {
+        regNo: `${studentBranch}/${courseCode}/${regNumber.trim()}`,
+        status: "accepted" 
+      });
+      toast.success("Application Approved & Reg No Saved");
+      setEditingRegNo(false);
+      setShowRegInput(false);
     } catch {
-      toast.error("Error updating status");
+      toast.error("Failed to save Reg No");
     } finally {
       setLoading(false);
     }
   };
 
   const handleMarkDone = async () => {
-    if (!isAdmin) return;
-    if (!student.regNo) return toast.warning("Assign Reg No first");
+    if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) return;
+    if (Number(percent) < 0 || Number(percent) > 100) {
+      toast.error("Please enter a valid percentage (0-100)");
+      return;
+    }
     setLoading(true);
     try {
       await onSave(student.id, {
@@ -143,9 +149,22 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
         admissionDate,
         issueDate: issDate
       });
-      toast.success("Admission Completed!");
+      toast.success(isEditingFinal ? "Details Updated!" : "Admission Finalized!");
+      setIsEditingFinal(false);
     } catch {
-      toast.error("Error marking as done");
+      toast.error("Action failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await onDelete(student.id);
+      toast.success("Deleted");
+    } catch {
+      toast.error("Delete failed");
     } finally {
       setLoading(false);
     }
@@ -157,134 +176,121 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
         <div style={{ height: "6px", background: `linear-gradient(90deg, ${STATUS_COLORS[status]}, #6366f1)` }} />
 
         <div className="card-body p-3">
-          {/* 1. Header with Photo and Status */}
+          {/* Header */}
           <div className="d-flex align-items-center gap-3 mb-3">
-            <img
-              src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}&background=random`}
-              alt=""
-              style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "18px" }}
-            />
-            <div className="flex-grow-1">
-              <h6 className="fw-bold mb-0 text-truncate" style={{ maxWidth: "150px" }}>{student.name}</h6>
-              <small className="text-muted d-block">{student.course}</small>
+            <img src={avatarUrl} alt="" style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "18px" }} />
+            <div className="flex-grow-1" style={{ minWidth: 0 }}>
+              <h6 className="fw-bold mb-0 text-truncate">{student.name}</h6>
+              <small className="text-muted d-block text-truncate">{studentCourse}</small>
             </div>
             <span style={{ background: STATUS_COLORS[status], color: "#fff", padding: "4px 10px", borderRadius: "12px", fontSize: "11px", fontWeight: "600" }}>
               {status.toUpperCase()}
             </span>
           </div>
 
-          {/* 2. Branch and NEW Feature: Reg No Display with Edit Button */}
+          {/* Badges */}
           <div className="d-flex flex-wrap gap-2 mb-3">
             <span className="badge bg-light text-primary border rounded-pill px-3 py-2">
               <i className="bi bi-geo-alt me-1"></i>
               {BRANCH_DISPLAY[studentBranch] || studentBranch}
             </span>
-            
             {student.regNo && (
               <span className="badge bg-light text-dark border rounded-pill px-3 py-2 d-flex align-items-center">
                 <i className="bi bi-card-text me-1"></i>
                 <strong className="ms-1">{student.regNo}</strong>
-                {isAdmin && !isDone && (
-                  <i 
-                    className="bi bi-pencil-square ms-2 text-primary" 
-                    onClick={() => setEditingRegNo(!editingRegNo)}
-                    style={{ cursor: 'pointer', fontSize: '1.1rem' }}
-                    title="Edit Registration Number"
-                  ></i>
+                {isAdmin && !isDone && !isCanceled && (
+                  <i className="bi bi-pencil-square ms-2 text-primary" onClick={() => setEditingRegNo(true)} style={{ cursor: 'pointer' }}></i>
                 )}
               </span>
             )}
           </div>
 
-          {/* 3. NEW Feature: Assign/Edit Reg No Section */}
-          {( (isAccepted && !student.regNo) || editingRegNo ) && (
-            <div className="bg-light p-3 rounded-4 mb-3 border">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <label className="small fw-bold text-secondary">
-                  {editingRegNo ? "Edit Registration" : "Assign Registration"}
-                </label>
-                {editingRegNo && <button className="btn-close" style={{ fontSize: '0.7rem' }} onClick={() => setEditingRegNo(false)}></button>}
-              </div>
+          {/* 1. PENDING Section */}
+          {isPending && isAdmin && !showRegInput && (
+            <div className="mt-2 d-flex gap-2 border-top pt-3">
+              <button className="btn btn-success flex-grow-1 fw-bold" onClick={handleApproveClick} disabled={loading}>APPROVE</button>
               
-              <div className="input-group mb-1 shadow-sm rounded-3 overflow-hidden">
-                <input
-                  type="text"
-                  className={`form-control border-0 ${isDuplicate ? 'is-invalid' : ''}`}
-                  style={{ background: "#fff" }}
-                  value={regNumber}
-                  placeholder="Enter reg no..."
-                  onChange={e => setRegNumber(e.target.value.replace(/[^0-9]/g, ""))}
-                />
+              {!showRejectConfirm ? (
+                <button className="btn btn-outline-danger flex-grow-1" onClick={() => setShowRejectConfirm(true)} disabled={loading}>REJECT</button>
+              ) : (
+                <div className="flex-grow-1 d-flex gap-1 animate__animated animate__fadeIn">
+                  <button className="btn btn-danger flex-grow-1 btn-sm fw-bold" onClick={() => handleStatusChange("canceled")} disabled={loading}>CONFIRM REJECT?</button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setShowRejectConfirm(false)} disabled={loading}>✕</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 2. REGISTRATION INPUT */}
+          {((isPending && showRegInput) || (isAccepted && (!student.regNo || editingRegNo))) && (
+            <div className="bg-light p-3 rounded-4 mb-3 border border-success">
+              <div className="d-flex justify-content-between mb-2">
+                <label className="small fw-bold text-success">Assign Registration Number</label>
+                {(editingRegNo || showRegInput) && <button className="btn-close" onClick={() => {setEditingRegNo(false); setShowRegInput(false);}}></button>}
               </div>
-
-              {/* Real-time Validation UI */}
-              {checkingDuplicate && <small className="text-muted d-block mb-2">Checking...</small>}
-              {isDuplicate && <small className="text-danger d-block mb-2 fw-bold">⚠️ Already taken in this branch!</small>}
-              {!isDuplicate && regNumber && isValidDigit && <small className="text-success d-block mb-2 fw-bold">✅ Available</small>}
-
-              <button
-                className="btn w-100 btn-primary btn-sm fw-bold py-2 mt-1"
-                style={{ borderRadius: "10px" }}
-                onClick={handleGenerateRegNo}
-                disabled={loading || !isValidDigit || isDuplicate}
-              >
-                {loading ? "Saving..." : editingRegNo ? "Update Reg No" : "Generate Reg No"}
+              <input type="text" className={`form-control mb-2 ${isDuplicate ? 'is-invalid' : ''}`} value={regNumber} placeholder="Enter 1-8 digits" onChange={e => setRegNumber(e.target.value.replace(/[^0-9]/g, "").slice(0, 8))} />
+              {isDuplicate && <small className="text-danger d-block mb-2">Number already taken!</small>}
+              <button className="btn btn-success w-100" onClick={handleGenerateRegNo} disabled={loading || !isValidDigit || isDuplicate}>
+                {isPending ? "CONFIRM APPROVAL" : "UPDATE REG NO"}
               </button>
             </div>
           )}
 
-          {/* 4. Mark Done Section */}
-          {isAccepted && !isDone && student.regNo && !editingRegNo && (
-            <button
-              className="btn w-100 mb-3 fw-bold text-white py-2 shadow-sm"
-              style={{ borderRadius: "12px", background: "linear-gradient(135deg,#22c55e,#16a34a)" }}
-              onClick={handleMarkDone}
-              disabled={loading}
-            >
-              MARK AS DONE
-            </button>
-          )}
-
-          {isDone && (
-            <div className="text-center bg-info bg-opacity-10 p-2 rounded-3 mb-3 border border-info border-opacity-25">
-              <span className="text-info fw-bold small">✨ Admission Process Complete</span>
+          {/* 3. ACCEPTED - Finalize Admission */}
+          {isAccepted && student.regNo && !editingRegNo && !showRegInput && (
+            <div className="bg-light p-3 rounded-4 mb-3 border border-primary border-opacity-25">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h6 className="fw-bold mb-0 text-primary">{isEditingFinal ? "Edit Final Details" : "Finalize Admission"}</h6>
+                {isEditingFinal && <button className="btn-close" onClick={() => setIsEditingFinal(false)}></button>}
+              </div>
+              <input type="number" className="form-control mb-2" placeholder="Percentage (%)" value={percent} onChange={(e) => setPercent(e.target.value)} max="100" />
+              <div className="mb-2">
+                <label className="small text-muted">Admission Date</label>
+                <input type="date" className="form-control" value={admissionDate} onChange={(e) => setAdmissionDate(e.target.value)} />
+              </div>
+              <div className="mb-3">
+                <label className="small text-muted">Issue Date</label>
+                <input type="date" className="form-control" value={issDate} onChange={(e) => setIssDate(e.target.value)} />
+              </div>
+              <button className="btn btn-success w-100 fw-bold" onClick={handleMarkDone} disabled={loading || !percent || !admissionDate || !issDate}>
+                {isEditingFinal ? "UPDATE DETAILS" : "COMPLETE ADMISSION"}
+              </button>
             </div>
           )}
 
-          {/* 5. Footer Actions (View/Delete) */}
+          {/* 4. DONE Section */}
+          {isDone && !isEditingFinal && (
+            <div className="bg-primary bg-opacity-10 p-3 rounded-4 mb-3 border border-primary border-opacity-25">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="text-primary fw-bold"><i className="bi bi-patch-check-fill me-2"></i>ADMISSION COMPLETE</div>
+                {isAdmin && (
+                  <button className="btn btn-sm btn-outline-primary border-0" onClick={() => setIsEditingFinal(true)}>
+                    <i className="bi bi-pencil-square"></i> Edit
+                  </button>
+                )}
+              </div>
+              <small className="text-muted d-block mt-1">Score: {student.percentage}% | Issue Date: {student.issueDate}</small>
+            </div>
+          )}
+
+          {/* Footer Controls */}
           <div className="d-flex gap-2 pt-2 border-top">
             <Link to={`/admin/students/${student.id}`} className="flex-grow-1">
-              <button className="btn btn-light w-100 fw-semibold rounded-3 py-2 border">View Profile</button>
+              <button className="btn btn-light w-100">View Profile</button>
             </Link>
             {isAdmin && (
-              <button
-                className="btn btn-outline-danger rounded-3"
-                onClick={() => onDelete(student.id)}
-              >
-                <i className="bi bi-trash"></i>
-              </button>
+              <div className="d-flex gap-1">
+                {!showDeleteConfirm ? (
+                  <button className="btn btn-outline-danger" onClick={() => setShowDeleteConfirm(true)}><i className="bi bi-trash"></i></button>
+                ) : (
+                  <>
+                    <button className="btn btn-danger btn-sm" onClick={handleDelete} disabled={loading}>✓</button>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setShowDeleteConfirm(false)}>✗</button>
+                  </>
+                )}
+              </div>
             )}
           </div>
-
-          {/* 6. Approval Buttons (Only for Pending) */}
-          {status === "pending" && isAdmin && (
-            <div className="mt-3 d-flex gap-2">
-              <button
-                className="btn btn-success flex-grow-1 fw-bold rounded-3 py-2"
-                onClick={() => handleStatusChange("accepted")}
-                disabled={loading}
-              >
-                APPROVE
-              </button>
-              <button
-                className="btn btn-outline-danger flex-grow-1 fw-bold rounded-3 py-2"
-                onClick={() => handleStatusChange("canceled")}
-                disabled={loading}
-              >
-                REJECT
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

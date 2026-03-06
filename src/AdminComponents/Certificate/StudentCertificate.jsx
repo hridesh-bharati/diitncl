@@ -361,7 +361,7 @@ export default function StudentCertificate({ student: propStudent }) {
                     <p className="mb-3">No record found with ID: <strong>{id}</strong></p>
                     <p className="mb-4 text-muted small">Check if the ID is correct or the student exists in database</p>
                     <div className="d-flex gap-3 justify-content-center">
-                        <button onClick={() => navigate(-1)} size="lg">
+                        <button className="btn btn-dark" onClick={() => navigate(-1)} size="lg">
                             ← Go Back
                         </button>
                         <button onClick={() => window.location.reload()} size="lg">
@@ -411,11 +411,11 @@ export default function StudentCertificate({ student: propStudent }) {
     return (
         <div className="bg-white min-vh-100">
             <div className="p-3 d-flex justify-content-between border-bottom bg-white no-print">
-                <button onClick={() => navigate(-1)}>
+                <button className="btn btn-secondary btn-sm rounded-pill" onClick={() => navigate(-1)}>
                     ← Back
                 </button>
                 <div className="d-flex">
-                    <button className="btn btn-primary" onClick={downloadPDF}>
+                    <button className="btn btn-primary btn-sm rounded-pill" onClick={downloadPDF}>
                         Download
                     </button>
                 </div>

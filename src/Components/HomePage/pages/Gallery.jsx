@@ -16,192 +16,169 @@ export default function PublicSocialGallery() {
   const { user, isAdmin, isLoggedIn, displayName, photoURL } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [myId, setMyId] = useState("");
   const [comment, setComment] = useState({});
-  const [showUpload, setShowUpload] = useState(false);
-  
-  // Upload States
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState("");
-  const [title, setTitle] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [showComments, setShowComments] = useState({});
+  const [selectedImg, setSelectedImg] = useState(null); // Full size image state
+  const [up, setUp] = useState({ show: false, file: null, preview: "", title: "", loading: false });
 
-  const currentUserId = user?.uid || myId;
+  const currentUserId = user?.uid || (localStorage.getItem("gallery_user_id") || uuidv4());
   const navigate = useNavigate();
 
   useEffect(() => {
-    const id = localStorage.getItem("gallery_user_id") || uuidv4();
-    localStorage.setItem("gallery_user_id", id);
-    setMyId(id);
-
+    localStorage.setItem("gallery_user_id", currentUserId);
     const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(40));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setPosts(snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-        likes: doc.data().likes || [],
-        comments: doc.data().comments || []
-      })));
+    return onSnapshot(q, (s) => {
+      setPosts(s.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoading(false);
     });
-    return () => unsubscribe();
-  }, []);
+  }, [currentUserId]);
 
-  // DELETE POST WITH CONFIRMATION
-  const handleDeletePost = async (postId) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      try {
-        await deleteDoc(doc(db, "galleryImages", postId));
-        toast.success("Post delete ho gayi");
-      } catch (err) {
-        toast.error("Delete fail ho gaya");
-      }
-    }
-  };
+  const updatePost = (id, data) => updateDoc(doc(db, "galleryImages", id), data);
 
   const handleUpload = async () => {
-    if (!file || !title.trim()) return toast.error("File & Title required");
-    setUploading(true);
+    if (!up.file || !up.title.trim()) return toast.error("File & Title required");
+    setUp(p => ({ ...p, loading: true }));
     try {
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", up.file);
       fd.append("upload_preset", "hridesh99!");
       const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { method: "POST", body: fd });
-      const data = await res.json();
-
+      const { secure_url } = await res.json();
       await addDoc(collection(db, "galleryImages"), {
-        url: data.secure_url, title: title.trim(),
-        uploadedBy: displayName || "Guest", uploadedById: currentUserId,
-        userPhoto: photoURL || "", createdAt: serverTimestamp(),
+        url: secure_url, title: up.title.trim(), uploadedBy: displayName || "Admin",
+        uploadedById: currentUserId, userPhoto: photoURL || "", createdAt: serverTimestamp(),
         likes: [], comments: [], downloadCount: 0
       });
-
-      toast.success("Shared!");
-      setShowUpload(false); setFile(null); setTitle(""); setPreview("");
-    } catch (err) { toast.error("Failed!"); } finally { setUploading(false); }
+      setUp({ show: false, file: null, preview: "", title: "", loading: false });
+      toast.success("Uploaded!");
+    } catch (e) { toast.error("Error"); setUp(p => ({ ...p, loading: false })); }
   };
 
-  if (loading) return <p className="my-5 ms-auto p-5 text-center w-100 text-muted">Loading...</p>;
+  if (loading) return <div className="vh-100 d-flex align-items-center justify-content-center text-danger fw-bold">Loading Gallery...</div>;
 
   return (
-    <div className="bg-light min-vh-100 pb-5 mb-5 mb-lg-0">
-      <header className="bg-white border-bottom shadow-sm py-2 px-3 z-index-1000">
+    <div className="bg-light min-vh-100 pb-5">
+      <header className="bg-white border-bottom sticky-top shadow-sm py-3" style={{ zIndex: 1020 }}>
         <div className="container d-flex justify-content-between align-items-center">
-          <h4 className="fw-bold text-danger m-0">Drishtee Feed</h4>
-          {isLoggedIn ? (
-            <button className="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" onClick={() => setShowUpload(true)}>+ Post</button>
-          ) : (
-            <button className="btn btn-primary rounded-pill px-4 fw-bold" onClick={() => navigate("/login")}>Login</button>
-          )}
+          <h4 className="fw-bold text-dark m-0">Drishtee <span className="text-danger">Gallery</span></h4>
+          <button className={`btn btn-${isLoggedIn ? 'danger' : 'outline-danger'} rounded-pill px-4 fw-bold`} 
+            onClick={() => isLoggedIn ? setUp(p => ({ ...p, show: true })) : navigate("/login")}>
+            {isLoggedIn ? "+ Add Photo" : "Login"}
+          </button>
         </div>
       </header>
 
       <main className="container mt-4">
-        <div className="row g-4">
-          {posts.map((post) => (
-            <div key={post.id} className="col-12 col-lg-6">
-              <article className="card border-0 shadow-sm rounded-4 overflow-hidden h-100 bg-white">
-                
-                <div className="p-3 d-flex justify-content-between align-items-center">
-                  <div className="d-flex align-items-center gap-2">
-                    <img src={post.userPhoto || `https://ui-avatars.com/api/?name=${post.uploadedBy}`} className="rounded-circle border" width="35" height="35" alt="" />
-                    <div className="lh-1">
-                      <div className="fw-bold small">{post.uploadedBy}</div>
-                      <small className="text-muted extra-small">{new Date(post.createdAt).toLocaleDateString()}</small>
-                    </div>
-                  </div>
-                  {(isAdmin || post.uploadedById === currentUserId) && (
-                    <button className="btn btn-sm text-danger border-0 p-0" onClick={() => handleDeletePost(post.id)}>
-                      <i className="bi bi-trash3 fs-6"></i>
-                    </button>
-                  )}
-                </div>
+        <div className="row g-4"> 
+          {posts.map((p) => {
+            const isLiked = p.likes?.includes(currentUserId);
+            const commentsOpen = showComments[p.id];
 
-                <div className="bg-dark d-flex align-items-center justify-content-center post-img-container">
-                  <img src={post.url} className="img-fluid" alt={post.title} onDoubleClick={() => {
-                    const ref = doc(db, "galleryImages", post.id);
-                    updateDoc(ref, { likes: post.likes.includes(currentUserId) ? arrayRemove(currentUserId) : arrayUnion(currentUserId) });
-                  }} />
-                </div>
-
-                <div className="p-3">
-                  <h6 className="fw-bold mb-3">{post.title}</h6>
+            return (
+              <div key={p.id} className="col-12 col-md-6 col-lg-4">
+                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
                   
-                  <div className="d-flex align-items-center gap-4 mb-3">
-                    <LikeButton isLiked={post.likes.includes(currentUserId)} count={post.likes.length} onClick={() => {
-                      const ref = doc(db, "galleryImages", post.id);
-                      updateDoc(ref, { likes: post.likes.includes(currentUserId) ? arrayRemove(currentUserId) : arrayUnion(currentUserId) });
-                    }} />
-                    <div className="d-flex align-items-center gap-1 small fw-bold"><i className="bi bi-chat fs-5"></i> {post.comments.length}</div>
-                    <DownloadButton imageUrl={post.url} filename={post.title} />
+                  {/* Photo Section with Tap to View */}
+                  <div 
+                    className="ratio ratio-4x3 bg-dark border-bottom cursor-zoom-in" 
+                    onClick={() => setSelectedImg(p.url)} // Tap to open full screen
+                    onDoubleClick={(e) => {
+                      e.stopPropagation(); // Double click to like (avoids opening full screen twice)
+                      updatePost(p.id, { likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId) });
+                    }}
+                  >
+                    <img src={p.url} className="object-fit-cover w-100 h-100" alt={p.title} />
                   </div>
 
-                  <div className="comments-area mb-3">
-                    {post.comments.slice(-2).map((c) => (
-                      <div key={c.commentId} className="extra-small mb-1 d-flex align-items-start gap-2">
-                        <div className="flex-grow-1 text-break">
-                          <span className="fw-bold me-1 text-dark">{c.userName}:</span>
-                          <span className="text-secondary">{c.text}</span>
+                  <div className="card-body p-3">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <h6 className="fw-bold text-dark mb-0 text-truncate" title={p.title}>{p.title}</h6>
+                      {(isAdmin || p.uploadedById === currentUserId) && (
+                        <button className="btn btn-link text-danger p-0 border-0" onClick={() => window.confirm("Delete?") && deleteDoc(doc(db, "galleryImages", p.id))}>
+                          <i className="bi bi-trash3 small"></i>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                       <img src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}`} className="rounded-circle border" width="24" height="24" alt="" />
+                       <small className="text-muted" style={{fontSize: '11px'}}>{p.uploadedBy} • {p.createdAt?.toDate().toLocaleDateString()}</small>
+                    </div>
+
+                    <div className="d-flex align-items-center justify-content-between border-top pt-2 mt-auto">
+                      <div className="d-flex gap-3 align-items-center">
+                        <LikeButton isLiked={isLiked} count={p.likes?.length || 0} onClick={() => updatePost(p.id, { likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId) })} />
+                        <div className="cursor-pointer text-secondary d-flex align-items-center gap-1" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
+                          <i className={`bi ${commentsOpen ? 'bi-chat-fill text-danger' : 'bi-chat'} fs-5`}></i>
+                          <span className="small fw-bold">{p.comments?.length || 0}</span>
                         </div>
-                        {/* COMMENT DELETE WITH CONFIRMATION */}
-                        {(isAdmin || c.userId === currentUserId) && (
-                          <i className="bi bi-x-circle-fill text-danger opacity-50" 
-                             style={{cursor:'pointer', fontSize: 11}} 
-                             onClick={() => {
-                               if(window.confirm("Ye comment delete karein?")) {
-                                 updateDoc(doc(db, "galleryImages", post.id), { comments: arrayRemove(c) });
-                               }
-                             }}></i>
-                        )}
                       </div>
-                    ))}
-                  </div>
+                      <DownloadButton imageUrl={p.url} imageId={p.id} filename={p.title} count={p.downloadCount || 0} />
+                    </div>
 
-                  <form className="d-flex gap-2" onSubmit={(e) => {
-                    e.preventDefault();
-                    const text = comment[post.id]?.trim();
-                    if(!text) return;
-                    updateDoc(doc(db, "galleryImages", post.id), {
-                      comments: arrayUnion({ text, userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4(), createdAt: new Date().toISOString() })
-                    });
-                    setComment({...comment, [post.id]: ""});
-                  }}>
-                    <input className="form-control form-control-sm border-0 bg-light rounded-pill px-3" placeholder="Write a comment..." value={comment[post.id] || ""} onChange={(e) => setComment({...comment, [post.id]: e.target.value})} />
-                    <button className="btn btn-sm btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" style={{width: 30, height: 30}} type="submit" disabled={!comment[post.id]}><i className="bi bi-send-fill" style={{fontSize: 12}}></i></button>
-                  </form>
+                    {commentsOpen && (
+                      <div className="mt-3 pt-2 border-top">
+                        <div className="overflow-auto mb-2 px-1" style={{maxHeight: '120px', scrollbarWidth: 'thin'}}>
+                          {p.comments?.length > 0 ? p.comments.map((c) => (
+                            <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 position-relative">
+                              <div className="fw-bold text-danger" style={{fontSize: '10px'}}>{c.userName}</div>
+                              <div className="small text-dark lh-sm">{c.text}</div>
+                              {(isAdmin || c.userId === currentUserId) && (
+                                <i className="bi bi-x position-absolute top-0 end-0 m-1 text-muted cursor-pointer" onClick={() => updatePost(p.id, { comments: arrayRemove(c) })}></i>
+                              )}
+                            </div>
+                          )) : <div className="text-center text-muted small py-2">No comments yet</div>}
+                        </div>
+                        <form className="input-group input-group-sm mt-2" onSubmit={(e) => {
+                          e.preventDefault();
+                          if(!comment[p.id]?.trim()) return;
+                          updatePost(p.id, { comments: arrayUnion({ text: comment[p.id], userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4() }) });
+                          setComment({...comment, [p.id]: ""});
+                        }}>
+                          <input className="form-control border-0 bg-light rounded-start-pill px-3" placeholder="Add comment..." value={comment[p.id] || ""} onChange={(e) => setComment({...comment, [p.id]: e.target.value})} />
+                          <button className="btn btn-danger rounded-end-pill px-3"><i className="bi bi-send-fill small"></i></button>
+                        </form>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </article>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </main>
 
-      {showUpload && (
-        <div className="custom-modal-overlay p-3">
-          <div className="bg-white p-4 rounded-4 shadow-lg w-100" style={{ maxWidth: '400px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="fw-bold m-0">Create Post</h5>
-              <button className="btn-close" onClick={() => setShowUpload(false)}></button>
-            </div>
-            <input type="file" className="form-control mb-3" accept="image/*" onChange={(e) => {
-              const f = e.target.files[0]; setFile(f);
-              if(f) setPreview(URL.createObjectURL(f));
-            }} />
-            {preview && <img src={preview} className="w-100 rounded-3 mb-3 border" style={{ maxHeight: '180px', objectFit: 'contain' }} alt="" />}
-            <input className="form-control mb-4" placeholder="Caption/Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <button className="btn btn-danger w-100 rounded-pill fw-bold py-2" onClick={handleUpload} disabled={uploading}>{uploading ? "Posting..." : "Post Now"}</button>
-          </div>
+      {/* 1. FULL SIZE IMAGE MODAL (Lightbox) */}
+      {selectedImg && (
+        <div 
+          className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-light bg-opacity-90 z-3 p-2 p-md-5" 
+          onClick={() => setSelectedImg(null)}
+          style={{ cursor: 'zoom-out', zIndex: 3000 }}
+        >
+          <button className="btn btn-link text-white position-absolute top-0 end-0 m-3 fs-3 text-decoration-none">&times;</button>
+          <img src={selectedImg} className="img-fluid rounded shadow-lg" style={{ maxHeight: '90vh', objectFit: 'contain' }} alt="Full Size" />
         </div>
       )}
 
-      <style>{`
-        .post-img-container { height: 400px; overflow: hidden; }
-        .post-img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
-        .extra-small { font-size: 11px; }
-        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10001; }
-        @media (max-width: 992px) { .post-img-container { height: 320px; } }
-      `}</style>
+      {/* Upload Modal */}
+      {up.show && (
+        <div className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-75 z-3 p-3" style={{ zIndex: 2000 }}>
+          <div className="card w-100 shadow-lg border-0 rounded-4" style={{ maxWidth: 450 }}>
+            <div className="card-header bg-white border-bottom d-flex justify-content-between py-3 rounded-top-4">
+              <h5 className="fw-bold mb-0">Add to Gallery</h5>
+              <button className="btn-close" onClick={() => setUp(p => ({ ...p, show: false }))}></button>
+            </div>
+            <div className="card-body">
+              <input type="file" className="form-control mb-3" accept="image/*" onChange={(e) => setUp(p => ({ ...p, file: e.target.files[0], preview: URL.createObjectURL(e.target.files[0]) }))} />
+              {up.preview && <img src={up.preview} className="w-100 rounded border mb-3 shadow-sm" style={{maxHeight:'200px', objectFit:'contain'}} alt="" />}
+              <input className="form-control mb-3 fw-bold" placeholder="Image Title" value={up.title} onChange={(e) => setUp(p => ({ ...p, title: e.target.value }))} />
+              <button className="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow-sm" onClick={handleUpload} disabled={up.loading}>{up.loading ? "Processing..." : "Publish to Gallery"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <style>{`.cursor-zoom-in { cursor: zoom-in; }`}</style>
     </div>
   );
 }

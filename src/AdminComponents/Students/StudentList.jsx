@@ -1,4 +1,4 @@
-// src/AdminComponents/Students/StudentList.jsx
+// src\AdminComponents\Students\StudentList.jsx
 
 import React, { useState, useMemo } from "react";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
@@ -11,15 +11,30 @@ export default function StudentList() {
   return (
     <AdmissionProvider>
       {({ admissions = [], loading, updateAdmission, deleteAdmission }) => {
+
         // 🔹 Filtered & searched admissions
+        // 🔹 Filtered, Searched & Sorted admissions
         const filtered = useMemo(() => {
           const term = searchTerm.trim().toLowerCase();
 
           return admissions
             .filter((s) => {
-              const status = s.status || "pending";
-              const matchStatus = statusFilter === "all" || status === statusFilter;
+              // 1. Determine Status (Sync with StudentCard logic)
+              let actualStatus = "pending";
+              if (s.status === "canceled") {
+                actualStatus = "canceled";
+              } else if (s.regNo && s.issueDate) {
+                actualStatus = "done";
+              } else if (s.regNo) {
+                actualStatus = "accepted";
+              } else {
+                actualStatus = "pending";
+              }
 
+              // 2. Apply Status Filter
+              const matchStatus = statusFilter === "all" || actualStatus === statusFilter;
+
+              // 3. Apply Search Filter
               const matchSearch =
                 !term ||
                 s.name?.toLowerCase().includes(term) ||
@@ -27,10 +42,16 @@ export default function StudentList() {
 
               return matchStatus && matchSearch;
             })
-            .slice()
-            .reverse();
-        }, [admissions, searchTerm, statusFilter]);
+            .sort((a, b) => {
+              // 4. Sort by creation date (newest first)
+              // Firebase Timestamp ya normal date handle karne ke liye fallback use kiya hai
+              const dateA = a.createdAt?.seconds || (a.createdAt instanceof Date ? a.createdAt.getTime() / 1000 : 0);
+              const dateB = b.createdAt?.seconds || (b.createdAt instanceof Date ? b.createdAt.getTime() / 1000 : 0);
 
+              // Agar dates same hain toh ID se tie-break karega
+              return dateB - dateA || (b.id && a.id ? b.id.localeCompare(a.id) : 0);
+            });
+        }, [admissions, searchTerm, statusFilter]);
         // 🔹 CSV Export
         const handleExportCSV = () => {
           if (!filtered.length) return;
@@ -68,7 +89,7 @@ export default function StudentList() {
             <div className="mb-4">
               <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-3">
 
-                {/* Left: Title + Export (50%) */}
+                {/* Left: Title + Export */}
                 <div className="d-flex justify-content-start align-items-center gap-3 w-100 w-lg-50">
                   <h5 className="fw-bold mb-0 text-nowrap">Admissions ({filtered.length})</h5>
                   <button
@@ -79,7 +100,7 @@ export default function StudentList() {
                   </button>
                 </div>
 
-                {/* Right: Status Filters (50%) */}
+                {/* Right: Status Filters */}
                 <div className="d-flex gap-1 overflow-auto pb-1 w-100 w-lg-50 justify-content-lg-end" style={{ whiteSpace: "nowrap" }}>
                   {["all", "pending", "accepted", "done", "canceled"].map((s) => (
                     <button
@@ -95,10 +116,12 @@ export default function StudentList() {
 
               </div>
             </div>
+
             {/* 🔹 Search */}
             <input
               type="text"
-              className="form-control mb-4"
+              className="form-control mb-4 shadow-sm"
+              style={{ borderRadius: "12px", padding: "12px" }}
               placeholder="Search by name or Reg No..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -106,9 +129,15 @@ export default function StudentList() {
 
             {/* 🔹 Content */}
             {loading ? (
-              <div className="text-center py-5">Loading...</div>
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status"></div>
+                <div className="mt-2 text-muted">Loading Students...</div>
+              </div>
             ) : filtered.length === 0 ? (
-              <div className="text-center py-5 text-muted">No students found</div>
+              <div className="text-center py-5 text-muted bg-light rounded-4 border border-dashed">
+                <i className="bi bi-people fs-1 d-block mb-2"></i>
+                No students found in "{statusFilter}" category
+              </div>
             ) : (
               <div className="row g-3">
                 {filtered.map((student) => (
