@@ -1,21 +1,13 @@
-// src/Components/Chat/ChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Link import kiya
 import { db } from "../../firebase/firebase";
 import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  serverTimestamp,
+  collection, query, orderBy, onSnapshot, addDoc,
+  updateDoc, deleteDoc, doc, serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "../../contexts/AuthContext";
 
-// ----------------------- MEMBER CARD -----------------------
+// --- Sub-Components ---
 const MemberCard = ({ member, onClick }) => (
   <div className="text-center me-2" style={{ cursor: "pointer" }} onClick={() => onClick(member)}>
     <div className="rounded-circle border border-primary d-flex justify-content-center align-items-center p-1 shadow-sm" style={{ width: 60, height: 60 }}>
@@ -30,7 +22,6 @@ const MemberCard = ({ member, onClick }) => (
   </div>
 );
 
-// ----------------------- MESSAGE -----------------------
 const Message = ({ msg, isMe, isAdmin, onEdit, onDelete }) => (
   <div className={`d-flex mb-2 ${isMe ? "justify-content-end" : "justify-content-start"}`}>
     {!isMe && msg.senderPhoto && (
@@ -40,14 +31,14 @@ const Message = ({ msg, isMe, isAdmin, onEdit, onDelete }) => (
       <div className={`p-2 rounded-3 shadow ${isMe ? "bg-primary text-white" : "bg-white text-dark"}`}>
         <div className="d-flex justify-content-between align-items-center mb-1">
           <strong>{msg.senderName}</strong>
-          <div className="d-flex gap-2">
+          <div className="d-flex gap-2 mx-1">
             {isMe && <i className="bi bi-pencil-fill" style={{ cursor: "pointer" }} onClick={() => onEdit(msg)}></i>}
             {(isMe || isAdmin) && <i className="bi bi-trash-fill" style={{ cursor: "pointer" }} onClick={() => onDelete(msg)}></i>}
           </div>
         </div>
         <div>{msg.message}</div>
-        {msg.edited && <span className="text-muted" style={{ fontSize: 10 }}> (edited) </span>}
-        <div className="text-end text-muted" style={{ fontSize: 10 }}>
+        {msg.edited && <span className="opacity-75" style={{ fontSize: 10 }}> (edited) </span>}
+        <div className={`text-end ${isMe ? "text-white-50" : "text-muted"}`} style={{ fontSize: 10 }}>
           {msg.timestamp?.toDate?.()?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </div>
@@ -55,78 +46,65 @@ const Message = ({ msg, isMe, isAdmin, onEdit, onDelete }) => (
   </div>
 );
 
-// ----------------------- CHAT PAGE -----------------------
+// --- Main Page ---
 export default function ChatPage() {
   const { user, displayName, photoURL, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
+
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [members, setMembers] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [editingText, setEditingText] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const messagesEndRef = useRef(null);
 
-  // ------------------- FETCH MEMBERS -------------------
+  // Helper: Normalize Member Data
+  const formatMember = (d, roleType) => ({
+    id: d.id, // path matching ke liye 'id' use kiya
+    uid: d.id,
+    name: d.data().name?.trim() || d.data().displayName?.trim() || d.data().fullName?.trim() || "Unknown",
+    email: d.data().email || "N/A",
+    phone: d.data().phone || "N/A",
+    photoURL: d.data().photoURL || d.data().photoUrl || null,
+    role: d.data().role || roleType,
+    branch: d.data().branch || "N/A",
+  });
+
   useEffect(() => {
+    // Sync Users and Students
     const unsubUsers = onSnapshot(collection(db, "users"), (snap) => {
-      const users = snap.docs.map((d) => ({
-        uid: d.id,
-        name: d.data().name?.trim() || d.data().displayName?.trim() || "Unknown",
-        email: d.data().email || "N/A",
-        phone: d.data().phone || "N/A",
-        photoURL: d.data().photoURL || d.data().photoUrl || null,
-        role: d.data().role || "user",
-      }));
+      const usersData = snap.docs.map(d => formatMember(d, "user"));
       setMembers(prev => {
-        const students = prev.filter(m => m.role === "student");
-        return [...students, ...users].sort((a, b) => a.name.localeCompare(b.name));
+        const others = prev.filter(m => m.role === "student");
+        return [...others, ...usersData].sort((a, b) => a.name.localeCompare(b.name));
       });
     });
 
     const unsubStudents = onSnapshot(collection(db, "admissions"), (snap) => {
-      const students = snap.docs.map((d) => ({
-        uid: d.id,
-        name: d.data().name?.trim() || d.data().fullName?.trim() || "Unknown",
-        email: d.data().email || "N/A",
-        phone: d.data().phone || "N/A",
-        photoURL: d.data().photoURL || d.data().photoUrl || null,
-        role: "student",
-        branch: d.data().branch || "N/A",
-      }));
+      const studentsData = snap.docs.map(d => formatMember(d, "student"));
       setMembers(prev => {
-        const users = prev.filter(m => m.role !== "student");
-        return [...users, ...students].sort((a, b) => a.name.localeCompare(b.name));
+        const others = prev.filter(m => m.role !== "student");
+        return [...others, ...studentsData].sort((a, b) => a.name.localeCompare(b.name));
       });
     });
 
-    return () => {
-      unsubUsers();
-      unsubStudents();
-    };
-  }, []);
-
-  // ------------------- FETCH MESSAGES -------------------
-  useEffect(() => {
-    const q = query(collection(db, "chats"), orderBy("timestamp", "asc"));
-    const unsubscribe = onSnapshot(q, (snap) => {
+    const qMessages = query(collection(db, "chats"), orderBy("timestamp", "asc"));
+    const unsubMsgs = onSnapshot(qMessages, (snap) => {
       setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
     });
-    return () => unsubscribe();
+
+    return () => { unsubUsers(); unsubStudents(); unsubMsgs(); };
   }, []);
 
-  // ------------------- SEND / EDIT MESSAGE -------------------
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !user?.uid) return;
 
     try {
       if (editingId) {
-        await updateDoc(doc(db, "chats", editingId), { message: editingText.trim(), edited: true });
+        await updateDoc(doc(db, "chats", editingId), { message: newMessage.trim(), edited: true });
         setEditingId(null);
-        setEditingText("");
       } else {
         await addDoc(collection(db, "chats"), {
           senderId: user.uid,
@@ -138,120 +116,89 @@ export default function ChatPage() {
         });
       }
       setNewMessage("");
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
   };
 
   const handleDeleteMessage = async (msg) => {
-    if (!(isAdmin || msg.senderId === user.uid)) return;
-    if (!window.confirm("Delete this message?")) return;
-    try {
+    if ((isAdmin || msg.senderId === user.uid) && window.confirm("Delete this message?")) {
       await deleteDoc(doc(db, "chats", msg.id));
-    } catch (err) {
-      console.error(err);
     }
   };
 
-  const handleEditMessage = (msg) => {
-    if (msg.senderId === user.uid) {
-      setEditingId(msg.id);
-      setEditingText(msg.message);
-      setNewMessage(msg.message);
-    }
+  const handleEditInit = (msg) => {
+    setEditingId(msg.id);
+    setNewMessage(msg.message);
   };
 
-  // ------------------- PROFILE MODAL -------------------
-  const openProfileModal = (member) => {
-    setSelectedMember(member);
-    setShowProfileModal(true);
-  };
-
-  const handleDeleteStudent = async () => {
-    if (!selectedMember || !window.confirm(`Delete ${selectedMember.name}?`)) return;
-    try {
-      await deleteDoc(doc(db, "admissions", selectedMember.uid));
-      setMembers(prev => prev.filter(m => m.uid !== selectedMember.uid));
-      setShowProfileModal(false);
-      setSelectedMember(null);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // ------------------- RENDER MEMBERS -------------------
-  const renderMembers = () => {
-    const membersToShow = isAdmin ? members : members.filter(m => m.role === "admin");
-    return membersToShow.map(m => <MemberCard key={m.uid} member={m} onClick={openProfileModal} />);
-  };
+  const membersToShow = isAdmin ? members : members.filter(m => m.role === "admin");
 
   return (
     <div className="d-flex flex-column vh-100 bg-light">
       {/* Header */}
-      <div className="d-flex align-items-center p-2 bg-success text-white shadow-sm">
-        <button className="btn btn-link text-white p-0 me-2" onClick={() => navigate(-1)}>
-          <i className="bi bi-arrow-left"></i>
-        </button>
-        <h5 className="flex-grow-1 m-0">Drishtee Member Chat</h5>
-        <img src={photoURL || `https://ui-avatars.com/api/?name=${displayName}&background=075E54&color=fff`} alt="avatar" className="rounded-circle" style={{ width: 35, height: 35, objectFit: "cover" }} />
+      <header className="d-flex align-items-center p-2 bg-success text-white shadow-sm">
+        <i className="bi bi-arrow-left fs-4 me-3" style={{cursor: 'pointer'}} onClick={() => navigate(-1)}></i>
+        <h5 className="flex-grow-1 m-0">Drishtee Chat</h5>
+        <img src={photoURL || `https://ui-avatars.com/api/?name=${displayName}`} alt="me" className="rounded-circle" style={{ width: 35, height: 35 }} />
+      </header>
+
+      {/* Horizontal Member List */}
+      <div className="d-flex overflow-auto p-2 bg-white border-bottom">
+        {membersToShow.map(m => <MemberCard key={m.uid} member={m} onClick={setSelectedMember} />)}
       </div>
 
-      {/* Members */}
-      <div className="d-flex overflow-auto p-2 bg-white border-bottom">{renderMembers()}</div>
-
-      {/* Messages */}
-      <div className="flex-grow-1 overflow-auto p-2 d-flex flex-column">
+      {/* Messages Area */}
+      <main className="flex-grow-1 overflow-auto p-2">
         {messages.map(msg => (
-          <Message key={msg.id} msg={msg} isMe={msg.senderId === user.uid} isAdmin={isAdmin} onEdit={handleEditMessage} onDelete={handleDeleteMessage} />
+          <Message key={msg.id} msg={msg} isMe={msg.senderId === user.uid} isAdmin={isAdmin} onEdit={handleEditInit} onDelete={handleDeleteMessage} />
         ))}
         <div ref={messagesEndRef}></div>
-      </div>
+      </main>
 
-      {/* Input */}
+      {/* Input Form */}
       <form className="d-flex p-2 border-top bg-white" onSubmit={handleSendMessage}>
         <input
-          type="text"
           className="form-control rounded-pill me-2"
-          placeholder="Type a message..."
+          placeholder={editingId ? "Edit message..." : "Type a message..."}
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
-          disabled={!user}
         />
-        <button type="submit" className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style={{ width: 45, height: 45 }}>
-          <i className="bi bi-send-fill"></i>
+        <button type="submit" className={`btn ${editingId ? 'btn-warning' : 'btn-primary'} rounded-circle`} style={{ width: 45, height: 45 }}>
+          <i className={`bi ${editingId ? 'bi-check-lg' : 'bi-send-fill'}`}></i>
         </button>
       </form>
 
       {/* Profile Modal */}
-      {showProfileModal && (
+      {selectedMember && (
         <>
-          <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-            <div className="modal-dialog modal-dialog-centered" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Profile</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowProfileModal(false)}></button>
+          <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content shadow-lg border-0">
+                <div className="modal-header border-0 pb-0">
+                  <button type="button" className="btn-close" onClick={() => setSelectedMember(null)}></button>
                 </div>
-                <div className="modal-body text-center">
-                  <img
-                    src={selectedMember?.photoURL || `https://ui-avatars.com/api/?name=${selectedMember?.name}&background=007bff&color=fff`}
-                    alt=""
-                    className="rounded-circle mb-3"
-                    style={{ width: 120, height: 120, objectFit: "cover" }}
-                  />
-                  <h5>{selectedMember?.name}</h5>
-                  <p><strong>Role:</strong> {selectedMember?.role}</p>
-                  {isAdmin && selectedMember?.role === "student" && <p><strong>Branch:</strong> {selectedMember?.branch}</p>}
+                <div className="modal-body text-center pb-4">
+                  <img src={selectedMember.photoURL || `https://ui-avatars.com/api/?name=${selectedMember.name}`} className="rounded-circle mb-3 border p-1" style={{ width: 100, height: 100, objectFit: "cover" }} />
+                  <h4>{selectedMember.name}</h4>
+                  <span className="badge bg-info text-dark mb-3 text-capitalize">{selectedMember.role}</span>
+                  
+                  {/* Admin specific Student details */}
+                  {isAdmin && selectedMember.role === "student" && (
+                    <div className="mt-2 w-100">
+                      <p className="mb-3 text-muted"><strong>Branch:</strong> {selectedMember.branch}</p>
+                      
+                      {/* VIEW PROFILE LINK ADDED HERE */}
+                      <Link to={`/admin/students/${selectedMember.id}`} className="text-decoration-none">
+                        <button className="btn btn-light w-100 fw-semibold rounded-3 py-2 border">
+                          View Profile
+                        </button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
-                {isAdmin && selectedMember?.role === "student" && (
-                  <div className="modal-footer justify-content-center">
-                    <button type="button" className="btn btn-danger" onClick={handleDeleteStudent}>Delete Student</button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show" onClick={() => setShowProfileModal(false)}></div>
+          <div className="modal-backdrop fade show" onClick={() => setSelectedMember(null)}></div>
         </>
       )}
     </div>
