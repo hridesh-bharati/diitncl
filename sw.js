@@ -1,1 +1,319 @@
-if(!self.define){let e,s={};const i=(i,n)=>(i=new URL(i+".js",n).href,s[i]||new Promise(s=>{if("document"in self){const e=document.createElement("script");e.src=i,e.onload=s,document.head.appendChild(e)}else e=i,importScripts(i),s()}).then(()=>{let e=s[i];if(!e)throw new Error(`Module ${i} didn’t register its module`);return e}));self.define=(n,r)=>{const l=e||("document"in self?document.currentScript.src:"")||location.href;if(s[l])return;let a={};const o=e=>i(e,l),u={module:{uri:l},exports:a,require:o};s[l]=Promise.all(n.map(e=>u[e]||o(e))).then(e=>(r(...e),a))}}define(["./workbox-66610c77"],function(e){"use strict";self.skipWaiting(),e.clientsClaim(),e.precacheAndRoute([{url:"registerSW.js",revision:"1872c500de691dce40960bb85481de07"},{url:"index.html",revision:"8f5e8960eb0f85ea473f128e339616a6"},{url:"images/vender/signature.png",revision:"adf625febcb7ae5e00e9c467d0964465"},{url:"images/vender/reading-hall.webp",revision:"ae87bcd267a7760456eab1e16edf9026"},{url:"images/vender/onlineclass.webp",revision:"afe1e21c25ba1e69c05284b3548587d4"},{url:"images/vender/meeting-room.webp",revision:"490be44dd9759b0373a2deae0f1b1130"},{url:"images/vender/main6.webp",revision:"69c2d460d122f4541e4bc6e9b545b1b4"},{url:"images/vender/main5.webp",revision:"e3effbae4ebc95350692b213383ebed0"},{url:"images/vender/main3.webp",revision:"7c899273c0ef2325eb77fa219004017c"},{url:"images/vender/main2.webp",revision:"723adfe49f6ff6d4d7d5ba9cc9e1b644"},{url:"images/vender/logos.png",revision:"c56dedde958a1543be91d9791df27ecd"},{url:"images/vender/homepic.webp",revision:"6e30f64e8eff6a6b4d53c8db394259ef"},{url:"images/vender/cefeteria.webp",revision:"8b9988f111836525e11f2fc1e307dbaa"},{url:"images/thumbnails/Certificate4.png",revision:"a4db3634fe979d0032a19798f29854d5"},{url:"images/thumbnails/Certificate3.png",revision:"301ad896390334094dc0162ac14f6b0a"},{url:"images/thumbnails/Certificate2.png",revision:"8089c4204456fec528f0123ae21751c5"},{url:"images/thumbnails/Certificate1.png",revision:"c528c50aea333e71153a0dee0d326fb0"},{url:"images/mainSlider/slider1.webp",revision:"24679c69d9de4fe6b2f6d6e8e7e8955d"},{url:"images/library/tdiit.webp",revision:"1d2b25ab511dd5f32949ba6382924968"},{url:"images/library/library.webp",revision:"d4775560e1eafa09fb86df52d9f6e532"},{url:"images/icon/resized-image (2).webp",revision:"f185fab8b4c771cab69150ca3086fbec"},{url:"images/icon/pagenotfound.webp",revision:"9599f9723862745fae3beec19184c15a"},{url:"images/icon/logo.png",revision:"1c9699c115e71dff3e5ec03dbf77fd51"},{url:"images/icon/icon.webp",revision:"1b26aab3464b87c87f8e2e174fa726ef"},{url:"images/icon/icon-512.png",revision:"8609cfe7774b91becc4f96475feae71d"},{url:"images/icon/icon-192.png",revision:"6838f1298b01c6899c5b7fb3fdbc5ff8"},{url:"images/icon/favicon.ico",revision:"9aa2db0b6024e4393b6f1cc16da0db21"},{url:"images/icon/favicon-32x32.png",revision:"8b623dee8d883cef43e7f3fdb861efdc"},{url:"images/icon/favicon-16x16.png",revision:"bcc219448e5675690073dc877c71683f"},{url:"images/icon/apple-touch-icon.png",revision:"2515dd875f60c658d0dba8670831a7f2"},{url:"assets/vendor-Darxe_VZ.js",revision:null},{url:"assets/index-Ch9ykMFp.js",revision:null},{url:"assets/index-CWjAWGnZ.css",revision:null},{url:"assets/courseData-CeKRB8nL.js",revision:null},{url:"assets/bootstrap-icons-mSm7cUeB.woff2",revision:null},{url:"assets/bootstrap-icons-BeopsB42.woff",revision:null},{url:"assets/WebDev-Oneux0ap.js",revision:null},{url:"assets/Verification-ytlG00d7.js",revision:null},{url:"assets/Terms-DGvUZUbY.js",revision:null},{url:"assets/Team-D6OzniLA.js",revision:null},{url:"assets/StudentRoutes-DxF7EmVl.css",revision:null},{url:"assets/StudentRoutes-DrqpC4_r.js",revision:null},{url:"assets/StudentCertificate-CJrF44Xx.css",revision:null},{url:"assets/StudentCertificate-CBt0kLvE.js",revision:null},{url:"assets/ScrollUp-w6ig2V2I.js",revision:null},{url:"assets/QuickSupport-DDHX2fMq.js",revision:null},{url:"assets/PrivacyPolicy-xu7SUqTV.js",revision:null},{url:"assets/PageNotFound-DK29h2Vp.js",revision:null},{url:"assets/OurCourses-BRMtSJiE.js",revision:null},{url:"assets/Nielet-CMkcihch.js",revision:null},{url:"assets/LocationMapCard-YB8yfnDg.css",revision:null},{url:"assets/LocationMapCard-9wR6X057.js",revision:null},{url:"assets/Library-DCaLpZFs.js",revision:null},{url:"assets/Home-D28bzYVg.js",revision:null},{url:"assets/Home-BaOx0pd7.css",revision:null},{url:"assets/Gallery-RbOxiQ-V.js",revision:null},{url:"assets/Footer-CzKBu2sR.js",revision:null},{url:"assets/FAQ-xrlLFvkH.js",revision:null},{url:"assets/Discription-CEjUxi7V.js",revision:null},{url:"assets/Designing-D-cJVnjS.js",revision:null},{url:"assets/ComputerLanguage-Cs1pzWjF.js",revision:null},{url:"assets/CommanCourse-CMEYJnqA.js",revision:null},{url:"assets/ChatPage-HxKre3cI.js",revision:null},{url:"assets/Ceritificate-CcKBk4lh.js",revision:null},{url:"assets/Branch-Bozm9UdW.css",revision:null},{url:"assets/Branch-BYswcZvm.js",revision:null},{url:"assets/Banking-DXVwnMCD.js",revision:null},{url:"assets/AdmissionProvider-CsCVBtR-.js",revision:null},{url:"assets/AdmissionForm-BQAnQ9D6.js",revision:null},{url:"assets/AdminRoutes-Dw4hlU6u.css",revision:null},{url:"assets/AdminRoutes-DU47Um7J.js",revision:null},{url:"assets/About-CjyN2sG1.js",revision:null},{url:"robots.txt",revision:"d93d6423f33aa6f65339d23463fb174b"},{url:"sitemap.xml",revision:"401e870e1c79a20e39531703b3f38427"},{url:"images/icon/icon-192.png",revision:"6838f1298b01c6899c5b7fb3fdbc5ff8"},{url:"images/icon/icon-512.png",revision:"8609cfe7774b91becc4f96475feae71d"},{url:"manifest.webmanifest",revision:"ace2ab43965b8f52a280f582baccc726"}],{}),e.cleanupOutdatedCaches(),e.registerRoute(new e.NavigationRoute(e.createHandlerBoundToURL("index.html"))),e.registerRoute(/^https:\/\/cdn\.jsdelivr\.net\/.*$/,new e.CacheFirst({cacheName:"external-assets",plugins:[new e.ExpirationPlugin({maxEntries:10,maxAgeSeconds:2592e3})]}),"GET")});
+// Service Worker Version - इसे हर अपडेट में बदलें
+const CACHE_VERSION = 'v7';
+const CACHE_NAME = `drishtee-cache-${CACHE_VERSION}`;
+const STATIC_CACHE_NAME = `drishtee-static-${CACHE_VERSION}`;
+const IMAGES_CACHE_NAME = `drishtee-images-${CACHE_VERSION}`;
+
+// Assets to cache on install
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/offline.html',
+  '/images/icon/icon-192.png',
+  '/images/icon/icon-512.png'
+];
+
+// Install Event
+self.addEventListener('install', (event) => {
+  console.log(`[Service Worker] Installing version ${CACHE_VERSION}`);
+  
+  // Force waiting service worker to become active
+  self.skipWaiting();
+  
+  event.waitUntil(
+    Promise.all([
+      // Cache static assets
+      caches.open(STATIC_CACHE_NAME).then((cache) => {
+        console.log('[Service Worker] Caching static assets');
+        return cache.addAll(STATIC_ASSETS).catch(error => {
+          console.warn('[Service Worker] Static caching error:', error);
+          // Continue even if some assets fail
+          return Promise.resolve();
+        });
+      }),
+      // Cache images
+      caches.open(IMAGES_CACHE_NAME).then((cache) => {
+        console.log('[Service Worker] Setting up images cache');
+        return Promise.resolve();
+      })
+    ])
+  );
+});
+
+// Activate Event - Clean up old caches
+self.addEventListener('activate', (event) => {
+  console.log(`[Service Worker] Activating version ${CACHE_VERSION}`);
+  
+  event.waitUntil(
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (
+              cacheName !== STATIC_CACHE_NAME && 
+              cacheName !== IMAGES_CACHE_NAME &&
+              cacheName.startsWith('drishtee-')
+            ) {
+              console.log('[Service Worker] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Claim clients immediately
+      self.clients.claim()
+    ]).then(() => {
+      console.log('[Service Worker] Activated successfully');
+      
+      // Notify all clients about the update
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: CACHE_VERSION
+          });
+        });
+      });
+    })
+  );
+});
+
+// Fetch Event - Smart caching strategy
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip cross-origin requests and non-GET
+  if (!url.origin.startsWith(self.location.origin) || request.method !== 'GET') {
+    return;
+  }
+
+  // Skip browser extensions
+  if (url.protocol === 'chrome-extension:' || url.protocol === 'moz-extension:') {
+    return;
+  }
+
+  // Handle different types of requests
+  if (url.pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|ico)$/i)) {
+    // Images strategy: Cache First
+    event.respondWith(handleImageRequest(request));
+  } else if (url.pathname.match(/\.(js|css)$/i)) {
+    // Static resources: Stale While Revalidate
+    event.respondWith(handleStaticRequest(request));
+  } else if (request.mode === 'navigate') {
+    // HTML pages: Network First with fallback
+    event.respondWith(handleNavigationRequest(request));
+  } else {
+    // Default: Network First
+    event.respondWith(handleDefaultRequest(request));
+  }
+});
+
+// Image request handler
+async function handleImageRequest(request) {
+  const cache = await caches.open(IMAGES_CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+  
+  if (cachedResponse) {
+    // Return cached image and update in background
+    fetch(request).then(response => {
+      if (response && response.ok) {
+        cache.put(request, response);
+      }
+    }).catch(() => {});
+    return cachedResponse;
+  }
+  
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    console.warn('[Service Worker] Image fetch failed:', request.url);
+    return new Response('Image offline', { status: 408 });
+  }
+}
+
+// Static request handler (JS, CSS)
+async function handleStaticRequest(request) {
+  const cache = await caches.open(STATIC_CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+  
+  if (cachedResponse) {
+    // Return cached and update
+    fetch(request).then(response => {
+      if (response && response.ok) {
+        cache.put(request, response);
+      }
+    }).catch(() => {});
+    return cachedResponse;
+  }
+  
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    console.warn('[Service Worker] Static fetch failed:', request.url);
+    return new Response('Resource offline', { status: 408 });
+  }
+}
+
+// Navigation request handler
+async function handleNavigationRequest(request) {
+  try {
+    // Try network first
+    const response = await fetch(request);
+    
+    // Cache the HTML response
+    if (response && response.ok) {
+      const cache = await caches.open(STATIC_CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    console.log('[Service Worker] Network failed, using cache for:', request.url);
+    
+    // Try to get from cache
+    const cache = await caches.open(STATIC_CACHE_NAME);
+    const cachedResponse = await cache.match('/offline.html');
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Last resort: return offline page from install cache
+    return caches.match('/offline.html');
+  }
+}
+
+// Default request handler
+async function handleDefaultRequest(request) {
+  try {
+    const response = await fetch(request);
+    return response;
+  } catch (error) {
+    const cache = await caches.open(STATIC_CACHE_NAME);
+    const cachedResponse = await cache.match(request);
+    return cachedResponse || new Response('Offline', { status: 408 });
+  }
+}
+
+// Push Event - Notifications
+self.addEventListener('push', (event) => {
+  console.log('[Service Worker] Push received');
+  
+  if (!event.data) {
+    console.log('[Service Worker] Push received but no data');
+    return;
+  }
+
+  try {
+    const data = event.data.json();
+    
+    const title = data.title || 'Drishtee Computer Center';
+    const options = {
+      body: data.body || 'New notification from Drishtee',
+      icon: data.icon || '/images/icon/icon-192.png',
+      badge: '/images/icon/icon-192.png',
+      vibrate: [200, 100, 200],
+      data: {
+        url: data.url || '/',
+        timestamp: Date.now(),
+        ...data.data
+      },
+      actions: [
+        { action: 'open', title: 'Open App' },
+        { action: 'close', title: 'Close' }
+      ],
+      requireInteraction: true,
+      silent: false,
+      tag: `drishtee-${Date.now()}`
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(title, options)
+    );
+  } catch (error) {
+    console.error('[Service Worker] Push error:', error);
+    
+    // Fallback for plain text
+    const text = event.data.text();
+    event.waitUntil(
+      self.registration.showNotification('Drishtee Computer Center', {
+        body: text.substring(0, 100),
+        icon: '/images/icon/icon-192.png'
+      })
+    );
+  }
+});
+
+// Notification Click Event
+self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Notification clicked:', event.action);
+  
+  event.notification.close();
+
+  if (event.action === 'close') {
+    return;
+  }
+
+  const urlToOpen = event.notification.data?.url || '/';
+  
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then(clientList => {
+      // Try to focus existing window
+      for (const client of clientList) {
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Open new window
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Message Event - Listen for messages from clients
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CHECK_UPDATES') {
+    event.waitUntil(
+      self.registration.update().then(() => {
+        event.source.postMessage({
+          type: 'UPDATES_CHECKED',
+          version: CACHE_VERSION
+        });
+      })
+    );
+  }
+});
+
+// Sync Event - Background sync
+self.addEventListener('sync', (event) => {
+  console.log('[Service Worker] Sync event:', event.tag);
+  
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData());
+  }
+});
+
+async function syncData() {
+  console.log('[Service Worker] Syncing data...');
+  // Add your background sync logic here
+  return Promise.resolve();
+}
