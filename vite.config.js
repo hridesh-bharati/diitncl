@@ -35,9 +35,9 @@ export default defineConfig({
 
       workbox: {
         cleanupOutdatedCaches: true,
-        skipWaiting: true,     // ✅ Installs new SW immediately
-        clientsClaim: true,    // ✅ Takes control of all clients
-        navigateFallback: "/index.html",
+        skipWaiting: true,
+        clientsClaim: true,
+        navigateFallback: "/offline.html",
 
         runtimeCaching: [
           {
