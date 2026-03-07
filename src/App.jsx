@@ -94,7 +94,7 @@ export default function App() {
       <Header />
       <InstallPrompt />
 
-      <Suspense fallback={<p className="my-5 text-center text-muted w-100">Loading...</p>}>
+      <Suspense fallback={<p className="my-5 text-center text-muted w-100 p-5 m-5">Loading...</p>}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />

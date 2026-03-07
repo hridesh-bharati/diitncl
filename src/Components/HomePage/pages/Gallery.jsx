@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
-import { 
-  collection, query, orderBy, onSnapshot, updateDoc, 
-  doc, limit, addDoc, serverTimestamp, deleteDoc, 
-  arrayUnion, arrayRemove 
+import {
+  collection, query, orderBy, onSnapshot, updateDoc,
+  doc, limit, addDoc, serverTimestamp, deleteDoc,
+  arrayUnion, arrayRemove
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -57,86 +57,151 @@ export default function PublicSocialGallery() {
   if (loading) return <div className="vh-100 d-flex align-items-center justify-content-center text-danger fw-bold">Loading Gallery...</div>;
 
   return (
-    <div className="bg-light min-vh-100 pb-5">
-      <header className="bg-white border-bottom sticky-top shadow-sm py-3" style={{ zIndex: 1020 }}>
+    <div className="bg-primary-subtle min-vh-100 pb-5 ">
+      <header className="bg-white border-bottom shadow-sm py-3">
         <div className="container d-flex justify-content-between align-items-center">
           <h4 className="fw-bold text-dark m-0">Drishtee <span className="text-danger">Gallery</span></h4>
-          <button className={`btn btn-${isLoggedIn ? 'danger' : 'outline-danger'} rounded-pill px-4 fw-bold`} 
+          <button className={`btn btn-${isLoggedIn ? 'danger' : 'outline-danger'} rounded-pill px-4 fw-bold`}
             onClick={() => isLoggedIn ? setUp(p => ({ ...p, show: true })) : navigate("/login")}>
             {isLoggedIn ? "+ Add Photo" : "Login"}
           </button>
         </div>
       </header>
 
-      <main className="container mt-4">
-        <div className="row g-4"> 
+      <main className="container mt-3 mb-5">
+        <div className="row g-3">
           {posts.map((p) => {
             const isLiked = p.likes?.includes(currentUserId);
             const commentsOpen = showComments[p.id];
 
             return (
-              <div key={p.id} className="col-12 col-md-6 col-lg-4">
+              <div key={p.id} className="col-12 col-md-6 col-lg-4 mb-2">
                 <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
-                  
-                  {/* Photo Section with Tap to View */}
-                  <div 
-                    className="ratio ratio-4x3 bg-dark border-bottom cursor-zoom-in" 
-                    onClick={() => setSelectedImg(p.url)} // Tap to open full screen
-                    onDoubleClick={(e) => {
-                      e.stopPropagation(); // Double click to like (avoids opening full screen twice)
-                      updatePost(p.id, { likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId) });
-                    }}
-                  >
-                    <img src={p.url} className="object-fit-cover w-100 h-100" alt={p.title} />
+
+                  {/* Header: Title & Delete */}
+                  <div className="d-flex justify-content-between align-items-center px-3 pt-3">
+                    <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ maxWidth: '80%' }} title={p.title}>
+                      {p.title}
+                    </h6>
+                    {(isAdmin || p.uploadedById === currentUserId) && (
+                      <button
+                        className="btn btn-link text-danger p-0 border-0"
+                        onClick={() => window.confirm("Delete this image?") && deleteDoc(doc(db, "galleryImages", p.id))}
+                      >
+                        <i className="bi bi-trash3-fill"></i>
+                      </button>
+                    )}
                   </div>
 
+                  {/* User Info */}
+                  <div className="d-flex align-items-center px-3 py-2">
+                    <img
+                      src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random`}
+                      className="rounded-circle border"
+                      width="24"
+                      height="24"
+                      alt="user"
+                    />
+                    <small className="text-muted ms-2" style={{ fontSize: '11px' }}>
+                      {p.uploadedBy} • {p.createdAt?.toDate().toLocaleDateString()}
+                    </small>
+                  </div>
+
+                  {/* Photo Section */}
+                  <div
+                    className="ratio ratio-4x3 bg-light border-top border-bottom cursor-zoom-in position-relative"
+                    onClick={() => setSelectedImg(p.url)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      updatePost(p.id, {
+                        likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId)
+                      });
+                    }}
+                  >
+                    <img src={p.url} className="object-fit-cover w-100 h-100" alt={p.title} loading="lazy" />
+                  </div>
+
+                  {/* Card Body: Actions & Comments */}
                   <div className="card-body p-3">
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <h6 className="fw-bold text-dark mb-0 text-truncate" title={p.title}>{p.title}</h6>
-                      {(isAdmin || p.uploadedById === currentUserId) && (
-                        <button className="btn btn-link text-danger p-0 border-0" onClick={() => window.confirm("Delete?") && deleteDoc(doc(db, "galleryImages", p.id))}>
-                          <i className="bi bi-trash3 small"></i>
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                       <img src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}`} className="rounded-circle border" width="24" height="24" alt="" />
-                       <small className="text-muted" style={{fontSize: '11px'}}>{p.uploadedBy} • {p.createdAt?.toDate().toLocaleDateString()}</small>
-                    </div>
-
-                    <div className="d-flex align-items-center justify-content-between border-top pt-2 mt-auto">
+                    <div className="d-flex align-items-center justify-content-between">
                       <div className="d-flex gap-3 align-items-center">
-                        <LikeButton isLiked={isLiked} count={p.likes?.length || 0} onClick={() => updatePost(p.id, { likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId) })} />
-                        <div className="cursor-pointer text-secondary d-flex align-items-center gap-1" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
-                          <i className={`bi ${commentsOpen ? 'bi-chat-fill text-danger' : 'bi-chat'} fs-5`}></i>
+                        {/* Like Button */}
+                        <LikeButton
+                          isLiked={isLiked}
+                          count={p.likes?.length || 0}
+                          onClick={() => updatePost(p.id, { likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId) })}
+                        />
+
+                        {/* Comment Toggle */}
+                        <div
+                          className="cursor-pointer text-secondary d-flex align-items-center gap-1"
+                          onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}
+                        >
+                          <i className={`bi ${showComments[p.id] ? 'bi-chat-fill' : 'bi-chat'} fs-5`}></i>
                           <span className="small fw-bold">{p.comments?.length || 0}</span>
                         </div>
                       </div>
+
+                      {/* Download Button */}
                       <DownloadButton imageUrl={p.url} imageId={p.id} filename={p.title} count={p.downloadCount || 0} />
                     </div>
 
-                    {commentsOpen && (
+                    {/* Comments Section */}
+                    {showComments[p.id] && (
                       <div className="mt-3 pt-2 border-top">
-                        <div className="overflow-auto mb-2 px-1" style={{maxHeight: '120px', scrollbarWidth: 'thin'}}>
-                          {p.comments?.length > 0 ? p.comments.map((c) => (
-                            <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 position-relative">
-                              <div className="fw-bold text-danger" style={{fontSize: '10px'}}>{c.userName}</div>
-                              <div className="small text-dark lh-sm">{c.text}</div>
-                              {(isAdmin || c.userId === currentUserId) && (
-                                <i className="bi bi-x position-absolute top-0 end-0 m-1 text-muted cursor-pointer" onClick={() => updatePost(p.id, { comments: arrayRemove(c) })}></i>
-                              )}
-                            </div>
-                          )) : <div className="text-center text-muted small py-2">No comments yet</div>}
+                        <div
+                          className="overflow-auto mb-2 px-1"
+                          style={{ maxHeight: '150px', scrollbarWidth: 'thin' }}
+                        >
+                          {p.comments && p.comments.length > 0 ? (
+                            p.comments.map((c) => (
+                              <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 position-relative border-start border-danger border-3">
+                                <div className="d-flex justify-content-between">
+                                  <span className="fw-bold text-dark" style={{ fontSize: '11px' }}>{c.userName}</span>
+                                  {(isAdmin || c.userId === currentUserId) && (
+                                    <i
+                                      className="bi bi-x-circle-fill text-muted cursor-pointer"
+                                      style={{ fontSize: '12px' }}
+                                      onClick={() => updatePost(p.id, { comments: arrayRemove(c) })}
+                                    ></i>
+                                  )}
+                                </div>
+                                <div className="small text-muted lh-sm">{c.text}</div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center text-muted small py-2 italic">No comments yet. Be the first!</div>
+                          )}
                         </div>
-                        <form className="input-group input-group-sm mt-2" onSubmit={(e) => {
-                          e.preventDefault();
-                          if(!comment[p.id]?.trim()) return;
-                          updatePost(p.id, { comments: arrayUnion({ text: comment[p.id], userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4() }) });
-                          setComment({...comment, [p.id]: ""});
-                        }}>
-                          <input className="form-control border-0 bg-light rounded-start-pill px-3" placeholder="Add comment..." value={comment[p.id] || ""} onChange={(e) => setComment({...comment, [p.id]: e.target.value})} />
-                          <button className="btn btn-danger rounded-end-pill px-3"><i className="bi bi-send-fill small"></i></button>
+
+                        {/* Comment Form */}
+                        <form
+                          className="input-group input-group-sm mt-2"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            const text = comment[p.id]?.trim();
+                            if (!text) return;
+                            updatePost(p.id, {
+                              comments: arrayUnion({
+                                text,
+                                userId: currentUserId,
+                                userName: displayName || "Guest",
+                                commentId: uuidv4(),
+                                createdAt: new Date()
+                              })
+                            });
+                            setComment({ ...comment, [p.id]: "" });
+                          }}
+                        >
+                          <input
+                            className="form-control border-0 bg-light rounded-start-pill px-3"
+                            placeholder="Add comment..."
+                            value={comment[p.id] || ""}
+                            onChange={(e) => setComment({ ...comment, [p.id]: e.target.value })}
+                          />
+                          <button className="btn btn-danger rounded-end-pill px-3">
+                            <i className="bi bi-send-fill"></i>
+                          </button>
                         </form>
                       </div>
                     )}
@@ -150,8 +215,8 @@ export default function PublicSocialGallery() {
 
       {/* 1. FULL SIZE IMAGE MODAL (Lightbox) */}
       {selectedImg && (
-        <div 
-          className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-light bg-opacity-90 z-3 p-2 p-md-5" 
+        <div
+          className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-light bg-opacity-90 z-3 p-2 p-md-5"
           onClick={() => setSelectedImg(null)}
           style={{ cursor: 'zoom-out', zIndex: 3000 }}
         >
@@ -170,14 +235,14 @@ export default function PublicSocialGallery() {
             </div>
             <div className="card-body">
               <input type="file" className="form-control mb-3" accept="image/*" onChange={(e) => setUp(p => ({ ...p, file: e.target.files[0], preview: URL.createObjectURL(e.target.files[0]) }))} />
-              {up.preview && <img src={up.preview} className="w-100 rounded border mb-3 shadow-sm" style={{maxHeight:'200px', objectFit:'contain'}} alt="" />}
+              {up.preview && <img src={up.preview} className="w-100 rounded border mb-3 shadow-sm" style={{ maxHeight: '200px', objectFit: 'contain' }} alt="" />}
               <input className="form-control mb-3 fw-bold" placeholder="Image Title" value={up.title} onChange={(e) => setUp(p => ({ ...p, title: e.target.value }))} />
               <button className="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow-sm" onClick={handleUpload} disabled={up.loading}>{up.loading ? "Processing..." : "Publish to Gallery"}</button>
             </div>
           </div>
         </div>
       )}
-      
+
       <style>{`.cursor-zoom-in { cursor: zoom-in; }`}</style>
     </div>
   );
