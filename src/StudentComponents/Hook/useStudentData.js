@@ -8,19 +8,18 @@ export function useStudentData() {
   const user = auth.currentUser;
 
   useEffect(() => {
-    if (!user) return;
-    const fetchData = async () => {
-      try {
-        const snap = await getDoc(doc(db, "admissions", user.uid));
+    if (!user?.uid) {
+      setLoading(false);
+      return;
+    }
+    
+    getDoc(doc(db, "admissions", user.uid))
+      .then(snap => {
         if (snap.exists()) setData(snap.data());
-      } catch (err) {
-        console.error("Error fetching student data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [user]);
 
-  return { data, setData, loading, user };
+  return { data, loading, user };
 }

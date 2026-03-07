@@ -3,6 +3,41 @@ import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
+const StatCard = ({ icon, label, value, grad }) => (
+  <div className="col-6 col-md-3">
+    <div
+      className="card border-0 shadow-sm rounded-4 p-3 h-100 text-white"
+      style={{ background: grad, minHeight: "110px" }}
+    >
+      <div
+        className="mb-2 bg-white bg-opacity-20 d-inline-flex p-2 rounded-3 shadow-sm"
+        style={{ width: "fit-content" }}
+      >
+        <i className={`bi ${icon}`} style={{ fontSize: "20px" }}></i>
+      </div>
+      <div className="fw-bold opacity-75 mb-1" style={{ fontSize: "0.6rem", letterSpacing: "1px" }}>
+        {label.toUpperCase()}
+      </div>
+      <div className="fw-bold text-truncate" style={{ fontSize: "0.85rem" }}>
+        {value || "---"}
+      </div>
+    </div>
+  </div>
+);
+
+const ActionItem = ({ icon, label, onClick, color = "#4361ee" }) => (
+  <div className="col-4" onClick={onClick} role="button">
+    <div className="card border-0 shadow-sm p-3 rounded-4 bg-white text-center h-100">
+      <div className="mb-1" style={{ color: color }}>
+        <i className={`bi ${icon}`} style={{ fontSize: "22px" }}></i>
+      </div>
+      <div className="fw-bold text-dark" style={{ fontSize: "0.75rem" }}>
+        {label}
+      </div>
+    </div>
+  </div>
+);
+
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [notices, setNotices] = useState([]);
@@ -11,9 +46,23 @@ export default function Dashboard() {
   const user = auth.currentUser;
 
   useEffect(() => {
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
+      @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+      .animate-pulse { animation: pulse 2s infinite; }
+    `;
+    document.head.appendChild(styleSheet);
+    return () => styleSheet.remove();
+  }, []);
+
+  useEffect(() => {
     if (!user?.email) return;
 
-    const q = query(collection(db, "admissions"), where("email", "==", user.email.trim().toLowerCase()));
+    const q = query(
+      collection(db, "admissions"),
+      where("email", "==", user.email.trim().toLowerCase())
+    );
+    
     const unsubData = onSnapshot(q, (snap) => {
       if (!snap.empty) setData(snap.docs[0].data());
       setLoading(false);
@@ -27,24 +76,31 @@ export default function Dashboard() {
     return () => { unsubData(); unsubNotice(); };
   }, [user]);
 
-  if (loading) return (
-    <div className="vh-100 d-flex justify-content-center align-items-center bg-white">
-      <div className="spinner-grow text-primary" role="status"></div>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="vh-100 d-flex justify-content-center align-items-center bg-white">
+        <div className="spinner-grow text-primary" role="status"></div>
+      </div>
+    );
+  }
+
+  const admissionDate = data?.admissionDate || data?.issueDate || "N/A";
+  const dueAmount = data?.dueAmount || "0";
+  const examStatus = data?.examStatus || "Qualified";
 
   return (
     <div className="p-3" style={{ backgroundColor: "#F4F7FE", minHeight: "100vh", paddingBottom: "40px" }}>
-
-      {/* 1. PREMIUM PROFILE BANNER */}
       <div className="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden shadow"
         style={{ background: "linear-gradient(135deg, #1e3c72, #2a5298)" }}>
         <div className="p-4 text-white">
           <div className="d-flex align-items-center mb-3">
-            <img src={data?.photoUrl || `https://ui-avatars.com/api/?name=${data?.name}&background=random`}
+            <img 
+              src={data?.photoUrl || `https://ui-avatars.com/api/?name=${data?.name || 'Student'}&background=2a5298&color=fff`}
               className="rounded-circle border border-3 border-white shadow-sm"
               style={{ width: 75, height: 75, objectFit: 'cover' }}
-              alt="profile" />
+              alt="profile"
+              onError={(e) => e.target.src = "https://ui-avatars.com/api/?name=Student&background=2a5298&color=fff"}
+            />
             <div className="ms-3">
               <h5 className="fw-bold mb-0">{data?.name || "Student Name"}</h5>
               <small className="opacity-75">{data?.course || "Enrolled Course"}</small>
@@ -58,14 +114,13 @@ export default function Dashboard() {
             <div className="col-6">
               <div className="small opacity-75" style={{ fontSize: '0.65rem' }}>STATUS</div>
               <div className="fw-bold small">
-                <span className="badge bg-success rounded-pill px-3">Active</span>
+                <span className="badge bg-success rounded-pill px-3">{data?.status || "Active"}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. COLORFUL STAT CARDS GRID */}
       <div className="row g-3 mb-4">
         <StatCard
           icon="bi-book"
@@ -73,37 +128,33 @@ export default function Dashboard() {
           value={data?.course}
           grad="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
         />
-
         <StatCard
           icon="bi-clock"
           label="Reg No"
           value={data?.regNo}
           grad="linear-gradient(135deg, #02aab0 0%, #00cdac 100%)"
         />
-
         <StatCard
           icon="bi-award"
           label="Status"
           value={data?.status || "Active"}
           grad="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
         />
-
         <StatCard
           icon="bi-calendar"
           label="Adm. Date"
-          value={data?.admissionDate || data?.issueDate}
+          value={admissionDate}
           grad="linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)"
         />
       </div>
 
       <div className="row g-3">
-        {/* 3. FEAT CARDS */}
         <div className="col-md-6">
           <div className="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white border-start border-5 border-primary">
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <h6 className="fw-bold text-muted small">PENDING FEES</h6>
-                <h3 className="fw-bold text-dark mb-0">₹{data?.dueAmount || "0"}</h3>
+                <h3 className="fw-bold text-dark mb-0">₹{dueAmount}</h3>
               </div>
               <div className="bg-primary bg-opacity-10 p-3 rounded-4 text-primary">
                 <i className="bi bi-credit-card-2-back" style={{ fontSize: "26px" }}></i>
@@ -120,21 +171,22 @@ export default function Dashboard() {
                 <h6 className="fw-bold text-muted small">EXAM STATUS</h6>
                 <div className="d-flex align-items-center">
                   <i className="bi bi-patch-check-fill text-success me-2" style={{ fontSize: "18px" }}></i>
-                  <span className="fw-bold text-dark">Qualified</span>
+                  <span className="fw-bold text-dark">{examStatus}</span>
                 </div>
               </div>
               <div className="bg-success bg-opacity-10 p-3 rounded-4 text-success">
                 <i className="bi bi-award" style={{ fontSize: "26px" }}></i>
               </div>
             </div>
-            <button className="btn btn-outline-success w-100 rounded-pill fw-bold py-2 mt-3"
-              onClick={() => navigate("/student/certificate")}>
+            <button 
+              className="btn btn-outline-success w-100 rounded-pill fw-bold py-2 mt-3"
+              onClick={() => navigate("/student/certificate")}
+            >
               Download Certificate
             </button>
           </div>
         </div>
 
-        {/* 4. NOTICE BOARD */}
         <div className="col-12 mt-2">
           <div className="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
             <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-light bg-opacity-50">
@@ -143,7 +195,7 @@ export default function Dashboard() {
               </h6>
             </div>
             <div className="p-0" style={{ maxHeight: '180px', overflowY: 'auto' }}>
-              {notices.length > 0 ? notices.map((n, i) => (
+              {notices.length > 0 ? notices.map((n) => (
                 <div key={n.id} className="p-3 border-bottom border-light">
                   <div className="fw-bold small text-dark">{n.title}</div>
                   <p className="text-muted small mb-0" style={{ fontSize: '0.75rem' }}>{n.message}</p>
@@ -155,64 +207,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 5. QUICK ACTIONS */}
         <div className="col-12 mt-2 mb-5 pb-5">
           <div className="row g-2">
             <ActionItem icon="bi-person-fill" label="Profile" onClick={() => navigate("/student/profile")} />
             <ActionItem icon="bi-file-earmark-arrow-down" label="Docs" onClick={() => navigate("/student/documents")} />
             <ActionItem icon="bi-whatsapp" label="Support" onClick={() => window.open('https://wa.me/91XXXXXXXXXX')} color="#25D366" />
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- COLORFUL HELPER COMPONENTS ---
-function StatCard({ icon, label, value, grad }) {
-  return (
-    <div className="col-6 col-md-3">
-      <div
-        className="card border-0 shadow-sm rounded-4 p-3 h-100 text-white"
-        style={{ background: grad, minHeight: "110px" }}
-      >
-        <div
-          className="mb-2 bg-white bg-opacity-20 d-inline-flex p-2 rounded-3 shadow-sm"
-          style={{ width: "fit-content" }}
-        >
-          <i className={`bi ${icon}`} style={{ fontSize: "20px" }}></i>
-        </div>
-
-        <div
-          className="fw-bold opacity-75 mb-1"
-          style={{ fontSize: "0.6rem", letterSpacing: "1px" }}
-        >
-          {label.toUpperCase()}
-        </div>
-
-        <div
-          className="fw-bold text-truncate"
-          style={{ fontSize: "0.85rem" }}
-        >
-          {value || "---"}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ActionItem({ icon, label, onClick, color = "#4361ee" }) {
-  return (
-    <div className="col-4" onClick={onClick} role="button">
-      <div className="card border-0 shadow-sm p-3 rounded-4 bg-white text-center h-100">
-        <div className="mb-1" style={{ color: color }}>
-          <i className={`bi ${icon}`} style={{ fontSize: "22px" }}></i>
-        </div>
-        <div
-          className="fw-bold text-dark"
-          style={{ fontSize: "0.75rem" }}
-        >
-          {label}
         </div>
       </div>
     </div>

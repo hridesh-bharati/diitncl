@@ -1,7 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
-
-
+import { toast } from "react-toastify";  // ✅ यह import जोड़ें
 
 import "./App.css";
 
@@ -98,17 +97,65 @@ export default function App() {
     trackVisit();
   }, []);
 
+  // ✅ NEW: PWA Update Checker - यह पूरा useEffect जोड़ें
+  useEffect(() => {
+    // PWA Update Check
+    if ('serviceWorker' in navigator) {
+      console.log('🔍 PWA Update Checker Active');
+
+      // Check for updates every hour
+      const interval = setInterval(() => {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if (reg) {
+            console.log('🔄 Checking for PWA updates...');
+            reg.update();
+          }
+        });
+      }, 60 * 60 * 1000); // हर घंटे
+
+      // Listen for new service worker
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('🆕 New version detected, reloading...');
+        window.location.reload();
+      });
+
+      // Show update notification when new version is detected
+      navigator.serviceWorker.ready.then(registration => {
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // नया अपडेट उपलब्ध है - toast दिखाएं
+              toast.info('🆕 नया अपडेट उपलब्ध है! अपडेट के लिए क्लिक करें।', {
+                position: "top-center",
+                autoClose: 10000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                onClick: () => {
+                  window.location.reload();
+                }
+              });
+            }
+          });
+        });
+      });
+
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   if (loading) return <LoadingSpinner />;
 
   return (
     <>
-      {/* <Lock> */}
+      <Lock>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
 
-      <Suspense fallback={<p className="my-5 ms-auto p-5 text-center  w-100 text-muted">Loading...</p>}>
+      <Suspense fallback={<p className="my-5 ms-auto p-5 text-center w-100 text-muted">Loading...</p>}>
         <Routes>
           {/* --- PUBLIC ROUTES --- */}
           <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
@@ -152,7 +199,7 @@ export default function App() {
           <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
         </Routes>
       </Suspense>
-      {/* </Lock> */}
+      </Lock>
     </>
   );
 }

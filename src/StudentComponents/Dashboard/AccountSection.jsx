@@ -3,7 +3,7 @@ import { auth } from "../../firebase/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-export default function AccountSettings() {
+export default function AccountSection() {
   const navigate = useNavigate();
   const user = auth.currentUser;
 
@@ -11,66 +11,36 @@ export default function AccountSettings() {
     if (user?.email) {
       try {
         await sendPasswordResetEmail(auth, user.email);
-        alert("Password reset link sent to your email: " + user.email);
+        alert("Reset link sent to " + user.email);
       } catch (error) {
-        alert("Error: " + error.message);
+        alert(error.message);
       }
     }
   };
 
   const handleLogout = async () => {
-    await auth.signOut();
-    navigate("/login");
+    try {
+      await auth.signOut();
+      navigate("/login");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
-    <div className="container mt-4">
-      <div className="card shadow-sm border-0">
-        <div className="card-header bg-white fw-bold">
-          <i className="bi bi-gear me-2"></i>
-          Account Settings
+    <div className="container p-3">
+      <div className="card">
+        <div className="card-header">
+          <h6 className="mb-0">⚙️ Account Settings</h6>
         </div>
-
         <div className="card-body">
-          {/* Email Display */}
-          <div className="d-flex align-items-center mb-4">
-            <div className="bg-light p-3 rounded-circle me-3">
-              <i className="bi bi-envelope fs-4 text-primary"></i>
-            </div>
-            <div>
-              <label className="text-muted small d-block">
-                Email Address
-              </label>
-              <span className="fw-bold text-dark">
-                {user?.email || "Not Logged In"}
-              </span>
-            </div>
-          </div>
-
-          <hr />
-
-          {/* Actions */}
-          <div className="row g-3">
-            <div className="col-md-6">
-              <button
-                className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2"
-                onClick={handleResetPassword}
-              >
-                <i className="bi bi-shield-lock"></i>
-                Reset Password Link
-              </button>
-            </div>
-
-            <div className="col-md-6">
-              <button
-                className="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2"
-                onClick={handleLogout}
-              >
-                <i className="bi bi-box-arrow-right"></i>
-                Logout from Account
-              </button>
-            </div>
-          </div>
+          <p className="mb-3"><strong>Email:</strong> {user?.email}</p>
+          <button className="btn btn-primary w-100 mb-2" onClick={handleResetPassword}>
+            Reset Password
+          </button>
+          <button className="btn btn-danger w-100" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
     </div>

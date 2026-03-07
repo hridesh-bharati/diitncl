@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/firebase";
-import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import * as bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function StudentSidebar({ open, setOpen }) {
@@ -9,7 +9,6 @@ export default function StudentSidebar({ open, setOpen }) {
   const offcanvasRef = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
 
-  // DRY: Menu definition
   const menuItems = [
     { to: "/student/dashboard", icon: "bi-speedometer2", label: "Dashboard" },
     { to: "/student/profile", icon: "bi-person-circle", label: "My Profile" },
@@ -17,13 +16,11 @@ export default function StudentSidebar({ open, setOpen }) {
     { to: "/student/certificate", icon: "bi-award", label: "Certificate" },
   ];
 
-  // Bootstrap Offcanvas Fix
   useEffect(() => {
     const element = offcanvasRef.current;
     if (!element) return;
 
     const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(element);
-
     if (open) bsOffcanvas.show();
     else bsOffcanvas.hide();
 
@@ -34,12 +31,15 @@ export default function StudentSidebar({ open, setOpen }) {
   }, [open, setOpen]);
 
   const handleLogout = async () => {
-    await auth.signOut();
-    setOpen(false);
-    navigate("/login");
+    try {
+      await auth.signOut();
+      setOpen(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
-  // DRY Component for NavLinks
   const NavLinks = ({ isMobile = false }) => (
     <>
       {menuItems.map((item) => (
@@ -60,7 +60,6 @@ export default function StudentSidebar({ open, setOpen }) {
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <div className={`d-none d-lg-flex flex-column vh-100 border-end p-3 desktop-sidebar ${collapsed ? "collapsed" : ""}`}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           {!collapsed && <h5 className="sidebar-brand mb-0 text-primary fw-bold">LMS Portal</h5>}
@@ -81,11 +80,9 @@ export default function StudentSidebar({ open, setOpen }) {
         </div>
       </div>
 
-      {/* Mobile Offcanvas */}
       <div className="offcanvas offcanvas-start d-lg-none mobile-sidebar" ref={offcanvasRef} tabIndex="-1">
         <div className="offcanvas-header border-bottom">
           <h5 className="fw-bold text-primary mb-0">LMS Portal</h5>
-          {/* Explicit Close Button Fix */}
           <button type="button" className="btn-close" onClick={() => setOpen(false)} aria-label="Close"></button>
         </div>
         <div className="offcanvas-body d-flex flex-column p-3">
@@ -93,7 +90,7 @@ export default function StudentSidebar({ open, setOpen }) {
             <NavLinks isMobile={true} />
           </nav>
           <div className="mt-auto border-top pt-3">
-            <button className="btn  btn-danger w-100 border-0" onClick={handleLogout}>
+            <button className="btn btn-danger w-100 border-0" onClick={handleLogout}>
               <i className="bi bi-box-arrow-right" style={{ fontSize: "22px" }}></i>
               <span>Logout Account</span>
             </button>

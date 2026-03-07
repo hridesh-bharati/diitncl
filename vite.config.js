@@ -42,11 +42,14 @@ export default defineConfig({
           { src: "/images/icon/icon-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" }
         ]
       },
+      // यह नया ऑप्शन जोड़ें - service worker का नाम बदलने के लिए
       workbox: {
         globPatterns: ["**/*.{js,css,html,png,svg,webp,ico,woff,woff2}"],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
+        // यह line जोड़ें - हर बिल्ड में नया नाम
+        swDest: `sw-${fullVersion.replace(/\./g, '-')}.js`,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*$/,
@@ -85,7 +88,6 @@ export default defineConfig({
     host: true,
     port: 5173
   },
-
   preview: {
     port: 4173,
     host: true

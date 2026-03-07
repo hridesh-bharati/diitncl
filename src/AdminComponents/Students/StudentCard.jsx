@@ -303,7 +303,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
             <div className="bg-primary bg-opacity-10 p-3 rounded-4 mb-3 border border-primary border-opacity-25">
               <div className="d-flex justify-content-between align-items-center">
                 <div className="text-primary fw-bold">
-                  <i className="bi bi-patch-check-fill me-2"></i>ADMISSION COMPLETE
+                  <i className="bi bi-patch-check-fill me-2"></i>COURSE COMPLETE
                 </div>
                 {isAdmin && (
                   <button
