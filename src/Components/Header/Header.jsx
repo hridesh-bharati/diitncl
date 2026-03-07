@@ -284,8 +284,9 @@ export default function Header() {
               ) : (
                 <button onClick={() => { setShowLoginModal(true); setIsMenuOpen(false); }} className="btn btn-primary w-100 py-3 rounded-4">Login to Account</button>
               )}
-              <p className="text-center text-muted mt-3 small">© 2026 Drishtee Computer Center • v2.4.0</p>
-            </div>
+              <p className="text-center text-muted mt-3 small">
+                © 2026 Drishtee Computer Center • v{__APP_VERSION__}
+              </p>            </div>
           </div>
         </div>
       </div>

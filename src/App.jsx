@@ -1,10 +1,9 @@
+// src/App.jsx
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
-import { toast } from "react-toastify";  // ✅ यह import जोड़ें
-
 import "./App.css";
 
-// 🚀 Core Components (Turant load honge bina loading ke)
+/* Core Components */
 import Lock from "./Components/HomePage/LockWeb/Lock";
 import Header from "./Components/Header/Header";
 import NetworkStatus from "./Components/HomePage/LockWeb/NetworkStatus";
@@ -12,12 +11,12 @@ import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
 import HelmetManager from "./Components/HomePage/pages/HelmetManager";
 import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
-// 🔥 Firebase Auth Logic
+/* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
 import { db } from "./firebase/firebase";
 import { doc, setDoc, increment } from "firebase/firestore";
 
-// 🌐 Dynamic Lazy Loading (Optimized for Vite/Webpack)
+/* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
 const About = lazy(() => import("./Components/HomePage/pages/About/About"));
 const OurCourses = lazy(() => import("./Components/HomePage/pages/Course/OurCourses"));
@@ -31,7 +30,7 @@ const LoginForm = lazy(() => import("./Components/Header/LoginForm"));
 const Library = lazy(() => import("./Components/HomePage/pages/Library/Library"));
 const ChatPage = lazy(() => import("./Components/Chats/ChatPage"));
 
-// 📚 Course Sections
+/* Courses */
 const ComputerLanguage = lazy(() => import("./Components/HomePage/pages/Course/ComputerLanguage"));
 const Designing = lazy(() => import("./Components/HomePage/pages/Course/Designing"));
 const WebDev = lazy(() => import("./Components/HomePage/pages/Course/WebDev"));
@@ -39,13 +38,13 @@ const Nielet = lazy(() => import("./Components/HomePage/pages/Course/Nielet"));
 const Banking = lazy(() => import("./Components/HomePage/pages/Course/Banking"));
 const Certificate = lazy(() => import("./Components/HomePage/pages/Course/Ceritificate"));
 
-// ⚖️ Legal & Info Pages
+/* Legal */
 const Discription = lazy(() => import("./Components/HomePage/pages/About/Discription"));
 const FAQ = lazy(() => import("./Components/HomePage/pages/About/FAQ"));
 const PrivacyPolicy = lazy(() => import("./Components/HomePage/pages/About/PrivacyPolicy"));
 const Term = lazy(() => import("./Components/HomePage/pages/About/Terms"));
 
-// 🧑‍💻 Protected Dashboards
+/* Dashboards */
 const AdminRoutes = lazy(() => import("./AdminComponents/AdminRoutes"));
 const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
 const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
@@ -55,8 +54,8 @@ export default function App() {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /* 🔐 Firebase Auth Listener */
   useEffect(() => {
-    // 🛡️ Single Listener for better performance
     const unsubscribe = authListener(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -68,96 +67,36 @@ export default function App() {
       }
       setLoading(false);
     });
-    return () => unsubscribe();
+
+    return unsubscribe;
   }, []);
 
+  /* 📊 Visitor Tracking */
   useEffect(() => {
     const trackVisit = async () => {
-      // 1. Check karo ki kya isi session mein count ho chuka hai?
-      const hasVisited = sessionStorage.getItem("drishtee_visitor");  // ✅ Smart session check
-
-      if (!hasVisited) {
-        const ref = doc(db, "stats", "visitors");
+      if (!sessionStorage.getItem("drishtee_visitor")) {
         try {
-          // 2. Sirf 'count' field bhejna hai (Rules allow only this)  // ✅ Rules compliant
-          await setDoc(ref, {
-            count: increment(1)
-          }, { merge: true });
-
-          // 3. Session set karein taki page refresh par count na badhe  // ✅ Duplicate prevention
+          await setDoc(doc(db, "stats", "visitors"), { count: increment(1) }, { merge: true });
           sessionStorage.setItem("drishtee_visitor", "true");
-          console.log("🚀 New visitor tracked successfully!");
-        } catch (error) {
-          // Agar permission error aaye toh check karein rules mein visitors allow hai ya nahi  // ✅ Debug ready
-          console.error("Firebase Tracking Error:", error);
+        } catch (err) {
+          console.error("Visitor tracking error", err);
         }
       }
     };
-
     trackVisit();
-  }, []);
-
-  // ✅ NEW: PWA Update Checker - यह पूरा useEffect जोड़ें
-  useEffect(() => {
-    // PWA Update Check
-    if ('serviceWorker' in navigator) {
-      console.log('🔍 PWA Update Checker Active');
-
-      // Check for updates every hour
-      const interval = setInterval(() => {
-        navigator.serviceWorker.getRegistration().then(reg => {
-          if (reg) {
-            console.log('🔄 Checking for PWA updates...');
-            reg.update();
-          }
-        });
-      }, 60 * 60 * 1000); // हर घंटे
-
-      // Listen for new service worker
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('🆕 New version detected, reloading...');
-        window.location.reload();
-      });
-
-      // Show update notification when new version is detected
-      navigator.serviceWorker.ready.then(registration => {
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // नया अपडेट उपलब्ध है - toast दिखाएं
-              toast.info('🆕 नया अपडेट उपलब्ध है! अपडेट के लिए क्लिक करें।', {
-                position: "top-center",
-                autoClose: 10000,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                onClick: () => {
-                  window.location.reload();
-                }
-              });
-            }
-          });
-        });
-      });
-
-      return () => clearInterval(interval);
-    }
   }, []);
 
   if (loading) return <LoadingSpinner />;
 
   return (
-    <>
-      <Lock>
+    <Lock>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
 
-      <Suspense fallback={<p className="my-5 ms-auto p-5 text-center w-100 text-muted">Loading...</p>}>
+      <Suspense fallback={<p className="my-5 text-center text-muted w-100">Loading...</p>}>
         <Routes>
-          {/* --- PUBLIC ROUTES --- */}
+          {/* Public Routes */}
           <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
           <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
           <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
@@ -173,20 +112,20 @@ export default function App() {
           <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
           <Route path="/chat" element={<ChatPage />} />
 
-          {/* --- COURSE ROUTES --- */}
+          {/* Courses */}
           <Route path="/courses/computer-language" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
           <Route path="/courses/designing" element={<HelmetManager><Designing /></HelmetManager>} />
           <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
           <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
           <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
 
-          {/* --- LEGAL ROUTES (Sitemap Sync) --- */}
+          {/* Legal */}
           <Route path="/terms" element={<HelmetManager><Term /></HelmetManager>} />
           <Route path="/privacy-policy" element={<HelmetManager><PrivacyPolicy /></HelmetManager>} />
           <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
           <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
 
-          {/* --- DASHBOARDS (Protected) --- */}
+          {/* Protected Routes */}
           <Route
             path="/admin/*"
             element={user && role === "admin" ? <AdminRoutes /> : <Navigate to="/login" replace />}
@@ -199,7 +138,6 @@ export default function App() {
           <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
         </Routes>
       </Suspense>
-      </Lock>
-    </>
+    </Lock>
   );
 }
