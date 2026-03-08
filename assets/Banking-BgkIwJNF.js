@@ -1,1 +1,0 @@
-import{j as t}from"./index-Fr3CAVEK.js";import{C as o}from"./CommanCourse-CBb1JNKl.js";import"./courseData-CeKRB8nL.js";function a(){const s=["DBI"];return t.jsx("div",{className:"MT3",children:t.jsx(o,{targetCourses:s,CTitle:"Banking"})})}export{a as default};
