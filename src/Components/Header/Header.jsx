@@ -1,176 +1,259 @@
-import { useState, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
-import "./Header.css";
 import LanguageTranslator from "../LanguageTranslator/LanguageTranslator";
+import "./Header.css";
 
 export default function Header() {
   const { user, student, isAdmin, logout } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showApps, setShowApps] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginType, setLoginType] = useState("student");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
 
+  const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isActive = (path) => (location.pathname === path ? "text-primary fw-bold" : "text-secondary");
+  const isActive = (path) => (location.pathname === path ? "active" : "");
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
       await logout();
+      setShowProfileMenu(false);
       setIsMenuOpen(false);
       navigate("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    } catch (error) { console.error(error); }
   };
 
   const userData = useMemo(() => ({
     name: student?.name || user?.displayName || "Guest Student",
+    email: student?.email || user?.email || "student@drishteeindia.com",
     photo: student?.photoUrl || user?.photoURL || "/images/icon/default-avatar.png",
     dashboard: isAdmin ? "/admin" : "/student"
   }), [student, user, isAdmin]);
 
   const courseLinks = [
-    { to: "/courses", label: "All Courses" },
-    { to: "/certificate", label: "Computer Certificate" },
-    { to: "/courses/computer-language", label: "Computer Language" },
-    { to: "/courses/designing", label: "Graphics Design" },
-    { to: "/courses/web-development", label: "Web Development" },
-    { to: "/courses/nielit", label: "NIELIT Courses" },
-    { to: "/courses/banking", label: "Banking Course" },
+    {
+      to: "/courses",
+      label: "All Courses",
+      desc: "Explore our full catalog of professional programs.",
+      icon: "bi-mortarboard",
+      color: "linear-gradient(135deg, #34C759, #30D158)"
+    },
+    {
+      to: "/certificate",
+      label: "Certificate",
+      desc: "Download and verify your earned certifications.",
+      icon: "bi-patch-check",
+      color: "linear-gradient(135deg, #FF9500, #FFCC00)"
+    },
+    {
+      to: "/courses/computer-language",
+      label: "Languages",
+      desc: "Master C++, Java, Python and more.",
+      icon: "bi-code-slash",
+      color: "linear-gradient(135deg, #5856D6, #AF52DE)"
+    },
+    {
+      to: "/courses/designing",
+      label: "Graphics",
+      desc: "Learn UI/UX, Photoshop, and Creative Design.",
+      icon: "bi-brush",
+      color: "linear-gradient(135deg, #FF2D55, #FF375F)"
+    },
+    {
+      to: "/courses/web-development",
+      label: "Web Dev",
+      desc: "Build modern websites with React and Node.",
+      icon: "bi-globe",
+      color: "linear-gradient(135deg, #007AFF, #00BCD4)"
+    },
+    {
+      to: "/courses/nielit",
+      label: "NIELIT",
+      desc: "Official CCC, O-Level and Govt. recognized courses.",
+      icon: "bi-award",
+      color: "linear-gradient(135deg, #FF3B30, #FF453A)"
+    },
+  ];
+  const studentZoneLinks = [
+    { to: "/new-admission", label: "New Admission", icon: "bi-pencil-square", color: "linear-gradient(135deg, #007AFF, #054e9e)" },
+    { to: "/download-certificate", label: "Verification", icon: "bi-shield-check", color: "linear-gradient(135deg, #34C759, #1a9638)" },
   ];
 
   return (
     <>
-      {/* --- PC NAVBAR (Fixed Height) --- */}
-      <nav className="navbar navbar-expand-lg fixed-top bg-white border-bottom p-0 d-none d-lg-block shadow-sm"
-        style={{ height: "80px" }}>
-        <div className="container-fluid px-4 h-100 d-flex align-items-center justify-content-between">
-          <Link to="/" className="navbar-brand">
-            <img src="/images/icon/logo.png" alt="Logo" height="45" />
-          </Link>
+      <header className="google-header-advanced sticky-top shadow-sm bg-white">
+        <div className="header-container container-fluid px-3 px-lg-4">
+          <div className="header-left d-flex align-items-center w-100">
+            <Link to="/" className="logo d-flex align-items-center text-decoration-none">
+              <img src="/images/icon/logo.png" alt="Drishtee" height="32" />
+            </Link>
 
-          <div className="d-flex align-items-center gap-4">
-            <Link to="/" className={`nav-link px-2 ${isActive("/")}`}>Home</Link>
-            <Link to="/about" className={`nav-link px-2 ${isActive("/about")}`}>About</Link>
-            <div className="dropdown">
-              <Link to="/courses" className={`nav-link dropdown-toggle px-2 ${location.pathname.startsWith("/courses") ? "text-primary fw-bold" : ""}`} data-bs-toggle="dropdown">
-                Courses
-              </Link>
-              <ul className="dropdown-menu shadow-lg border-0 mt-2">
-                {courseLinks.map((link) => (
-                  <li key={link.to}><Link className="dropdown-item py-2" to={link.to}>{link.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <Link to="/library" className={`nav-link px-2 ${isActive("/library")}`}>Library</Link>
-            <div className="dropdown">
-              <button className="btn dropdown-toggle fw-semibold text-secondary border-0 p-0 shadow-none" data-bs-toggle="dropdown">Student Zone</button>
-              <ul className="dropdown-menu shadow-lg border-0 mt-2">
-                <li><Link className="dropdown-item py-2" to="/new-admission">New Admission</Link></li>
-                <li><Link className="dropdown-item py-2" to="/download-certificate">Download Certificate</Link></li>
-              </ul>
-            </div>
-            <Link to="/gallery" className={`nav-link px-2 ${isActive("/gallery")}`}>Gallery</Link>
-            <Link to="/contact-us" className={`nav-link px-2 ${isActive("/contact-us")}`}>Contact</Link>
-          </div>
+            <nav className="nav-links d-none d-lg-flex mx-auto">
+              <Link to="/" className={isActive("/")}>Home</Link>
+              <Link to="/about" className={isActive("/about")}>About</Link>
 
-          <div className="d-flex align-items-center gap-3">
-            <GlobleSearchBox routes={RouteLinks} placeholder="Search..." />
-            {user && (
-              <button className="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" onClick={() => navigate("/chat")} style={{ width: '42px', height: '42px' }} title="Messages">
-                <i className="bi bi-chat-dots-fill text-primary fs-5"></i>
-              </button>
-            )}
-            {!user ? (
-              <button className="btn btn-primary px-4 rounded-4 fw-bold shadow-sm" onClick={() => setShowLoginModal(true)}>Login</button>
-            ) : (
-              <div className="dropdown">
-                <img src={userData.photo} className="rounded-circle border border-2 border-primary cursor-pointer shadow-sm" width="42" height="42" data-bs-toggle="dropdown" alt="Profile" />
-                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                  <li><Link className="dropdown-item py-2 fw-bold" to={userData.dashboard}>Dashboard</Link></li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li><button className="dropdown-item text-danger py-2" onClick={handleLogout}>Logout</button></li>
-                </ul>
+              <div className="nav-item-dropdown position-relative pt-2">
+                <Link to="/courses" className={location.pathname.startsWith("/courses") ? "active" : ""}>
+                  Courses <i className="bi bi-chevron-down small"></i>
+                </Link>
+                <div className="nav-dropdown-menu modern-grid-menu shadow-lg border-0">
+                  <div className="dropdown-grid">
+                    <div className="dropdown-grid">
+                      {courseLinks.map((link) => (
+                        <Link key={link.to} to={link.to} className="grid-item d-flex align-items-start gap-3 p-3">
+                          <div className="grid-icon flex-shrink-0" style={{ background: link.color }}>
+                            <i className={`bi ${link.icon}`}></i>
+                          </div>
+                          <div className="d-flex flex-column">
+                            <span className="fw-bold text-dark">{link.label}</span>
+                            <small className="text-muted" style={{ fontSize: '12px', lineHeight: '1.2' }}>
+                              {link.desc}
+                            </small>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-             <button className="btn btn-outline-danger rounded-circle p-2 d-flex align-items-center justify-content-center" onClick={() => navigate("/branch/nichlaul/location")} title="Our Location" style={{ width: '40px', height: '40px' }}>
-              <i className="bi bi-geo-alt-fill"></i>
-            </button>
-          </div>
-        </div>
-      </nav>
+              <Link to="/library" className={isActive("/library")}>Library</Link>
+              <div className="nav-item-dropdown position-relative mt-2">
+                <span className={`nav-static-link ${location.pathname.includes('admission') ? 'active' : ''}`}>Student Zone <i className="bi bi-chevron-down small"></i></span>
+                <div className="nav-dropdown-menu modern-grid-menu shadow-lg border-0" style={{ minWidth: '220px' }}>
+                  <div className="dropdown-grid" style={{ gridTemplateColumns: '1fr' }}>
+                    {studentZoneLinks.map((link) => (
+                      <Link key={link.to} to={link.to} className="grid-item">
+                        <div className="grid-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
+                        <span>{link.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <Link to="/gallery" className={isActive("/gallery")}>Gallery</Link>
+              <Link to="/contact-us" className={isActive("/contact-us")}>Contact</Link>
 
-      {/* --- MOBILE TOP BAR --- */}
-      <header className="d-lg-none bg-primary p-3 sticky-top shadow-sm">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center gap-2" onClick={() => navigate("/")} style={{ cursor: 'pointer' }}>
-            <img src="/images/icon/icon.webp" className="bg-white p-1 rounded-3 shadow-sm" height="38" width="38" alt="Logo" />
-            <div className="text-white">
-              <h1 className="m-0 fs-6 fw-bold" style={{ letterSpacing: '0.5px' }}>DRISHTEE</h1>
-              <div style={{ fontSize: '8px', opacity: 0.8, fontWeight: 'bold' }}>COMPUTER CENTER</div>
-            </div>
+            </nav>
           </div>
-          <div className="d-flex gap-2">
-            <button className="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" onClick={() => setIsSearchActive(true)} style={{ width: '38px', height: '38px' }}><i className="bi bi-search"></i></button>
-            {user && (
-              <button className="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" onClick={() => navigate("/chat")} style={{ width: '38px', height: '38px' }}><i className="bi bi-chat-text-fill text-primary"></i></button>
-            )}
-            <button className="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" onClick={() => navigate("/branch/nichlaul/location")} style={{ width: '38px', height: '38px' }}><i className="bi bi-geo-alt-fill text-danger"></i></button>
+          <div className="d-none d-lg-inline">
+            <GlobleSearchBox routes={RouteLinks} placeholder="Search courses..." />
+          </div>
+
+          <div className="header-right d-flex align-items-center gap-2 gap-md-3">
+            <button className="btn btn-light rounded-circle d-sm-none" onClick={() => setIsSearchActive(true)}><i className="bi bi-search"></i></button>
+            <div className="apps-dropdown position-relative">
+              <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
+                <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
+              </button>
+              {showApps && (
+                <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3 animate__animated animate__fadeIn">
+                  <div className="apps-grid">
+                    <Link to="/chat" className="app-item" onClick={() => setShowApps(false)}>
+                      <i className="bi bi-chat-dots-fill text-primary"></i><span>Chat</span>
+                    </Link>
+                    <Link to="/download-certificate" className="app-item" onClick={() => setShowApps(false)}>
+                      <i className="bi bi-patch-check-fill text-success"></i><span>Verify</span>
+                    </Link>
+                    <Link to="/contact-us" className="app-item" onClick={() => setShowApps(false)}>
+                      <i className="bi bi-envelope-fill  text-danger"></i><span>Contact</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Login/Profile Section */}
+            <div className="d-none d-lg-block">
+              {!user ? (
+                <button className="google-signin-btn" onClick={() => setShowLoginModal(true)}>Login</button>
+              ) : (
+                <div className="profile-section" ref={profileRef}>
+                  <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+                    <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" />
+                  </div>
+                  {showProfileMenu && (
+                    <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden animate__animated animate__fadeInUp">
+                      <div className="profile-header p-4 text-center bg-light border-bottom">
+                        <img src={userData.photo} alt="user" className="rounded-circle mb-2 border border-3 border-white shadow" width="65" height="65" />
+                        <h6 className="fw-bold m-0">{userData.name}</h6>
+                        <p className="text-muted small m-0 text-truncate">{userData.email}</p>
+                      </div>
+                      <div className="menu-items p-2">
+                        <Link to={userData.dashboard} onClick={() => setShowProfileMenu(false)}><i className="bi bi-person-circle text-primary"></i> Dashboard</Link>
+                        <button onClick={handleLogout} className="logout-btn w-100 border-0 bg-transparent text-start"><i className="bi bi-box-arrow-right text-danger"></i> Sign out</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0" onClick={() => setShowApps(false)}>
+              <i className="bi bi-geo-alt-fill text-danger"></i>
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* --- MOBILE BOTTOM TAB BAR --- */}
-      <nav className="fixed-bottom bg-white border-top d-lg-none d-flex justify-content-around align-items-center shadow-lg" style={{ height: "68px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      {/* MOBILE BOTTOM NAV */}
+      <nav className="fixed-bottom bg-white border-top d-lg-none d-flex justify-content-around align-items-center shadow-lg"
+        style={{ height: "68px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <Link to="/" className={`text-center text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/' ? 'text-primary' : 'text-secondary'}`}>
           <i className={`bi bi-house-door${location.pathname === '/' ? '-fill' : ''} fs-4`}></i>
-          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Home</span>
+          <span className="mobile-nav-label">Home</span>
         </Link>
-
         <Link to="/courses" className={`text-center text-decoration-none d-flex flex-column align-items-center ${location.pathname.startsWith('/courses') ? 'text-primary' : 'text-secondary'}`}>
           <i className={`bi bi-grid${location.pathname.startsWith('/courses') ? '-fill' : ''} fs-4`}></i>
-          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Explore</span>
+          <span className="mobile-nav-label">Explore</span>
         </Link>
-
         <div className="position-relative" style={{ width: '60px' }}>
           <Link to="/gallery" className="btn btn-primary rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center custom-camera-btn"
-            style={{ width: '58px', height: '58px', top: '-10px' }}>
-            <i className="bi bi-camera-fill fs-4 text-white"></i>
-          </Link>
+            style={{ width: '58px', height: '58px', top: '-10px' }}><i className="bi bi-camera-fill fs-4 text-white"></i></Link>
         </div>
-
         <Link to="/library" className={`text-center text-decoration-none d-flex flex-column align-items-center ${location.pathname.startsWith('/library') ? 'text-primary' : 'text-secondary'}`}>
           <i className={`bi bi-book${location.pathname.startsWith('/library') ? '-fill' : ''} fs-4`}></i>
-          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Library</span>
+          <span className="mobile-nav-label">Library</span>
         </Link>
-
         <button onClick={() => setIsMenuOpen(true)} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
           <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
             <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="User" />
           </div>
-          <span className="text-secondary" style={{ fontSize: '10px', fontWeight: 'bold' }}>Account</span>
+          <span className="text-secondary mobile-nav-label">Account</span>
         </button>
       </nav>
 
-      {/* --- MOBILE DRAWER (iOS OFFCANVAS) --- */}
+      {/* MOBILE ACCOUNT DRAWER */}
       <div className={`offcanvas offcanvas-bottom rounded-top-5 border-0 ${isMenuOpen ? "show" : ""}`}
-        style={{ height: "80vh", visibility: isMenuOpen ? "visible" : "hidden", zIndex: 20001, transition: '0.4s cubic-bezier(0.1, 0.7, 0.1, 1)' }}>
+        style={{ height: "85vh", visibility: isMenuOpen ? "visible" : "hidden", zIndex: 900000, transition: '0.4s cubic-bezier(0.1, 0.7, 0.1, 1)' }}>
+
         <div className="offcanvas-header justify-content-center pt-3">
           <div className="bg-secondary opacity-25 rounded-pill" style={{ width: "40px", height: "5px" }} onClick={() => setIsMenuOpen(false)}></div>
         </div>
 
         <div className="offcanvas-body p-4 pt-0 custom-scrollbar">
-          <h2 className="fw-bolder text-dark mb-3 mt-2" style={{ letterSpacing: '-1px' }}>Account</h2>
+          <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
 
+          {/* PROFILE CARD */}
           <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
             <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-light">
-              <img src={userData.photo} className="rounded-circle border border-3 border-white shadow-sm" width="60" height="60" />
+              <img src={userData.photo} className="rounded-circle border border-3 border-white shadow-sm" width="60" height="60" alt="Profile" />
               <div className="flex-grow-1">
                 <h6 className="m-0 fw-bold text-dark fs-5">{userData.name}</h6>
                 <span className="text-muted small">Go to dashboard</span>
@@ -179,92 +262,177 @@ export default function Header() {
             </div>
           </Link>
 
-          <div className="row g-3 mb-4 text-center">
-            <div className="col-6">
-              <Link to="/download-certificate" onClick={() => setIsMenuOpen(false)} className="text-decoration-none d-block p-3 rounded-4 bg-white shadow-sm border border-light">
-                <i className="bi bi-patch-check-fill fs-3 text-warning mb-1 d-block"></i>
-                <span className="small fw-bold text-secondary">Verification</span>
-              </Link>
-            </div>
-            <div className="col-6">
-              <Link to="/chat" onClick={() => setIsMenuOpen(false)} className="text-decoration-none d-block p-3 rounded-4 bg-white shadow-sm border border-light">
-                <i className="bi bi-chat-dots-fill fs-3 text-success mb-1 d-block"></i>
-                <span className="small fw-bold text-secondary">Messages</span>
-              </Link>
-            </div>
-          </div>
-
           <div className="ios-menu">
+
+            {/* SECTION: PREFERENCES */}
             <div className="ios-menu-section">
               <div className="ios-menu-title">Preferences</div>
+
+              {/* Language Translator */}
               <div className="ios-menu-item no-hover justify-content-between">
                 <div className="d-flex align-items-center gap-3">
                   <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
                   <span>App Language</span>
                 </div>
-                <div className="language-wrapper-drawer">
-                  <LanguageTranslator />
+                <div className="language-wrapper-drawer"><LanguageTranslator /></div>
+              </div>
+
+              {/* Dark Mode Toggle */}
+              <div className="ios-menu-item no-hover justify-content-between">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}><i className="bi bi-moon-stars-fill"></i></div>
+                  <span>Dark Mode</span>
+                </div>
+                <div className="form-check form-switch">
+                  <input className="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" />
                 </div>
               </div>
             </div>
 
+            {/* SECTION: ABOUT */}
             <div className="ios-menu-section">
-              <div className="ios-menu-title">Information</div>
-              <Link to="/about" className="ios-menu-item" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #5856D6, #AF52DE)' }}><i className="bi bi-info-circle"></i></div>
-                <span>About Us</span>
-                <i className="bi bi-chevron-right"></i>
+              <div className="ios-menu-title">About</div>
+              <Link to="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #007AFF, #00C7BE)' }}><i className="bi bi-building"></i></div>
+                    <span>About Institute</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
+                </div>
               </Link>
-              <Link to="/branch/thoothibari" className="ios-menu-item" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #007AFF, #00BCD4)' }}><i className="bi bi-building"></i></div>
-                <span>Our Branches</span>
-                <i className="bi bi-chevron-right"></i>
+              <Link to="/branch/thoothibari" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #5856D6, #AF52DE)' }}><i className="bi bi-diagram-3"></i></div>
+                    <span>About Branch</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
+                </div>
               </Link>
             </div>
 
+            {/* SECTION: ACADEMICS */}
             <div className="ios-menu-section">
-              <div className="ios-menu-title">Academics</div>
-              <Link to="/courses" className="ios-menu-item" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #34C759, #30D158)' }}><i className="bi bi-mortarboard"></i></div>
-                <span>Explore Courses</span>
-                <i className="bi bi-chevron-right"></i>
+              <div className="ios-menu-title">Academics Courses</div>
+              {courseLinks.map(link => (
+                <Link key={link.to} to={link.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
+                      <span>{link.label}</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* SECTION: SUPPORT */}
+            <div className="ios-menu-section">
+              <div className="ios-menu-title">Support & Feedback</div>
+              <Link to="/contact-us" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #34C759, #30D158)' }}><i className="bi bi-headset"></i></div>
+                    <span>Help Center</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
+                </div>
               </Link>
-              <Link to="/library" className="ios-menu-item" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF3B30, #FF453A)' }}><i className="bi bi-journal-bookmark"></i></div>
-                <span>E-Library</span>
-                <i className="bi bi-chevron-right"></i>
+              <Link to="/feedback" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF2D55, #FF375F)' }}><i className="bi bi-heart-fill"></i></div>
+                    <span>Rate our App</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
+                </div>
               </Link>
             </div>
+
+
+
+            {/* SECTION: LEGAL */}
+            <div className="ios-menu-section">
+              <div className="ios-menu-title">Legal</div>
+              <Link to="/privacy-policy" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #8E8E93, #636366)' }}><i className="bi bi-shield-lock"></i></div>
+                    <span>Privacy Policy</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
+                </div>
+              </Link>
+              {/* SECTION: SOCIAL CONNECT */}
+              <div className="ios-menu-section">
+                <div className="ios-menu-title">Connect With Us</div>
+                <div className="ios-menu-item no-hover justify-content-around py-3">
+                  <a href="#" className="text-primary fs-4"><i className="bi bi-facebook"></i></a>
+                  <a href="#" className="text-danger fs-4"><i className="bi bi-instagram"></i></a>
+                  <a href="#" className="text-info fs-4"><i className="bi bi-linkedin"></i></a>
+                  <a href="#" className="text-danger fs-4"><i className="bi bi-youtube"></i></a>
+                </div>
+              </div>
+
+              {/* Professional addition: Delete Account */}
+              <div className="ios-menu-item justify-content-between mt-2">
+                <div className="d-flex align-items-center gap-3 text-danger">
+                  <div className="ios-icon" style={{ background: 'rgba(255, 59, 48, 0.1)', color: '#FF3B30' }}><i className="bi bi-trash3"></i></div>
+                  <span className="fw-medium">Delete Account</span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <div className="pb-5 mt-3">
+          {/* FOOTER INFO */}
+          <div className="text-center mt-4 opacity-50">
+            <div className="ios-menu-section bg-transparent shadow-none mb-0">
+              <a
+                href="https://github.com/hridesh-bharati"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link d-inline-block"
+              >
+                <div className="d-flex align-items-center justify-content-center gap-2 text-muted mb-2">
+                  <i className="bi bi-github fs-5 text-dark"></i>
+                  <span className="small fw-medium">Developed by: hridesh-bharati</span>
+                </div>
+              </a></div>
+            <small className="text-muted">Version 2.4.0 (2026)</small>
+          </div>
+
+          {/* AUTH BUTTON */}
+          <div className="pb-5 mt-4">
             {user ? (
-              <button onClick={handleLogout} className="btn btn-light w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0 mb-4">Sign Out</button>
+              <button onClick={handleLogout} className="btn btn-light w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0 mb-4 active-scale">Sign Out</button>
             ) : (
-              <button onClick={() => { setShowLoginModal(true); setIsMenuOpen(false); }} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow mb-4">Login to Portal</button>
+              <button onClick={() => { setShowLoginModal(true); setIsMenuOpen(false); }} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow mb-4 active-scale">Login to Portal</button>
             )}
           </div>
         </div>
       </div>
 
-      {isMenuOpen && <div className="modal-backdrop fade show" style={{ zIndex: 20000 }} onClick={() => setIsMenuOpen(false)}></div>}
-
-      {/* --- LOGIN MODAL --- */}
+      {/* --- LOGIN MODAL (ADD THIS BLOCK) --- */}
       {showLoginModal && (
-        <div className="modal show d-block" onClick={() => setShowLoginModal(false)}>
+        <div className="modal show d-block" style={{ zIndex: 30000 }} onClick={() => setShowLoginModal(false)}>
           <div className="modal-dialog modal-dialog-centered modal-sm p-3" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-content border-0 rounded-5 p-4 shadow-lg bg-light bg-opacity-95" style={{ backdropFilter: 'blur(10px)' }}>
-              <div className="modal-header border-0 pb-0 justify-content-between">
+            <div className="modal-content border-0 rounded-5 p-4 shadow-lg bg-white">
+              <div className="d-flex justify-content-between align-items-center mb-4">
                 <h4 className="fw-bold m-0 text-dark">Login</h4>
-                <button type="button" className="btn-close shadow-none" onClick={() => setShowLoginModal(false)}></button>
+                <button className="btn-close shadow-none" onClick={() => setShowLoginModal(false)}></button>
               </div>
-              <div className="modal-body pt-4">
-                <div className="btn-group w-100 mb-4 bg-secondary bg-opacity-10 p-1 rounded-4 shadow-sm border border-white">
-                  <button className={`btn rounded-4 fw-bold border-0 ${loginType === 'student' ? 'bg-white shadow-sm text-primary' : 'text-muted'}`} onClick={() => setLoginType('student')}>Student</button>
-                  <button className={`btn rounded-4 fw-bold border-0 ${loginType === 'admin' ? 'bg-white shadow-sm text-primary' : 'text-muted'}`} onClick={() => setLoginType('admin')}>Admin</button>
-                </div>
-                <LoginForm isAdminView={loginType === "admin"} onSuccess={() => setShowLoginModal(false)} isModal={true} />
+
+              <div className="btn-group w-100 mb-4 bg-light p-1 rounded-4">
+                <button className={`btn rounded-4 fw-bold border-0 ${loginType === 'student' ? 'bg-white shadow-sm text-primary' : 'text-muted'}`}
+                  onClick={() => setLoginType('student')}>Student</button>
+                <button className={`btn rounded-4 fw-bold border-0 ${loginType === 'admin' ? 'bg-white shadow-sm text-primary' : 'text-muted'}`}
+                  onClick={() => setLoginType('admin')}>Admin</button>
               </div>
+
+              <LoginForm isAdminView={loginType === "admin"} onSuccess={() => setShowLoginModal(false)} isModal={true} />
             </div>
           </div>
         </div>
@@ -272,15 +440,15 @@ export default function Header() {
 
       {/* SEARCH OVERLAY */}
       {isSearchActive && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 bg-white" style={{ zIndex: 40000, padding: '15px' }}>
-          <div className="d-flex align-items-center gap-3 mb-4">
-            <button className="btn btn-light rounded-circle shadow-sm" onClick={() => setIsSearchActive(false)}><i className="bi bi-arrow-left fs-4"></i></button>
-            <div className="flex-grow-1">
-              <GlobleSearchBox routes={RouteLinks} autoFocus onSelect={() => setIsSearchActive(false)} />
-            </div>
+        <div className="position-fixed top-0 start-0 w-100 h-100 bg-white p-3" style={{ zIndex: 40000 }}>
+          <div className="d-flex align-items-center gap-2">
+            <button className="btn btn-light rounded-circle" onClick={() => setIsSearchActive(false)}><i className="bi bi-arrow-left"></i></button>
+            <div className="flex-grow-1"><GlobleSearchBox routes={RouteLinks} autoFocus onSelect={() => setIsSearchActive(false)} /></div>
           </div>
         </div>
       )}
+
+      {(isMenuOpen || showLoginModal) && <div className="modal-backdrop fade show" style={{ zIndex: 20000 }} onClick={() => { setIsMenuOpen(false); setShowLoginModal(false); }}></div>}
     </>
   );
 }

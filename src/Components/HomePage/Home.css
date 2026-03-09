@@ -1,93 +1,356 @@
-/* --- HERO SLIDER --- */
-.hero-slider {
-    position: relative;
-    height: 75vh;
-    min-height: 350px;
-    width: 100%;
-    overflow: hidden;
-    background: #000;
+:root {
+  --accent-blue: #1a73e8;
+  --bg-dark: #050a14;
+  --text-white: #ffffff;
+  --text-gray: rgba(255, 255, 255, 0.7);
+  --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.1);
+  --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.slider-wrapper { position: absolute; inset: 0; z-index: 1; }
+/* Global Reset */
+.modern-home {
+  background: #fff;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ========== HERO SECTION ========== */
+.hero-viewport {
+  position: relative;
+  height: 100vh;
+  background: var(--bg-dark);
+  overflow: hidden;
+}
 
 .hero-slide {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center top; 
-    opacity: 0;
-    transform: scale(1.1);
-    transition: opacity 1.5s ease-in-out, transform 6s linear;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease-in-out;
+  z-index: 1;
 }
 
-.hero-slide.active { 
-    opacity: 1; 
-    transform: scale(1); 
-    z-index: 2; 
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 2;
 }
 
-.hero-overlay-content {
-    position: absolute;
-    bottom: 80px; 
-    left: 0;
-    width: 100%;
-    z-index: 10;
+.hero-img-fill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.85);
 }
 
-.custom-btn {
-    border-radius: 50px !important;
-    padding: 12px 28px !important;
-    font-size: 0.95rem;
-    min-width: 140px;
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(5, 10, 20, 0.95) 0%, rgba(5, 10, 20, 0.4) 100%);
+  z-index: 2;
 }
 
-/* --- PORTAL HUB --- */
-.portal-container {
-    margin-top: -50px;
-    position: relative;
-    z-index: 99;
+.hero-container {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  z-index: 10;
+  max-width: 900px;
 }
 
-.portal-icon-wrapper {
-    width: 55px;
-    height: 55px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.4rem;
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.badge-premium {
+  background: var(--accent-blue);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
-.portal-hover:hover .portal-icon-wrapper {
-    transform: translateY(-5px) scale(1.1);
+/* --- FUTURE SKILLS TEXT (BIG & BOLD) --- */
+.hero-title {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 15px;
+  flex-wrap: wrap;
+  /* Ensures responsiveness */
 }
 
-.last-child-border-0:last-child {
-    border-right: none !important;
+.fw-light {
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  color: #fff;
+  font-weight: 300;
+  line-height: 1.1;
 }
 
-/* --- MOBILE FIXES --- */
+.fw-bold-gradient {
+  font-size: clamp(2.5rem, 6vw, 5.2rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  background: linear-gradient(to right, #fff, var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+  display: inline-block;
+}
+
+.hero-desc {
+  color: var(--text-gray);
+  font-size: 1.15rem;
+  margin-bottom: 40px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* --- BUTTONS INLINE (ALWAYS) --- */
+.hero-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-prime,
+.btn-glass {
+  padding: 14px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 16px;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.btn-prime {
+  background: var(--accent-blue);
+  color: #fff;
+  border: 2px solid var(--accent-blue);
+}
+
+.btn-prime:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(26, 115, 232, 0.4);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ========== PORTAL SECTION ========== */
+.portal-overlap {
+  position: relative;
+  z-index: 20;
+  margin-top: -100px;
+}
+
+.portal-glass-card {
+  background: #fff;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: var(--shadow-premium);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.portal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.portal-title {
+  font-weight: 800;
+  font-size: 26px;
+}
+
+.portal-title span {
+  color: var(--accent-blue);
+}
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+/* --- UPDATED PORTAL ITEM CSS --- */
+.portal-item {
+  text-align: center;
+  text-decoration: none;
+  padding: 15px;
+  border-radius: 20px;
+  transition: all 0.4s ease;
+  background: transparent;
+}
+
+.portal-item:hover {
+  background: #f8faff;
+  transform: translateY(-8px);
+  /* Upar ki taraf uthega */
+  box-shadow: 0 10px 20px rgba(26, 115, 232, 0.08);
+}
+
+.icon-circle {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 15px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 26px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Icon Flip Animation on Card Hover */
+.portal-item:hover .icon-circle {
+  transform: rotateY(180deg);
+  /* border-radius: 50%; */
+}
+
+.info-name {
+  display: block;
+  font-weight: 700;
+  color: #111;
+  font-size: 15px;
+}
+
+.info-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* ========== INDICATORS ========== */
+.slider-indicators {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 30;
+}
+
+.indicator-dot {
+  width: 5px;
+  height: 30px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.indicator-dot.active {
+  background: var(--accent-blue);
+  height: 60px;
+}
+
+/* ========== MOBILE RESPONSIVE ========== */
 @media (max-width: 768px) {
-    .hero-slider {
-        height: 60vw;
-        min-height: 280px;
-    }
-    
-    .hero-overlay-content { bottom: 20px; }
+  .hero-viewport {
+    height: 85vh;
+  }
 
-    .custom-btn {
-        padding: 8px 15px !important;
-        font-size: 0.8rem;
-        min-width: 110px;
-    }
+  .hero-img-fill {
+    object-fit: fill;
+  }
 
-    .portal-container { margin-top: -15px; }
+  /* Mobile banner fix */
 
-    .portal-icon-wrapper {
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
-    }
+  .hero-overlay {
+    background: linear-gradient(0deg, var(--bg-dark) 25%, rgba(2, 21, 59, 0.3) 100%);
+  }
+
+  .hero-container {
+    left: 5%;
+    right: 5%;
+    bottom: 120px;
+    top: auto;
+    transform: none;
+    text-align: center;
+  }
+
+  .hero-title {
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fw-light {
+    font-size: 2.2rem;
+  }
+
+  .fw-bold-gradient {
+    font-size: 3.2rem;
+  }
+
+  /* Bada Mobile font */
+
+  .hero-desc {
+    margin-inline: auto;
+    font-size: 1rem;
+    margin-bottom: 25px;
+  }
+
+  .hero-actions {
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .btn-prime,
+  .btn-glass {
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+
+  .portal-overlap {
+    margin-top: -60px;
+  }
+
+  .portal-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .portal-glass-card {
+    padding: 25px 15px;
+  }
+
+  .slider-indicators {
+    flex-direction: row;
+    right: auto;
+    left: 50%;
+    bottom: 25px;
+    top: auto;
+    transform: translateX(-50%);
+  }
+
+  .indicator-dot {
+    width: 30px;
+    height: 5px;
+  }
+
+  .indicator-dot.active {
+    width: 50px;
+    height: 5px;
+  }
 }

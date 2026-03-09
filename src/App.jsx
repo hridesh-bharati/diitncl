@@ -89,12 +89,12 @@ export default function App() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Lock>
+    <>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
 
-      <Suspense fallback={<p className="my-5 text-center text-muted w-100 p-5 m-5">Loading...</p>}>
+      <Suspense fallback={<p className="text-center text-muted  p-5 m-5">Loading...</p>}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
@@ -138,6 +138,6 @@ export default function App() {
           <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
         </Routes>
       </Suspense>
-    </Lock>
+    </>
   );
 }

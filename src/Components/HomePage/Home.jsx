@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 
+// Components
 import TopCourseList from "./TopCourseList";
 import Footer from "../Footer/Footer";
 import CardSlider from "./Cardslider";
@@ -10,126 +11,131 @@ import Testimonials from "./Testimonial";
 import HomeOffers from "./pages/offers/HomeOffers";
 import Features from "./Features";
 
-function Home() {
-  const slides = [
-    "/images/vender/main3.webp",
-    "/images/vender/main2.webp",
-    "/images/vender/main6.webp",
-  ];
+const SLIDES = [
+  {
+    id: 1,
+    image: "/images/vender/pc-hero-1.png",
+    mobileImage: "/images/vender/mobile-hero-1.png",
+    badge: "🎓 WELCOME TO DRISHTEE",
+    title: "Empowering Your",
+    highlight: "Digital Future",
+    description: "Nichlaul's premier institute for professional computer education and career excellence.",
+    btnText: "Start Learning",
+    btnLink: "/courses",
+    stats: "2500+ Students Success"
+  },
+  {
+    id: 2,
+    image: "/images/vender/hero5.png",
+    mobileImage: "/images/vender/mobile-hero-2.png",
+    badge: "🚀 100% JOB READY",
+    title: "Master High-In-Demand",
+    highlight: "Modern Skills",
+    description: "Get industry-recognized certifications in Web, Graphic Design, and IT Management.",
+    btnText: "Explore Courses",
+    btnLink: "/courses",
+    stats: "Government Recognized"
+  }
+];
 
-  const [current, setCurrent] = useState(0);
+const PORTAL_ITEMS = [
+  { id: 1, label: "Verify", icon: "bi-shield-check", link: "/Download-Certificate", bg: "#1a73e8", tag: "ID_Card/Cert" },
+  { id: 2, label: "Results", icon: "bi-bar-chart-line", link: "/Download-Certificate", bg: "#34a853", tag: "Exam 2026" },
+  { id: 3, label: "Notes", icon: "bi-file-earmark-pdf", link: "/Library", bg: "#f9ab00", tag: "E-Books" },
+  { id: 4, label: "Jobs", icon: "bi-person-workspace", link: "/", bg: "#ea4335", tag: "Placements" },
+  { id: 5, label: "LMS", icon: "bi-cpu-fill", link: "/login-as-member", bg: "#9334e8", tag: "E-Learning" },
+  { id: 6, label: "App", icon: "bi-phone-vibrate", link: "/", bg: "#4285f4", tag: "Android" }
+];
+
+function Home() {
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
-    const slider = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % SLIDES.length);
     }, 5000);
-    return () => clearInterval(slider);
-  }, [slides.length]);
-
-  const portalItems = [
-    { label: "Verify ID", icon: "bi-shield-check", link: "/Download-Certificate", bg: "#4F46E5" },
-    { label: "Results", icon: "bi-bar-chart-line", link: "/Download-Certificate", bg: "#0891B2" },
-    { label: "Material", icon: "bi-file-earmark-pdf", link: "/Library", bg: "#E11D48" },
-    { label: "Job", icon: "bi-person-workspace", link: "/", bg: "#F59E0B" },
-    { label: "LMS", icon: "bi-cpu-fill", link: "/login-as-member", bg: "#7C3AED" },
-    { label: "App", icon: "bi-phone-vibrate", link: "/", bg: "#10B981" }
-  ];
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="hybrid-app-shell bg-light">
+    <div className="modern-home">
       {/* HERO SECTION */}
-      <section className="hero-slider">
-        <div className="slider-wrapper">
-          {slides.map((img, index) => (
-            <div
-              key={index}
-              className={`hero-slide ${index === current ? "active" : ""}`}
-              style={{ backgroundImage: `url(${img})` }}
+      <section className="hero-viewport">
+        <div className="hero-slider">
+          {SLIDES.map((slide, index) => (
+            <div key={slide.id} className={`hero-slide ${index === activeSlide ? 'active' : ''}`}>
+              <picture className="hero-media">
+                <source media="(max-width:768px)" srcSet={slide.mobileImage} />
+                <img src={slide.image} alt={slide.title} className="hero-img-fill" />
+              </picture>
+              
+              <div className="hero-overlay"></div>
+              
+              <div className="hero-container">
+                <div className="hero-badge-row d-none d-lg-block">
+                  <span className="badge-premium">{slide.badge}</span>
+                  <span className="badge stats-label text-white">
+                    <i className="bi bi-patch-check-fill"></i> {slide.stats}
+                  </span>
+                </div>
+                
+                <h1 className="hero-title">
+                  <span className="fw-light">{slide.title}</span>
+                  <span className="fw-bold-gradient">{slide.highlight}</span>
+                </h1>
+                
+                <p className="hero-desc">{slide.description}</p>
+                
+                <div className="hero-actions">
+                  <Link to={slide.btnLink} className="btn-prime">
+                    {slide.btnText} <i className="bi bi-arrow-right"></i>
+                  </Link>
+                  <Link to="/contact" className="btn-glass">
+                    Contact Us
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="slider-indicators pb-5">
+          {SLIDES.map((_, index) => (
+            <button 
+              key={index} 
+              className={`indicator-dot ${index === activeSlide ? 'active' : ''}`} 
+              onClick={() => setActiveSlide(index)}
             />
           ))}
         </div>
-        <div className="hero-overlay-content">
-          <div className="container">
-            <div className="d-flex gap-2 gap-md-3 justify-content-center">
-              <Link to="/new-admission" className="btn btn-warning custom-btn shadow fw-bold">
-                Admission
-              </Link>
-              <Link to="/login" className="btn btn-light custom-btn shadow fw-bold">
-                Student Login
-              </Link>
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* PORTAL HUB */}
-      <div className="container portal-container">
-        <div className="bg-white rounded-4 shadow-sm p-4 p-md-4">
-          <div className="row g-2 g-md-3 row-cols-3 row-cols-md-6 text-center">
-            {portalItems.map((item, i) => (
-              <div key={i} className="col p-2">
-                <Link to={item.link} className="text-decoration-none d-flex flex-column align-items-center portal-hover">
-                  <div className="portal-icon-wrapper shadow-sm mb-2" style={{ backgroundColor: item.bg }}>
+      {/* FLOATING PORTAL */}
+      <section className="portal-overlap">
+        <div className="container">
+          <div className="portal-glass-card">
+            <div className="portal-header">
+              <h2 className="portal-title">Student <span>Actions</span></h2>
+              <Link to="/all-services" className="btn-link nav-link">Explore All</Link>
+            </div>
+            
+            <div className="portal-grid">
+              {PORTAL_ITEMS.map(item => (
+                <Link key={item.id} to={item.link} className="portal-item">
+                  <div className="icon-circle" style={{ backgroundColor: item.bg }}>
                     <i className={`bi ${item.icon}`}></i>
                   </div>
-                  <span className="small fw-bold text-dark" style={{ fontSize: '0.75rem' }}>{item.label}</span>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ABOUT SECTION - REFACTORED */}
-      <section className="py-5 mt-md-4">
-        <div className="container">
-          <div className="row align-items-center g-4 g-lg-5">
-            <div className="col-lg-6">
-              <h6 className="text-warning fw-bold mb-2">ABOUT OUR INSTITUTE</h6>
-              <h2 className="fw-bold mb-3 display-6">Drishtee Computer Center</h2>
-              <p className="text-muted lead fs-6">
-                Drishtee Computer Center is a modern computer training institute focused on providing practical computer education and digital skills.
-              </p>
-              <p className="text-muted d-none d-md-block">
-                We offer various professional courses like Web Development, DCA, ADCA, Tally, and Programming with 100% practical training in real-world scenarios.
-              </p>
-              
-              {/* STATS */}
-              <div className="row g-2 text-center my-4 py-3 border-top border-bottom">
-                {[
-                  { count: "500+", label: "Students", color: "primary" },
-                  { count: "20+", label: "Courses", color: "success" },
-                  { count: "5+", label: "Years Exp.", color: "danger" }
-                ].map((item, i) => (
-                  <div className="col-4 border-end last-child-border-0" key={i}>
-                    <h4 className={`fw-bold mb-0 text-${item.color}`}>{item.count}</h4>
-                    <small className="text-muted d-block" style={{fontSize: '11px'}}>{item.label}</small>
+                  <div className="portal-info">
+                    <span className="info-name">{item.label}</span>
+                    <span className="info-tag" style={{ color: item.bg }}>{item.tag}</span>
                   </div>
-                ))}
-              </div>
-
-              <div className="text-center text-lg-start mt-4">
-                <Link to="/about" className="btn btn-warning px-5 py-2 rounded-pill fw-bold shadow-sm">
-                  Read More <i className="bi bi-arrow-right ms-2"></i>
                 </Link>
-              </div>
-            </div>
-
-            <div className="col-lg-6  order-lg-last">
-              <div className="position-relative p-2">
-                <img
-                  src="/images/vender/homepic.webp"
-                  alt="Drishtee Computer Center"
-                  className="img-fluid rounded-4 shadow-lg w-100"
-                  style={{ objectFit: 'cover', maxHeight: '400px' }}
-                />
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* OTHER COMPONENTS */}
       <Features />
       <TopCourseList />
       <CardSlider />
