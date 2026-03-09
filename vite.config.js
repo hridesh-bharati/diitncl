@@ -10,58 +10,36 @@ export default defineConfig({
 
     // ✅ PWA Configuration with Auto Update
     VitePWA({
-      registerType: "autoUpdate",  // Auto update service worker
+      registerType: "autoUpdate",
       injectRegister: "auto",
-      includeAssets: ["robots.txt", "sitemap.xml", "favicon.ico"],
-
+      includeAssets: [
+        "robots.txt",
+        "sitemap.xml",
+        "favicon.ico",
+        "images/icon/icon-192.png",
+        "images/icon/icon-512.png"
+      ],
       manifest: {
-        id: "/",
         name: "Drishtee Computer Center",
         short_name: "Drishtee",
-        description: "Best IT Training Institute in Nichlaul Maharajganj offering CCC, ADCA, Web Development and Python courses.",
+        start_url: "/",
+        display: "standalone",
         theme_color: "#00268f",
         background_color: "#ffffff",
-        display: "standalone",
-        orientation: "portrait-primary",
-        start_url: "/",
-        scope: "/",
-        lang: "en-IN",
         icons: [
-          { src: "/images/icon/icon-192.png", sizes: "192x192", type: "image/png" },
-          { src: "/images/icon/icon-512.png", sizes: "512x512", type: "image/png" },
-          { src: "/images/icon/icon-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" }
-        ]
-      },
-
-      workbox: {
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
-        navigateFallback: "/offline.html",
-
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "cdn-cache",
-              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 30 }
-            }
-          },
-          {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|webp|avif|gif)$/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "image-cache",
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 }
-            }
-          },
-          {
-            urlPattern: /\.(?:js|css)$/i,
-            handler: "StaleWhileRevalidate",
-            options: { cacheName: "static-resources" }
-          }
-        ]
+  {
+    src: "/images/icon/icon-192.png",
+    sizes: "192x192",
+    type: "image/png",
+    purpose: "any"
+  },
+  {
+    src: "/images/icon/icon-512.png",
+    sizes: "512x512",
+    type: "image/png",
+    purpose: "any maskable"
+  }
+]
       }
     }),
 
