@@ -1,19 +1,39 @@
-User-agent: *
-Allow: /
+# Robots.txt - Drishtee India
+# Updated March 2026
 
-# Disallow Private Areas
+User-agent: *
+
+# Block private areas
 Disallow: /admin/
 Disallow: /student/
-Disallow: /login
-Disallow: /chat
+Disallow: /login/
+Disallow: /chat/
+Disallow: /private/
+Disallow: /temp/
+Disallow: /backup/
+Disallow: /testing/
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /firebase/
+Disallow: /cgi-bin/
 
-# Allow Important Pages
+# Allow important assets
+Allow: /images/
+Allow: /assets/
+Allow: /static/
+Allow: /*.js
+Allow: /*.css
+Allow: /*.json
+
+# Allow public pages
 Allow: /courses/
 Allow: /about
 Allow: /contact-us
 Allow: /gallery
-Allow: /library
-Allow: /new-admission
+Allow: /branch/
+Allow: /certificate
+Allow: /faq
 
-# Sitemap Location
+# Sitemaps
 Sitemap: https://www.drishteeindia.com/sitemap.xml
+Sitemap: https://www.drishteeindia.com/sitemap-images.xml

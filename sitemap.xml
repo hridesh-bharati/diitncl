@@ -1,39 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <url>
     <loc>https://www.drishteeindia.com/</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.drishteeindia.com/hi/" />
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.drishteeindia.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.drishteeindia.com/" />
   </url>
 
   <url>
-    <loc>https://www.drishteeindia.com/about</loc>
-    <priority>0.8</priority>
+    <loc>https://www.drishteeindia.com/new-admission</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://www.drishteeindia.com/courses</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://www.drishteeindia.com/contact-us</loc>
+    <loc>https://www.drishteeindia.com/adca-course</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.drishteeindia.com/ccc-course</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.drishteeindia.com/tally-course</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.drishteeindia.com/branch/nichlaul/location</loc>
+    <lastmod>2026-03-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.drishteeindia.com/branch/thoothibari</loc>
+    <lastmod>2026-03-01</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://www.drishteeindia.com/gallery</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://www.drishteeindia.com/images/gallery/classroom.webp</image:loc>
+      <image:title>Drishtee Computer Center Lab</image:title>
+    </image:image>
   </url>
 
   <url>
-    <loc>https://www.drishteeindia.com/library</loc>
+    <loc>https://www.drishteeindia.com/certificate</loc>
+    <lastmod>2026-03-01</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.drishteeindia.com/faq</loc>
+    <lastmod>2026-03-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://www.drishteeindia.com/new-admission</loc>
-    <priority>0.9</priority>
+    <loc>https://www.drishteeindia.com/privacy-policy</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
 </urlset>
