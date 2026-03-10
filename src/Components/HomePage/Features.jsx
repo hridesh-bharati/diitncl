@@ -20,17 +20,28 @@ export default function LiveCards() {
     <section className="container py-5">
       <div className="row align-items-center g-4">
         {/* Left */}
-        <div className="col-lg-5 text-center text-lg-start">
-          <span className="badge bg-primary-subtle text-primary rounded-pill mb-3 fw-bold">WHY CHOOSE DRISHTEE</span>
-          <h2 className="display-6 fw-bold mb-4">Transform Your Career with <span className="text-primary">Industry-Focused</span> Learning</h2>
-          {H.map((item, i) => (
-            <div key={i} className="d-flex mb-3 align-items-start justify-content-lg-start justify-content-center text-start">
-              <i className="bi bi-check-circle-fill text-primary me-3 fs-5"></i>
-              <div><h6 className="fw-bold mb-0 small">{item.t}</h6><p className="text-muted extra-small mb-0">{item.d}</p></div>
-            </div>
-          ))}
-          <button className="btn btn-primary btn-lg px-5 rounded-pill fw-bold shadow-sm w-100 mt-3">Get Started Now →</button>
-        </div>
+     <div className="col-lg-5 text-start">
+  <span className="badge bg-primary-subtle text-primary rounded-pill mb-3 fw-bold">
+    WHY CHOOSE DRISHTEE
+  </span>
+  <h2 className="display-6 fw-bold mb-4">
+    Transform Your Career with <span className="text-primary">Industry-Focused</span> Learning
+  </h2>
+
+  {H.map((item, i) => (
+    <div key={i} className="d-flex mb-3 align-items-start justify-content-start text-start">
+      <i className="bi bi-check-circle-fill text-primary me-3 fs-5"></i>
+      <div>
+        <h6 className="fw-bold mb-0 small">{item.t}</h6>
+        <p className="text-muted extra-small mb-0">{item.d}</p>
+      </div>
+    </div>
+  ))}
+
+  <button className="btn btn-primary btn-lg px-5 rounded-pill fw-bold shadow-sm w-100 mt-3">
+    Get Started Now →
+  </button>
+</div>
 
         {/* Right Grid */}
         <div className="col-lg-7"><div className="row g-3">

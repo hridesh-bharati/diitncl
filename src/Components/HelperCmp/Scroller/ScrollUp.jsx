@@ -67,7 +67,7 @@ function ScrollUp() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#0a2885' // Aapka primary theme color
+                    backgroundColor: '#0a2885'  
                 }}
             >
                 <i className="bi bi-arrow-up-circle-fill fs-3 text-white"></i>

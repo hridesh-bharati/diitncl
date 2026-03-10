@@ -32,7 +32,7 @@ const footerData = {
 
 export default function Footer() {
   return (
-    <footer className="bg-white pt-5 mt-5">
+    <footer className="bg-white py-2 pb-lg-0 mb-5 mb-lg-0">
       <div className="w-100 overflow-hidden" style={{ height: 80, marginBottom: -1 }}>
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-100 h-100">
           <path fill="#00378a" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3L1440,192L1440,0L0,0Z"></path>
