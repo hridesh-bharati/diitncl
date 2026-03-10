@@ -1,3 +1,4 @@
+// src\AdminComponents\Students\StudentProfile.jsx
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -252,7 +253,13 @@ const ProfileContent = ({ admissions, loading, error }) => {
             </div>
           </div>
         </div>
-
+<button
+  className="btn btn-success w-100 py-3 rounded-4 shadow-sm border-0 d-flex align-items-center justify-content-center gap-2 mb-3"
+  onClick={() => navigate(`/admin/students/${id}/fees`, { state: { studentData: formData } })}
+>
+  <i className="bi bi-cash-stack fs-5"></i>
+  <span className="fw-bold">FEE REPORT</span>
+</button>
         {/* PORTAL ACCESS CONTROL */}
         <div className="glass-card p-3 mb-5 border-0 shadow-sm bg-white bg-opacity-50 rounded-4">
           <div className="d-flex align-items-center justify-content-between">

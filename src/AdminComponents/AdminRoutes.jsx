@@ -11,7 +11,7 @@ import VisitorCount from "./Dashboard/VisitorCount";
 import StudentList from "./Students/StudentList";
 import StudentProfile from "./Students/StudentProfile";
 import StudentCertificate from "./Certificate/StudentCertificate";
-
+import FeePage from "./Students/Fees/FeePage"
 // Admissions
 import AdmissionList from "./Admissions/AdmitedStudent";
 
@@ -51,7 +51,7 @@ export default function AdminRoutes() {
         <Route path="students" element={<StudentList />} />
         <Route path="students/:id" element={<StudentProfile />} />
         <Route path="students/:id/certificate" element={<StudentCertificate />} />
-
+        <Route path="students/:id/fees" element={<FeePage />} />
         {/* Attendance */}
         <Route path="students/attendance" element={<AttendanceDashboard />} />
         <Route path="students/attendance/mark" element={<AttendanceMark />} />

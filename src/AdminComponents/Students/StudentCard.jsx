@@ -32,7 +32,7 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
   const [showRegInput, setShowRegInput] = useState(false);
   const [isEditingFinal, setIsEditingFinal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showRejectConfirm, setShowRejectConfirm] = useState(false); // Naya state for Reject confirmation
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);  
 
   // --- STRICT STATUS LOGIC ---
   const status = useMemo(() => {
