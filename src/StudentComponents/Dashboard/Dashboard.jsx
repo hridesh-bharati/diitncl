@@ -1,86 +1,129 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { printReceipt } from "../../AdminComponents/Students/Fees/FeeServices";
+import { printSingleReceipt, getFeeLogic } from "../../AdminComponents/Students/Fees/FeeServices";
+
+// Small Sub-Components for Clean Code
+const StatCard = ({ icon, label, value, color }) => (
+  <div className="col-6">
+    <div className="card border-0 shadow-sm rounded-4 p-3 h-100">
+      <div className="d-flex align-items-center mb-2">
+        <div className={`bg-${color}-subtle p-2 rounded-3 me-2`}>
+          <i className={`bi bi-${icon} text-${color}`}></i>
+        </div>
+        <small className="text-muted fw-bold">{label}</small>
+      </div>
+      <h4 className="fw-bold mb-0">₹{value}</h4>
+    </div>
+  </div>
+);
 
 export default function StudentDashboard() {
   const [data, setData] = useState(null);
   const [payments, setPayments] = useState([]);
-  const navigate = useNavigate();
   const user = auth.currentUser;
 
   useEffect(() => {
     if (!user?.email) return;
-    const q = query(collection(db, "admissions"), where("email", "==", user.email.toLowerCase()));
-    const unsub = onSnapshot(q, (snap) => {
-      if (!snap.empty) setData({ id: snap.docs[0].id, ...snap.docs[0].data() });
+
+    // Fetch Student Data
+    const studentQ = query(collection(db, "admissions"), where("email", "==", user.email.toLowerCase()));
+    
+    const unsubStudent = onSnapshot(studentQ, (snap) => {
+      if (snap.empty) return;
+      const studentDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
+      setData(studentDoc);
+
+      // Fetch Payments inside the same context if data exists
+      const payQ = query(collection(db, "admissions", studentDoc.id, "payments"), orderBy("date", "desc"));
+      const unsubPay = onSnapshot(payQ, (pSnap) => {
+        setPayments(pSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      });
+
+      return () => unsubPay();
     });
-    return () => unsub();
+
+    return () => unsubStudent();
   }, [user]);
 
-  useEffect(() => {
-    if (!data?.id) return;
-    const pq = query(collection(db, "admissions", data.id, "payments"), orderBy("date", "desc"));
-    return onSnapshot(pq, (snap) => setPayments(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
-  }, [data]);
-
-  // Next Payment Date Logic
-  const getNextDate = () => {
+  // Calculations
+  const totalPaid = payments.reduce((s, p) => s + Number(p.amount), 0);
+  const summary = getFeeLogic(data?.course, payments);
+  
+  const nextDueDate = (() => {
     if (!data?.admissionDate) return "--";
     const adm = new Date(data.admissionDate);
-    const count = payments.filter(p => p.note.includes("Monthly")).length;
+    const count = payments.filter(p => (p.note || "").includes("Monthly")).length;
     adm.setMonth(adm.getMonth() + (count || 1));
-    return adm.toLocaleDateString('en-GB');
-  };
-
-  const totalPaid = payments.reduce((s, p) => s + Number(p.amount), 0);
+    return adm.toLocaleDateString("en-GB", { day: '2-digit', month: 'short' });
+  })();
 
   return (
-    <div className="container py-3" style={{ background: "#f8f9fa", minHeight: "100vh" }}>
-      {/* Profile Header */}
-      <div className="card border-0 rounded-4 text-white p-4 mb-4" style={{ background: "linear-gradient(135deg,#1e3c72,#2a5298)" }}>
-        <div className="d-flex align-items-center mb-3">
-          <img src={data?.photoUrl || "https://via.placeholder.com/60"} className="rounded-circle border border-2" style={{ width: 60, height: 60 }} />
-          <div className="ms-3">
-            <h5 className="mb-0">{data?.name}</h5>
-            <small>{data?.course} ({data?.courseDuration})</small>
+    <div className="pb-5 min-vh-100 bg-light">
+      {/* Premium Header */}
+      <div className="p-4 mb-4 text-white shadow" style={{ background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", borderRadius: "0 0 25px 25px" }}>
+        <div className="container py-2">
+          <div className="d-flex align-items-center justify-content-between mb-4">
+            <div className="d-flex align-items-center">
+              <div className="position-relative">
+                <img src={data?.photoUrl || `https://ui-avatars.com/api/?name=${user?.email}`} className="rounded-circle border border-2 border-white shadow-sm" style={{ width: 60, height: 60, objectFit: "cover" }} alt="profile" />
+                <span className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle p-1"></span>
+              </div>
+              <div className="ms-3">
+                <h5 className="mb-0 fw-bold">{data?.name || "Welcome!"}</h5>
+                <small className="opacity-75">{data?.regNo || "Searching..."}</small>
+              </div>
+            </div>
+            <i className="bi bi-bell-fill fs-5 opacity-75"></i>
+          </div>
+
+          <div className="bg-white bg-opacity-10 rounded-4 p-3 d-flex align-items-center justify-content-between border border-white border-opacity-10">
+            <div>
+              <small className="d-block text-uppercase fw-bold opacity-75" style={{ fontSize: '0.6rem' }}>Next Installment</small>
+              <h5 className="mb-0 text-warning fw-bold">{nextDueDate}</h5>
+            </div>
+            <button className="btn btn-sm btn-warning fw-bold rounded-pill px-4 shadow-sm">Pay Now</button>
           </div>
         </div>
-        <div className="bg-white bg-opacity-10 p-2 rounded-3 text-center">
-          <small className="d-block opacity-75">NEXT DUE DATE</small>
-          <span className="fw-bold text-warning">{getNextDate()}</span>
+      </div>
+
+      <div className="container">
+        {/* Stats Row */}
+        <div className="row g-3 mb-4">
+          <StatCard icon="cash-stack" label="Total Paid" value={totalPaid} color="success" />
+          <StatCard icon="wallet2" label="Monthly" value={data?.monthlyFee || 0} color="primary" />
         </div>
-      </div>
 
-      {/* Fee Summary */}
-      <div className="row g-3 mb-4 text-center">
-        <div className="col-6"><div className="card p-3 border-0 shadow-sm rounded-4">
-          <small className="text-muted">Total Paid</small><h4 className="fw-bold text-success">₹{totalPaid}</h4>
-        </div></div>
-        <div className="col-6"><div className="card p-3 border-0 shadow-sm rounded-4">
-          <small className="text-muted">Monthly Fee</small><h4 className="fw-bold">₹{data?.monthlyFee || 0}</h4>
-        </div></div>
-      </div>
+        {/* Transactions */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6 className="fw-bold mb-0">Recent Receipts</h6>
+          <button className="btn btn-link btn-sm text-decoration-none fw-bold p-0">View All</button>
+        </div>
 
-      {/* Payment Table */}
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div className="p-3 bg-white border-bottom fw-bold">Recent Receipts</div>
-        <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0">
-            <thead className="table-light">
-              <tr style={{ fontSize: '12px' }}><th>Date</th><th>Amt</th><th>Print</th></tr>
-            </thead>
-            <tbody>
-              {payments.map(p => (
-                <tr key={p.id}>
-                  <td>{p.date}</td>
-                  <td className="fw-bold text-success">₹{p.amount}</td>
-                  <td><button onClick={() => printReceipt(data, p)} className="btn btn-sm btn-light border"><i className="bi bi-printer"></i></button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div className="list-group list-group-flush">
+            {payments.length > 0 ? payments.map((p) => (
+              <div key={p.id} className="list-group-item p-3 d-flex align-items-center justify-content-between border-light">
+                <div className="d-flex align-items-center">
+                  <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: 40, height: 40 }}>
+                    <i className="bi bi-receipt text-muted"></i>
+                  </div>
+                  <div>
+                    <p className="mb-0 fw-bold small text-dark">{p.note || "Fee Payment"}</p>
+                    <small className="text-muted" style={{ fontSize: '0.75rem' }}>{p.date}</small>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <span className="fw-bold text-success">₹{p.amount}</span>
+                  <button onClick={() => printSingleReceipt(data, p, summary)} className="btn btn-outline-primary btn-sm rounded-circle p-0" style={{ width: 32, height: 32 }}>
+                    <i className="bi bi-printer small"></i>
+                  </button>
+                </div>
+              </div>
+            )) : (
+              <div className="p-5 text-center text-muted small">No transactions found.</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

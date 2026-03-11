@@ -1,7 +1,6 @@
 import React from "react";
 import { deletePayment, printSingleReceipt } from "./FeeServices";
 
-// Yahan { summary } add karna zaroori hai props mein
 export default function PaymentTable({ payments = [], student, summary }) { 
   return (
     <div className="table-responsive text-start">
