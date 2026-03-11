@@ -1,58 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { addPayment, COURSE_CONFIG } from "./FeeServices";
 import { toast } from "react-toastify";
 
 export default function AddPaymentModal({ student }) {
-  const [formData, setFormData] = useState({ 
-    amount: 700, method: "Cash", 
-    date: new Date().toISOString().split('T')[0], note: "Monthly Fee" 
+  const [show, setShow] = useState(false);
+  const [formData, setFormData] = useState({
+    amount: 700,
+    method: "Cash",
+    date: new Date().toISOString().split("T")[0],
+    note: "Monthly Fee",
   });
 
-  const handleTypeChange = (type) => {
-    const c = student.course?.toUpperCase() || "";
-    const fee = type === "Admission Fee" ? 500 : (COURSE_CONFIG[c]?.monthly || 700);
-    setFormData({ ...formData, note: type, amount: fee });
-  };
+  // Body scroll lock jab modal khule
+  useEffect(() => {
+    document.body.style.overflow = show ? "hidden" : "unset";
+  }, [show]);
 
-  const closeModal = () => {
-    document.getElementById('closeModal').click();
-    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-    document.body.style.overflow = 'auto';
+  const updateForm = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
+
+  const handleTypeChange = (type) => {
+    const courseKey = student?.course?.toUpperCase() || "";
+    const fee = type === "Admission Fee" ? 500 : COURSE_CONFIG[courseKey]?.monthly || 700;
+    setFormData((prev) => ({ ...prev, note: type, amount: fee }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await addPayment(student.id, formData);
-    toast.success("Saved Successfully");
-    closeModal();
+    try {
+      await addPayment(student.id, { ...formData, amount: Number(formData.amount) });
+      toast.success("Payment Saved");
+      setShow(false);
+    } catch (err) {
+      toast.error("Save Failed");
+    }
   };
 
   return (
     <>
-      <button className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#pMod">+ Fee</button>
-      <div className="modal fade" id="pMod" tabIndex="-1">
-        <div className="modal-dialog modal-sm modal-dialog-centered">
-          <form className="modal-content border-0 shadow-lg rounded-4 text-start" onSubmit={handleSubmit}>
-            <div className="modal-body p-4">
-              <div className="d-flex justify-content-between mb-3 align-items-center">
-                <h6 className="fw-bold mb-0">Collect Fee</h6>
-                <button type="button" id="closeModal" className="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <label className="small fw-bold text-muted">Type</label>
-              <select className="form-select mb-2" onChange={e => handleTypeChange(e.target.value)}>
-                <option>Monthly Fee</option><option>Admission Fee</option>
-              </select>
-              <label className="small fw-bold text-muted">Amount</label>
-              <input type="number" className="form-control mb-3 fw-bold text-primary" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} />
-              <div className="row g-2 mb-3">
-                <div className="col-6"><input type="date" className="form-control form-control-sm" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} /></div>
-                <div className="col-6"><select className="form-select form-select-sm" onChange={e => setFormData({...formData, method: e.target.value})}><option>Cash</option><option>Online</option></select></div>
-              </div>
-              <button type="submit" className="btn btn-primary w-100 fw-bold py-2">Save</button>
+      <button className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" onClick={() => setShow(true)}>
+        + Fee
+      </button>
+
+      {show && createPortal(
+        <>
+          <div className="modal-backdrop fade show" onClick={() => setShow(false)} style={{ zIndex: 1050 }} />
+          <div className="modal d-block" tabIndex="-1" style={{ zIndex: 1055 }}>
+            <div className="modal-dialog modal-sm modal-dialog-centered">
+              <form className="modal-content border-0 shadow-lg rounded-4 overflow-hidden" onSubmit={handleSubmit}>
+                <div className="modal-body p-4">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="fw-bold mb-0">Collect Fee</h6>
+                    <button type="button" className="btn-close" onClick={() => setShow(false)}></button>
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="small fw-bold text-muted">Type</label>
+                    <select className="form-select" value={formData.note} onChange={(e) => handleTypeChange(e.target.value)}>
+                      <option value="Monthly Fee">Monthly Fee</option>
+                      <option value="Admission Fee">Admission Fee</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="small fw-bold text-muted">Amount</label>
+                    <input type="number" className="form-control fw-bold text-primary" value={formData.amount} onChange={(e) => updateForm("amount", e.target.value)} required />
+                  </div>
+
+                  <div className="row g-2 mb-3">
+                    <div className="col-6">
+                      <label className="small text-muted">Date</label>
+                      <input type="date" className="form-control form-control-sm" value={formData.date} onChange={(e) => updateForm("date", e.target.value)} />
+                    </div>
+                    <div className="col-6">
+                      <label className="small text-muted">Method</label>
+                      <select className="form-select form-select-sm" value={formData.method} onChange={(e) => updateForm("method", e.target.value)}>
+                        <option>Cash</option>
+                        <option>Online</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button type="submit" className="btn btn-primary w-100 fw-bold py-2 shadow-sm">Save Payment</button>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
-      </div>
+          </div>
+        </>,
+        document.body
+      )}
     </>
   );
 }
