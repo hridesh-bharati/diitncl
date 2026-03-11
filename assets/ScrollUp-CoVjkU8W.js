@@ -1,4 +1,4 @@
-import{j as o}from"./index-D895pJfA.js";function n(){const t=e=>{e.stopPropagation(),window.scrollTo({top:0,behavior:"smooth"})};return o.jsxs(o.Fragment,{children:[o.jsx("style",{children:`
+import{j as o}from"./index-Bn-j1yJW.js";function n(){const t=e=>{e.stopPropagation(),window.scrollTo({top:0,behavior:"smooth"})};return o.jsxs(o.Fragment,{children:[o.jsx("style",{children:`
                 #btnBackToTop {
                     /* Ripple animation ko button ke andar restrict karne ke liye overflow hidden */
                     overflow: visible; 
