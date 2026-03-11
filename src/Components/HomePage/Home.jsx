@@ -1,3 +1,4 @@
+// src/Home/Home.jsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
@@ -19,8 +20,6 @@ const SLIDES = [
     image: "/images/vender/pc-hero-1.png",
     mobileImage: "/images/vender/mobile-hero-1.png",
     badge: "🎓 WELCOME TO DRISHTEE",
-    title: "Empowering Your",
-    highlight: "Digital Future",
     description: "Nichlaul's premier institute for professional computer education and career excellence.",
     btnText: "Start Learning",
     btnLink: "/courses",
@@ -31,8 +30,6 @@ const SLIDES = [
     image: "/images/vender/hero5.png",
     mobileImage: "/images/vender/mobile-hero-2.png",
     badge: "🚀 100% JOB READY",
-    title: "Master High-In-Demand",
-    highlight: "Modern Skills",
     description: "Get industry-recognized certifications in Web, Graphic Design, and IT Management.",
     btnText: "Explore Courses",
     btnLink: "/courses",
@@ -69,21 +66,29 @@ function Home() {
             <div key={slide.id} className={`hero-slide ${index === activeSlide ? 'active' : ''}`}>
               <picture className="hero-media">
                 <source media="(max-width:768px)" srcSet={slide.mobileImage} />
-                <img src={slide.image} alt={slide.title} className="hero-img-fill" />
+                <img src={slide.image} alt="Hero Slide" className="hero-img-fill" />
               </picture>
               <div className="hero-overlay"></div>
               <div className="hero-container">
+
+                {/* Hero Badge & Stats */}
                 <div className="hero-badge-row d-none d-lg-flex justify-content-between align-items-center">
                   <span className="badge-premium">{slide.badge}</span>
                   <span className="badge stats-label text-white">
                     <i className="bi bi-patch-check-fill"></i> {slide.stats}
                   </span>
                 </div>
-                <h1 className="hero-title">
-                  <span className="fw-light">{slide.title}</span>
-                  <span className="fw-bold-gradient">{slide.highlight}</span>
+
+                {/* Updated Hero Title */}
+                <h1 className="hero-title text-center text-lg-start">
+                  <span className="fw-bold-gradient hero-main-title">DRISHTEE</span>
+                  <span className="fw-light hero-subtitle">COMPUTER CENTER</span>
                 </h1>
+
+                {/* Hero Description */}
                 <p className="hero-desc">{slide.description}</p>
+
+                {/* Hero Buttons */}
                 <div className="hero-actions">
                   <Link to={slide.btnLink} className="btn-prime btn-lg">{slide.btnText} <i className="bi bi-arrow-right"></i></Link>
                   <Link to="/contact" className="btn-glass btn-lg">Contact Us</Link>
@@ -92,6 +97,8 @@ function Home() {
             </div>
           ))}
         </div>
+
+        {/* Slider Indicators */}
         <div className="slider-indicators pb-5">
           {SLIDES.map((_, index) => (
             <button key={index} className={`indicator-dot ${index === activeSlide ? 'active' : ''}`} onClick={() => setActiveSlide(index)} />
@@ -124,7 +131,7 @@ function Home() {
         </div>
       </section>
 
-      {/* 3. ABOUT SECTION (A LEGACY OF QUALITY) */}
+      {/* 3. ABOUT SECTION */}
       <section className="container py-5 mt-5">
         <div className="row align-items-center g-4">
           <div className="col-lg-6 order-lg-2">
@@ -154,14 +161,14 @@ function Home() {
         </div>
       </section>
 
-      {/* 4. FEATURES & WHY CHOOSE US */}
+      {/* 4. FEATURES */}
       <Features />
 
-      {/* 5. TOP COURSES LIST & PROMOTIONAL SLIDER */}
+      {/* 5. TOP COURSES & SLIDER */}
       <TopCourseList />
       <CardSlider />
 
-      {/* 6. LEADERSHIP (THE MINDS BEHIND DRISHTEE) */}
+      {/* 6. LEADERSHIP */}
       <section className="py-5 bg-light">
         <div className="container text-center mb-5">
           <h6 className="text-primary fw-bold text-uppercase small">Institutional Leadership</h6>
@@ -191,7 +198,7 @@ function Home() {
         </div>
       </section>
 
-      {/* 7. FACILITIES SECTION */}
+      {/* 7. FACILITIES */}
       <section className="container py-5">
         <h2 className="fw-bolder display-6 mb-4 border-start border-primary border-4 ps-3">World-Class Facilities</h2>
         <div className="row g-3">
@@ -216,15 +223,11 @@ function Home() {
       {/* 8. OFFERS */}
       <HomeOffers />
 
-      {/* 9. UPDATES (NOTICE BOARD & TIME TABLE) */}
+      {/* 9. UPDATES */}
       <section className="container py-5">
         <div className="row">
-          <div className="col-md-6 my-3">
-            <NoticeBoard />
-          </div>
-          <div className="col-md-6 my-3">
-            <TimeTable />
-          </div>
+          <div className="col-md-6 my-3"><NoticeBoard /></div>
+          <div className="col-md-6 my-3"><TimeTable /></div>
         </div>
       </section>
 

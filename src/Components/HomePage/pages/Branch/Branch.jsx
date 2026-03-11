@@ -132,12 +132,11 @@ export default function Branch() {
                 <div className="row g-4">
                     <div className="col-lg-7 fade-right">
                         <AppCard className="p-2 overflow-hidden shadow-sm">
-                            <iframe src="https://www.google.com/maps/embed?..." width="100%" height="350" className="rounded-3 border-0" allowFullScreen loading="lazy" />
-                        </AppCard>
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d56673.45958182093!2d83.67044173430745!3d27.4040833462884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39942392249c9073%3A0x6b62ef81415149dd!2sDrishtee%20Institute%20of%20Information%20Technology!5e0!3m2!1sen!2sin!4v1773220082099!5m2!1sen!2sin" width="100%" height="350" className="rounded-3 border-0" allowFullScreen loading="lazy" />
+                             </AppCard>
                     </div>
-                    <div className="col-lg-5 fade-left">
-                        <AppCard className="p-4 bg-white">
-                            <h5 className="fw-bold mb-4">Quick Enquiry</h5>
+                    <div className="col-lg-5 p-0 m-0 fade-left">
+                        <AppCard className="p-0 m-0 bg-white">
                             <QueryForm />
                         </AppCard>
                     </div>

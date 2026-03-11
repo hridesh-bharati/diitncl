@@ -134,6 +134,8 @@ export default function Header() {
                   </div>
                 </div>
               </div>
+              <Link to="/branch/thoothibari" className={isActive("/branch/thoothibari")}>Branch</Link>
+
               <Link to="/library" className={isActive("/library")}>Library</Link>
               <div className="nav-item-dropdown position-relative mt-2">
                 <span className={`nav-static-link ${location.pathname.includes('admission') ? 'active' : ''}`}>Student Zone <i className="bi bi-chevron-down small"></i></span>
@@ -240,8 +242,13 @@ export default function Header() {
       </nav>
 
       {/* MOBILE ACCOUNT DRAWER */}
-      <div className={`offcanvas offcanvas-bottom rounded-top-5 border-0 ${isMenuOpen ? "show" : ""}`}
-        style={{ height: "85vh", visibility: isMenuOpen ? "visible" : "hidden", zIndex: 900000, transition: '0.4s cubic-bezier(0.1, 0.7, 0.1, 1)' }}>
+      <div className={`offcanvas offcanvas-bottom rounded-top-5 border-0 bg-light ${isMenuOpen ? "show" : ""}`}
+        style={{
+          height: "85vh",
+          visibility: isMenuOpen ? "visible" : "hidden",
+          zIndex: 900000,
+          transition: '0.4s cubic-bezier(0.1, 0.7, 0.1, 1)'
+        }}>
 
         <div className="offcanvas-header justify-content-center pt-3">
           <div className="bg-secondary opacity-25 rounded-pill" style={{ width: "40px", height: "5px" }} onClick={() => setIsMenuOpen(false)}></div>
@@ -250,10 +257,10 @@ export default function Header() {
         <div className="offcanvas-body p-4 pt-0 custom-scrollbar">
           <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
 
-          {/* PROFILE CARD */}
+          {/* PROFILE CARD: White background with Shadow */}
           <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
-            <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-light">
-              <img src={userData.photo} className="rounded-circle border border-3 border-white shadow-sm" width="60" height="60" alt="Profile" />
+            <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
+              <img src={userData.photo} className="rounded-circle border border-3 border-light shadow-sm" width="60" height="60" alt="Profile" />
               <div className="flex-grow-1">
                 <h6 className="m-0 fw-bold text-dark fs-5">{userData.name}</h6>
                 <span className="text-muted small">Go to dashboard</span>
@@ -263,37 +270,52 @@ export default function Header() {
           </Link>
 
           <div className="ios-menu">
-
-            {/* SECTION: PREFERENCES */}
-            <div className="ios-menu-section">
-              <div className="ios-menu-title">Preferences</div>
-
-              {/* Language Translator */}
-              <div className="ios-menu-item no-hover justify-content-between">
-                <div className="d-flex align-items-center gap-3">
-                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
-                  <span>App Language</span>
+            {/* SECTION 1: ADMISSIONS (White Card style) */}
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
+              <div className="ios-menu-title text-primary px-3 pt-3">Admission Portal</div>
+              <Link to="/new-admission" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #0D6EFD, #0a58ca)' }}><i className="bi bi-person-plus-fill"></i></div>
+                    <span className="fw-bold">New Admission 2026</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
                 </div>
-                <div className="language-wrapper-drawer"><LanguageTranslator /></div>
-              </div>
+              </Link>
+              <Link to="/download-certificate" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <div className="ios-menu-item justify-content-between mx-2">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #34C759, #11998e)' }}><i className="bi bi-patch-check-fill"></i></div>
+                    <span className="fw-bold">Verify Certificate</span>
+                  </div>
+                  <i className="bi bi-chevron-right text-muted small"></i>
+                </div>
+              </Link>
+            </div>
 
-              {/* Dark Mode Toggle */}
-              <div className="ios-menu-item no-hover justify-content-between">
-                <div className="d-flex align-items-center gap-3">
-                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}><i className="bi bi-moon-stars-fill"></i></div>
-                  <span>Dark Mode</span>
-                </div>
-                <div className="form-check form-switch">
-                  <input className="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" />
-                </div>
+            {/* SECTION 2: ACADEMICS (White Card style) */}
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
+              <div className="ios-menu-title px-3 pt-3">Academics</div>
+              <div className="px-2">
+                {courseLinks.map((link, index) => (
+                  <Link key={link.to} to={link.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                    <div className={`ios-menu-item justify-content-between ${index !== courseLinks.length - 1 ? 'border-bottom border-light' : ''}`}>
+                      <div className="d-flex align-items-center gap-3">
+                        <div className="ios-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
+                        <span>{link.label}</span>
+                      </div>
+                      <i className="bi bi-chevron-right text-muted small"></i>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
 
-            {/* SECTION: ABOUT */}
-            <div className="ios-menu-section">
-              <div className="ios-menu-title">About</div>
+            {/* SECTION 3: INSTITUTE (White Card style) */}
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
+              <div className="ios-menu-title px-3 pt-3">Institute Info</div>
               <Link to="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between">
+                <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
                   <div className="d-flex align-items-center gap-3">
                     <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #007AFF, #00C7BE)' }}><i className="bi bi-building"></i></div>
                     <span>About Institute</span>
@@ -302,7 +324,7 @@ export default function Header() {
                 </div>
               </Link>
               <Link to="/branch/thoothibari" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between">
+                <div className="ios-menu-item justify-content-between mx-2">
                   <div className="d-flex align-items-center gap-3">
                     <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #5856D6, #AF52DE)' }}><i className="bi bi-diagram-3"></i></div>
                     <span>About Branch</span>
@@ -312,104 +334,34 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* SECTION: ACADEMICS */}
-            <div className="ios-menu-section">
-              <div className="ios-menu-title">Academics Courses</div>
-              {courseLinks.map(link => (
-                <Link key={link.to} to={link.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <div className="ios-menu-item justify-content-between">
-                    <div className="d-flex align-items-center gap-3">
-                      <div className="ios-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
-                      <span>{link.label}</span>
-                    </div>
-                    <i className="bi bi-chevron-right text-muted small"></i>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* SECTION: SUPPORT */}
-            <div className="ios-menu-section">
-              <div className="ios-menu-title">Support & Feedback</div>
-              <Link to="/contact-us" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #34C759, #30D158)' }}><i className="bi bi-headset"></i></div>
-                    <span>Help Center</span>
-                  </div>
-                  <i className="bi bi-chevron-right text-muted small"></i>
+            {/* SECTION 4: SETTINGS (White Card style) */}
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
+              <div className="ios-menu-title px-3 pt-3">App Settings</div>
+              <div className="ios-menu-item no-hover justify-content-between border-bottom border-light mx-2">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
+                  <span>Language</span>
                 </div>
-              </Link>
-              <Link to="/feedback" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF2D55, #FF375F)' }}><i className="bi bi-heart-fill"></i></div>
-                    <span>Rate our App</span>
-                  </div>
-                  <i className="bi bi-chevron-right text-muted small"></i>
-                </div>
-              </Link>
-            </div>
-
-
-
-            {/* SECTION: LEGAL */}
-            <div className="ios-menu-section">
-              <div className="ios-menu-title">Legal</div>
-              <Link to="/privacy-policy" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #8E8E93, #636366)' }}><i className="bi bi-shield-lock"></i></div>
-                    <span>Privacy Policy</span>
-                  </div>
-                  <i className="bi bi-chevron-right text-muted small"></i>
-                </div>
-              </Link>
-              {/* SECTION: SOCIAL CONNECT */}
-              <div className="ios-menu-section">
-                <div className="ios-menu-title">Connect With Us</div>
-                <div className="ios-menu-item no-hover justify-content-around py-3">
-                  <a href="#" className="text-primary fs-4"><i className="bi bi-facebook"></i></a>
-                  <a href="#" className="text-danger fs-4"><i className="bi bi-instagram"></i></a>
-                  <a href="#" className="text-info fs-4"><i className="bi bi-linkedin"></i></a>
-                  <a href="#" className="text-danger fs-4"><i className="bi bi-youtube"></i></a>
-                </div>
+                <div className="language-wrapper-drawer"><LanguageTranslator /></div>
               </div>
-
-              {/* Professional addition: Delete Account */}
-              <div className="ios-menu-item justify-content-between mt-2">
-                <div className="d-flex align-items-center gap-3 text-danger">
-                  <div className="ios-icon" style={{ background: 'rgba(255, 59, 48, 0.1)', color: '#FF3B30' }}><i className="bi bi-trash3"></i></div>
-                  <span className="fw-medium">Delete Account</span>
+              <div className="ios-menu-item no-hover justify-content-between mx-2">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}><i className="bi bi-moon-stars-fill"></i></div>
+                  <span>Dark Mode</span>
+                </div>
+                <div className="form-check form-switch">
+                  <input className="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" />
                 </div>
               </div>
             </div>
-
-          </div>
-
-          {/* FOOTER INFO */}
-          <div className="text-center mt-4 opacity-50">
-            <div className="ios-menu-section bg-transparent shadow-none mb-0">
-              <a
-                href="https://github.com/hridesh-bharati"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-link d-inline-block"
-              >
-                <div className="d-flex align-items-center justify-content-center gap-2 text-muted mb-2">
-                  <i className="bi bi-github fs-5 text-dark"></i>
-                  <span className="small fw-medium">Developed by: hridesh-bharati</span>
-                </div>
-              </a></div>
-            <small className="text-muted">Version 2.4.0 (2026)</small>
           </div>
 
           {/* AUTH BUTTON */}
-          <div className="pb-5 mt-4">
+          <div className="mt-4 pb-4">
             {user ? (
-              <button onClick={handleLogout} className="btn btn-light w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0 mb-4 active-scale">Sign Out</button>
+              <button onClick={handleLogout} className="btn btn-white w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0 active-scale">Sign Out</button>
             ) : (
-              <button onClick={() => { setShowLoginModal(true); setIsMenuOpen(false); }} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow mb-4 active-scale">Login to Portal</button>
+              <button onClick={() => { setShowLoginModal(true); setIsMenuOpen(false); }} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow active-scale">Login to Portal</button>
             )}
           </div>
         </div>

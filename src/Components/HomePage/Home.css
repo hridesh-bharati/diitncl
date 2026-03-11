@@ -7,14 +7,14 @@
   --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* Global Reset */
+/* ================= GLOBAL RESET ================= */
 .modern-home {
   background: #fff;
   overflow-x: hidden;
   font-family: 'Inter', sans-serif;
 }
 
-/* ========== HERO SECTION ========== */
+/* ================= HERO SECTION ================= */
 .hero-viewport {
   position: relative;
   height: 100vh;
@@ -70,7 +70,7 @@
   letter-spacing: 1px;
 }
 
-/* --- FUTURE SKILLS TEXT (BIG & BOLD) --- */
+/* Hero Title */
 .hero-title {
   margin: 20px 0;
   display: flex;
@@ -78,7 +78,6 @@
   align-items: baseline;
   gap: 15px;
   flex-wrap: wrap;
-  /* Ensures responsiveness */
 }
 
 .fw-light {
@@ -107,7 +106,7 @@
   line-height: 1.6;
 }
 
-/* --- BUTTONS INLINE (ALWAYS) --- */
+/* Hero Buttons */
 .hero-actions {
   display: flex !important;
   flex-direction: row !important;
@@ -148,7 +147,7 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* ========== PORTAL SECTION ========== */
+/* ================= PORTAL SECTION ================= */
 .portal-overlap {
   position: relative;
   z-index: 20;
@@ -185,7 +184,7 @@
   gap: 20px;
 }
 
-/* --- UPDATED PORTAL ITEM CSS --- */
+/* Portal Items */
 .portal-item {
   text-align: center;
   text-decoration: none;
@@ -198,7 +197,6 @@
 .portal-item:hover {
   background: #f8faff;
   transform: translateY(-8px);
-  /* Upar ki taraf uthega */
   box-shadow: 0 10px 20px rgba(26, 115, 232, 0.08);
 }
 
@@ -216,10 +214,8 @@
   transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Icon Flip Animation on Card Hover */
 .portal-item:hover .icon-circle {
   transform: rotateY(180deg);
-  /* border-radius: 50%; */
 }
 
 .info-name {
@@ -236,7 +232,7 @@
   opacity: 0.8;
 }
 
-/* ========== INDICATORS ========== */
+/* ================= SLIDER INDICATORS ================= */
 .slider-indicators {
   position: absolute;
   right: 40px;
@@ -262,7 +258,7 @@
   height: 60px;
 }
 
-/* ========== MOBILE RESPONSIVE ========== */
+/* ================= MOBILE RESPONSIVE ================= */
 @media (max-width: 768px) {
   .hero-viewport {
     height: 85vh;
@@ -272,10 +268,8 @@
     object-fit: fill;
   }
 
-  /* Mobile banner fix */
-
   .hero-overlay {
-    background: linear-gradient(0deg, var(--bg-dark) 25%, rgba(2, 21, 59, 0.3) 100%);
+    background: linear-gradient(0deg, var(--bg-dark) 25%, rgba(2, 21, 59, 0.123) 100%);
   }
 
   .hero-container {
@@ -301,8 +295,6 @@
   .fw-bold-gradient {
     font-size: 3.2rem;
   }
-
-  /* Bada Mobile font */
 
   .hero-desc {
     margin-inline: auto;
