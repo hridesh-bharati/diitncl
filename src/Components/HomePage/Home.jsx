@@ -1,4 +1,3 @@
-// src/Home/Home.jsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
@@ -19,8 +18,10 @@ const SLIDES = [
     id: 1,
     image: "/images/vender/pc-hero-1.png",
     mobileImage: "/images/vender/mobile-hero-1.png",
-    badge: "🎓 WELCOME TO DRISHTEE",
-    description: "Nichlaul's premier institute for professional computer education and career excellence.",
+    badge: "🎓 WELCOME TO NICHLAUL'S BEST",
+    title: "DRISHTEE",
+    highlight: "COMPUTER CENTRE",
+    description: "Leading the digital revolution in Nichlaul since 2007. Join India's most trusted ISO 9001:2015 Certified IT Skill Hub.",
     btnText: "Start Learning",
     btnLink: "/courses",
     stats: "2500+ Students Success"
@@ -29,8 +30,10 @@ const SLIDES = [
     id: 2,
     image: "/images/vender/hero5.png",
     mobileImage: "/images/vender/mobile-hero-2.png",
-    badge: "🚀 100% JOB READY",
-    description: "Get industry-recognized certifications in Web, Graphic Design, and IT Management.",
+    badge: "🚀 100% JOB READY SKILLS",
+    title: "UPGRADE AT",
+    highlight: "DRISHTEE CENTRE",
+    description: "Master Modern Skills like Web Development, Graphic Design, and IT Management with expert mentorship.",
     btnText: "Explore Courses",
     btnLink: "/courses",
     stats: "Government Recognized"
@@ -66,29 +69,21 @@ function Home() {
             <div key={slide.id} className={`hero-slide ${index === activeSlide ? 'active' : ''}`}>
               <picture className="hero-media">
                 <source media="(max-width:768px)" srcSet={slide.mobileImage} />
-                <img src={slide.image} alt="Hero Slide" className="hero-img-fill" />
+                <img src={slide.image} alt={slide.title} className="hero-img-fill" />
               </picture>
               <div className="hero-overlay"></div>
               <div className="hero-container">
-
-                {/* Hero Badge & Stats */}
-                <div className="hero-badge-row d-none d-lg-flex justify-content-between align-items-center">
-                  <span className="badge-premium">{slide.badge}</span>
+                <div className="hero-badge-row d-none d-lg-flex justify-content-between align-items-center mb-3">
+                  {/* <span className="badge-premium">{slide.badge}</span> */}
                   <span className="badge stats-label text-white">
                     <i className="bi bi-patch-check-fill"></i> {slide.stats}
                   </span>
                 </div>
-
-                {/* Updated Hero Title */}
-                <h1 className="hero-title text-center text-lg-start">
-                  <span className="fw-bold-gradient hero-main-title">DRISHTEE</span>
-                  <span className="fw-light hero-subtitle">COMPUTER CENTER</span>
+                <h1 className="hero-title">
+                  <span className="fw-light">{slide.title}</span>
+                  <span className="fw-bold-gradient">{slide.highlight}</span>
                 </h1>
-
-                {/* Hero Description */}
                 <p className="hero-desc">{slide.description}</p>
-
-                {/* Hero Buttons */}
                 <div className="hero-actions">
                   <Link to={slide.btnLink} className="btn-prime btn-lg">{slide.btnText} <i className="bi bi-arrow-right"></i></Link>
                   <Link to="/contact" className="btn-glass btn-lg">Contact Us</Link>
@@ -97,11 +92,13 @@ function Home() {
             </div>
           ))}
         </div>
-
-        {/* Slider Indicators */}
         <div className="slider-indicators pb-5">
           {SLIDES.map((_, index) => (
-            <button key={index} className={`indicator-dot ${index === activeSlide ? 'active' : ''}`} onClick={() => setActiveSlide(index)} />
+            <button 
+              key={index} 
+              className={`indicator-dot ${index === activeSlide ? 'active' : ''}`} 
+              onClick={() => setActiveSlide(index)} 
+            />
           ))}
         </div>
       </section>
@@ -161,10 +158,10 @@ function Home() {
         </div>
       </section>
 
-      {/* 4. FEATURES */}
+      {/* 4. FEATURES & WHY CHOOSE US */}
       <Features />
 
-      {/* 5. TOP COURSES & SLIDER */}
+      {/* 5. TOP COURSES LIST & PROMOTIONAL SLIDER */}
       <TopCourseList />
       <CardSlider />
 
@@ -198,7 +195,7 @@ function Home() {
         </div>
       </section>
 
-      {/* 7. FACILITIES */}
+      {/* 7. FACILITIES SECTION */}
       <section className="container py-5">
         <h2 className="fw-bolder display-6 mb-4 border-start border-primary border-4 ps-3">World-Class Facilities</h2>
         <div className="row g-3">
@@ -226,8 +223,12 @@ function Home() {
       {/* 9. UPDATES */}
       <section className="container py-5">
         <div className="row">
-          <div className="col-md-6 my-3"><NoticeBoard /></div>
-          <div className="col-md-6 my-3"><TimeTable /></div>
+          <div className="col-md-6 my-3">
+            <NoticeBoard />
+          </div>
+          <div className="col-md-6 my-3">
+            <TimeTable />
+          </div>
         </div>
       </section>
 
@@ -235,7 +236,6 @@ function Home() {
       <Testimonials />
       <Team />
 
-      {/* FOOTER */}
       <Footer />
     </div>
   );

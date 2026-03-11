@@ -17,23 +17,5 @@ Disallow: /node_modules/
 Disallow: /firebase/
 Disallow: /cgi-bin/
 
-# Allow important assets
-Allow: /images/
-Allow: /assets/
-Allow: /static/
-Allow: /*.js
-Allow: /*.css
-Allow: /*.json
-
-# Allow public pages
-Allow: /courses/
-Allow: /about
-Allow: /contact-us
-Allow: /gallery
-Allow: /branch/
-Allow: /certificate
-Allow: /faq
-
-# Sitemaps
+# Sitemap
 Sitemap: https://www.drishteeindia.com/sitemap.xml
-Sitemap: https://www.drishteeindia.com/sitemap-images.xml

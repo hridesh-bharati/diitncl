@@ -6,8 +6,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="google" content="notranslate" />
-  <meta http-equiv="content-language" content="en-IN" />
   <link rel="canonical" href="https://www.drishteeindia.com/" />
 
   <!-- ===== HREFLANG TAGS ===== -->
@@ -24,9 +22,10 @@
   <meta name="author" content="Drishtee Computer Center" />
 
   <!-- ===== MICRO SEO IMPROVEMENTS ===== -->
-  <meta name="format-detection" content="address=no,email=no,telephone=no" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660059673395664"
+    crossorigin="anonymous"></script>
   <!-- ===== VERIFICATION ===== -->
   <meta name="google-site-verification" content="qpSbT3ZgVT3PL4-pWciz8UD6hrgF-_RFiT-jvlnVPnU" />
 
@@ -74,7 +73,6 @@
   <!-- ===== PRELOAD & PERFORMANCE ===== -->
   <link rel="preload" as="image" href="/images/vender/homepic.webp" fetchpriority="high" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
 
   <!-- ===== BOOTSTRAP ICONS ===== -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
@@ -90,188 +88,52 @@
 
   <!-- ===== STRUCTURED DATA (COMPLETE & FIXED - ALL FAQs IN ENGLISH) ===== -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "ComputerSchool",
-        "@id": "https://www.drishteeindia.com/#organization",
-        "name": "Drishtee Computer Center",
-        "alternateName": "Drishtee Institute of Information Technology",
-        "url": "https://www.drishteeindia.com",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://www.drishteeindia.com/images/icon/logo.webp",
-          "width": "512",
-          "height": "512"
-        },
-        "telephone": "+91-7267995307",
-        "email": "info@drishteeindia.com",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Paragpur Road, Near Bank of Baroda",
-          "addressLocality": "Nichlaul",
-          "addressRegion": "Uttar Pradesh",
-          "postalCode": "273304",
-          "addressCountry": "IN"
-        },
-        "areaServed": ["Nichlaul", "Maharajganj", "Thoothibari", "Anandnagar"],
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-            "opens": "08:00",
-            "closes": "20:00"
-          },
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": "Sunday",
-            "opens": "10:00",
-            "closes": "16:00"
-          }
-        ],
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.4",
-          "reviewCount": "128",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "sameAs": [
-          "https://www.facebook.com/drishteeindia",
-          "https://www.instagram.com/drishteecomputer",
-          "https://www.youtube.com/@drishteecomputer",
-          "https://twitter.com/DrishteeIndia"
-        ]
-      },
-      {
-        "@type": "Course",
-        "@id": "https://www.drishteeindia.com/ccc-course",
-        "name": "CCC - Course on Computer Concepts",
-        "description": "Government recognized CCC course in Nichlaul. NIELIT approved syllabus. Covers MS Office, Internet, Digital Literacy. Certificate included.",
-        "provider": { "@id": "https://www.drishteeindia.com/#organization" },
-        "educationalCredentialAwarded": "NIELIT CCC Certificate",
-        "courseMode": "InPerson",
-        "inLanguage": "en-IN",
-        "coursePrerequisites": "No prior knowledge required",
-        "timeRequired": "P3M",
-        "offers": {
-          "@type": "Offer",
-          "price": "2999",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock"
-        }
-      },
-      {
-        "@type": "Course",
-        "@id": "https://www.drishteeindia.com/adca-course",
-        "name": "ADCA - Advanced Diploma in Computer Applications",
-        "description": "Complete ADCA course in Maharajganj including Tally, MS Office, DTP, Programming Basics, and Financial Accounting.",
-        "provider": { "@id": "https://www.drishteeindia.com/#organization" },
-        "educationalCredentialAwarded": "Advanced Diploma Certificate",
-        "courseMode": "InPerson",
-        "inLanguage": "en-IN",
-        "timeRequired": "P6M",
-        "offers": {
-          "@type": "Offer",
-          "price": "8499",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock"
-        }
-      },
-      {
-        "@type": "Course",
-        "@id": "https://www.drishteeindia.com/python-training",
-        "name": "Python Programming Course with AI & ML",
-        "description": "Industry-standard Python training in Nichlaul. Learn Python basics to advanced, Django, Flask with live projects.",
-        "provider": { "@id": "https://www.drishteeindia.com/#organization" },
-        "educationalCredentialAwarded": "Certificate in Python Programming",
-        "courseMode": "InPerson",
-        "inLanguage": "en-IN",
-        "timeRequired": "P4M",
-        "offers": {
-          "@type": "Offer",
-          "price": "11999",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock"
-        }
-      },
-      {
-        "@type": "Course",
-        "@id": "https://www.drishteeindia.com/web-development-course",
-        "name": "Full Stack Web Development Course",
-        "description": "Master HTML, CSS, JavaScript, React, Node.js, MongoDB. Build 10+ live projects. 100% job assistance.",
-        "provider": { "@id": "https://www.drishteeindia.com/#organization" },
-        "educationalCredentialAwarded": "Full Stack Developer Certificate",
-        "courseMode": "InPerson",
-        "inLanguage": "en-IN",
-        "timeRequired": "P6M"
-      },
-      {
-        "@type": "FAQPage",
-        "@id": "https://www.drishteeindia.com/#faq",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How can I get photos of Drishtee Computer Centre Nichlaul?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "You can see photos of Drishtee Computer Centre on Google Maps, Justdial, or our official Instagram page. You can also visit the center directly to take photos."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the fee for CCC course?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "The fee for CCC course is ₹2999 only. Installment facility is also available."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the contact number of Computer Institute in Nichlaul?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Drishtee Computer Center contact number is +91-7267995307. You can visit us at Paragpur Road, Near Bank of Baroda, Nichlaul."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Do you provide placement assistance?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, we provide 100% placement assistance. More than 400 students have been placed in MNCs and Govt offices."
-            }
-          }
-        ]
-      },
-      {
-        "@type": "BreadcrumbList",
-        "@id": "https://www.drishteeindia.com/#breadcrumb",
-        "itemListElement": [
-          { 
-            "@type": "ListItem", 
-            "position": 1, 
-            "name": "Home", 
-            "item": "https://www.drishteeindia.com/" 
-          },
-          { 
-            "@type": "ListItem", 
-            "position": 2, 
-            "name": "Courses", 
-            "item": "https://www.drishteeindia.com/courses" 
-          },
-          { 
-            "@type": "ListItem", 
-            "position": 3, 
-            "name": "Python Training", 
-            "item": "https://www.drishteeindia.com/python-training" 
-          }
-        ]
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ComputerSchool",
+      "@id": "https://www.drishteeindia.com/#organization",
+      "name": "Drishtee Computer Center",
+      "url": "https://www.drishteeindia.com",
+      "logo": "https://www.drishteeindia.com/images/icon/logo.png",
+      "telephone": "+91-7267995307",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8", 
+        "reviewCount": "128"
       }
-    ]
-  }
-  </script>
+    },
+    {
+      "@type": "Course",
+      "@id": "https://www.drishteeindia.com/ccc-course",
+      "name": "CCC - Course on Computer Concepts",
+      "url": "https://www.drishteeindia.com/ccc-course", 
+      "description": "Government recognized CCC course in Nichlaul. NIELIT approved syllabus.",
+      "provider": { "@id": "https://www.drishteeindia.com/#organization" },
+      "offers": { "@type": "Offer", "price": "2999", "priceCurrency": "INR" }
+    },
+    {
+      "@type": "Course",
+      "@id": "https://www.drishteeindia.com/adca-course",
+      "name": "ADCA - Advanced Diploma in Computer Applications",
+      "url": "https://www.drishteeindia.com/adca-course",
+      "description": "Complete ADCA course including Tally, MS Office, and DTP.",
+      "provider": { "@id": "https://www.drishteeindia.com/#organization" },
+      "offers": { "@type": "Offer", "price": "8499", "priceCurrency": "INR" }
+    },
+    {
+      "@type": "Course",
+      "@id": "https://www.drishteeindia.com/python-training",
+      "name": "Python Programming Course with AI & ML",
+      "url": "https://www.drishteeindia.com/python-training",
+      "description": "Industry-standard Python training in Nichlaul with live projects.",
+      "provider": { "@id": "https://www.drishteeindia.com/#organization" },
+      "offers": { "@type": "Offer", "price": "11999", "priceCurrency": "INR" }
+    }
+  ]
+}
+</script>
 </head>
 
 <body>
