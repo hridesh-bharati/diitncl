@@ -74,7 +74,6 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
     try {
       const num = Number(regNum);
 
-      // Server-side filtering: Dono conditions query mein hi daal dein
       const q = query(
         collection(db, "admissions"),
         where("regShort", "==", num),
@@ -83,7 +82,6 @@ const StudentCard = React.memo(({ student, onSave, onDelete }) => {
 
       const snapshot = await getDocs(q);
 
-      // Agar koi document mila aur wo current student nahi hai, toh duplicate hai
       return snapshot.docs.some(doc => doc.id !== student.id);
     } catch (error) {
       console.error("Duplicate check failed:", error);

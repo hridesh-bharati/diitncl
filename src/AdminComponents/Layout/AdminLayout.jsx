@@ -3,7 +3,6 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { db } from "../../firebase/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import AdminSidebar from "./AdminSidebar";
-import "./AdminLayout.css";
 
 export default function AdminLayout() {
   const [open, setOpen] = useState(false);
@@ -12,64 +11,50 @@ export default function AdminLayout() {
 
   useEffect(() => {
     const todayStr = new Date().toDateString();
-
     const unsubStudents = onSnapshot(collection(db, "admissions"), (snap) => {
-      const todayCount = snap.docs.filter(doc =>
-        doc.data().createdAt?.toDate?.().toDateString() === todayStr
-      ).length;
+      const todayCount = snap.docs.filter(doc => doc.data()?.createdAt?.toDate?.().toDateString() === todayStr).length;
       setCounts(prev => ({ ...prev, total: snap.size, today: todayCount }));
     });
-
     const unsubQueries = onSnapshot(collection(db, "studentQueries"), (snap) => {
       setCounts(prev => ({ ...prev, queries: snap.size }));
     });
-
     return () => { unsubStudents(); unsubQueries(); };
   }, []);
 
   const navItems = [
+    { icon: "bi-house-door-fill", count: 0, bg: "bg-secondary", link: "/admin" },
     { icon: "bi-people-fill", count: counts.total, bg: "bg-primary", link: "/admin/admitted-student-list" },
-    { icon: "bi-chat-left-text-fill", count: counts.queries, bg: "bg-danger", link: "/admin/clients-contacts" },
+    { icon: "bi-chat-left-dots-fill", count: counts.queries, bg: "bg-danger", link: "/admin/clients-contacts" },
     { icon: "bi-lightning-charge-fill", count: counts.today, bg: "bg-success", link: "/admin/students" }
   ];
 
   return (
-    <div className="admin-layout">
+    <div className="d-flex overflow-x-hidden"> {/* Fix: No more X scroll */}
       <AdminSidebar open={open} setOpen={setOpen} />
 
-      <div className="admin-main">
-        <div className="admin-topbar d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center">
-            {/* Sidebar Toggle */}
-            <button className="icon-btn btn p-0 border-0 shadow-none" onClick={() => setOpen(true)}>
-              <i className="bi bi-list" style={{ fontSize: "24px" }}></i>
-            </button>
+      <div className="flex-grow-1 min-vh-100 d-flex flex-column" style={{ background: "#f8f9fa" }}>
+        <header className="sticky-top bg-white border-bottom px-3 d-flex align-items-center justify-content-between shadow-sm" style={{ height: "64px", zIndex: 1030 }}>
+          <button className="btn border-0 p-0 text-secondary" onClick={() => setOpen(true)}>
+            <i className="bi bi-list fs-2"></i>
+          </button>
 
-            {/* Home Button Icon */}
-            <button
-              className="btn p-0 border-0 shadow-none ms-3 d-flex align-items-center"
-              onClick={() => navigate("/admin")} // Change path based on your dashboard route
-              style={{ color: "#64748b" }}
-              title="Go to Dashboard"
-            >
-              <i className="bi bi-house-door-fill" style={{ fontSize: "20px" }}></i>
-              <h6 className="mb-0 ms-2 fw-bold text-dark"></h6>
-            </button>
-          </div>
-
-          <div className="topbar-notifications d-flex gap-2">
+          <div className="d-flex flex-grow-1 flex-sm-grow-0 justify-content-around justify-content-sm-end gap-sm-4 ms-sm-auto">
             {navItems.map((item, idx) => (
-              <div key={idx} className="top-notify-icon" onClick={() => navigate(item.link)}>
-                <i className={`bi ${item.icon}`}></i>
-                {item.count > 0 && <span className={`top-badge ${item.bg}`}>{item.count}</span>}
+              <div key={idx} className="position-relative p-2" style={{ cursor: "pointer" }} onClick={() => navigate(item.link)}>
+                <i className={`bi ${item.icon} text-secondary fs-4`}></i>
+                {item.count > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style={{ fontSize: "9px" }}>
+                    {item.count}
+                  </span>
+                )}
               </div>
             ))}
           </div>
-        </div>
+        </header>
 
-        <div className="admin-content">
+        <main className="p-0 flex-grow-1">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );

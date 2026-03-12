@@ -61,7 +61,7 @@ export default function Branch() {
             </header>
 
             <div className="container overlap-container" style={{ marginTop: '-50px' }}>
-                <Counter /> 
+                <Counter />
             </div>
 
             <main className="container py-5">
@@ -81,8 +81,8 @@ export default function Branch() {
                         <div className="carousel slide rounded-4 overflow-hidden shadow" data-bs-ride="carousel">
                             <div className="carousel-inner">
                                 {DATA.CAROUSELS.hero.map((img, i) => (
-                                    <div key={i} className={`carousel-item ${i===0?'active':''}`}>
-                                        <img src={img.src} className="w-100" style={{height:'300px', objectFit:'cover'}} alt={img.alt} />
+                                    <div key={i} className={`carousel-item ${i === 0 ? 'active' : ''}`}>
+                                        <img src={img.src} className="w-100" style={{ height: '300px', objectFit: 'cover' }} alt={img.alt} />
                                     </div>
                                 ))}
                             </div>
@@ -133,7 +133,7 @@ export default function Branch() {
                     <div className="col-lg-7 fade-right">
                         <AppCard className="p-2 overflow-hidden shadow-sm">
                             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d56673.45958182093!2d83.67044173430745!3d27.4040833462884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39942392249c9073%3A0x6b62ef81415149dd!2sDrishtee%20Institute%20of%20Information%20Technology!5e0!3m2!1sen!2sin!4v1773220082099!5m2!1sen!2sin" width="100%" height="350" className="rounded-3 border-0" allowFullScreen loading="lazy" />
-                             </AppCard>
+                        </AppCard>
                     </div>
                     <div className="col-lg-5 p-0 m-0 fade-left">
                         <AppCard className="p-0 m-0 bg-white">
@@ -146,7 +146,7 @@ export default function Branch() {
             <Footer />
 
             {/* Mobile Actions */}
-            <div className="fixed-bottom p-3 d-md-none" style={{zIndex: 1050}}>
+            <div className="fixed-bottom p-3 d-md-none" style={{ zIndex: 1050 }}>
                 <div className="d-flex gap-2 bg-white p-2 rounded-4 shadow-lg border">
                     <a href="tel:+917398889347" className="btn btn-primary flex-grow-1 rounded-3 py-2 shadow-sm fw-bold">Call Now</a>
                     <a href="https://wa.me/917398889347" className="btn btn-success rounded-3 px-3"><i className="bi bi-whatsapp fs-5"></i></a>
