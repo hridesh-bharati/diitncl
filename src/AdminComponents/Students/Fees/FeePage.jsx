@@ -114,7 +114,6 @@ export default function FeePage() {
           summary={summary}
           payments={payments}
         />
-
         {/* Payments History Table */}
         <div className="card border-0 shadow-sm rounded-4 mt-4 overflow-hidden">
           <div className="card-header bg-white py-3 border-bottom">
