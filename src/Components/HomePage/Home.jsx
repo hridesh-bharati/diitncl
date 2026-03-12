@@ -18,7 +18,7 @@ import ScrollUp from "../HelperCmp/Scroller/ScrollUp"
 const SLIDES = [
   {
     id: 1,
-    image: "/images/vender/pc-hero-1.avif", 
+    image: "/images/vender/pc-hero-1.avif",
     mobileImage: "/images/vender/mobile-hero-1.avif",
     title: "DRISHTEE",
     highlight: "COMPUTER CENTRE",
@@ -70,12 +70,12 @@ function Home() {
             <div key={slide.id} className={`hero-slide ${index === activeSlide ? 'active' : ''}`}>
               <picture className="hero-media">
                 <source media="(max-width:768px)" srcSet={slide.mobileImage} />
-                <img 
-                  src={slide.image} 
-                  alt={slide.title} 
-                  className="hero-img-fill" 
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="hero-img-fill"
                   fetchpriority={index === 0 ? "high" : "low"}
-                  loading={index === 0 ? "eager" : "lazy"} 
+                  loading={index === 0 ? "eager" : "lazy"}
                 />
               </picture>
               <div className="hero-overlay"></div>
@@ -100,10 +100,10 @@ function Home() {
         </div>
         <div className="slider-indicators pb-5">
           {SLIDES.map((_, index) => (
-            <button 
-              key={index} 
-              className={`indicator-dot ${index === activeSlide ? 'active' : ''}`} 
-              onClick={() => setActiveSlide(index)} 
+            <button
+              key={index}
+              className={`indicator-dot ${index === activeSlide ? 'active' : ''}`}
+              onClick={() => setActiveSlide(index)}
               aria-label={`Slide ${index + 1}`}
             />
           ))}
@@ -126,7 +126,7 @@ function Home() {
                   </div>
                   <div className="portal-info">
                     <span className="info-name">{item.label}</span>
-                    <span className="info-tag d-none d-md-block" style={{ color: item.bg }}>{item.tag}</span>
+                    <span className="info-tag " style={{ color: item.bg }}>{item.tag}</span>
                   </div>
                 </Link>
               ))}
@@ -210,7 +210,14 @@ function Home() {
             ].map((item, index) => (
               <div key={index} className="col-md-4">
                 <div className="rounded-4 overflow-hidden position-relative shadow-sm hover-scale transition-all" style={{ height: '240px' }}>
-                  <img src={item.img} alt={item.title} className="w-100 h-100 object-fit-cover" loading="lazy" />
+                  <img
+                    src={item.img}
+                    alt={item.title}
+                    className="w-100 h-100 object-fit-cover"
+                    loading="lazy"
+                    width="400"  
+                    height="240" 
+                  />
                   <div className="position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-60 backdrop-blur-sm">
                     <h5 className="text-white fw-bold mb-1">{item.title}</h5>
                     <p className="text-white small mb-0 opacity-75">{item.desc}</p>
