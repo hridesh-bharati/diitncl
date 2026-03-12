@@ -26,6 +26,7 @@
   "bugs": {
     "url": "https://github.com/hridesh-bharati/diitncl/issues"
   },
+  
   "scripts": {
     "dev": "vite",
     "build": "vite build",
