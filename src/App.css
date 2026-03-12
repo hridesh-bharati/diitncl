@@ -1,13 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
+html, body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  /* background: var(--off-white); */
   color: var(--charcoal);
-  overflow-x: hidden;
+  overflow-y: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE & Edge */
+  -ms-overflow-style: none;
 }
+
+/* Chrome, Safari, Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .Toastify__toast-container {
   z-index: 999999 !important;
 }
@@ -51,26 +62,6 @@ body {
   .app-main-viewport { padding-top: 85px; height: auto; overflow: visible; }
 }
 
-.swipe-wrapper {
-  display: flex;
-  width: 100vw;
-  height: 100%;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  background: white;
-}
-
-.swipe-wrapper::-webkit-scrollbar { display: none; }
-
-.swipe-slide {
-  min-width: 100vw;
-  width: 100vw;
-  height: 100%;
-  scroll-snap-align: start;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
 
 /* WhatsApp UI */
 .mobile-wa-header {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react"; 
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
@@ -6,14 +6,14 @@ const BASE_TITLE = "Drishtee Computer Center";
 const BASE_URL = "https://www.drishteeindia.com";
 const TODAY = new Date().toISOString().split('T')[0];
 
-// Helper
 const makeMeta = (titlePart, description) => ({
   title: `${titlePart} | ${BASE_TITLE}`,
   description,
 });
 
+// metaData ko static rakho (Component ke bahar)
 const metaData = {
-  // 🏠 Home
+ // 🏠 Home
   "/": {
     title: `${BASE_TITLE} | Best IT Training Institute in Nichlaul`,
     description:
@@ -127,175 +127,92 @@ const metaData = {
     "Login to your Drishtee Computer Center student dashboard to access course materials."
   ),
   
-  // 💬 Chat
-  "/chat": {
-    title: `Chat Support | ${BASE_TITLE}`,
-    description: "Chat with Drishtee Computer Center support team for instant help.",
-    noindex: true, // Chat pages usually don't need indexing
-  },
-  
-  // ❌ 404
-  "*": {
-    title: `Page Not Found | ${BASE_TITLE}`,
-    description: "The page you are looking for does not exist. Return to Drishtee Computer Center homepage.",
-  },
+  "/chat": { title: `Chat Support | ${BASE_TITLE}`, description: "Chat support...", noindex: true },
+  "*": { title: `Page Not Found | ${BASE_TITLE}`, description: "Return to homepage." },
 };
-
-// Route Matcher with Dynamic Routes Support
-function getMeta(pathname) {
-  const path = pathname.toLowerCase();
-  
-  // Exact match
-  if (metaData[path]) return metaData[path];
-  
-  // Dynamic routes pattern matching
-  if (path.startsWith("/admin/") || path.startsWith("/student/")) {
-    return { title: `Dashboard | ${BASE_TITLE}`, description: "", noindex: true };
-  }
-  
-  return metaData["*"];
-}
 
 const HelmetManager = ({ children }) => {
   const { pathname } = useLocation();
-  const meta = getMeta(pathname);
 
-  const fullUrl = `${BASE_URL}${pathname}`.replace(/\/+$/, "");
+  // 1. Memoize Meta Calculation: Sirf pathname badalne par hi calculation hogi
+  const meta = useMemo(() => {
+    const path = pathname.toLowerCase();
+    if (metaData[path]) return metaData[path];
+    if (path.startsWith("/admin/") || path.startsWith("/student/")) {
+      return { title: `Dashboard | ${BASE_TITLE}`, description: "", noindex: true };
+    }
+    return metaData["*"];
+  }, [pathname]);
 
-  const isNoIndex = 
+  const fullUrl = useMemo(() => `${BASE_URL}${pathname}`.replace(/\/+$/, ""), [pathname]);
+
+  const isNoIndex = useMemo(() => 
     meta.noindex === true ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/student") ||
-    pathname === "/login" ||
-    pathname === "/chat";
+    ["/login", "/chat"].includes(pathname), 
+  [meta.noindex, pathname]);
 
-  // JSON-LD Structured Data
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "@id": `${BASE_URL}/#organization`,
-    name: "Drishtee Computer Center",
-    url: BASE_URL,
-    logo: {
-      "@type": "ImageObject",
-      url: `${BASE_URL}/images/icon/logo.png`,
-    },
-    description: meta.description,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Main Road, Paragpur Road",
-      addressLocality: "Nichlaul",
-      addressRegion: "Uttar Pradesh",
-      postalCode: "273304",
-      addressCountry: "IN",
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: 27.3150,
-      longitude: 83.7200,
-    },
-    telephone: "+91-7267995307",
-    email: "hridesh027@gmail.com",
-    sameAs: [
-      "https://www.facebook.com/drishteeindia/",
-    ],
-    founder: [
-  {
-    "@type": "Person",
-    "name": "Ajay Tiwari"
-  },
-  {
-    "@type": "Person",
-    "name": "Santosh Singh Chauhan"
-  },
-  {
-    "@type": "Person",
-    "name": "Hridesh Bharati"
-  }
-],
-    ...(!isNoIndex && {
-      potentialAction: {
-        "@type": "SearchAction",
-        target: `${BASE_URL}/courses?q={search_term_string}`,
-        "query-input": "required name=search_term_string",
+  // 2. Memoize Structured Data: Sabse heavy part yahi hai
+  const finalStructuredData = useMemo(() => {
+    const orgData = {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "@id": `${BASE_URL}/#organization`,
+      name: "Drishtee Computer Center",
+      url: BASE_URL,
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/images/icon/logo.png` },
+      description: meta.description,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Paragpur Road, Near Bank of Baroda", // Update as per official address
+        addressLocality: "Nichlaul",
+        addressRegion: "Uttar Pradesh",
+        postalCode: "273304",
+        addressCountry: "IN",
       },
-    }),
-  };
+      geo: { "@type": "GeoCoordinates", latitude: 27.3150, longitude: 83.7200 },
+      telephone: "+91-7267995307",
+      founder: [
+        { "@type": "Person", "name": "Ajay Tiwari" },
+        { "@type": "Person", "name": "Santosh Singh Chauhan" },
+        { "@type": "Person", "name": "Hridesh Bharati" }
+      ]
+    };
 
-  // Add Course-specific structured data for course pages
-  const getCourseStructuredData = () => {
     if (pathname.includes("/courses/")) {
       const courseName = pathname.split("/").pop().replace(/-/g, " ");
-      return {
+      const courseData = {
+        "@context": "https://schema.org",
         "@type": "Course",
         name: courseName.toUpperCase(),
         description: meta.description,
-        provider: {
-          "@id": `${BASE_URL}/#organization`,
-        },
+        provider: { "@id": `${BASE_URL}/#organization` },
         url: fullUrl,
       };
+      return [orgData, courseData];
     }
-    return null;
-  };
-
-  const courseData = getCourseStructuredData();
-  const finalStructuredData = courseData 
-    ? [structuredData, courseData] 
-    : structuredData;
+    return orgData;
+  }, [meta.description, pathname, fullUrl]);
 
   return (
     <>
       <Helmet>
-        {/* Basic SEO */}
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
-        <meta name="author" content="Drishtee Computer Center - Ajay Tiwari, Santosh Singh Chauhan, Hridesh Bharati" />        <meta
-          name="keywords"
-          content="Drishtee Computer Center, Computer Institute Nichlaul, Computer Institute Maharajganj, Web Development Course, Python Training, Java Course, Designing Course, Banking Course, NIELIT, CCC, ADCA, Computer Classes Near Me, IT Training Maharajganj"
-        />
-        <meta name="theme-color" content="#00268f" />
         <link rel="canonical" href={fullUrl} />
-
-        {/* Robots */}
-        <meta
-          name="robots"
-          content={isNoIndex ? "noindex, nofollow" : "index, follow"}
-        />
-
-        {/* Open Graph */}
+        <meta name="robots" content={isNoIndex ? "noindex, nofollow" : "index, follow"} />
+        
+        {/* Open Graph & Twitter (Static images logic use karo for speed) */}
         <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:url" content={fullUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Drishtee Computer Center" />
-        <meta property="og:image" content={`${BASE_URL}/images/og-image.jpg`} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:locale" content="en_IN" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={meta.title} />
-        <meta name="twitter:description" content={meta.description} />
-        <meta name="twitter:image" content={`${BASE_URL}/images/og-image.jpg`} />
-        <meta name="twitter:site" content="@DrishteeIndia" />
-
-        {/* Local SEO */}
-        <meta name="geo.region" content="IN-UP" />
-        <meta name="geo.placename" content="Nichlaul, Maharajganj, Uttar Pradesh" />
-        <meta name="geo.position" content="27.3150;83.7200" />
-        <meta name="ICBM" content="27.3150, 83.7200" />
-
-        {/* Last Modified */}
-        <meta name="revised" content={TODAY} />
-
-        {/* Structured Data */}
+        <meta property="og:image" content={`${BASE_URL}/images/icon/logo.png`} />
+        <meta name="twitter:image" content={`${BASE_URL}/images/icon/logo.png`} />
+        
+        {/* Optimized Structured Data injection */}
         <script type="application/ld+json">
           {JSON.stringify(finalStructuredData)}
         </script>
       </Helmet>
-
       {children}
     </>
   );
