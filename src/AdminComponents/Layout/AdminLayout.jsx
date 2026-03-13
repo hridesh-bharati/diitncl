@@ -29,7 +29,7 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="d-flex overflow-x-hidden"> {/* Fix: No more X scroll */}
+    <div className="d-flex overflow-x-hidden"> 
       <AdminSidebar open={open} setOpen={setOpen} />
 
       <div className="flex-grow-1 min-vh-100 d-flex flex-column" style={{ background: "#f8f9fa" }}>

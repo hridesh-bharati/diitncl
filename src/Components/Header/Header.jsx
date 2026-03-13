@@ -138,14 +138,12 @@ export default function Header() {
             </nav>
           </div>
 
-          <div className="d-none d-lg-inline">
+          <div className="searchBox">
             <GlobleSearchBox routes={RouteLinks} placeholder="Search courses..." />
           </div>
 
           <div className="header-right d-flex align-items-center gap-2 gap-md-3">
-            <button className="btn btn-light rounded-circle d-sm-none" onClick={() => setIsSearchActive(true)}>
-              <i className="bi bi-search"></i>
-            </button>
+          
             
             <div className="apps-dropdown position-relative">
               <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
