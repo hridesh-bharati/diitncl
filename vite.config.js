@@ -7,14 +7,7 @@ export default defineConfig(({ command }) => {
 
   return {
     plugins: [
-      react({
-        fastRefresh: isDev,
-        babel: {
-          plugins: isDev
-            ? []
-            : [["transform-remove-console", { exclude: ["error", "warn"] }]]
-        }
-      }),
+      react({ fastRefresh: isDev }),
 
       VitePWA({
         registerType: "autoUpdate",
@@ -58,7 +51,7 @@ export default defineConfig(({ command }) => {
     server: {
       host: true,
       port: 5173,
-      open:true
+      open: true
     },
 
     build: {
