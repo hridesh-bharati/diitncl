@@ -29,16 +29,22 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="d-flex overflow-x-hidden"> 
+    <div className="d-flex" style={{ width: "100vw", overflowX: "hidden" }}>
       <AdminSidebar open={open} setOpen={setOpen} />
 
-      <div className="flex-grow-1 min-vh-100 d-flex flex-column" style={{ background: "#f8f9fa" }}>
-        <header className="sticky-top bg-white border-bottom px-3 d-flex align-items-center justify-content-between shadow-sm" style={{ height: "64px", zIndex: 1030 }}>
+      <div
+        className="flex-grow-1 min-vh-100 d-flex flex-column"
+        style={{
+          background: "#f8f9fa",
+          width: "100%",
+          overflowX: "hidden"
+        }}
+      >        <header className="sticky-top bg-white border-bottom px-3 d-flex align-items-center justify-content-between shadow-sm" style={{ height: "64px", zIndex: 1030 }}>
           <button className="btn border-0 p-0 text-secondary" onClick={() => setOpen(true)}>
             <i className="bi bi-list fs-2"></i>
           </button>
 
-          <div className="d-flex flex-grow-1 flex-sm-grow-0 justify-content-around justify-content-sm-end gap-sm-4 ms-sm-auto">
+          <div className="d-flex justify-content-end gap-3 ms-auto">
             {navItems.map((item, idx) => (
               <div key={idx} className="position-relative p-2" style={{ cursor: "pointer" }} onClick={() => navigate(item.link)}>
                 <i className={`bi ${item.icon} text-secondary fs-4`}></i>
@@ -52,7 +58,13 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="p-0 flex-grow-1">
+        <main
+          className="flex-grow-1"
+          style={{
+            overflowX: "hidden",
+            width: "100%"
+          }}
+        >
           <Outlet />
         </main>
       </div>
