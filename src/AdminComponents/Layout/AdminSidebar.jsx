@@ -1,3 +1,4 @@
+// src/AdminComponents/AdminSidebar.jsx
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./AdminSidebar.css";
@@ -6,8 +7,9 @@ export default function AdminSidebar({ open, setOpen }) {
   const location = useLocation();
   const handleClose = () => setOpen(false);
 
-  // Checks if any attendance route is active to keep accordion open
+  // Active state checks for accordions
   const isAttendanceActive = location.pathname.includes("/admin/students/attendance");
+  const isExamActive = location.pathname.includes("/admin/exams");
 
   const MAIN_MENU = [
     { path: "/admin", label: "Dashboard", icon: "bi-house-door-fill", end: true },
@@ -57,7 +59,37 @@ export default function AdminSidebar({ open, setOpen }) {
               </NavLink>
             ))}
 
-            {/* 2. ATTENDANCE ACCORDION (Merged from your code) */}
+            {/* 2. 🔥 EXAMS SECTION (Accordion Style) */}
+            <div className="accordion accordion-flush mt-1" id="examAccordion">
+              <div className="accordion-item bg-transparent border-0">
+                <div 
+                  className={`ios-link accordion-button shadow-none ${!isExamActive ? "collapsed" : ""}`}
+                  data-bs-toggle="collapse" 
+                  data-bs-target="#examCollapse"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <i className="bi bi-journal-text"></i>
+                  <span>Examinations</span>
+                </div>
+                
+                <div id="examCollapse" className={`accordion-collapse collapse ${isExamActive ? "show" : ""}`} data-bs-parent="#examAccordion">
+                  <div className="ps-4 ms-3 border-start py-1">
+                    {[
+                      { path: "/admin/exams", label: "Dashboard" },
+                      { path: "/admin/exams/new", label: "Launch Exam" },
+                      { path: "/admin/exams/live-tracking", label: "Live Tracking" },
+                      { path: "/admin/exams/completed", label: "Reports & Results" }
+                    ].map(sub => (
+                      <NavLink key={sub.path} to={sub.path} className={({ isActive }) => `ios-sublink ${isActive ? "active" : ""}`} onClick={handleClose}>
+                        {sub.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. ATTENDANCE SECTION */}
             <div className="accordion accordion-flush mt-1" id="studentAccordion">
               <div className="accordion-item bg-transparent border-0">
                 <div 
@@ -87,7 +119,7 @@ export default function AdminSidebar({ open, setOpen }) {
               </div>
             </div>
 
-            {/* 3. MEDIA & OFFERS */}
+            {/* 4. MEDIA & OFFERS */}
             <p className="sidebar-label mt-3">Marketing</p>
             {MEDIA_MARKETING.map((item) => (
               <NavLink key={item.path} to={item.path} className={({ isActive }) => `ios-link ${isActive ? "active" : ""}`} onClick={handleClose}>
@@ -96,7 +128,7 @@ export default function AdminSidebar({ open, setOpen }) {
               </NavLink>
             ))}
 
-            {/* 4. SYSTEM LISTS */}
+            {/* 5. SYSTEM LISTS */}
             <p className="sidebar-label mt-3">System</p>
             {SYSTEM_LISTS.map((item) => (
               <NavLink key={item.path} to={item.path} className={({ isActive }) => `ios-link ${isActive ? "active" : ""}`} onClick={handleClose}>

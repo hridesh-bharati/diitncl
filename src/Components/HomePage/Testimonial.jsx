@@ -4,7 +4,7 @@ const testimonials = [
   { name: "Rohit Kumar", img: "images/testimonial/testimonial1.avif", text: "Drishtee Computer Center transformed my understanding of technology.", rating: 5 },
   { name: "Abhay Gautam", img: "images/testimonial/testimonial2.avif", text: "The expert guidance and practical approach gave me confidence.", rating: 5 },
   { name: "The Jugnoo", img: "images/testimonial/testimonial3.avif", text: "I appreciated the personalized coaching. Truly prepares you.", rating: 4 },
-  { name: "Aditi Verma", img: "http://themes.audemedia.com/html/goodgrowth/images/testimonial4.jpg", text: "The team helped me grow exponentially from basic to advanced.", rating: 5 }
+  { name: "Aditi Verma", img: "images/testimonial/testimonial4.avif", text: "The team helped me grow exponentially from basic to advanced.", rating: 5 }
 ];
 
 const Testimonials = () => {
@@ -20,12 +20,12 @@ const Testimonials = () => {
     <section className="py-5 overflow-hidden" style={{ background: "#f8fafc" }}>
       <div className="container text-center">
         <h2 className="fw-bold h3 mb-4">What Students <span className="text-primary">Say</span></h2>
-        
+
         <div className="slider-container position-relative mx-auto">
           {testimonials.map((item, i) => {
-            const pos = i === idx ? "active-card shadow-lg" : 
-                        i === (idx + 1) % T_LEN ? "next-card opacity-50" : 
-                        i === (idx - 1 + T_LEN) % T_LEN ? "prev-card opacity-50" : "hidden-card";
+            const pos = i === idx ? "active-card shadow-lg" :
+              i === (idx + 1) % T_LEN ? "next-card opacity-50" :
+                i === (idx - 1 + T_LEN) % T_LEN ? "prev-card opacity-50" : "hidden-card";
             return (
               <div key={i} className={`testi-card rounded-4 p-4 bg-white border ${pos}`}>
                 <div className="text-warning mb-2 small">

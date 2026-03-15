@@ -12,7 +12,6 @@ export default function StudentList() {
     <AdmissionProvider>
       {({ admissions = [], loading, updateAdmission, deleteAdmission }) => {
 
-        // 🔹 Filtered & searched admissions
         // 🔹 Filtered, Searched & Sorted admissions
         const filtered = useMemo(() => {
           const term = searchTerm.trim().toLowerCase();

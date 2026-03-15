@@ -25,8 +25,8 @@ const PORTAL_ITEMS = [
 
 const PortalItem = memo(({ item }) => (
   <div className="col-4 col-md-2 text-center">
-    <Link to={item.link} className="text-decoration-none d-block py-3 portal-hover">
-      <div className={`mx-auto mb-2 rounded-3 bg-${item.bg} text-white d-flex align-items-center justify-content-center portal-btn-icon`}>
+    <Link to={item.link} className="text-decoration-none d-block py-3  portal-hover">
+      <div className={`mx-auto mb-2 p-3 rounded-4 bg-${item.bg} fs-5 text-white d-flex align-items-center justify-content-center portal-btn-icon`}>
         <i className={`bi ${item.icon}`}></i>
       </div>
       <h6 className="fw-bold mb-1">{item.label}</h6>
@@ -40,7 +40,7 @@ function Home() {
     <div className="modern-home">
       {/* HERO */}
       <section className="hero-viewport d-flex position-relative text-white">
-        <img src="/images/vender/hero.png" alt="Drishtee Computer Centre" className="hero-bg-img" />
+        <img src="/images/vender/hero.webp" alt="Drishtee Computer Centre" className="hero-bg-img" />
         <div className="hero-overlay"></div>
 
         <div className="container hero-content text-center text-md-start">
@@ -48,11 +48,13 @@ function Home() {
             <i className="bi bi-patch-check-fill text-primary me-1"></i> 2500+ Students Success
           </span>
 
-          <h1 className="hero-title mb-3">DRISHTEE <br /> COMPUTER CENTRE</h1>
+         <div className="leadingText">
+           <h1 className="hero-title mb-3">DRISHTEE <br /> COMPUTER CENTRE</h1>
           <p className="opacity-75 mb-4 fs-6">
             Leading the digital revolution in Nichlaul since 2007.
             Join India's trusted ISO 9001:2015 IT Skill Hub.
           </p>
+         </div>
 
           <div className="d-flex justify-content-center justify-content-md-start gap-2 flex-wrap">
             <Link to="/courses" className="btn btn-primary px-4 fw-semibold">Start Learning</Link>
@@ -67,7 +69,7 @@ function Home() {
           <div className="card-body p-4 p-md-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="h4 fw-bold m-0">Student <span className="text-primary">Portal</span></h2>
-              <Link to="/courses" className="btn btn-sm btn-outline-primary fw-bold">View All</Link>
+              <Link to="/login" className="btn btn-sm btn-outline-primary fw-bold">View All</Link>
             </div>
 
             <div className="row g-3 text-center justify-content-center">
