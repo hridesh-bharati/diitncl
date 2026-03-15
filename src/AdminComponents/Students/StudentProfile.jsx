@@ -1,14 +1,17 @@
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 
 const safe = (val) => (val && val !== "undefined" && val !== "" ? val : "—");
 
-// --- MEMOIZED COMPONENTS (Performance focused) ---
-const InfoRow = memo(({ label, value, isEditing, onChange, type = "text", icon, color }) => (
+// --- HELPER FOR REGNO PARSING ---
+const getShortReg = (val) => (val && typeof val === "string" ? val.split("/").pop() : val);
+
+// --- MEMOIZED COMPONENTS ---
+const InfoRow = memo(({ label, value, isEditing, onChange, type = "text", icon, color, fieldKey }) => (
   <div className="col-12 col-md-6 mb-3">
     <div className="d-flex align-items-center p-3 rounded-4 bg-white bg-opacity-25 border border-white border-opacity-25 transition-all">
       {icon && (
@@ -24,11 +27,14 @@ const InfoRow = memo(({ label, value, isEditing, onChange, type = "text", icon, 
             type={type}
             className="form-control form-control-sm border-0 border-bottom bg-transparent rounded-0 shadow-none p-0 fw-bold"
             style={{ borderColor: color }}
-            value={value || ""}
+            // Input mein sirf short number dikhega
+            value={fieldKey === "regNo" ? getShortReg(value) : (value || "")}
             onChange={(e) => onChange(e.target.value)}
           />
         ) : (
-          <span className="fw-semibold text-dark text-truncate d-block" style={{ fontSize: '0.95rem' }}>{safe(value)}</span>
+          <span className="fw-semibold text-dark text-truncate d-block" style={{ fontSize: '0.95rem' }}>
+            {fieldKey === "regNo" ? getShortReg(value) : safe(value)}
+          </span>
         )}
       </div>
     </div>
@@ -67,8 +73,32 @@ const ProfileContent = ({ admissions, loading, error }) => {
 
   useEffect(() => { if (student) setFormData(student); }, [student]);
 
+  // --- UPDATED HANDLE CHANGE LOGIC ---
   const handleChange = useCallback((field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      let newData = { ...prev };
+
+      if (field === "regNo") {
+        const parts = (prev.regNo || "").split("/");
+        if (parts.length === 3) {
+          // Rebuild full RegNo with new digits (e.g. DIIT125/CDTP/7)
+          newData.regNo = `${parts[0]}/${parts[1]}/${value}`;
+        } else {
+          newData.regNo = value;
+        }
+      } else if (field === "course") {
+        newData.course = value;
+        // If course changes, update the middle part of full regNo
+        const parts = (prev.regNo || "").split("/");
+        if (parts.length === 3) {
+          const newCourseCode = value.replace(/\s+/g, "").toUpperCase().slice(0, 10);
+          newData.regNo = `${parts[0]}/${newCourseCode}/${parts[2]}`;
+        }
+      } else {
+        newData[field] = value;
+      }
+      return newData;
+    });
   }, []);
 
   const handleSave = async () => {
@@ -166,8 +196,12 @@ const ProfileContent = ({ admissions, loading, error }) => {
             )}
           </div>
           <h4 className="fw-800 mb-1">{safe(formData.name)}</h4>
+          <p className="text-muted small mb-0">{safe(formData.course)}</p>
           <div className="d-flex justify-content-center gap-2 mt-2">
-            <span className="badge rounded-pill bg-primary px-3 shadow-sm">ID: {safe(formData.regNo)}</span>
+            <span className="badge rounded-pill bg-primary px-3 shadow-sm">
+              {/* Yahan ID hamesha full format mein aayegi */}
+              ID: {safe(formData.regNo)}
+            </span>
             <span className="badge rounded-pill bg-dark px-3 shadow-sm">{safe(formData.status)}</span>
           </div>
         </div>
@@ -202,7 +236,14 @@ const ProfileContent = ({ admissions, loading, error }) => {
           <p className="fw-bold text-primary mb-3 ps-2" style={{ fontSize: '12px' }}><i className="bi bi-info-circle me-1"></i> PERSONAL DETAILS</p>
           <div className="row g-1">
             {fields.map((f) => (
-              <InfoRow key={f.key} {...f} value={formData[f.key]} isEditing={isEditing} onChange={(val) => handleChange(f.key, val)} />
+              <InfoRow
+                key={f.key}
+                {...f}
+                fieldKey={f.key}
+                value={formData[f.key]}
+                isEditing={isEditing}
+                onChange={(val) => handleChange(f.key, val)}
+              />
             ))}
           </div>
         </div>
@@ -229,7 +270,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
               </div>
             ))}
 
-            {/* FULL ADDRESS TEXTAREA */}
             <div className="col-12 mt-3 pt-3 border-top border-white border-opacity-25">
               <small className="text-muted d-block fw-bold text-uppercase mb-1" style={{ fontSize: '9px' }}>Full Address</small>
               {isEditing ? (
@@ -248,7 +288,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
         </div>
 
-        {/* PORTAL ACCESS (LAST ITEM) */}
+        {/* PORTAL ACCESS */}
         <div className="glass-panel p-3 mb-5 border-0 d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'}`}>
@@ -256,7 +296,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
             </div>
             <div>
               <h6 className="fw-bold mb-0">Portal Status</h6>
-              <small className="text-muted">{formData.certificateDisabled ? 'Locked' : 'Active Access'}</small>
+              <small className="text-muted">Certificate {formData.certificateDisabled ? 'Locked' : 'Active'}</small>
             </div>
           </div>
           <div className="form-check form-switch fs-3">

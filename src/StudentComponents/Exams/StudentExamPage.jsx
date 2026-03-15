@@ -163,7 +163,7 @@ export default function StudentExamPage() {
   }
 
   return (
-    <div className="container-fluid bg-light min-vh-100 d-flex align-items-center justify-content-center p-2">
+    <div className="container-fluid bg-light d-flex align-items-center justify-content-center p-2">
       <div className="col-md-6 col-12 bg-white border shadow-sm p-4 text-center">
         <i className="bi bi-shield-check text-primary display-5 mb-2"></i>
         <h5 className="fw-bold text-dark text-uppercase">{exam?.title}</h5>

@@ -39,17 +39,35 @@ export default function AdminLayout() {
           width: "100%",
           overflowX: "hidden"
         }}
-      >        <header className="sticky-top bg-white border-bottom px-3 d-flex align-items-center justify-content-between shadow-sm" style={{ height: "64px", zIndex: 1030 }}>
-          <button className="btn border-0 p-0 text-secondary" onClick={() => setOpen(true)}>
+      >
+        <header
+          className="sticky-top bg-white border-bottom px-3 d-flex align-items-center shadow-sm"
+          style={{ height: "64px", zIndex: 1030 }}
+        >
+          {/* Sidebar Toggle */}
+          <button
+            className="btn border-0 p-0 text-secondary"
+            onClick={() => setOpen(true)}
+          >
             <i className="bi bi-list fs-2"></i>
           </button>
 
-          <div className="d-flex justify-content-end gap-3 ms-auto">
+          {/* Nav Icons */}
+          <div className="d-flex align-items-center flex-grow-1 px-3 justify-content-between justify-content-md-end gap-md-5">
             {navItems.map((item, idx) => (
-              <div key={idx} className="position-relative p-2" style={{ cursor: "pointer" }} onClick={() => navigate(item.link)}>
+              <div
+                key={idx}
+                className="position-relative p-2"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(item.link)}
+              >
                 <i className={`bi ${item.icon} text-secondary fs-4`}></i>
+
                 {item.count > 0 && (
-                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style={{ fontSize: "9px" }}>
+                  <span
+                    className="position-absolute top-0 mt-2 start-100 translate-middle badge rounded-pill bg-danger border border-white"
+                    style={{ fontSize: "9px" }}
+                  >
                     {item.count}
                   </span>
                 )}

@@ -4,6 +4,14 @@ import React, { useState, useMemo } from "react";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 import StudentCard from "./StudentCard";
 
+// 🔹 Helper to determine status (Keep it outside to prevent re-declaration)
+const getActualStatus = (s) => {
+  if (s.status === "canceled") return "canceled";
+  if (s.regNo && s.issueDate) return "done";
+  if (s.regNo) return "accepted";
+  return "pending";
+};
+
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("pending");
@@ -12,46 +20,32 @@ export default function StudentList() {
     <AdmissionProvider>
       {({ admissions = [], loading, updateAdmission, deleteAdmission }) => {
 
-        // 🔹 Filtered, Searched & Sorted admissions
+        // 🔹 Optimized Filter, Search & Sort
         const filtered = useMemo(() => {
           const term = searchTerm.trim().toLowerCase();
 
           return admissions
             .filter((s) => {
-              // 1. Determine Status (Sync with StudentCard logic)
-              let actualStatus = "pending";
-              if (s.status === "canceled") {
-                actualStatus = "canceled";
-              } else if (s.regNo && s.issueDate) {
-                actualStatus = "done";
-              } else if (s.regNo) {
-                actualStatus = "accepted";
-              } else {
-                actualStatus = "pending";
-              }
+              const actualStatus = getActualStatus(s);
 
-              // 2. Apply Status Filter
               const matchStatus = statusFilter === "all" || actualStatus === statusFilter;
-
-              // 3. Apply Search Filter
-              const matchSearch =
-                !term ||
+              const matchSearch = !term ||
                 s.name?.toLowerCase().includes(term) ||
                 s.regNo?.toLowerCase().includes(term);
 
               return matchStatus && matchSearch;
             })
             .sort((a, b) => {
-              // 4. Sort by creation date (newest first)
-              // Firebase Timestamp ya normal date handle karne ke liye fallback use kiya hai
-              const dateA = a.createdAt?.seconds || (a.createdAt instanceof Date ? a.createdAt.getTime() / 1000 : 0);
-              const dateB = b.createdAt?.seconds || (b.createdAt instanceof Date ? b.createdAt.getTime() / 1000 : 0);
+              // Get numeric timestamps
+              const getTime = (date) => date?.seconds || (date instanceof Date ? date.getTime() / 1000 : 0);
+              const diff = getTime(b.createdAt) - getTime(a.createdAt);
 
-              // Agar dates same hain toh ID se tie-break karega
-              return dateB - dateA || (b.id && a.id ? b.id.localeCompare(a.id) : 0);
+              // Sort by date, then by ID as tie-breaker
+              return diff !== 0 ? diff : (b.id || "").localeCompare(a.id || "");
             });
         }, [admissions, searchTerm, statusFilter]);
-        // 🔹 CSV Export
+
+        // 🔹 CSV Export (Maintained all original headers)
         const handleExportCSV = () => {
           if (!filtered.length) return;
 
@@ -78,64 +72,69 @@ export default function StudentList() {
           const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
-          link.download = `students_${statusFilter}.csv`;
+          link.download = `students_${statusFilter}_${new Date().toLocaleDateString()}.csv`;
           link.click();
         };
 
         return (
-          <div className="container-fluid py-4">
-            {/* 🔹 Header Section */}
-            <div className="mb-4">
-              <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-3">
+          <div className="container-fluid py-4 mb-5 mb-lg-0">
+            {/* 🔹 Header: Improved Layout Consistency */}
+            <div className="mb-4 border-bottom pb-2">
 
-                {/* Left: Title + Export */}
-                <div className="d-flex justify-content-start align-items-center gap-3 w-100 w-lg-50">
-                  <h5 className="fw-bold mb-0 text-nowrap">Admissions ({filtered.length})</h5>
-                  <button
-                    onClick={handleExportCSV}
-                    className="btn btn-sm btn-success rounded-pill px-3 shadow-sm d-flex align-items-center gap-1"
-                  >
-                    <i className="bi bi-file-earmark-arrow-up"></i> Export CSV
-                  </button>
-                </div>
+              {/* Row 1 : Title + Export */}
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h5 className="fw-bold mb-0">
+                  Admissions
+                  <span className="badge bg-primary ms-2">{filtered.length}</span>
+                </h5>
 
-                {/* Right: Status Filters */}
-                <div className="d-flex gap-1 overflow-auto pb-1 w-100 w-lg-50 justify-content-lg-end" style={{ whiteSpace: "nowrap" }}>
-                  {["all", "pending", "accepted", "done", "canceled"].map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setStatusFilter(s)}
-                      className={`btn btn-sm rounded-pill px-3 fw-medium ${statusFilter === s ? "btn-primary shadow-sm" : "btn-outline-secondary"
-                        }`}
-                    >
-                      {s.charAt(0).toUpperCase() + s.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
+                <button
+                  onClick={handleExportCSV}
+                  className="btn btn-success btn-sm rounded-pill px-3 d-flex align-items-center gap-1 shadow-sm"
+                > <i className="bi bi-file-earmark-arrow-up"></i> Export CSV
+                </button>
               </div>
+
+              {/* Row 2 : Filters */}
+              <div className="d-flex justify-content-start justify-content-lg-center gap-2 overflow-auto pb-1 scrollbar-hidden">
+                {["all", "pending", "accepted", "done", "canceled"].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setStatusFilter(s)}
+                    className={`btn btn-sm rounded-pill px-3 fw-medium ${statusFilter === s
+                      ? "btn-primary shadow-sm"
+                      : "btn-outline-secondary"
+                      }`}
+                  >
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+            </div>
+            {/* 🔹 Search Input */}
+            <div className="position-relative mb-4">
+              <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+              <input
+                type="text"
+                className="form-control shadow-sm ps-5"
+                style={{ borderRadius: "12px", padding: "12px 12px 12px 45px" }}
+                placeholder="Search by name or Reg No..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
 
-            {/* 🔹 Search */}
-            <input
-              type="text"
-              className="form-control mb-4 shadow-sm"
-              style={{ borderRadius: "12px", padding: "12px" }}
-              placeholder="Search by name or Reg No..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-
-            {/* 🔹 Content */}
+            {/* 🔹 Content Display */}
             {loading ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status"></div>
-                <div className="mt-2 text-muted">Loading Students...</div>
+                <div className="mt-2 text-muted">Fetching Student Records...</div>
               </div>
             ) : filtered.length === 0 ? (
               <div className="text-center py-5 text-muted bg-light rounded-4 border border-dashed">
                 <i className="bi bi-people fs-1 d-block mb-2"></i>
-                No students found in "{statusFilter}" category
+                No records found in <strong>{statusFilter}</strong>
               </div>
             ) : (
               <div className="row g-3">
