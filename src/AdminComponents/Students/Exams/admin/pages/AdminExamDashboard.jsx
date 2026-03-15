@@ -86,7 +86,7 @@ export default function AdminExamDashboard() {
                         <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ maxWidth: '180px' }}>{e.title}</h6>
                         <span
                           className="text-danger small fw-bold cursor-pointer"
-                          style={{ fontSize: '10px', textDecoration: 'underline' }}
+                          style={{ fontSize: '10px'}}
                           onClick={() => deleteExam(e.id)}
                         >
                           DELETE PERMANENTLY

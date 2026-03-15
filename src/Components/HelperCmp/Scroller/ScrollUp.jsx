@@ -39,7 +39,7 @@ function ScrollUp() {
                 #btnBackToTop::after {
                     content: "";
                     border-radius: 50%;
-                    border: 2px solid #00ffcb;
+                    border: 6px solid #00ffcb;
                     position: absolute;
                     top: 50%;
                     left: 50%;

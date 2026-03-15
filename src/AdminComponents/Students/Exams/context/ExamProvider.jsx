@@ -1,5 +1,7 @@
 // src/AdminComponents/Students/Exams/context/ExamProvider.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { staticCourses } from "../../../../Components/HomePage/pages/Course/courseData";
+
 import { db } from "../../../../firebase/firebase";
 import {
     collection, doc, addDoc, updateDoc, getDocs, query, where,
@@ -9,7 +11,7 @@ import {
 const ExamContext = createContext();
 export const useExam = () => useContext(ExamContext);
 
-const COMPUTER_COURSES = ["ADCA", "DCA", "DFA", "DTP", "TALLY", "BASIC COMPUTER", "JAVA", "PYTHON", "WEB DESIGNING", "CCC"];
+const COMPUTER_COURSES = staticCourses.map(c => c.name);
 
 export const ExamProvider = ({ children }) => {
     const [exams, setExams] = useState([]);

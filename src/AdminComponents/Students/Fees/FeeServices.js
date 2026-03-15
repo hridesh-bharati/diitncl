@@ -4,10 +4,10 @@ import { collection, addDoc, serverTimestamp, doc, deleteDoc } from "firebase/fi
 // 1. Course Config
 export const COURSE_CONFIG = {
   "ADCA+": { duration: 18, monthly: 800, adm: 600 },
-  "ADCA":  { duration: 15, monthly: 700, adm: 500 },
-  "DCA":   { duration: 12, monthly: 700, adm: 500 },
-  "DCAA":  { duration: 6,  monthly: 700, adm: 500 },
-  "CCC":   { duration: 3,  monthly: 1000, adm: 500 },
+  "ADCA": { duration: 15, monthly: 700, adm: 500 },
+  "DCA": { duration: 12, monthly: 700, adm: 500 },
+  "DCAA": { duration: 6, monthly: 700, adm: 500 },
+  "CCC": { duration: 3, monthly: 1000, adm: 500 },
 };
 
 export const getFeeLogic = (courseName, payments = []) => {
@@ -45,7 +45,7 @@ const numberToWords = (num) => {
 // --- COLLEGE STYLE A4 TEMPLATE ---
 const generateA4HTML = (student, paymentsArray, summary, isSingle = false) => {
   const docTitle = isSingle ? "OFFICIAL FEE RECEIPT" : "STUDENT FEE LEDGER / STATEMENT";
-  
+
   return `
   <html>
   <head>
@@ -121,7 +121,7 @@ const generateA4HTML = (student, paymentsArray, summary, isSingle = false) => {
         <h1>Drishtee Computer Center</h1>
         <p>Managed by Drishtee Educational & Charitable Trust</p>
         <p>An ISO 9001:2015 Certified IT Training Institute</p>
-        <p>Main Road, Varanasi - 221001 | Web: www.drishtee.com | Mob: +91 9918151032</p>
+        <p>Paragpur Road , Nichlaul - 221001 | Web: www.drishteeindia.com | Mob: +91 9918151032</p>
       </div>
 
       <div class="doc-header">${docTitle}</div>
@@ -135,7 +135,7 @@ const generateA4HTML = (student, paymentsArray, summary, isSingle = false) => {
         <div class="info-group">
           <div class="info-row"><b>Admission Date:</b> <span>${student?.admissionDate || 'N/A'}</span></div>
           <div class="info-row"><b>Statement Date:</b> <span>${new Date().toLocaleDateString('en-GB')}</span></div>
-          <div class="info-row"><b>Center Code:</b> <span>DCC-UP01</span></div>
+          <div class="info-row"><b>Center Code:</b> <span>DIIT124</span></div>
         </div>
       </div>
 

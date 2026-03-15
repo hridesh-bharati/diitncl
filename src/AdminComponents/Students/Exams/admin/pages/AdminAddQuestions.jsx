@@ -33,7 +33,10 @@ export default function AdminAddQuestions() {
 
   const handleAddOrUpdate = () => {
     if (!q.question || !q.optionA || !q.optionB) return alert("Min 2 options required!");
-    setList(editingId !== null ? list.map((item, i) => i === editingId ? q : item) : [...list, q]);
+    setList(editingId !== null
+      ? list.map((item, i) => (i === editingId ? { ...q } : item))
+      : [...list, { ...q }]
+    );
     resetForm();
   };
 
@@ -63,12 +66,12 @@ export default function AdminAddQuestions() {
       </div>
 
       <div className="row g-0">
-        <div className="col-lg-5 border-end">
+        <div className="col-lg-6 border-end">
           <div className="p-3 bg-white sticky-lg-top" style={{ top: "65px" }}>
             <div className="border p-3">
               <label className="small fw-bold text-muted mb-1 text-uppercase">{editingId !== null ? "Edit Question" : "New Question"}</label>
               <textarea className="form-control rounded-0 mb-3 shadow-none" placeholder="Enter Question Statement..." value={q.question} onChange={e => setQ({ ...q, question: e.target.value })} rows="2" />
-              
+
               <div className="row g-2 mb-3">
                 {['A', 'B', 'C', 'D'].map(opt => (
                   <div className="col-6" key={opt}>
@@ -80,13 +83,21 @@ export default function AdminAddQuestions() {
               <div className="row g-2 mb-3 small">
                 <div className="col-6">
                   <label className="fw-bold text-muted uppercase">Correct Ans</label>
-                  <select className="form-select form-select-sm rounded-0 shadow-none" value={q.correctAnswer} onChange={e => setQ({ ...q, correctAnswer: e.target.value })}>
-                    {['A', 'B', 'C', 'D'].map(o => <option key={o} value={o}>{o}</option>)}
+                  <select
+                    className="form-select form-select-sm rounded-0 shadow-none"
+                    value={q.correctAnswer}
+                    onChange={(e) => setQ({ ...q, correctAnswer: e.target.value })}
+                  >
+                    {["A", "B", "C", "D"].map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="col-6">
                   <label className="fw-bold text-muted uppercase">Marks</label>
-                  <input type="number" className="form-control form-control-sm rounded-0 shadow-none" value={q.marks} onChange={e => setQ({ ...q, marks: e.target.value })} />
+                  <input type="number" className="form-control form-control-sm rounded-0 shadow-none" value={q.marks} onChange={e => setQ({ ...q, marks: Number(e.target.value) })} />
                 </div>
               </div>
 
@@ -98,7 +109,7 @@ export default function AdminAddQuestions() {
           </div>
         </div>
 
-        <div className="col-lg-7 p-3">
+        <div className="col-lg-6 p-3">
           {list.map((item, i) => (
             <div key={i} className={`bg-white rounded-4 border-start border-primary border-4 mb-3 p-3 position-relative ${editingId === i ? 'border-primary border-3' : ''}`}>
               <div className="d-flex justify-content-between">

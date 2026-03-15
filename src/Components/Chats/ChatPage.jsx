@@ -155,9 +155,9 @@ export default function ChatPage() {
       </main>
 
       {/* Input Form */}
-      <form className="d-flex p-2 border-top bg-white" onSubmit={handleSendMessage}>
+      <form className="d-flex p-2 border-top bg-white mb-5" onSubmit={handleSendMessage}>
         <input
-          className="form-control rounded-pill me-2"
+          className="form-control rounded-pill me-2 mb-4 mb-lg-0"
           placeholder={editingId ? "Edit message..." : "Type a message..."}
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
