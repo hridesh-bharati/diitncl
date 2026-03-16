@@ -89,7 +89,7 @@ export default function App() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <>
+    <Lock>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
@@ -138,6 +138,6 @@ export default function App() {
           <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
         </Routes>
       </Suspense>
-    </>
+    </Lock>
   );
 }
