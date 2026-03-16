@@ -8,22 +8,27 @@ import LanguageTranslator from "../LanguageTranslator/LanguageTranslator";
 import "./Header.css";
 
 export default function Header() {
-  const { user, student, isAdmin, logout } = useAuth();
+  // Destructure photoURL and displayName directly from useAuth for real-time reactivity
+  const { user, student, isAdmin, logout, photoURL, displayName, userProfile } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showApps, setShowApps] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginType, setLoginType] = useState("student");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchActive, setIsSearchActive] = useState(false);
-  
-  // High Priority Update for Smooth UI
   const [isPending, startTransition] = useTransition();
 
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Logic to handle click outside for profile menu
+  // REAL-TIME DATA: No useMemo here to ensure it updates instantly when photoURL changes
+  const userData = {
+    name: displayName,
+    email: student?.email || user?.email || "student@drishteeindia.com",
+    photo: photoURL,
+    dashboard: isAdmin ? "/admin" : "/student"
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -43,15 +48,6 @@ export default function Header() {
     } catch (error) { console.error("Logout error:", error); }
   };
 
-  // Memoized user data for better performance
-  const userData = useMemo(() => ({
-    name: student?.name || user?.displayName || "Guest Student",
-    email: student?.email || user?.email || "student@drishteeindia.com",
-    photo: student?.photoUrl || user?.photoURL || "/images/icon/default-avatar.png",
-    dashboard: isAdmin ? "/admin" : "/student"
-  }), [student, user, isAdmin]);
-
-  // Static links data - Keep outside of render cycle if possible, or useMemo
   const courseLinks = useMemo(() => [
     { to: "/courses", label: "All Courses", desc: "Explore our catalog.", icon: "bi-mortarboard", color: "linear-gradient(135deg, #34C759, #30D158)" },
     { to: "/certificate", label: "Certificate", desc: "Verify earned certifications.", icon: "bi-patch-check", color: "linear-gradient(135deg, #FF9500, #FFCC00)" },
@@ -66,10 +62,7 @@ export default function Header() {
     { to: "/download-certificate", label: "Verification", icon: "bi-shield-check", color: "linear-gradient(135deg, #34C759, #1a9638)" },
   ], []);
 
-  // Optimized toggle handlers using startTransition
-  const toggleMobileMenu = () => {
-    startTransition(() => setIsMenuOpen(!isMenuOpen));
-  };
+  const toggleMobileMenu = () => startTransition(() => setIsMenuOpen(!isMenuOpen));
 
   const openLogin = () => {
     startTransition(() => {
@@ -80,7 +73,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="google-header-advanced sticky-top shadow-sm bg-white">
+      <header className="google-header-advanced sticky-top bg-white">
         <div className="header-container container-fluid px-3 px-lg-4">
           <div className="header-left d-flex align-items-center w-100">
             <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
@@ -91,7 +84,6 @@ export default function Header() {
               <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
               <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""}>About</NavLink>
 
-              {/* Courses Dropdown */}
               <div className="nav-item-dropdown position-relative pt-2">
                 <Link to="/courses" className={location.pathname.startsWith("/courses") ? "active" : ""}>
                   Courses <i className="bi bi-chevron-down small"></i>
@@ -116,7 +108,6 @@ export default function Header() {
               <NavLink to="/branch/thoothibari" className={({ isActive }) => isActive ? "active" : ""}>Branch</NavLink>
               <NavLink to="/library" className={({ isActive }) => isActive ? "active" : ""}>Library</NavLink>
 
-              {/* Student Zone Dropdown */}
               <div className="nav-item-dropdown position-relative mt-2">
                 <span className={`nav-static-link ${location.pathname.includes('admission') ? 'active' : ''}`}>
                   Student Zone <i className="bi bi-chevron-down small"></i>
@@ -143,14 +134,12 @@ export default function Header() {
           </div>
 
           <div className="header-right d-flex align-items-center gap-2 gap-md-3">
-          
-            
             <div className="apps-dropdown position-relative">
               <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
                 <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
               </button>
               {showApps && (
-                <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3 animate__animated animate__fadeIn">
+                <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3">
                   <div className="apps-grid">
                     <Link to="/chat" className="app-item" onClick={() => setShowApps(false)}>
                       <i className="bi bi-chat-dots-fill text-primary"></i><span>Chat</span>
@@ -166,17 +155,16 @@ export default function Header() {
               )}
             </div>
 
-            {/* Desktop Account Section */}
             <div className="d-none d-lg-block">
               {!user ? (
                 <button className="google-signin-btn" onClick={openLogin}>Login</button>
               ) : (
                 <div className="profile-section" ref={profileRef}>
                   <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                    <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" loading="lazy" />
+                    <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" />
                   </div>
                   {showProfileMenu && (
-                    <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden animate__animated animate__fadeInUp">
+                    <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden">
                       <div className="profile-header p-4 text-center bg-light border-bottom">
                         <img src={userData.photo} alt="user" className="rounded-circle mb-2 border border-3 border-white shadow" width="65" height="65" />
                         <h6 className="fw-bold m-0">{userData.name}</h6>
@@ -203,7 +191,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* MOBILE BOTTOM NAV - iOS STYLE */}
+      {/* MOBILE BOTTOM NAV */}
       <nav className="fixed-bottom bg-white border-top d-lg-none d-flex justify-content-around align-items-center shadow-lg"
         style={{ height: "68px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <NavLink to="/" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary' : 'text-secondary'}`}>
@@ -243,7 +231,6 @@ export default function Header() {
 
         <div className="offcanvas-body p-4 pt-0 custom-scrollbar">
           <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
-
           <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
             <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
               <img src={userData.photo} className="rounded-circle border border-3 border-light shadow-sm" width="60" height="60" alt="Profile" />
@@ -256,7 +243,6 @@ export default function Header() {
           </Link>
 
           <div className="ios-menu">
-            {/* Admission Portal Card */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title text-primary px-3 pt-3">Admission Portal</div>
               <Link to="/new-admission" className="nav-link" onClick={() => setIsMenuOpen(false)}>
@@ -297,6 +283,76 @@ export default function Header() {
               </div>
             </div>
 
+            {/* Location & Support Card */}
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
+              <div className="ios-menu-title px-3 pt-3">Support & Location</div>
+              <div className="px-2">
+                <Link to="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #5856D6, #007AFF)' }}><i className="bi bi-info-circle-fill"></i></div>
+                      <span>About Drishtee</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+                <Link to="/branch/thoothibari" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF3B30, #FF2D55)' }}><i className="bi bi-geo-alt-fill"></i></div>
+                      <span>Thoothibari Branch</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+
+              </div>
+            </div>
+
+            {/* Legal & Policies Card */}
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
+              <div className="ios-menu-title px-3 pt-3">Legal</div>
+              <div className="px-2">
+                <Link to="/terms" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-file-text-fill"></i></div>
+                      <span>Terms & Conditions</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+                <Link to="/privacy-policy" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-shield-lock-fill"></i></div>
+                      <span>Privacy Policy</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+                <Link to="/faq" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-question-circle-fill"></i></div>
+                      <span>FAQs</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+                <Link to="/disclaimer" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <div className="ios-menu-item justify-content-between">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-exclamation-triangle-fill"></i></div>
+                      <span>Disclaimer</span>
+                    </div>
+                    <i className="bi bi-chevron-right text-muted small"></i>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+
             {/* Settings Card */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
               <div className="ios-menu-title px-3 pt-3">App Settings</div>
@@ -317,19 +373,22 @@ export default function Header() {
                 </div>
               </div>
             </div>
+
+
+
           </div>
 
           <div className="mt-4 pb-4">
             {user ? (
-              <button onClick={handleLogout} className="btn btn-white w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0 active-scale">Sign Out</button>
+              <button onClick={handleLogout} className="btn btn-white w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0">Sign Out</button>
             ) : (
-              <button onClick={openLogin} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow active-scale">Login to Portal</button>
+              <button onClick={openLogin} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow">Login to Portal</button>
             )}
           </div>
         </div>
       </div>
 
-      {/* LOGIN MODAL */}
+      {/* MODALS & OVERLAYS */}
       {showLoginModal && (
         <div className="modal show d-block" style={{ zIndex: 30000 }} onClick={() => setShowLoginModal(false)}>
           <div className="modal-dialog modal-dialog-centered modal-sm p-3" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
@@ -350,24 +409,8 @@ export default function Header() {
         </div>
       )}
 
-      {/* SEARCH OVERLAY */}
-      {isSearchActive && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 bg-white p-3" style={{ zIndex: 40000 }}>
-          <div className="d-flex align-items-center gap-2">
-            <button className="btn btn-light rounded-circle" onClick={() => setIsSearchActive(false)}><i className="bi bi-arrow-left"></i></button>
-            <div className="flex-grow-1">
-              <GlobleSearchBox routes={RouteLinks} autoFocus onSelect={() => setIsSearchActive(false)} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* BACKDROP */}
       {(isMenuOpen || showLoginModal) && (
-        <div className="modal-backdrop fade show" 
-          style={{ zIndex: 20000 }} 
-          onClick={() => { setIsMenuOpen(false); setShowLoginModal(false); }}>
-        </div>
+        <div className="modal-backdrop fade show" style={{ zIndex: 20000 }} onClick={() => { setIsMenuOpen(false); setShowLoginModal(false); }}></div>
       )}
     </>
   );

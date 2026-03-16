@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useExam } from "../../context/ExamProvider";
 import { db } from "../../../../../firebase/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-
+import BackButton from "../../../../../Components/HelperCmp/BackButton/BackButton";
 export default function AdminExamDashboard() {
   const navigate = useNavigate();
   const { exams, loading, toggleExamLive, deleteExam } = useExam();
@@ -51,13 +51,18 @@ export default function AdminExamDashboard() {
 
   return (
     <div className="container-fluid p-0 bg-light  pb-5">
-      <div className="d-flex justify-content-between align-items-center p-3 bg-white border-bottom sticky-top shadow-sm">
-        <h6 className="fw-bold mb-0 text-dark text-uppercase letter-spacing-1">
-          <i className="bi bi-shield-lock-fill me-2 text-primary"></i>Exam Console
-        </h6>
-        <button className="btn btn-primary btn-sm rounded-0 fw-bold px-3" onClick={() => navigate("new")}>
-          <i className="bi bi-plus-lg me-1"></i> NEW PAPER
+      <div className="d-flex justify-content-between align-items-center p-2 p-md-3 bg-white border-bottom sticky-top shadow-sm">
+
+        <div className="d-flex align-items-center gap-2">
+          <BackButton className="border-0"/>
+          <h6 className="fw-bold mb-0 text-dark">
+            <i className="bi bi-shield-lock-fill me-1 text-primary"></i>Exam Console</h6>
+        </div>
+
+        <button className="btn btn-primary btn-sm rounded-0 fw-bold" onClick={() => navigate("new")} >
+          <i className="bi bi-plus"></i> New Exam
         </button>
+
       </div>
 
       <div className="row g-0">
@@ -86,7 +91,7 @@ export default function AdminExamDashboard() {
                         <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ maxWidth: '180px' }}>{e.title}</h6>
                         <span
                           className="text-danger small fw-bold cursor-pointer"
-                          style={{ fontSize: '10px'}}
+                          style={{ fontSize: '10px' }}
                           onClick={() => deleteExam(e.id)}
                         >
                           DELETE PERMANENTLY

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useExam } from "../../context/ExamProvider";
+import BackButton from "../../../../../Components/HelperCmp/BackButton/BackButton";
 
 export default function AdminCreateExam() {
   const navigate = useNavigate();
@@ -34,10 +35,7 @@ export default function AdminCreateExam() {
     <div className="container-fluid p-0 bg-light min-vh-100">
       {/* Top Header - Radius 0 */}
       <div className="d-flex align-items-center p-3 bg-white border-bottom sticky-top shadow-sm">
-        <button className="btn btn-light btn-sm rounded-0 me-3" onClick={() => navigate("..")}>
-          <i className="bi bi-chevron-left"></i>
-        </button>
-        <h6 className="fw-bold mb-0 text-uppercase letter-spacing-1">Create New Paper</h6>
+      <BackButton />   Create New Paper
       </div>
 
       <div className="container p-3">

@@ -41,8 +41,7 @@ export default function AdminLayout() {
         }}
       >
         <header
-          className="sticky-top bg-white border-bottom px-3 d-flex align-items-center shadow-sm"
-          style={{ height: "64px", zIndex: 1030 }}
+          className="bg-white border-bottom px-3 d-flex align-items-center shadow-sm"
         >
           {/* Sidebar Toggle */}
           <button

@@ -1,17 +1,13 @@
-// src\contexts\AuthContext.jsx
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   authListener, 
   logoutUser, 
   getUserRole,
-  getCurrentUserProfile,
   isUserAdmin
 } from '../firebase/auth';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
+import { collection, query, where, getDocs, doc, onSnapshot } from 'firebase/firestore';
+import { db, auth } from '../firebase/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../firebase/firebase';
 
 const AuthContext = createContext();
 
@@ -19,7 +15,6 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-// ✅ Centralized admin emails
 export const ADMIN_ALLOWED_EMAILS = [
   "hridesh027@gmail.com", 
   "ajaytiwari4@gmail.com",
@@ -34,13 +29,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch student admission data
   const fetchStudentData = async (email) => {
     try {
-      const q = query(
-        collection(db, "admissions"), 
-        where("email", "==", email.toLowerCase())
-      );
+      const q = query(collection(db, "admissions"), where("email", "==", email.toLowerCase()));
       const snap = await getDocs(q);
       if (!snap.empty) {
         setStudent({ id: snap.docs[0].id, ...snap.docs[0].data() });
@@ -53,84 +44,57 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Listen to auth state
   useEffect(() => {
-    const unsubscribe = authListener(async (currentUser) => {
+    let unsubscribeProfile = () => {};
+
+    const unsubscribeAuth = authListener(async (currentUser) => {
       try {
         setError(null);
-        
         if (currentUser) {
           setUser(currentUser);
-          
-          // Get user role from Firestore
-          const userRole = await getUserRole(currentUser.uid);
-          setRole(userRole);
-          
-          // Get full profile
-          const profile = await getCurrentUserProfile();
-          setUserProfile(profile);
-          
-          // Save to localStorage for gallery
           localStorage.setItem("user_email", currentUser.email);
-          localStorage.setItem("user_role", userRole || 'user');
-          localStorage.setItem("user_name", profile?.name || currentUser.displayName || '');
-          localStorage.setItem("user_photo", profile?.photoURL || currentUser.photoURL || '');
-          
-          // Fetch student data if role is student
-          if (userRole === 'student') {
-            await fetchStudentData(currentUser.email);
-          } else {
-            setStudent(null);
-          }
+
+          // ✅ REAL-TIME LISTENER: No refresh needed now
+          unsubscribeProfile = onSnapshot(doc(db, "users", currentUser.uid), (docSnap) => {
+            if (docSnap.exists()) {
+              const profileData = docSnap.data();
+              setUserProfile(profileData);
+              const userRole = profileData.role || 'user';
+              setRole(userRole);
+
+              localStorage.setItem("user_role", userRole);
+              localStorage.setItem("user_name", profileData.name || currentUser.displayName || '');
+              localStorage.setItem("user_photo", profileData.photoURL || currentUser.photoURL || '');
+
+              if (userRole === 'student') fetchStudentData(currentUser.email);
+            }
+          });
         } else {
-          // Clear all states
           setUser(null);
           setUserProfile(null);
           setRole(null);
           setStudent(null);
-          
-          // Clear only auth localStorage
-          localStorage.removeItem("user_email");
-          localStorage.removeItem("user_role");
-          localStorage.removeItem("user_name");
-          localStorage.removeItem("user_photo");
+          localStorage.clear();
+          unsubscribeProfile();
         }
       } catch (err) {
         setError(err.message);
-        console.error("Auth state error:", err);
       } finally {
         setLoading(false);
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProfile();
+    };
   }, []);
 
-  // Login success handler
-  const handleLoginSuccess = (userData) => {
-    localStorage.setItem("user_email", userData.email);
-  };
-
-  // Logout function
   const logout = async () => {
-    try {
-      await logoutUser();
-      setUser(null);
-      setUserProfile(null);
-      setRole(null);
-      setStudent(null);
-      
-      localStorage.removeItem("user_email");
-      localStorage.removeItem("user_role");
-      localStorage.removeItem("user_name");
-      localStorage.removeItem("user_photo");
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
+    await logoutUser();
+    localStorage.clear();
   };
 
-  // Reset password
   const resetPassword = async (email) => {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -140,61 +104,21 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Update user profile in context
-  const updateUserProfile = (updatedData) => {
-    setUserProfile(prev => ({ ...prev, ...updatedData }));
-    if (updatedData.name) localStorage.setItem("user_name", updatedData.name);
-    if (updatedData.photoURL) localStorage.setItem("user_photo", updatedData.photoURL);
-  };
-
-  // ✅ Admin check using centralized ADMIN_ALLOWED_EMAILS
   const isAdmin = role === 'admin' || ADMIN_ALLOWED_EMAILS.includes(user?.email);
 
-  // Student check
-  const isStudent = role === 'student';
-
-  // Logged in check
-  const isLoggedIn = !!user;
-
-  // Get display name
-  const displayName = student?.name || 
-    userProfile?.name || 
-    user?.displayName || 
-    localStorage.getItem("user_name") || 
-    "Guest";
-
-  // Get photo URL
-  const photoURL = student?.photoUrl || 
-    userProfile?.photoURL || 
-    user?.photoURL || 
-    localStorage.getItem("user_photo") || 
-    "/images/icon/default-avatar.png";
-
   const value = {
-    user,
-    userProfile,
-    student,
-    role,
-    loading,
-    error,
-    isAdmin,
-    isStudent,
-    isLoggedIn,
-    displayName,
-    photoURL,
+    user, userProfile, student, role, loading, error, isAdmin,
+    isStudent: role === 'student',
+    isLoggedIn: !!user,
+    displayName: student?.name || userProfile?.name || user?.displayName || "Guest",
+    photoURL: student?.photoUrl || userProfile?.photoURL || user?.photoURL || "/images/icon/default-avatar.png",
     userEmail: user?.email || null,
-    ADMIN_ALLOWED_EMAILS, // 👈 Export karo context se bhi
+    ADMIN_ALLOWED_EMAILS,
     logout,
     resetPassword,
-    handleLoginSuccess,
-    updateUserProfile,
     fetchStudentData,
     isUserAdmin: async (uid) => await isUserAdmin(uid)
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }

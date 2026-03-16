@@ -65,8 +65,8 @@ export default function AdminLiveTracking() {
   );
 
   return (
-    <div className="container-fluid py-4 bg-light min-vh-100 text-dark">
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 bg-white p-3 border shadow-sm sticky-top">
+    <div className="container-fluid py-4 bg-light text-dark">
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 bg-white p-2 p-lg-4 border shadow-sm">
         <div>
           <h5 className="fw-bold mb-0 text-uppercase">📡 Live Exam Monitor</h5>
           <p className="text-muted small mb-0">Showing students only in <b>LIVE</b> exam papers</p>

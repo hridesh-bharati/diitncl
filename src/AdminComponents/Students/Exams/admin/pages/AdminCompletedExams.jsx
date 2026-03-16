@@ -65,16 +65,34 @@ export default function AdminCompletedExams() {
 
   return (
     <div className="container-fluid py-4 bg-light min-vh-100">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h4 className="fw-bold mb-0 text-dark text-uppercase">✅ Completed Exams</h4>
-          <p className="text-muted small mb-0">Manage reports and unlock exams for re-attempt</p>
+      <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4 gap-2">
+        <div className="d-flex flex-column">
+          {/* Title & Badge Row */}
+          <div className="d-flex align-items-center gap-2 mb-1">
+            <h5 className="fw-bold mb-0 text-dark text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.5px' }}>
+              Completed Exams
+            </h5>
+            <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold" style={{ fontSize: '8px', padding: '3px 8px' }}>
+              LIVE REPORTS
+            </span>
+          </div>
+
+          {/* Subtext */}
+          <p className="text-muted mb-0" style={{ fontSize: '10.5px', fontWeight: '500' }}>
+            Manage results & re-attempts
+          </p>
         </div>
-        <button className="btn btn-white border shadow-sm rounded-0 btn-sm fw-bold px-3" onClick={fetchCompletedData}>
-          <i className="bi bi-arrow-clockwise me-1"></i> REFRESH
+
+        {/* Sync Button: Icon only on mobile, text on large screens */}
+        <button
+          className="btn btn-white border shadow-sm rounded-1 fw-bold text-uppercase px-3 py-2 py-sm-1 ms-auto"
+          style={{ fontSize: '10px', minWidth: 'fit-content' }}
+          onClick={fetchCompletedData}
+        >
+          <i className="bi bi-arrow-clockwise text-primary me-lg-1"></i>
+          <span className="d-none d-lg-inline">Sync Data</span>
         </button>
       </div>
-
       <div className="card border-0 shadow-sm rounded-0 overflow-hidden">
         <div className="table-responsive">
           <table className="table align-middle table-hover mb-0">
