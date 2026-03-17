@@ -1,9 +1,37 @@
-/* --- GOOGLE STYLE PC HEADER --- */
+/* ==========================================
+   1. GLOBAL VARIABLES (DRY SETUP)
+   ========================================== */
+:root {
+    --primary-blue: #1a73e8;
+    --apple-blue: #007aff;
+    --dark-navy: #0f172a;
+    --ios-grey: #8e8e93;
+    --text-main: #3c4043;
+    --text-muted: #5f6368;
+    --bg-light: #f1f3f4;
+    --glass-white: rgba(255, 255, 255, 0.75);
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.02);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --transition: 0.2s ease;
+}
+
+/* Common resets for DRY */
+.nav-links a, .nav-static-link, .grid-item, .app-item, .menu-items a, .ios-menu-item {
+    text-decoration: none !important;
+    transition: var(--transition);
+}
+
+/* ==========================================
+   2. PC HEADER & NAVIGATION
+   ========================================== */
 .google-header-advanced {
     height: 64px;
     display: flex;
     align-items: center;
-    transition: all 0.3s ease;
+    background: white;
 }
 
 .header-container {
@@ -13,246 +41,143 @@
     justify-content: space-between;
 }
 
-.logo-text {
-    font-size: 20px;
-    letter-spacing: -0.5px;
-    color: #5f6368;
-}
+.nav-links { display: flex; gap: 5px; }
 
-.nav-links {
-    gap: 5px;
-}
-
-.nav-links a,
-.nav-static-link {
+.nav-links a, .nav-static-link {
     padding: 8px 15px;
-    text-decoration: none;
-    color: #5f6368;
+    color: var(--text-muted);
     font-weight: 500;
     font-size: 14px;
-    border-radius: 8px;
-    transition: 0.2s;
-    cursor: pointer;
+    border-radius: var(--radius-sm);
 }
 
-.nav-links a:hover,
-.nav-links a.active,
-.nav-static-link:hover,
-.nav-static-link.active {
-    background-color: #f1f3f4;
-    color: #1a73e8;
+.nav-links a:hover, .nav-links a.active, 
+.nav-static-link:hover, .nav-static-link.active {
+    background-color: var(--bg-light);
+    color: var(--primary-blue);
 }
 
-/* --- PC MODERN GRID DROPDOWN --- */
-.nav-item-dropdown:hover .modern-grid-menu {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+/* ==========================================
+   3. DROPDOWNS & APPS (PC)
+   ========================================== */
+.modern-grid-menu, .profile-menu {
+    position: absolute;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--bg-light);
+    z-index: 1000;
 }
 
 .modern-grid-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 450px;
-    background: white;
-    padding: 15px;
-    border-radius: 16px;
-    z-index: 1000;
+    display: none; top: 100%; min-width: 450px; padding: 15px;
     transform: translateY(10px);
-    transition: all 0.3s cubic-bezier(0.1, 0.7, 0.1, 1);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
 }
 
-.dropdown-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
+.nav-item-dropdown:hover .modern-grid-menu { display: block; transform: translateY(0); }
+
+.dropdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
 .grid-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px;
-    border-radius: 12px;
-    text-decoration: none !important;
-    color: #3c4043 !important;
-    font-weight: 500;
-    font-size: 13.5px;
-    transition: 0.2s;
+    display: flex; align-items: center; gap: 12px; padding: 10px;
+    border-radius: var(--radius-md); color: var(--text-main) !important;
+    font-weight: 500; font-size: 13.5px;
 }
-
-.grid-item:hover {
-    background: #f8f9fa;
-    transform: scale(1.02);
-}
+.grid-item:hover { background: #f8f9fa; transform: scale(1.02); }
 
 .grid-icon {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 16px;
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px;
 }
 
-/* Apps Grid & Profile */
-.apps-menu {
-    width: 280px;
+/* Apps & Profile Specifics */
+.apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
+.app-item { display: flex; flex-direction: column; align-items: center; padding: 10px; border-radius: var(--radius-md); }
+.app-item:hover { background: #f8f9fa; }
+.app-item i { font-size: 28px; margin-bottom: 5px; }
+
+.profile-image { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #eee; }
+.profile-menu { width: 300px; right: 0; overflow: hidden; }
+
+.menu-items a, .menu-items button {
+    display: flex; align-items: center; gap: 12px; padding: 12px 15px;
+    color: var(--text-main); font-weight: 500; border: none; width: 100%; background: transparent;
+}
+.menu-items a:hover, .menu-items button:hover { background: var(--bg-light); color: var(--primary-blue); }
+
+/* ==========================================
+   4. MOBILE FLOATING NAV (iOS Water)
+   ========================================== */
+.glass-nav-white {
+    background: var(--glass-white) !important;
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    margin: 5px 15px;
+    border-radius: 30px !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    height: 65px !important;
+    bottom: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
 }
 
-.apps-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    text-align: center;
-}
-
-.app-item {
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 12px;
-    transition: 0.2s;
-}
-
-.app-item:hover {
-    background: #f8f9fa;
-}
-
-.app-item i {
-    font-size: 28px;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.app-item span {
-    font-size: 12px;
-    color: #3c4043;
-    font-weight: 500;
-}
-
-.profile-image {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.google-signin-btn {
-    background: #1a73e8;
-    color: white;
-    border: none;
-    padding: 8px 24px;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.profile-menu {
-    width: 300px;
-    right: 0;
-}
-
-.menu-items a,
-.menu-items button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #3c4043;
-    font-weight: 500;
-    border-radius: 8px;
-}
-
-.menu-items a:hover,
-.menu-items button:hover {
-    background: #f1f3f4;
-}
-
-/* --- MOBILE STYLES (iOS Style) --- */
 .mobile-nav-label {
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 8.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+    margin-top: 3px;
+    text-transform: uppercase;
 }
 
-.custom-camera-btn {
-    border: 4px solid white !important;
+.nav-text-color { color: var(--ios-grey) !important; }
+.text-primary-active { color: var(--apple-blue) !important; }
+
+.custom-camera-btn-dark {
+    background: linear-gradient(135deg, var(--dark-navy) 0%, #1e3a8a 100%) !important;
+    border: 3px solid white !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3) !important;
 }
 
+/* ==========================================
+   5. MOBILE ACCOUNT DRAWER (iOS List)
+   ========================================== */
 .ios-menu-section {
-    background: #f8f9fa;
-    border-radius: 20px;
+    background: #ffffff;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     margin-bottom: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: var(--shadow-sm);
 }
 
 .ios-menu-title {
-    padding: 15px 15px 5px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #8e8e93;
-    letter-spacing: 0.5px;
+    padding: 16px 16px 8px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; color: var(--ios-grey); letter-spacing: 0.8px;
 }
 
 .ios-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 14px 15px;
-    text-decoration: none;
-    color: #000;
-    border-bottom: 1px solid #efefef;
-    transition: background 0.2s;
+    display: flex; align-items: center; padding: 12px 16px;
+    color: #000; min-height: 56px;
 }
 
-.ios-menu-item:last-child {
-    border-bottom: none;
-}
+.ios-menu-item:not(:last-child) { border-bottom: 1px solid #f2f2f7; }
+.ios-menu-item:active { background-color: #f2f2f7; }
 
 .ios-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
-    margin-right: 15px;
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #ffffff; font-size: 18px; margin-right: 15px; flex-shrink: 0;
 }
 
-/* Utils */
-.cursor-pointer {
-    cursor: pointer;
-}
-
-.rounded-top-5 {
-    border-radius: 30px 30px 0 0 !important;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-    width: 0px;
-}
+/* ==========================================
+   6. UTILS & RESPONSIVE
+   ========================================== */
+.cursor-pointer { cursor: pointer; }
+.rounded-top-5 { border-radius: 30px 30px 0 0 !important; }
+.custom-scrollbar::-webkit-scrollbar { width: 0px; }
 
 @media (max-width: 991px) {
-    .header-left {
-        width: auto !important;
-    }
-
-    .searchBox {
-        flex-grow: 1;
-        margin: 0 10px;
-        min-width: 150px;
-    }
-
-    .logo img {
-        height: 28px;
-    }
+    .google-header-advanced { height: 60px; }
+    .searchBox { flex-grow: 1; margin: 0 10px; min-width: 120px; }
+    .logo img { height: 26px; }
 }

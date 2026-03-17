@@ -102,7 +102,7 @@ export default function LoginForm({ isAdminView, onSuccess }) {
       }
 
       onSuccess?.();
-      navigate(isAdminView ? "/admin/dashboard" : "/student/dashboard");
+      navigate(isAdminView ? "/admin" : "/student/dashboard");
     } catch (e) {
       toast.error(e.message);
     } finally {

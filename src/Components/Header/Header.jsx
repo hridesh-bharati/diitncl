@@ -192,28 +192,37 @@ export default function Header() {
       </header>
 
       {/* MOBILE BOTTOM NAV */}
-      <nav className="fixed-bottom bg-white border-top d-lg-none d-flex justify-content-around align-items-center shadow-lg"
-        style={{ height: "68px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <NavLink to="/" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary' : 'text-secondary'}`}>
-          <i className="bi bi-house-door fs-4"></i><span className="mobile-nav-label">Home</span>
+      <nav className="fixed-bottom d-lg-none d-flex justify-content-around align-items-center glass-nav-white"
+        style={{ height: "65px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
+
+        <NavLink to="/" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
+          <i className="bi bi-house-door fs-5"></i>
+          <span className="mobile-nav-label">Home</span>
         </NavLink>
-        <NavLink to="/courses" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary' : 'text-secondary'}`}>
-          <i className="bi bi-grid fs-4"></i><span className="mobile-nav-label">Explore</span>
+
+        <NavLink to="/courses" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
+          <i className="bi bi-grid fs-5"></i>
+          <span className="mobile-nav-label">Explore</span>
         </NavLink>
+
+        {/* CENTER CAMERA - Darker Blue Gradient */}
         <div className="position-relative" style={{ width: '60px' }}>
-          <Link to="/gallery" className="btn btn-primary rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center custom-camera-btn"
-            style={{ width: '58px', height: '58px', top: '-10px' }}>
+          <Link to="/gallery" className="btn custom-camera-btn-dark rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center"
+            style={{ width: '58px', height: '58px', top: '-12px' }}>
             <i className="bi bi-camera-fill fs-4 text-white"></i>
           </Link>
         </div>
-        <NavLink to="/library" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary' : 'text-secondary'}`}>
-          <i className="bi bi-book fs-4"></i><span className="mobile-nav-label">Library</span>
+
+        <NavLink to="/library" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
+          <i className="bi bi-book fs-5"></i>
+          <span className="mobile-nav-label">Library</span>
         </NavLink>
+
         <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
-          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
+          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '26px', height: '26px' }}>
             <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="User" />
           </div>
-          <span className="text-secondary mobile-nav-label">Account</span>
+          <span className="nav-text-color mobile-nav-label">Account</span>
         </button>
       </nav>
 

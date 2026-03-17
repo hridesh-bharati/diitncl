@@ -132,7 +132,7 @@ useEffect(() => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    < >
+    <Lock >
       <NetworkStatus />
       <Header />
       <InstallPrompt />
@@ -181,6 +181,6 @@ useEffect(() => {
           <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
         </Routes>
       </Suspense>
-    </ >
+    </Lock >
   );
 }
