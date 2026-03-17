@@ -1,4 +1,5 @@
-const nodemailer = require("nodemailer");
+// diit\api\send-mail.js
+import nodemailer from "nodemailer"; 
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -18,11 +19,16 @@ export default async function handler(req, res) {
 
   const { to, subject, html } = req.body;
 
+  // Validation
+  if (!to || !subject || !html) {
+    return res.status(400).json({ success: false, error: "Missing required fields" });
+  }
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // App Password
+      pass: process.env.EMAIL_PASS, 
     },
   });
 
@@ -34,6 +40,7 @@ export default async function handler(req, res) {
       html,
     });
 
+    console.log("Email sent:", info.messageId);
     return res.status(200).json({ success: true, messageId: info.messageId });
   } catch (error) {
     console.error("Vercel Email Error:", error);
