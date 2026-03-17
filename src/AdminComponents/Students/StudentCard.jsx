@@ -4,8 +4,14 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import { collection, query, where, getDocs, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-// 🔹 Nodemailer Service Imports
-import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../services/emailService";
+// 🔹 Nodemailer & Push Service Imports
+import { 
+  sendEmailNotification, 
+  sendPushNotification, // 🔥 Naya function call karne ke liye
+  admissionTemplate, 
+  certificateTemplate, 
+  deleteAccountTemplate 
+} from "../../services/emailService";
 
 const STATUS_COLORS = {
   accepted: "#10b981",
@@ -21,8 +27,6 @@ const BRANCH_DISPLAY = {
 
 const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) => {
   const { isAdmin } = useAuth();
-
-  // 🔹 Step 1: Local state jo LIVE data hold karegi (onSnapshot isi ko update karega)
   const [student, setStudent] = useState(initialStudent);
 
   // States for Input Fields
@@ -38,20 +42,17 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
-  // 🔥 FEATURE 1: REAL-TIME ON-SNAPSHOT (No Reload Needed)
-  // Jaise hi Admin "Approve" ya "Done" karega, ye listener data ko turant fetch kar lega
   useEffect(() => {
     const docRef = doc(db, "admissions", initialStudent.id);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = { id: docSnap.id, ...docSnap.data() };
-        setStudent(data); // Local state update
+        setStudent(data);
       }
     });
     return () => unsubscribe();
   }, [initialStudent.id]);
 
-  // --- STRICT STATUS LOGIC (Using live 'student' state) ---
   const status = useMemo(() => {
     if (student.status === "canceled") return "canceled";
     if (student.regNo && student.issueDate) return "done";
@@ -73,13 +74,11 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || "Student")}&background=random&length=2`;
   }, [student.photoUrl, student.name]);
 
-  // 🔥 Inputs ko live 'student' data ke saath sync rakhna zaroori hai
   useEffect(() => {
     setPercent(student.percentage ?? "");
     setIssDate(student.issueDate || "");
     setAdmissionDate(student.admissionDate || "");
     setRegNumber(student.regNo ? student.regNo.split("/").pop() : "");
-    // Close inputs if status changes externally
     setEditingRegNo(false);
     setShowRegInput(false);
     setIsEditingFinal(false);
@@ -121,7 +120,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, onSave, student.id]);
 
-  // 🔹 FEATURE 2: Admission Approved (Email + Push)
+  // 🔥 FEATURE: Admission Approved (Email + Push)
   const handleGenerateRegNo = useCallback(async () => {
     if (!isAdmin || !isValidDigit || isDuplicate) return;
     setLoading(true);
@@ -137,21 +136,22 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         status: "accepted"
       });
 
+      // 📧 Email Logic
       if (student.email) {
-        // 🔥 Ek hi function se dono kaam: Email + Push
-        await sendEmailNotification(
-          student.email,
-          "Admission Approved - Drishtee",
-          admissionTemplate(student, newRegNo),
-          student, // 👈 Student object pass kiya
-          "Admission Approved! 🎉", // 👈 Push Title
-          `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`, // 👈 Push Body
-          "/student/dashboard" // 👈 Click URL
-        );
-        toast.success("Approved & Notified!");
-      } else {
-        toast.success("Approved Successfully!");
+        sendEmailNotification(student.email, "Admission Approved - Drishtee", admissionTemplate(student, newRegNo));
       }
+
+      // 📲 Push Logic
+      if (student.pushSubscription) {
+        sendPushNotification(
+          student, 
+          "Admission Approved! 🎉", 
+          `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`,
+          "/student/dashboard"
+        );
+      }
+
+      toast.success("Approved & Notified!");
       setShowRegInput(false);
     } catch (error) {
       toast.error("Failed to save");
@@ -160,7 +160,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, isValidDigit, isDuplicate, regNumber, studentCourse, studentBranch, onSave, student]);
 
-  // 🔹 FEATURE 3: Certificate Ready (Email + Push)
+  // 🔥 FEATURE: Certificate Ready (Email + Push)
   const handleMarkDone = useCallback(async () => {
     if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) return toast.error("Fill all details");
     setLoading(true);
@@ -172,20 +172,22 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         issueDate: issDate
       });
 
+      // 📧 Email Logic
       if (student.email) {
-        await sendEmailNotification(
-          student.email,
-          "Congratulations! Certificate Ready",
-          certificateTemplate(student, percent, issDate),
+        sendEmailNotification(student.email, "Congratulations! Certificate Ready", certificateTemplate(student, percent, issDate));
+      }
+
+      // 📲 Push Logic
+      if (student.pushSubscription) {
+        sendPushNotification(
           student,
           "Course Completed! 🎓",
           `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`,
           "/download-certificate"
         );
-        toast.success("Finalized & Notified!");
-      } else {
-        toast.success("Details Updated!");
       }
+
+      toast.success("Finalized & Notified!");
       setIsEditingFinal(false);
     } catch (err) {
       toast.error("Action failed");
@@ -194,16 +196,17 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, student, percent, admissionDate, issDate, onSave, studentCourse]);
 
-  // 🔹 FEATURE 4: Record Deleted (Email + Push)
+  // 🔥 FEATURE: Delete Record (Email + Push)
   const handleDelete = useCallback(async () => {
     setLoading(true);
     try {
       if (student.email) {
-        // Pehle notify karo fir delete
-        await sendEmailNotification(
-          student.email,
-          "Student Record Deactivated",
-          deleteAccountTemplate(student),
+        await sendEmailNotification(student.email, "Student Record Deactivated", deleteAccountTemplate(student));
+      }
+
+      // 🔥 Push for Deletion (Optional but good)
+      if (student.pushSubscription) {
+        sendPushNotification(
           student,
           "Account Deactivated ⚠️",
           "Your student record has been removed by the administrator."
@@ -253,7 +256,6 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
             )}
           </div>
 
-          {/* Render Sections based on status (Pending -> Registration -> Finalize) */}
           {isPending && isAdmin && !showRegInput && (
             <div className="mt-2 d-flex gap-2 border-top pt-3">
               <button className="btn btn-success flex-grow-1 fw-bold shadow-none" onClick={handleApproveClick}>APPROVE</button>
