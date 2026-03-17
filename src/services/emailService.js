@@ -1,36 +1,59 @@
 // diit\src\services\emailService.js
 
 const API_URL = "/api/send-mail";
+const PUSH_API_URL = "/api/send-push"; // 🔥 Push API Endpoint
 
+/**
+ * 📲 Generic Push Notification Function
+ */
+export const sendPushNotification = async (student, title, body, url = "/student/dashboard") => {
+  if (!student?.pushSubscription) return false;
 
-// ----------------------------------------------------
-// sendEmailNotification()
-// Generic function to send email from frontend
-// Parameters:
-// to      -> receiver email address
-// subject -> email subject line
-// html    -> full HTML email template
-//
-// Returns:
-// true  -> email sent successfully
-// false -> error occurred
-// ----------------------------------------------------
-export const sendEmailNotification = async (to, subject, html) => {
   try {
+    const response = await fetch(PUSH_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subscription: JSON.parse(student.pushSubscription),
+        title,
+        body,
+        url: `https://www.drishteeindia.com${url}`
+      }),
+    });
+    const data = await response.json().catch(() => ({ success: false }));
+    return data.success;
+  } catch (err) {
+    console.error("Push Notification Error:", err);
+    return false;
+  }
+};
+
+/**
+ * 📧 Generic Email Notification Function
+ * Ab ye email ke saath Push bhi trigger kar sakta hai agar student data pass kiya jaye
+ */
+export const sendEmailNotification = async (to, subject, html, studentData = null, pushTitle = "", pushBody = "", pushUrl = "") => {
+  try {
+    // 1. Email bhejo
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, subject, html }),
     });
-
-    // Check if JSON response is valid
     const data = await response.json().catch(() => ({ success: false }));
+
+    // 2. 🔥 Agar studentData hai aur pushTitle hai, toh Push bhi trigger karo
+    if (studentData?.pushSubscription && pushTitle) {
+      sendPushNotification(studentData, pushTitle, pushBody, pushUrl);
+    }
+
     return data.success;
   } catch (err) {
-    console.error("Vercel Fetch Error:", err);
+    console.error("Vercel Email Fetch Error:", err);
     return false;
   }
 };
+
 
 // ======================================================
 // CONTACT FORM EMAIL TEMPLATE

@@ -121,7 +121,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, onSave, student.id]);
 
-  // 🔥 FEATURE 2: NODEMAILER + PUSH (Admission Approved)
+  // 🔹 FEATURE 2: Admission Approved (Email + Push)
   const handleGenerateRegNo = useCallback(async () => {
     if (!isAdmin || !isValidDigit || isDuplicate) return;
     setLoading(true);
@@ -138,22 +138,16 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       });
 
       if (student.email) {
-        // 1. Email bhejo
-        await sendEmailNotification(student.email, "Admission Approved - Drishtee", admissionTemplate(student, newRegNo));
-
-        // 2. 🔥 Push Notification (WhatsApp style)
-        if (student.pushSubscription) {
-          fetch('/api/send-push', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              subscription: JSON.parse(student.pushSubscription),
-              title: "Admission Approved! 🎉",
-              body: `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`
-            })
-          }).catch(e => console.error("Push failed", e));
-        }
-
+        // 🔥 Ek hi function se dono kaam: Email + Push
+        await sendEmailNotification(
+          student.email,
+          "Admission Approved - Drishtee",
+          admissionTemplate(student, newRegNo),
+          student, // 👈 Student object pass kiya
+          "Admission Approved! 🎉", // 👈 Push Title
+          `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`, // 👈 Push Body
+          "/student/dashboard" // 👈 Click URL
+        );
         toast.success("Approved & Notified!");
       } else {
         toast.success("Approved Successfully!");
@@ -166,7 +160,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, isValidDigit, isDuplicate, regNumber, studentCourse, studentBranch, onSave, student]);
 
-  // 🔥 FEATURE 3: NODEMAILER + PUSH (Certificate/Done Notification)
+  // 🔹 FEATURE 3: Certificate Ready (Email + Push)
   const handleMarkDone = useCallback(async () => {
     if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) return toast.error("Fill all details");
     setLoading(true);
@@ -179,22 +173,15 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       });
 
       if (student.email) {
-        // 1. Email bhejo
-        await sendEmailNotification(student.email, "Congratulations! Certificate Ready", certificateTemplate(student, percent, issDate));
-
-        // 2. 🔥 Push Notification
-        if (student.pushSubscription) {
-          fetch('/api/send-push', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              subscription: JSON.parse(student.pushSubscription),
-              title: "Course Completed! 🎓",
-              body: `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`
-            })
-          }).catch(e => console.error("Push failed", e));
-        }
-
+        await sendEmailNotification(
+          student.email,
+          "Congratulations! Certificate Ready",
+          certificateTemplate(student, percent, issDate),
+          student,
+          "Course Completed! 🎓",
+          `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`,
+          "/download-certificate"
+        );
         toast.success("Finalized & Notified!");
       } else {
         toast.success("Details Updated!");
@@ -207,21 +194,22 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, student, percent, admissionDate, issDate, onSave, studentCourse]);
 
-
-  // 🔥 FEATURE 4: NODEMAILER (Delete Account Alert)
+  // 🔹 FEATURE 4: Record Deleted (Email + Push)
   const handleDelete = useCallback(async () => {
     setLoading(true);
     try {
-      // Step 1: Mail pehle bhejien (Record delete hone se pehle)
       if (student.email) {
+        // Pehle notify karo fir delete
         await sendEmailNotification(
           student.email,
           "Student Record Deactivated",
-          deleteAccountTemplate(student)
+          deleteAccountTemplate(student),
+          student,
+          "Account Deactivated ⚠️",
+          "Your student record has been removed by the administrator."
         );
       }
 
-      // Step 2: Delete from DB
       await onDelete(student.id);
       toast.success("Record Deleted & Student Notified");
     } catch (err) {
@@ -230,6 +218,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       setLoading(false);
     }
   }, [onDelete, student]);
+
   return (
     <div className="mb-4">
       <div className="card border-0 bg-white shadow-sm overflow-hidden" style={{ borderRadius: "20px" }}>
