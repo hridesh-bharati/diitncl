@@ -114,25 +114,15 @@ export default function AdmissionForm() {
         }
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validation
-        if (form.aadharNo && form.aadharNo.length !== 12) {
-            return toast.error("Aadhar must be 12 digits");
-        }
-
-        if (form.mobile && form.mobile.length !== 10) {
-            return toast.error("Mobile number must be 10 digits");
-        }
-
-        if (!form.photoUrl) {
-            return toast.error("Please upload Photo");
-        }
-
-        if (!isDeclared) {
-            return toast.error("Please accept the Declaration");
-        }
+        // Basic Validations
+        if (form.aadharNo && form.aadharNo.length !== 12) return toast.error("Aadhar must be 12 digits");
+        if (form.mobile && form.mobile.length !== 10) return toast.error("Mobile number must be 10 digits");
+        if (!form.photoUrl) return toast.error("Please upload Photo");
+        if (!isDeclared) return toast.error("Please accept the Declaration");
 
         setLoading(true);
 
@@ -152,25 +142,38 @@ export default function AdmissionForm() {
             // 1. Firebase mein Save kiya
             await addDoc(collection(db, "admissions"), finalData);
 
-            // 2. 🔥 ADMINS KO EMAIL BHEJEIN
-            // Hum saare admins ko loop karke mail bhej rahe hain
-            await Promise.all(
-                ADMIN_ALLOWED_EMAILS.map(adminEmail =>
-                    sendEmailNotification(
-                        adminEmail,
-                        `New Admission: ${form.name} (${form.course})`,
-                        adminAdmissionAlertTemplate(finalData)
+            // 2. 🔥 ADMIN ALERTS
+            // Tip: Promise.all use karna sahi hai, lekin agar array bada ho toh 
+            // single admin email use karna faster hota hai. 
+            // Yahan main aapke defined array ko use kar raha hoon.
+            
+            try {
+                await Promise.all(
+                    ADMIN_ALLOWED_EMAILS.map(adminEmail =>
+                        sendEmailNotification(
+                            adminEmail,
+                            `New Admission Request: ${form.name}`,
+                            adminAdmissionAlertTemplate(finalData)
+                        )
                     )
-                )
-            );
+                );
+            } catch (emailErr) {
+                console.error("Admin Email Error:", emailErr);
+                // Hum yahan error block khali chhod rahe hain taaki 
+                // agar email fail bhi ho, toh student ko "Success" dikhe (kyunki data save ho gaya hai).
+            }
 
             setSubmittedData(finalData);
             setIsSubmitted(true);
             window.scrollTo(0, 0);
+            
+            // Audio feedback (Jaisa Quick Support mein tha)
+            new Audio("/audio/ring.mp3").play().catch(() => {});
             toast.success("Admission Submitted Successfully!");
 
         } catch (e) {
-            toast.error("Error: " + e.message);
+            console.error("Submission Error:", e);
+            toast.error("System Error: " + e.message);
         } finally {
             setLoading(false);
         }

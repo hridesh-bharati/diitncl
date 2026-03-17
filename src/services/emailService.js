@@ -1,7 +1,7 @@
-// const API_URL = "http://localhost:5000/api/send-mail";
 // diit\src\services\emailService.js
 
-const API_URL = "/api/send-mail"; 
+const API_URL = "/api/send-mail";
+
 export const sendEmailNotification = async (to, subject, html) => {
   try {
     const response = await fetch(API_URL, {
@@ -18,7 +18,6 @@ export const sendEmailNotification = async (to, subject, html) => {
     return false;
   }
 };
-
 
 // --- Contact Templates ---
 export const supportTemplate = (data) => `
