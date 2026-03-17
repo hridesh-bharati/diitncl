@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../../firebase/firebase";
-import { collection, getDocs, query, where, doc, deleteDoc, setDoc, serverTimestamp, onSnapshot,getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, deleteDoc, setDoc, serverTimestamp, onSnapshot, getDoc } from "firebase/firestore";
 import { useExam } from "../../context/ExamProvider";
 import { sendEmailNotification, examPermitTemplate } from "../../../../../services/emailService";
 import { toast } from "react-toastify";
@@ -81,7 +81,6 @@ export default function AdminAssignExam() {
 
           // 🔥 4. PUSH NOTIFICATION TRIGGER (Yahan missing tha)
           if (student.pushSubscription) {
-            console.log("Sending Push to:", student.name);
             fetch('/api/send-push', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -90,7 +89,11 @@ export default function AdminAssignExam() {
                 title: "Exam Permit Issued! 📝",
                 body: `Hi ${student.name}, You are permitted for ${exam?.title}. Best of luck!`
               })
-            }).catch(e => console.error("Exam Push failed", e));
+            })
+              .then(response => {
+                if (!response.ok) console.error("Push API error response:", response.status);
+              })
+              .catch(e => console.error("Exam Push failed", e));
           }
 
           if (emailSent) {
