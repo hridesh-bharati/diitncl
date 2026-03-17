@@ -1,1 +1,0 @@
-import{j as t}from"./index-u_X6NT5w.js";import{C as o}from"./CommanCourse-eHne0Z7R.js";import"./courseData-CeKRB8nL.js";function C(){const s=["CCC","O LEVEL","A LEVEL","B LEVEL"];return t.jsx("div",{className:"MT3",children:t.jsx(o,{targetCourses:s,CTitle:"NIELIT"})})}export{C as default};
