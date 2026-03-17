@@ -1,30 +1,32 @@
-// diit\src\services\emailService.js
 // const API_URL = "http://localhost:5000/api/send-mail";
-// const API_URL = "https://diitnclserver.onrender.com/api/send-mail";
-const API_URL = "https://diitnclserver.onrender.com";  
+
+// diit\src\services\emailService.js
+
+const API_URL = "https://diitnclserver.onrender.com/api/send-mail";
 
 export const sendEmailNotification = async (to, subject, html) => {
-    try {
-        const response = await fetch(`${API_URL}/api/send-mail`, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json" 
-            },
-            body: JSON.stringify({ to, subject, html }),
-        });
-        
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-            const data = await response.json();
-            return data.success;
-        } else {
-            const text = await response.text();
-            return response.ok;
-        }
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        return false;
-    }
+
+  try{
+
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({to,subject,html})
+    });
+
+    const data = await response.json();
+
+    return data.success;
+
+  }catch(err){
+
+    console.error("Email Error:",err);
+    return false;
+
+  }
+
 };
 
 
