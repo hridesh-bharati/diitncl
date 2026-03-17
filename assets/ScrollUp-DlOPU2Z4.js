@@ -1,4 +1,4 @@
-import{R as n,r as o,j as t}from"./index-BZg2FAre.js";function l(){const[s,r]=o.useState(!1),e=o.useCallback(()=>{window.scrollY>300?r(!0):r(!1)},[]);o.useEffect(()=>(window.addEventListener("scroll",e,{passive:!0}),()=>window.removeEventListener("scroll",e)),[e]);const a=i=>{i.preventDefault(),window.scrollTo({top:0,behavior:"smooth"})};return s?t.jsxs(t.Fragment,{children:[t.jsx("style",{children:`
+import{R as n,r as o,j as t}from"./index-u_X6NT5w.js";function l(){const[s,r]=o.useState(!1),e=o.useCallback(()=>{window.scrollY>300?r(!0):r(!1)},[]);o.useEffect(()=>(window.addEventListener("scroll",e,{passive:!0}),()=>window.removeEventListener("scroll",e)),[e]);const a=i=>{i.preventDefault(),window.scrollTo({top:0,behavior:"smooth"})};return s?t.jsxs(t.Fragment,{children:[t.jsx("style",{children:`
                 #btnBackToTop {
                     overflow: visible; 
                     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
