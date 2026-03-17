@@ -2,34 +2,31 @@
 
 // diit\src\services\emailService.js
 
-const API_URL = "https://diitnclserver.onrender.com/api/send-mail";
+// diit\src\services\emailService.js
+const BASE_URL = "https://diitnclserver.onrender.com"; 
 
 export const sendEmailNotification = async (to, subject, html) => {
-
-  try{
-
-    const response = await fetch(API_URL,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({to,subject,html})
+  try {
+    const response = await fetch(`${BASE_URL}/api/send-mail`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to, subject, html }),
     });
 
-    const data = await response.json();
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Server Rejected Request:", errorText);
+        return false;
+    }
 
+    const data = await response.json();
     return data.success;
 
-  }catch(err){
-
-    console.error("Email Error:",err);
+  } catch (err) {
+    console.error("Network/Fetch Error:", err);
     return false;
-
   }
-
 };
-
-
 
 // --- Contact Templates ---
 export const supportTemplate = (data) => `

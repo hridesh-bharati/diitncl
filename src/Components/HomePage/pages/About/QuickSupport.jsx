@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { db } from "../../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { sendEmailNotification, supportTemplate } from "../../../../services/emailService"; 
+import { sendEmailNotification, supportTemplate } from "../../../../services/emailService";
 
 const QuickSupport = () => {
   const init = { fullName: "", mobile: "", email: "", title: "", query: "" };
@@ -17,36 +17,38 @@ const QuickSupport = () => {
       setLoading(true);
 
       // 1. Firebase mein save karein
-      await addDoc(collection(db, "studentQueries"), { 
-        ...formData, 
-        timestamp: serverTimestamp(), 
-        status: "pending" 
+      await addDoc(collection(db, "studentQueries"), {
+        ...formData,
+        timestamp: serverTimestamp(),
+        status: "pending"
       });
 
-      // 2. Nodemailer API ko call karein (Background mein)
-      // "to" mein apni email ID dalein jahan aapko inquiry chahiye
-      sendEmailNotification(
-        "hridesh027@gmail.com", 
-        `New Inquiry: ${formData.title}`, 
+      // 2. Email notification (Await add kiya hai for reliability)
+      const emailSuccess = await sendEmailNotification(
+        "hridesh027@gmail.com",
+        `New Inquiry: ${formData.title}`,
         supportTemplate(formData)
       );
 
-      // 3. Success Feedback
-      new Audio("/audio/ring.mp3").play().catch(() => { });
-      toast.success("Sent Successfully!");
-      setFormData(init);
+      if (emailSuccess) {
+        new Audio("/audio/ring.mp3").play().catch(() => { });
+        toast.success("Query & Email Sent Successfully!");
+        setFormData(init);
+      } else {
+        toast.warning("Query saved, but email notification failed.");
+      }
 
-    } catch (err) { 
-      toast.error(err.message); 
-    } finally { 
-      setLoading(false); 
+    } catch (err) {
+      toast.error("System Error: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="row g-4 p-4">
       <h1 className="text-dark text-center fw-bolder">Quick Support</h1>
-      <hr className="text-primary"/>
+      <hr className="text-primary" />
       {[
         { n: "fullName", l: "Full Name", t: "text", i: "person" },
         { n: "mobile", l: "Mobile Number", t: "tel", i: "phone" },
