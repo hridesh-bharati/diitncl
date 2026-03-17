@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { db } from "../../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { sendEmailNotification, supportTemplate } from "../../../../../../server/emailService"; 
+import { sendEmailNotification, supportTemplate } from "../../../../services/emailService"; 
 
 const QuickSupport = () => {
   const init = { fullName: "", mobile: "", email: "", title: "", query: "" };

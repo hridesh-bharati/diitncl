@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { db } from "../../../../../firebase/firebase";
 import { collection, getDocs, query, where, doc, deleteDoc, setDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { useExam } from "../../context/ExamProvider";
-import { sendEmailNotification, examPermitTemplate } from "../../../../../../../server/emailService";
+import { sendEmailNotification, examPermitTemplate } from "../../../../../services/emailService";
 import { toast } from "react-toastify";
 
 export default function AdminAssignExam() {

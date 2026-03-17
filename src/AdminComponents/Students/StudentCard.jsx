@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { collection, query, where, getDocs, doc, onSnapshot } from "firebase/firestore"; 
 import { db } from "../../firebase/firebase";
 // 🔹 Nodemailer Service Imports
-import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../../../server/emailService"; 
+import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../../src/services/emailService"; 
 
 const STATUS_COLORS = {
   accepted: "#10b981",
