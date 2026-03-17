@@ -8,7 +8,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail
 } from "firebase/auth";
-import { doc, getDoc, setDoc, query, collection, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc, query, collection, where, getDocs, updateDoc } from "firebase/firestore";
 import { subscribeUser } from "../../services/pushService";
 import { useAuth } from "../../contexts/AuthContext";
 
