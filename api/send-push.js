@@ -26,26 +26,31 @@ export default async function handler(req, res) {
   // 2. VAPID Configuration
   webpush.setVapidDetails(
     'mailto:hridesh027@gmail.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
+    process.env.VAPID_PUBLIC_KEY.trim(),
+    process.env.VAPID_PRIVATE_KEY.trim()
   );
 
   try {
     // 3. Send Notification
     await webpush.sendNotification(
-      subscription, 
-      JSON.stringify({ title, body, url: 'https://www.drishteeindia.com/student/dashboard' })
+      subscription,
+      JSON.stringify({
+        title,
+        body,
+        url: 'https://www.drishteeindia.com/student/exams'
+      },
+      )
     );
-    
+
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Push Error:', error);
-    
+
     // Agar subscription invalid/expired ho chuka ho (410 ya 404)
     if (error.statusCode === 410 || error.statusCode === 404) {
       return res.status(410).json({ success: false, error: "Subscription expired" });
     }
-    
+
     return res.status(500).json({ success: false, error: error.message });
   }
 }
