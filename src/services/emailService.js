@@ -1,20 +1,36 @@
 // diit\src\services\emailService.js
 
 const API_URL = "/api/send-mail";
+const PUSH_API_URL = "/api/send-push"; // 🔥 Push API Endpoint
 
+/**
+ * 📲 Generic Push Notification Function
+ */
+export const sendPushNotification = async (student, title, body, url = "/student/dashboard") => {
+  if (!student?.pushSubscription) return false;
 
-// ----------------------------------------------------
-// sendEmailNotification()
-// Generic function to send email from frontend
-// Parameters:
-// to      -> receiver email address
-// subject -> email subject line
-// html    -> full HTML email template
-//
-// Returns:
-// true  -> email sent successfully
-// false -> error occurred
-// ----------------------------------------------------
+  try {
+    const response = await fetch(PUSH_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subscription: JSON.parse(student.pushSubscription),
+        title,
+        body,
+        url: `https://www.drishteeindia.com${url}`
+      }),
+    });
+    const data = await response.json().catch(() => ({ success: false }));
+    return data.success;
+  } catch (err) {
+    console.error("Push Notification Error:", err);
+    return false;
+  }
+};
+
+/**
+ * 📧 Generic Email Notification Function
+ */
 export const sendEmailNotification = async (to, subject, html) => {
   try {
     const response = await fetch(API_URL, {
@@ -23,7 +39,6 @@ export const sendEmailNotification = async (to, subject, html) => {
       body: JSON.stringify({ to, subject, html }),
     });
 
-    // Check if JSON response is valid
     const data = await response.json().catch(() => ({ success: false }));
     return data.success;
   } catch (err) {
@@ -31,6 +46,10 @@ export const sendEmailNotification = async (to, subject, html) => {
     return false;
   }
 };
+
+// ======================================================
+// TEMPLATES (Aapke purane templates yahan niche rahenge)
+// ======================================================
 
 // ======================================================
 // CONTACT FORM EMAIL TEMPLATE
@@ -245,23 +264,23 @@ export const admissionTemplate = (student, regNo) => `
 // EXAM PERMIT EMAIL
 // Sent when admin assigns exam access to student
 // ======================================================
-export const examPermitTemplate = (student, exam) => { 
+export const examPermitTemplate = (student, exam) => {
   const durationValue = exam.duration || 1;
   const durationText = `${durationValue} ${durationValue <= 1 ? 'Hour' : 'Hours'}`;
-  
+
   // 🔥 DATABASE se aane wala timing format (AM/PM)
   // startTime manual hota hai, endTime calculate ho chuka hai
   const examDate = exam.date || "As per Schedule";
-  
+
   // Start Time ko AM/PM mein convert karne ka safe check (agar DB mein raw 24hr format ho toh)
   let formattedStart = exam.startTime;
   try {
-     if(exam.startTime && !exam.startTime.includes('M')) { // Agar AM/PM nahi hai toh convert karo
-        formattedStart = new Date(`2000-01-01T${exam.startTime}`).toLocaleTimeString('en-US', { 
-           hour: '2-digit', minute: '2-digit', hour12: true 
-        });
-     }
-  } catch(e) { formattedStart = exam.startTime; }
+    if (exam.startTime && !exam.startTime.includes('M')) { // Agar AM/PM nahi hai toh convert karo
+      formattedStart = new Date(`2000-01-01T${exam.startTime}`).toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    }
+  } catch (e) { formattedStart = exam.startTime; }
 
   const formattedEnd = exam.endTime || "As per Schedule";
 

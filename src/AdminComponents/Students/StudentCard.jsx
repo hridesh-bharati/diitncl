@@ -7,7 +7,7 @@ import { db } from "../../firebase/firebase";
 // 🔹 Nodemailer & Push Service Imports
 import { 
   sendEmailNotification, 
-  sendPushNotification, // 🔥 Naya function call karne ke liye
+  sendPushNotification, 
   admissionTemplate, 
   certificateTemplate, 
   deleteAccountTemplate 
