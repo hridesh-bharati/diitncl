@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { collection, query, where, getDocs, doc, onSnapshot } from "firebase/firestore"; 
 import { db } from "../../firebase/firebase";
 // 🔹 Nodemailer Service Imports
-import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../../src/services/emailService"; 
+import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../services/emailService"; 
 
 const STATUS_COLORS = {
   accepted: "#10b981",
@@ -121,7 +121,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, onSave, student.id]);
 
-  // 🔥 FEATURE 2: NODEMAILER (Admission Approved)
+// 🔥 FEATURE 2: NODEMAILER (Admission Approved)
   const handleGenerateRegNo = useCallback(async () => {
     if (!isAdmin || !isValidDigit || isDuplicate) return;
     setLoading(true);
@@ -130,6 +130,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       const courseCode = (studentCourse || "CRS").toString().replace(/\s+/g, "").toUpperCase().slice(0, 10);
       const newRegNo = `${studentBranch}/${courseCode}/${cleanRegNum}`;
 
+      // 1. Firebase Update pehle karein
       await onSave(student.id, {
         branch: studentBranch,
         regNo: newRegNo,
@@ -137,14 +138,27 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         status: "accepted"
       });
 
+      // 2. Email bhejien (Await ke saath)
       if (student.email) {
-        sendEmailNotification(student.email, "Admission Approved - Drishtee Computer Centre", admissionTemplate(student, newRegNo));
-        toast.success("Approved & Email Sent!");
+        const mailSent = await sendEmailNotification(
+          student.email, 
+          "Admission Approved - Drishtee Computer Centre", 
+          admissionTemplate(student, newRegNo)
+        );
+        
+        if(mailSent) {
+          toast.success("Approved & Confirmation Email Sent!");
+        } else {
+          toast.warning("Approved! (Confirmation Email failed to send)");
+        }
       } else {
         toast.success("Approved Successfully!");
       }
+      
+      setShowRegInput(false);
+      setEditingRegNo(false);
     } catch (error) {
-      toast.error("Failed to save");
+      toast.error("Failed to save data");
     } finally {
       setLoading(false);
     }
@@ -152,9 +166,12 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
 
   // 🔥 FEATURE 3: NODEMAILER (Certificate/Done Notification)
   const handleMarkDone = useCallback(async () => {
-    if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) return;
+    if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) {
+       return toast.error("Please fill all details before marking Done");
+    }
     setLoading(true);
     try {
+      // 1. Update Database
       await onSave(student.id, {
         status: "done",
         percentage: Number(percent),
@@ -162,35 +179,52 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         issueDate: issDate
       });
 
-      if (!isDone && student.email) {
-        sendEmailNotification(student.email, "Congratulations! Certificate Ready", certificateTemplate(student, percent, issDate));
-        toast.success("Finalized & Email Sent!");
+      // 2. Send Congratulations Email
+      if (student.email) {
+        const mailSent = await sendEmailNotification(
+          student.email, 
+          "Congratulations! Your Certificate is Ready", 
+          certificateTemplate(student, percent, issDate)
+        );
+        
+        if(mailSent) {
+          toast.success("Finalized & Certificate Email Sent!");
+        } else {
+          toast.warning("Finalized! (Email failed)");
+        }
       } else {
         toast.success("Details Updated!");
       }
+      setIsEditingFinal(false);
     } catch (err) {
       toast.error("Action failed");
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, student, percent, admissionDate, issDate, onSave, isDone]);
+  }, [isAdmin, student, percent, admissionDate, issDate, onSave]);
 
   // 🔥 FEATURE 4: NODEMAILER (Delete Account Alert)
   const handleDelete = useCallback(async () => {
     setLoading(true);
     try {
+      // Step 1: Mail pehle bhejien (Record delete hone se pehle)
       if (student.email) {
-        sendEmailNotification(student.email, "Student Record Removed", deleteAccountTemplate(student));
+        await sendEmailNotification(
+          student.email, 
+          "Student Record Deactivated", 
+          deleteAccountTemplate(student)
+        );
       }
+      
+      // Step 2: Delete from DB
       await onDelete(student.id);
-      toast.success("Deleted Successfully");
+      toast.success("Record Deleted & Student Notified");
     } catch (err) {
       toast.error("Delete failed");
     } finally {
       setLoading(false);
     }
   }, [onDelete, student]);
-
   return (
     <div className="mb-4">
       <div className="card border-0 bg-white shadow-sm overflow-hidden" style={{ borderRadius: "20px" }}>

@@ -139,36 +139,28 @@ export default function AdmissionForm() {
                 appliedDate: new Date().toISOString()
             };
 
-            // 1. Firebase mein Save kiya
+            // 1. Firebase mein Save kiya (Sabse important step)
             await addDoc(collection(db, "admissions"), finalData);
 
-            // 2. 🔥 ADMIN ALERTS
-            // Tip: Promise.all use karna sahi hai, lekin agar array bada ho toh 
-            // single admin email use karna faster hota hai. 
-            // Yahan main aapke defined array ko use kar raha hoon.
-            
-            try {
-                await Promise.all(
-                    ADMIN_ALLOWED_EMAILS.map(adminEmail =>
-                        sendEmailNotification(
-                            adminEmail,
-                            `New Admission Request: ${form.name}`,
-                            adminAdmissionAlertTemplate(finalData)
-                        )
+            // 2. 🔥 ADMIN ALERTS (Fire and Forget)
+            // Hum 'await' nahi kar rahe taaki UI fast rahe, lekin syntax sahi hona chahiye
+            Promise.all(
+                ADMIN_ALLOWED_EMAILS.map(adminEmail =>
+                    sendEmailNotification(
+                        adminEmail,
+                        `New Admission: ${form.name}`,
+                        adminAdmissionAlertTemplate(finalData)
                     )
-                );
-            } catch (emailErr) {
-                console.error("Admin Email Error:", emailErr);
-                // Hum yahan error block khali chhod rahe hain taaki 
-                // agar email fail bhi ho, toh student ko "Success" dikhe (kyunki data save ho gaya hai).
-            }
+                )
+            ).catch(err => console.error("Background Email Error:", err));
 
+            // UI Updates
             setSubmittedData(finalData);
             setIsSubmitted(true);
             window.scrollTo(0, 0);
-            
-            // Audio feedback (Jaisa Quick Support mein tha)
-            new Audio("/audio/ring.mp3").play().catch(() => {});
+
+            // Audio feedback
+            new Audio("/audio/ring.mp3").play().catch(() => { });
             toast.success("Admission Submitted Successfully!");
 
         } catch (e) {
