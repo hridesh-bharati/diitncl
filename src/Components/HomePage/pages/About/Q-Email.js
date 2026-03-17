@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { db } from "../../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { sendEmailNotification, supportTemplate } from "../../../../../../server/emailService"; 
+import emailjs from "@emailjs/browser";
 
 const QuickSupport = () => {
   const init = { fullName: "", mobile: "", email: "", title: "", query: "" };
@@ -16,37 +16,46 @@ const QuickSupport = () => {
     try {
       setLoading(true);
 
-      // 1. Firebase mein save karein
-      await addDoc(collection(db, "studentQueries"), { 
-        ...formData, 
-        timestamp: serverTimestamp(), 
-        status: "pending" 
+      // 1. Firebase mein data save karein
+      await addDoc(collection(db, "studentQueries"), {
+        ...formData,
+        timestamp: serverTimestamp(),
+        status: "pending"
       });
 
-      // 2. Nodemailer API ko call karein (Background mein)
-      // "to" mein apni email ID dalein jahan aapko inquiry chahiye
-      sendEmailNotification(
-        "hridesh027@gmail.com", 
-        `New Inquiry: ${formData.title}`, 
-        supportTemplate(formData)
-      );
+      // 2. EmailJS Notification (Silent & Professional)
+      const serviceId = "service_a1jmn6q";
+      const templateId = "template_rym4nhl";
+      const publicKey = "8VANIXFp8ZzrP5SsZ";
+
+      const templateParams = {
+        from_name: formData.fullName,
+        mobile: formData.mobile,
+        email: formData.email,
+        subject: formData.title,
+        message: formData.query,
+        time: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      };
+
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
 
       // 3. Success Feedback
       new Audio("/audio/ring.mp3").play().catch(() => { });
-      toast.success("Sent Successfully!");
+      toast.success("Query Sent! We will contact you soon.");
       setFormData(init);
 
-    } catch (err) { 
-      toast.error(err.message); 
-    } finally { 
-      setLoading(false); 
+    } catch (err) {
+      console.error(err);
+      toast.error("Message saved, but notification failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="row g-4 p-4">
       <h1 className="text-dark text-center fw-bolder">Quick Support</h1>
-      <hr className="text-primary"/>
+      <hr className="text-primary" />
       {[
         { n: "fullName", l: "Full Name", t: "text", i: "person" },
         { n: "mobile", l: "Mobile Number", t: "tel", i: "phone" },

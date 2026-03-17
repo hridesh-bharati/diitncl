@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { db } from "../../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { sendEmailNotification, supportTemplate } from "../../../../../../server/emailService"; 
 
 const QuickSupport = () => {
   const init = { fullName: "", mobile: "", email: "", title: "", query: "" };
@@ -15,32 +14,12 @@ const QuickSupport = () => {
     e.preventDefault();
     try {
       setLoading(true);
-
-      // 1. Firebase mein save karein
-      await addDoc(collection(db, "studentQueries"), { 
-        ...formData, 
-        timestamp: serverTimestamp(), 
-        status: "pending" 
-      });
-
-      // 2. Nodemailer API ko call karein (Background mein)
-      // "to" mein apni email ID dalein jahan aapko inquiry chahiye
-      sendEmailNotification(
-        "hridesh027@gmail.com", 
-        `New Inquiry: ${formData.title}`, 
-        supportTemplate(formData)
-      );
-
-      // 3. Success Feedback
+      await addDoc(collection(db, "studentQueries"), { ...formData, timestamp: serverTimestamp(), status: "pending" });
       new Audio("/audio/ring.mp3").play().catch(() => { });
       toast.success("Sent Successfully!");
       setFormData(init);
-
-    } catch (err) { 
-      toast.error(err.message); 
-    } finally { 
-      setLoading(false); 
-    }
+    } catch (err) { toast.error(err.message); }
+    finally { setLoading(false); }
   };
 
   return (

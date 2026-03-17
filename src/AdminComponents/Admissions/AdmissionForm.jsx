@@ -1,8 +1,11 @@
+
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
+import { sendEmailNotification, adminAdmissionAlertTemplate } from "../../../../server/emailService";
+import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext"; 
 
 const BRANCHES = [
     { id: "DIIT124", name: "DIIT124 - Main Branch" },
@@ -131,36 +134,43 @@ export default function AdmissionForm() {
 
         setLoading(true);
 
-        try {
-            const formattedAdmissionDate = formatToDDMMYY(form.admissionDate);
-            const formattedDob = form.dob ? formatToDDMMYY(form.dob) : "";
+   try {
+        const formattedAdmissionDate = formatToDDMMYY(form.admissionDate);
+        const formattedDob = form.dob ? formatToDDMMYY(form.dob) : "";
 
-            const finalData = {
-                ...form,
-                admissionDate: formattedAdmissionDate,
-                dob: formattedDob,
-                status: "pending",
-                createdAt: serverTimestamp(),
-                appliedDate: new Date().toISOString()
-            };
+        const finalData = {
+            ...form,
+            admissionDate: formattedAdmissionDate,
+            dob: formattedDob,
+            status: "pending",
+            createdAt: serverTimestamp(),
+            appliedDate: new Date().toISOString()
+        };
 
-            await addDoc(collection(db, "admissions"), finalData);
+        // 1. Firebase mein Save kiya
+        await addDoc(collection(db, "admissions"), finalData);
 
-            setSubmittedData({
-                ...form,
-                admissionDate: formattedAdmissionDate,
-                dob: formattedDob
-            });
+        // 2. 🔥 ADMINS KO EMAIL BHEJEIN
+        // Hum saare admins ko loop karke mail bhej rahe hain
+        ADMIN_ALLOWED_EMAILS.forEach(adminEmail => {
+            sendEmailNotification(
+                adminEmail,
+                `New Admission: ${form.name} (${form.course})`,
+                adminAdmissionAlertTemplate(finalData)
+            );
+        });
 
-            setIsSubmitted(true);
-            window.scrollTo(0, 0);
+        setSubmittedData(finalData);
+        setIsSubmitted(true);
+        window.scrollTo(0, 0);
+        toast.success("Admission Submitted Successfully!");
 
-        } catch (e) {
-            toast.error("Error: " + e.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    } catch (e) {
+        toast.error("Error: " + e.message);
+    } finally {
+        setLoading(false);
+    }
+};
 
     // ===================== RECEIPT VIEW =====================
     if (isSubmitted) {

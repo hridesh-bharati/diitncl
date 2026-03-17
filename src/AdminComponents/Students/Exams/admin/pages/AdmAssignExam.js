@@ -4,8 +4,6 @@ import { useParams } from "react-router-dom";
 import { db } from "../../../../../firebase/firebase";
 import { collection, getDocs, query, where, doc, deleteDoc, setDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { useExam } from "../../context/ExamProvider";
-import { sendEmailNotification, examPermitTemplate } from "../../../../../../../server/emailService";
-import { toast } from "react-toastify";
 
 export default function AdminAssignExam() {
   const { examId } = useParams();
@@ -50,41 +48,29 @@ export default function AdminAssignExam() {
   }, [examId]);
 
   // handleToggle function to on/off examination
-const handleToggle = async (student) => {
-  const studentAdmissionId = student.id;
-  const isAssigned = !!assignedData[studentAdmissionId];
-  const docId = `${studentAdmissionId}_${examId}`;
+  const handleToggle = async (studentAdmissionId) => {
+    const isAssigned = !!assignedData[studentAdmissionId];
+    const docId = `${studentAdmissionId}_${examId}`;
 
-  try {
-    if (isAssigned) {
-      await deleteDoc(doc(db, "studentExams", docId));
-      toast.info(`Access Revoked for ${student.name}`);
-    } else {
-      await setDoc(doc(db, "studentExams", docId), {
-        studentId: studentAdmissionId,
-        examId: examId,
-        status: "Pending",
-        score: 0,
-        assignedAt: serverTimestamp()
-      });
-
-      // 2. Nodemailer Email Trigger (Jab Access ON ho)
-      if (student.email) {
-        sendEmailNotification(
-          student.email,
-          `Examination Permit: ${exam?.title}`,
-          examPermitTemplate(student, exam)
-        );
-        toast.success(`Access Enabled & Email Sent to ${student.name}`);
+    try {
+      if (isAssigned) {
+        // OFF: Record delete hoga -> StudentExamPage ka onSnapshot turant bache ko bahar phekh dega
+        await deleteDoc(doc(db, "studentExams", docId));
       } else {
-        toast.success(`Access Enabled for ${student.name}`);
+        // ON: Record create hoga -> StudentExamList mein real-time button show ho jayega
+        await setDoc(doc(db, "studentExams", docId), {
+          studentId: studentAdmissionId,
+          examId: examId,
+          status: "Pending",
+          score: 0,
+          assignedAt: serverTimestamp()
+        });
       }
+    } catch (err) { 
+      console.error("Toggle Error:", err);
+      alert("Error updating access. Check connection.");
     }
-  } catch (err) {
-    console.error("Toggle Error:", err);
-    toast.error("Error updating access.");
-  }
-};
+  };
 
   const filtered = useMemo(() => students.filter(s =>
     s.name?.toLowerCase().includes(searchTerm.toLowerCase()) || s.regNo?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -122,7 +108,7 @@ const handleToggle = async (student) => {
                           className="form-check-input border-2 cursor-pointer shadow-none"
                           type="checkbox"
                           checked={!!assignedData[s.id]}
-                          onChange={() => handleToggle(s)}
+                          onChange={() => handleToggle(s.id)}
                           style={{ width: '38px', height: '19px' }}
                         />
                       </div>

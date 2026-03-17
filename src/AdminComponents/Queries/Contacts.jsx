@@ -114,6 +114,7 @@ export default function AdaptiveAdminQueries() {
                   </div>
 
                   <h6 className="fw-bold text-dark mb-1">{q.fullName || "Anonymous User"}</h6>
+                  <p className="text-secondary small fw-bold mb-2">{q.email || "Support Request"}</p>
                   <p className="text-primary small fw-bold mb-2">{q.title || "Support Request"}</p>
                   <p className="text-muted small flex-grow-1 mb-4">{q.query}</p>
 
