@@ -1,18 +1,27 @@
 import { precacheAndRoute } from 'workbox-precaching';
-
-// Vite PWA plugin yahan apne assets inject karega
 precacheAndRoute(self.__WB_MANIFEST);
 
-// 🔥 Push Notification Listener
 self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : { title: 'DIIT Alert', body: 'New Update!' };
-  
+  let data = { title: 'Drishtee Alert', body: 'Update from Centre' };
+
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (e) {
+    console.log('Push data is not JSON, using text:', event.data.text());
+    data = { title: 'Drishtee Alert', body: event.data.text() };
+  }
+
+  const options = {
+    body: data.body,
+    icon: '/images/icon/icon-192.png',
+    badge: '/images/icon/icon-192.png',
+    vibrate: [200, 100, 200],
+    data: { url: data.url || '/' }
+  };
+
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/images/icon/icon-192.png',
-      badge: '/images/icon/icon-192.png',
-      vibrate: [200, 100, 200]
-    })
+    self.registration.showNotification(data.title, options)
   );
 });

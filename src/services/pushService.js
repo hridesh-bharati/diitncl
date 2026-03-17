@@ -1,6 +1,5 @@
 // src/services/pushService.js
 
-// Aapki generated Public Key
 // const PUBLIC_VAPID_KEY = "BOE6KlU4S7LB_0byc-bROXewESsYYefkkL97mLAqz_wuvJvIsJiIDmCzp8SXZCwoq2VK7Tg_PbMZ-KPuQQmBrKo";
 const PUBLIC_VAPID_KEY = import.meta.env.VITE_PUBLIC_VAPID_KEY;
 /**
