@@ -1,0 +1,1 @@
+import{j as t}from"./index-CjiXKx6a.js";import{C as e}from"./CommanCourse--Q8wj2pg.js";import"./courseData-CeKRB8nL.js";function i(){const r=["cca","cac"];return t.jsx("div",{className:"MT3",children:t.jsx(e,{targetCourses:r,CTitle:"Computer certificate course"})})}export{i as default};
