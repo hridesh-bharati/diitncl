@@ -1,32 +1,24 @@
 // const API_URL = "http://localhost:5000/api/send-mail";
-
 // diit\src\services\emailService.js
 
-// diit\src\services\emailService.js
-const BASE_URL = "https://diitnclserver.onrender.com"; 
-
+const API_URL = "/api/send-mail"; 
 export const sendEmailNotification = async (to, subject, html) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/send-mail`, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, subject, html }),
     });
 
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server Rejected Request:", errorText);
-        return false;
-    }
-
-    const data = await response.json();
+    // Check if JSON response is valid
+    const data = await response.json().catch(() => ({ success: false }));
     return data.success;
-
   } catch (err) {
-    console.error("Network/Fetch Error:", err);
+    console.error("Vercel Fetch Error:", err);
     return false;
   }
 };
+
 
 // --- Contact Templates ---
 export const supportTemplate = (data) => `
