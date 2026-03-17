@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../../firebase/firebase";
-import { collection, getDocs, query, where, doc, deleteDoc, setDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, deleteDoc, setDoc, serverTimestamp, onSnapshot,getDoc } from "firebase/firestore";
 import { useExam } from "../../context/ExamProvider";
 import { sendEmailNotification, examPermitTemplate } from "../../../../../services/emailService";
 import { toast } from "react-toastify";
@@ -11,7 +11,7 @@ export default function AdminAssignExam() {
   const { examId } = useParams();
   const { exams } = useExam();
   const [students, setStudents] = useState([]);
-  const [assignedData, setAssignedData] = useState({}); 
+  const [assignedData, setAssignedData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +23,7 @@ export default function AdminAssignExam() {
     const fetchStudents = async () => {
       const sSnap = await getDocs(query(collection(db, "admissions"), where("course", "==", exam.course)));
       const list = sSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-                   .filter(s => s.regNo && !s.issueDate && s.status !== "canceled");
+        .filter(s => s.regNo && !s.issueDate && s.status !== "canceled");
       setStudents(list);
     };
     fetchStudents();
@@ -34,7 +34,7 @@ export default function AdminAssignExam() {
     if (!examId) return;
 
     const q = query(collection(db, "studentExams"), where("examId", "==", examId));
-    
+
     // Listen for any changes in studentExams for this specific exam
     const unsubscribe = onSnapshot(q, (snap) => {
       const mapping = {};
@@ -49,50 +49,64 @@ export default function AdminAssignExam() {
     return () => unsubscribe();
   }, [examId]);
 
-// handleToggle function to on/off examination
-const handleToggle = async (student) => {
-  const studentAdmissionId = student.id;
-  const isAssigned = !!assignedData[studentAdmissionId];
-  const docId = `${studentAdmissionId}_${examId}`;
+  // handleToggle function to on/off examination
+  const handleToggle = async (student) => {
+    const studentAdmissionId = student.id;
+    const isAssigned = !!assignedData[studentAdmissionId];
+    const docId = `${studentAdmissionId}_${examId}`;
 
-  try {
-    if (isAssigned) {
-      // 1. Access OFF (Delete Doc)
-      await deleteDoc(doc(db, "studentExams", docId));
-      toast.info(`Access Revoked for ${student.name}`);
-    } else {
-      // 2. Access ON (Set Doc)
-      await setDoc(doc(db, "studentExams", docId), {
-        studentId: studentAdmissionId,
-        examId: examId,
-        status: "Pending",
-        score: 0,
-        assignedAt: serverTimestamp()
-      });
-
-      // 3. Nodemailer Email Trigger (Jab Access ON ho)
-      if (student.email) {
-        // Hum await kar rahe hain taaki email success confirm ho sake
-        const emailSent = await sendEmailNotification(
-          student.email,
-          `Examination Permit: ${exam?.title}`,
-          examPermitTemplate(student, exam)
-        );
-
-        if (emailSent) {
-          toast.success(`Access Enabled & Permit Sent to ${student.name}`);
-        } else {
-          toast.warning(`Access Enabled, but Permit Email failed.`);
-        }
+    try {
+      if (isAssigned) {
+        // 1. Access OFF (Delete Doc)
+        await deleteDoc(doc(db, "studentExams", docId));
+        toast.info(`Access Revoked for ${student.name}`);
       } else {
-        toast.success(`Access Enabled for ${student.name} (No Email)`);
+        // 2. Access ON (Set Doc)
+        await setDoc(doc(db, "studentExams", docId), {
+          studentId: studentAdmissionId,
+          examId: examId,
+          status: "Pending",
+          score: 0,
+          assignedAt: serverTimestamp()
+        });
+
+        // 3. Nodemailer Email Trigger (Jab Access ON ho)
+        if (student.email) {
+          // Hum await kar rahe hain taaki email success confirm ho sake
+          const emailSent = await sendEmailNotification(
+            student.email,
+            `Examination Permit: ${exam?.title}`,
+            examPermitTemplate(student, exam)
+          );
+
+          // 🔥 4. PUSH NOTIFICATION TRIGGER (Yahan missing tha)
+          if (student.pushSubscription) {
+            console.log("Sending Push to:", student.name);
+            fetch('/api/send-push', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                subscription: JSON.parse(student.pushSubscription),
+                title: "Exam Permit Issued! 📝",
+                body: `Hi ${student.name}, You are permitted for ${exam?.title}. Best of luck!`
+              })
+            }).catch(e => console.error("Exam Push failed", e));
+          }
+
+          if (emailSent) {
+            toast.success(`Access Enabled & Permit Sent to ${student.name}`);
+          } else {
+            toast.warning(`Access Enabled, but Permit Email failed.`);
+          }
+        } else {
+          toast.success(`Access Enabled for ${student.name} (No Email)`);
+        }
       }
+    } catch (err) {
+      console.error("Toggle Error:", err);
+      toast.error("Error updating access.");
     }
-  } catch (err) {
-    console.error("Toggle Error:", err);
-    toast.error("Error updating access.");
-  }
-};
+  };
 
   const filtered = useMemo(() => students.filter(s =>
     s.name?.toLowerCase().includes(searchTerm.toLowerCase()) || s.regNo?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -115,7 +129,7 @@ const handleToggle = async (student) => {
           <div className="table-responsive" style={{ maxHeight: 'calc(100vh - 220px)' }}>
             <table className="table table-hover align-middle mb-0 text-nowrap">
               <thead className="bg-light sticky-top shadow-sm">
-                <tr style={{fontSize: '11px'}}>
+                <tr style={{ fontSize: '11px' }}>
                   <th width="70" className="text-center border-0">ACCESS</th>
                   <th className="border-0 text-uppercase">Student Name</th>
                   <th className="text-end pe-3 border-0 text-uppercase">Reg No</th>
