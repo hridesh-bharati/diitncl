@@ -215,10 +215,25 @@ export const admissionTemplate = (student, regNo) => `
 `;
 
 // Exam Assign Trigger Notification to student
-export const examPermitTemplate = (student, exam) => {
-  // Aapke dashboard se duration hours mein aa rahi hai (e.g., 1, 1.5, 2)
+export const examPermitTemplate = (student, exam) => { 
   const durationValue = exam.duration || 1;
   const durationText = `${durationValue} ${durationValue <= 1 ? 'Hour' : 'Hours'}`;
+  
+  // 🔥 DATABASE se aane wala timing format (AM/PM)
+  // startTime manual hota hai, endTime calculate ho chuka hai
+  const examDate = exam.date || "As per Schedule";
+  
+  // Start Time ko AM/PM mein convert karne ka safe check (agar DB mein raw 24hr format ho toh)
+  let formattedStart = exam.startTime;
+  try {
+     if(exam.startTime && !exam.startTime.includes('M')) { // Agar AM/PM nahi hai toh convert karo
+        formattedStart = new Date(`2000-01-01T${exam.startTime}`).toLocaleTimeString('en-US', { 
+           hour: '2-digit', minute: '2-digit', hour12: true 
+        });
+     }
+  } catch(e) { formattedStart = exam.startTime; }
+
+  const formattedEnd = exam.endTime || "As per Schedule";
 
   return `
   <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 20px auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background-color: #fff;">
@@ -232,7 +247,7 @@ export const examPermitTemplate = (student, exam) => {
     <div style="padding: 35px; background-color: #ffffff;">
       <h3 style="color: #333; margin-top: 0; font-size: 20px;">Dear ${student.name},</h3>
       <p style="color: #555; font-size: 15px; line-height: 1.6;">
-        Your exam access has been successfully activated. You are now permitted to appear for the following assessment:
+        Your exam access has been successfully activated. Please follow the schedule strictly:
       </p>
       
       <div style="background-color: #fff5f6; border: 1px solid #fed7d7; border-left: 6px solid #fc0038; padding: 25px; border-radius: 8px; margin: 25px 0;">
@@ -242,37 +257,43 @@ export const examPermitTemplate = (student, exam) => {
             <td style="padding: 10px 0; color: #333; font-weight: 700; font-size: 16px;">${exam.title}</td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; color: #777; font-size: 14px;">Course Name</td>
-            <td style="padding: 10px 0; color: #333; font-weight: 500;">${exam.course}</td>
+            <td style="padding: 10px 0; color: #777; font-size: 14px;">Exam Date</td>
+            <td style="padding: 10px 0; color: #333; font-weight: 600;">${examDate}</td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; color: #777; font-size: 14px;">Time Duration</td>
-            <td style="padding: 10px 0; color: #fc0038; font-weight: 800; font-size: 16px;">
-               ${durationText}
-            </td>
+            <td style="padding: 10px 0; color: #777; font-size: 14px;">Log-in Time</td>
+            <td style="padding: 10px 0; color: #fc0038; font-weight: 800; font-size: 17px;">${formattedStart}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; color: #777; font-size: 14px;">Closing Time</td>
+            <td style="padding: 10px 0; color: #333; font-weight: 600;">${formattedEnd}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; color: #777; font-size: 14px;">Total Duration</td>
+            <td style="padding: 10px 0; color: #333; font-weight: 600;">${durationText}</td>
           </tr>
         </table>
       </div>
 
-      <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px dashed #ccc;">
+      <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px dashed #ccc; margin-bottom: 25px;">
         <p style="margin: 0; color: #666; font-size: 13px; line-height: 1.5;">
-          <strong>Instructions:</strong><br>
+          <strong>Quick Instructions:</strong><br>
           • Ensure you have a stable internet connection.<br>
-          • Do not refresh the page during the examination.<br>
-          • Your result will be generated immediately after submission.
+          • Your portal will automatically close at <strong>${formattedEnd}</strong>.<br>
+          • Do not refresh or switch tabs during the exam.
         </p>
       </div>
 
-      <div style="margin-top: 35px; text-align: center;">
+      <div style="margin-top: 10px; text-align: center;">
         <a href="https://drishteeindia.com/login" style="background-color: #fc0038; color: white; padding: 16px 45px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; box-shadow: 0 5px 15px rgba(252,0,56,0.3); font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">
-          Start Exam Now
+          Start Examination Now
         </a>
       </div>
     </div>
 
     <div style="background-color: #f7f7f7; padding: 20px; text-align: center; color: #999; font-size: 11px; border-top: 1px solid #eee;">
       <p style="margin: 0; font-weight: bold; color: #777;">DRISHTEE COMPUTER CENTRE</p>
-      <p style="margin: 5px 0 0;">Date: ${new Date().toLocaleDateString('en-IN')}</p>
+      <p style="margin: 5px 0 0;">Notification Date: ${new Date().toLocaleDateString('en-IN')}</p>
     </div>
   </div>
 `;
