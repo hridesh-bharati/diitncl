@@ -49,7 +49,7 @@ export default function AdminAssignExam() {
     return () => unsubscribe();
   }, [examId]);
 
-  // handleToggle function to on/off examination
+// handleToggle function to on/off examination
 const handleToggle = async (student) => {
   const studentAdmissionId = student.id;
   const isAssigned = !!assignedData[studentAdmissionId];
@@ -57,9 +57,11 @@ const handleToggle = async (student) => {
 
   try {
     if (isAssigned) {
+      // 1. Access OFF (Delete Doc)
       await deleteDoc(doc(db, "studentExams", docId));
       toast.info(`Access Revoked for ${student.name}`);
     } else {
+      // 2. Access ON (Set Doc)
       await setDoc(doc(db, "studentExams", docId), {
         studentId: studentAdmissionId,
         examId: examId,
@@ -68,16 +70,22 @@ const handleToggle = async (student) => {
         assignedAt: serverTimestamp()
       });
 
-      // 2. Nodemailer Email Trigger (Jab Access ON ho)
+      // 3. Nodemailer Email Trigger (Jab Access ON ho)
       if (student.email) {
-        sendEmailNotification(
+        // Hum await kar rahe hain taaki email success confirm ho sake
+        const emailSent = await sendEmailNotification(
           student.email,
           `Examination Permit: ${exam?.title}`,
           examPermitTemplate(student, exam)
         );
-        toast.success(`Access Enabled & Email Sent to ${student.name}`);
+
+        if (emailSent) {
+          toast.success(`Access Enabled & Permit Sent to ${student.name}`);
+        } else {
+          toast.warning(`Access Enabled, but Permit Email failed.`);
+        }
       } else {
-        toast.success(`Access Enabled for ${student.name}`);
+        toast.success(`Access Enabled for ${student.name} (No Email)`);
       }
     }
   } catch (err) {
