@@ -1,3 +1,4 @@
+// src\Components\Header\LoginForm.jsx
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import {
   sendPasswordResetEmail
 } from "firebase/auth";
 import { doc, getDoc, setDoc, query, collection, where, getDocs } from "firebase/firestore";
+import { subscribeUser } from "../../services/pushService";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginForm({ isAdminView, onSuccess }) {
@@ -83,6 +85,22 @@ export default function LoginForm({ isAdminView, onSuccess }) {
       }
 
       toast.success("Login successful!");
+      if (!isAdminView) {
+        const sub = await subscribeUser();
+        if (sub) {
+          // Humein student ka document update karna hai. 
+          // Note: admissions collection mein student ka ID search karke wahan update karein
+          const q = query(collection(db, "admissions"), where("email", "==", email.toLowerCase().trim()));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const studentDoc = snap.docs[0];
+            await updateDoc(doc(db, "admissions", studentDoc.id), {
+              pushSubscription: JSON.stringify(sub)
+            });
+          }
+        }
+      }
+
       onSuccess?.();
       navigate(isAdminView ? "/admin/dashboard" : "/student/dashboard");
     } catch (e) {

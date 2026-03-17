@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
-import { collection, query, where, getDocs, doc, onSnapshot } from "firebase/firestore"; 
+import { collection, query, where, getDocs, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 // 🔹 Nodemailer Service Imports
-import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../services/emailService"; 
+import { sendEmailNotification, admissionTemplate, certificateTemplate, deleteAccountTemplate } from "../../services/emailService";
 
 const STATUS_COLORS = {
   accepted: "#10b981",
@@ -121,7 +121,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, onSave, student.id]);
 
-// 🔥 FEATURE 2: NODEMAILER (Admission Approved)
+  // 🔥 FEATURE 2: NODEMAILER + PUSH (Admission Approved)
   const handleGenerateRegNo = useCallback(async () => {
     if (!isAdmin || !isValidDigit || isDuplicate) return;
     setLoading(true);
@@ -130,7 +130,6 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       const courseCode = (studentCourse || "CRS").toString().replace(/\s+/g, "").toUpperCase().slice(0, 10);
       const newRegNo = `${studentBranch}/${courseCode}/${cleanRegNum}`;
 
-      // 1. Firebase Update pehle karein
       await onSave(student.id, {
         branch: studentBranch,
         regNo: newRegNo,
@@ -138,40 +137,40 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         status: "accepted"
       });
 
-      // 2. Email bhejien (Await ke saath)
       if (student.email) {
-        const mailSent = await sendEmailNotification(
-          student.email, 
-          "Admission Approved - Drishtee Computer Centre", 
-          admissionTemplate(student, newRegNo)
-        );
-        
-        if(mailSent) {
-          toast.success("Approved & Confirmation Email Sent!");
-        } else {
-          toast.warning("Approved! (Confirmation Email failed to send)");
+        // 1. Email bhejo
+        await sendEmailNotification(student.email, "Admission Approved - Drishtee", admissionTemplate(student, newRegNo));
+
+        // 2. 🔥 Push Notification (WhatsApp style)
+        if (student.pushSubscription) {
+          fetch('/api/send-push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subscription: JSON.parse(student.pushSubscription),
+              title: "Admission Approved! 🎉",
+              body: `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`
+            })
+          }).catch(e => console.error("Push failed", e));
         }
+
+        toast.success("Approved & Notified!");
       } else {
         toast.success("Approved Successfully!");
       }
-      
       setShowRegInput(false);
-      setEditingRegNo(false);
     } catch (error) {
-      toast.error("Failed to save data");
+      toast.error("Failed to save");
     } finally {
       setLoading(false);
     }
   }, [isAdmin, isValidDigit, isDuplicate, regNumber, studentCourse, studentBranch, onSave, student]);
 
-  // 🔥 FEATURE 3: NODEMAILER (Certificate/Done Notification)
+  // 🔥 FEATURE 3: NODEMAILER + PUSH (Certificate/Done Notification)
   const handleMarkDone = useCallback(async () => {
-    if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) {
-       return toast.error("Please fill all details before marking Done");
-    }
+    if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) return toast.error("Fill all details");
     setLoading(true);
     try {
-      // 1. Update Database
       await onSave(student.id, {
         status: "done",
         percentage: Number(percent),
@@ -179,19 +178,24 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         issueDate: issDate
       });
 
-      // 2. Send Congratulations Email
       if (student.email) {
-        const mailSent = await sendEmailNotification(
-          student.email, 
-          "Congratulations! Your Certificate is Ready", 
-          certificateTemplate(student, percent, issDate)
-        );
-        
-        if(mailSent) {
-          toast.success("Finalized & Certificate Email Sent!");
-        } else {
-          toast.warning("Finalized! (Email failed)");
+        // 1. Email bhejo
+        await sendEmailNotification(student.email, "Congratulations! Certificate Ready", certificateTemplate(student, percent, issDate));
+
+        // 2. 🔥 Push Notification
+        if (student.pushSubscription) {
+          fetch('/api/send-push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subscription: JSON.parse(student.pushSubscription),
+              title: "Course Completed! 🎓",
+              body: `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`
+            })
+          }).catch(e => console.error("Push failed", e));
         }
+
+        toast.success("Finalized & Notified!");
       } else {
         toast.success("Details Updated!");
       }
@@ -201,7 +205,8 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, student, percent, admissionDate, issDate, onSave]);
+  }, [isAdmin, student, percent, admissionDate, issDate, onSave, studentCourse]);
+
 
   // 🔥 FEATURE 4: NODEMAILER (Delete Account Alert)
   const handleDelete = useCallback(async () => {
@@ -210,12 +215,12 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       // Step 1: Mail pehle bhejien (Record delete hone se pehle)
       if (student.email) {
         await sendEmailNotification(
-          student.email, 
-          "Student Record Deactivated", 
+          student.email,
+          "Student Record Deactivated",
           deleteAccountTemplate(student)
         );
       }
-      
+
       // Step 2: Delete from DB
       await onDelete(student.id);
       toast.success("Record Deleted & Student Notified");

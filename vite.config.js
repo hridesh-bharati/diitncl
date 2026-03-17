@@ -10,6 +10,9 @@ export default defineConfig(({ command }) => {
       react({ fastRefresh: isDev }),
 
       VitePWA({
+        strategies: "injectManifest",  
+        srcDir: "src",               
+        filename: "sw.js",           
         registerType: "autoUpdate",
         injectRegister: "auto",
         includeAssets: [

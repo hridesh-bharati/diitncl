@@ -2,6 +2,19 @@
 
 const API_URL = "/api/send-mail";
 
+
+// ----------------------------------------------------
+// sendEmailNotification()
+// Generic function to send email from frontend
+// Parameters:
+// to      -> receiver email address
+// subject -> email subject line
+// html    -> full HTML email template
+//
+// Returns:
+// true  -> email sent successfully
+// false -> error occurred
+// ----------------------------------------------------
 export const sendEmailNotification = async (to, subject, html) => {
   try {
     const response = await fetch(API_URL, {
@@ -19,7 +32,11 @@ export const sendEmailNotification = async (to, subject, html) => {
   }
 };
 
-// --- Contact Templates ---
+// ======================================================
+// CONTACT FORM EMAIL TEMPLATE
+// Used when someone submits contact/support form
+// This email is sent to ADMIN
+// ======================================================
 export const supportTemplate = (data) => `
   <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
     
@@ -81,7 +98,10 @@ export const supportTemplate = (data) => `
   </div>
 `;
 
-// --- New Admission alert Templates for Admin ---
+// ======================================================
+// ADMIN ADMISSION ALERT EMAIL
+// Sent to ADMIN when new student admission is submitted
+// ======================================================
 export const adminAdmissionAlertTemplate = (data) => `
   <div style="font-family: 'Segoe UI', sans-serif; max-width: 650px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fdfdfd;">
     <div style="background: #001529; color: #ffca28; padding: 20px; text-align: center;">
@@ -120,7 +140,11 @@ export const adminAdmissionAlertTemplate = (data) => `
   </div>
 `;
 
-// Admission / Student Record delete 
+// ======================================================
+// DELETE ACCOUNT / STUDENT RECORD REMOVED EMAIL
+// This email is sent to STUDENT when admin deletes
+// or deactivates their admission record
+// ======================================================
 export const deleteAccountTemplate = (student) => `
   <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 20px auto; border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: #fff;">
     
@@ -163,7 +187,10 @@ export const deleteAccountTemplate = (student) => `
   </div>
 `;
 
-// --- Admission approve Templates for student  for admission confirm---
+// ======================================================
+// STUDENT ADMISSION CONFIRMATION EMAIL
+// Sent to STUDENT when admin approves admission
+// ======================================================
 export const admissionTemplate = (student, regNo) => `
   <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 20px auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background-color: #fff;">
     <div style="background-color: #10b981; padding: 25px 20px; text-align: center; color: white;">
@@ -214,24 +241,27 @@ export const admissionTemplate = (student, regNo) => `
   </div>
 `;
 
-// Exam Assign Trigger Notification to student
-export const examPermitTemplate = (student, exam) => { 
+// ======================================================
+// EXAM PERMIT EMAIL
+// Sent when admin assigns exam access to student
+// ======================================================
+export const examPermitTemplate = (student, exam) => {
   const durationValue = exam.duration || 1;
   const durationText = `${durationValue} ${durationValue <= 1 ? 'Hour' : 'Hours'}`;
-  
+
   // 🔥 DATABASE se aane wala timing format (AM/PM)
   // startTime manual hota hai, endTime calculate ho chuka hai
   const examDate = exam.date || "As per Schedule";
-  
+
   // Start Time ko AM/PM mein convert karne ka safe check (agar DB mein raw 24hr format ho toh)
   let formattedStart = exam.startTime;
   try {
-     if(exam.startTime && !exam.startTime.includes('M')) { // Agar AM/PM nahi hai toh convert karo
-        formattedStart = new Date(`2000-01-01T${exam.startTime}`).toLocaleTimeString('en-US', { 
-           hour: '2-digit', minute: '2-digit', hour12: true 
-        });
-     }
-  } catch(e) { formattedStart = exam.startTime; }
+    if (exam.startTime && !exam.startTime.includes('M')) { // Agar AM/PM nahi hai toh convert karo
+      formattedStart = new Date(`2000-01-01T${exam.startTime}`).toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    }
+  } catch (e) { formattedStart = exam.startTime; }
 
   const formattedEnd = exam.endTime || "As per Schedule";
 
@@ -299,7 +329,10 @@ export const examPermitTemplate = (student, exam) => {
 `;
 };
 
-// Final Certification
+// ======================================================
+// CERTIFICATE GENERATED EMAIL
+// Sent when student completes course and certificate ready
+// ======================================================
 export const certificateTemplate = (student, percent, issDate) => `
   <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 20px auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background-color: #fff;">
     
