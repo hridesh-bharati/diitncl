@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
-import { sendEmailNotification, adminAdmissionAlertTemplate } from "../../../../server/emailService";
+import { sendEmailNotification, adminAdmissionAlertTemplate } from "../../services/emailService";
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext"; 
 
 const BRANCHES = [
