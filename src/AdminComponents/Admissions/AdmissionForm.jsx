@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
-import { sendEmailNotification, adminAdmissionAlertTemplate } from "../../services/emailService";
+import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification } from "../../services/emailService";
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
 
 
@@ -114,11 +114,10 @@ export default function AdmissionForm() {
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic Validations
+        // Basic Validations... (Pehle jaisa)
         if (form.aadharNo && form.aadharNo.length !== 12) return toast.error("Aadhar must be 12 digits");
         if (form.mobile && form.mobile.length !== 10) return toast.error("Mobile number must be 10 digits");
         if (!form.photoUrl) return toast.error("Please upload Photo");
@@ -139,11 +138,33 @@ export default function AdmissionForm() {
                 appliedDate: new Date().toISOString()
             };
 
-            // 1. Firebase mein Save kiya (Sabse important step)
+            // 1. Firebase mein Save kiya
             await addDoc(collection(db, "admissions"), finalData);
 
-            // 2. 🔥 ADMIN ALERTS (Fire and Forget)
-            // Hum 'await' nahi kar rahe taaki UI fast rahe, lekin syntax sahi hona chahiye
+            // 2. 🔥 ADMIN PUSH NOTIFICATION (Naya Logic)
+            const fetchAndNotifyAdmins = async () => {
+                try {
+                    // Admin ka subscription fetch karo
+                    const qAdmin = query(collection(db, "users"), where("role", "==", "admin"));
+                    const adminSnap = await getDocs(qAdmin);
+
+                    adminSnap.forEach((doc) => {
+                        const adminData = doc.data();
+                        if (adminData.pushSubscription) {
+                            sendPushNotification(
+                                adminData,
+                                "New Admission Alert! 🎓",
+                                `${form.name} has applied for ${form.course}.`,
+                                "/admin/students" // Click par jahan admin list dikhti hai
+                            );
+                        }
+                    });
+                } catch (err) { console.error("Admin Push Error:", err); }
+            };
+
+            fetchAndNotifyAdmins(); // Background mein chalne do
+
+            // 3. ADMIN EMAIL ALERTS (Pehle jaisa)
             Promise.all(
                 ADMIN_ALLOWED_EMAILS.map(adminEmail =>
                     sendEmailNotification(
@@ -154,12 +175,10 @@ export default function AdmissionForm() {
                 )
             ).catch(err => console.error("Background Email Error:", err));
 
-            // UI Updates
+            // UI Updates...
             setSubmittedData(finalData);
             setIsSubmitted(true);
             window.scrollTo(0, 0);
-
-            // Audio feedback
             new Audio("/audio/ring.mp3").play().catch(() => { });
             toast.success("Admission Submitted Successfully!");
 
