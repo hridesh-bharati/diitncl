@@ -11,11 +11,10 @@ import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
 import HelmetManager from "./Components/HomePage/pages/HelmetManager";
 import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
-/* Firebase & Push Service */
+/* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
 import { db } from "./firebase/firebase";
-import { doc, setDoc, getDoc, updateDoc, increment } from "firebase/firestore";
-import { subscribeUser } from "./services/pushService";
+import { doc, setDoc, increment } from "firebase/firestore";
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -31,10 +30,25 @@ const LoginForm = lazy(() => import("./Components/Header/LoginForm"));
 const Library = lazy(() => import("./Components/HomePage/pages/Library/Library"));
 const ChatPage = lazy(() => import("./Components/Chats/ChatPage"));
 
-/* Courses, Legal, Dashboards lazy imports... (Same as yours) */
+/* Courses */
+const ComputerLanguage = lazy(() => import("./Components/HomePage/pages/Course/ComputerLanguage"));
+const Designing = lazy(() => import("./Components/HomePage/pages/Course/Designing"));
+const WebDev = lazy(() => import("./Components/HomePage/pages/Course/WebDev"));
+const Nielet = lazy(() => import("./Components/HomePage/pages/Course/Nielet"));
+const Banking = lazy(() => import("./Components/HomePage/pages/Course/Banking"));
+const Certificate = lazy(() => import("./Components/HomePage/pages/Course/Ceritificate"));
+
+/* Legal */
+const Discription = lazy(() => import("./Components/HomePage/pages/About/Discription"));
+const FAQ = lazy(() => import("./Components/HomePage/pages/About/FAQ"));
+const PrivacyPolicy = lazy(() => import("./Components/HomePage/pages/About/PrivacyPolicy"));
+const Term = lazy(() => import("./Components/HomePage/pages/About/Terms"));
+
+/* Dashboards */
 const AdminRoutes = lazy(() => import("./AdminComponents/AdminRoutes"));
 const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
 const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
+
 
 // 🔥 Helper Function for Background Push Sync
 const syncStudentPushToken = async (userId) => {
@@ -61,6 +75,7 @@ const syncStudentPushToken = async (userId) => {
   }
 };
 
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
@@ -73,7 +88,6 @@ export default function App() {
         setUser(currentUser);
         const r = await getUserRole(currentUser.uid);
         setRole(r);
-
         // 🔥 Trigger Push Sync for Students in background
         if (r === "student") {
           syncStudentPushToken(currentUser.uid);
