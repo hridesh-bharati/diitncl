@@ -2,12 +2,20 @@
 
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
+import {
+    db,
+    doc,
+    getDoc,
+    setDoc,
+    collection,
+    serverTimestamp,
+    query,
+    where,
+    getDocs
+} from "firebase/firestore";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification } from "../../services/emailService";
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
-
 
 const BRANCHES = [
     { id: "DIIT124", name: "DIIT124 - Main Branch" },
@@ -24,7 +32,7 @@ const formatToDDMMYY = (dateString) => {
     return `${day}/${month}/${year}`;
 };
 
-// ✅ Get today in YYYY-MM-DD (for input type="date")
+// ✅ Get today in YYYY-MM-DD
 const getTodayInputFormat = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -63,23 +71,18 @@ export default function AdmissionForm() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Only allow digits for specific fields
         if (["mobile", "pincode", "aadharNo"].includes(name)) {
             if (value !== "" && !/^\d+$/.test(value)) return;
         }
-
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
     const uploadImg = async (file) => {
         if (!file) return;
-
-        if (file.size > 50 * 1024) { // 50KB limit
+        if (file.size > 50 * 1024) {
             toast.error("Photo size must be less than 50KB!");
             return;
         }
-
         setImgLoading(true);
         const fd = new FormData();
         fd.append("file", file);
@@ -103,21 +106,20 @@ export default function AdmissionForm() {
     const handleAutoAddress = (e) => {
         if (e.target.checked) {
             const { village, post, thana, city, state, pincode } = form;
-
             if (!village || !pincode) {
                 toast.warning("Please fill village and pincode first!");
                 return;
             }
-
             const fullAddr = `Vill: ${village}, PO: ${post}, PS: ${thana}, Dist: ${city}, State: ${state} - ${pincode}`;
             setForm(prev => ({ ...prev, address: fullAddr }));
         }
     };
+    const applicationId = "DCC-" + Math.floor(100000 + Math.random() * 900000);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic Validations... (Pehle jaisa)
         if (form.aadharNo && form.aadharNo.length !== 12) return toast.error("Aadhar must be 12 digits");
         if (form.mobile && form.mobile.length !== 10) return toast.error("Mobile number must be 10 digits");
         if (!form.photoUrl) return toast.error("Please upload Photo");
@@ -126,11 +128,25 @@ export default function AdmissionForm() {
         setLoading(true);
 
         try {
+            const email = form.email.trim().toLowerCase();
+
+            // ✅ Direct doc check (BEST METHOD)
+            const docRef = doc(db, "admissions", email);
+            const existing = await getDoc(docRef);
+
+            if (existing.exists()) {
+                setLoading(false);
+                return toast.error("Email already registered!");
+            }
+
+            // ✅ Create finalData AFTER check
             const formattedAdmissionDate = formatToDDMMYY(form.admissionDate);
             const formattedDob = form.dob ? formatToDDMMYY(form.dob) : "";
 
             const finalData = {
                 ...form,
+                applicationId,
+                email,
                 admissionDate: formattedAdmissionDate,
                 dob: formattedDob,
                 status: "pending",
@@ -138,16 +154,14 @@ export default function AdmissionForm() {
                 appliedDate: new Date().toISOString()
             };
 
-            // 1. Firebase mein Save kiya
-            await addDoc(collection(db, "admissions"), finalData);
+            // ✅ Save data
+            await setDoc(docRef, finalData);
 
-            // 2. 🔥 ADMIN PUSH NOTIFICATION (Naya Logic)
+            // 🔔 Admin notification
             const fetchAndNotifyAdmins = async () => {
                 try {
-                    // Admin ka subscription fetch karo
                     const qAdmin = query(collection(db, "users"), where("role", "==", "admin"));
                     const adminSnap = await getDocs(qAdmin);
-
                     adminSnap.forEach((doc) => {
                         const adminData = doc.data();
                         if (adminData.pushSubscription) {
@@ -155,16 +169,18 @@ export default function AdmissionForm() {
                                 adminData,
                                 "New Admission Alert! 🎓",
                                 `${form.name} has applied for ${form.course}.`,
-                                "/admin/students" // Click par jahan admin list dikhti hai
+                                "/admin/students"
                             );
                         }
                     });
-                } catch (err) { console.error("Admin Push Error:", err); }
+                } catch (err) {
+                    console.error("Admin Push Error:", err);
+                }
             };
 
-            fetchAndNotifyAdmins(); // Background mein chalne do
+            fetchAndNotifyAdmins();
 
-            // 3. ADMIN EMAIL ALERTS (Pehle jaisa)
+            // 📧 Email notification
             Promise.all(
                 ADMIN_ALLOWED_EMAILS.map(adminEmail =>
                     sendEmailNotification(
@@ -175,7 +191,6 @@ export default function AdmissionForm() {
                 )
             ).catch(err => console.error("Background Email Error:", err));
 
-            // UI Updates...
             setSubmittedData(finalData);
             setIsSubmitted(true);
             window.scrollTo(0, 0);
@@ -189,6 +204,7 @@ export default function AdmissionForm() {
             setLoading(false);
         }
     };
+
 
     // ===================== RECEIPT VIEW =====================
     if (isSubmitted) {
@@ -210,8 +226,7 @@ export default function AdmissionForm() {
                                 <tbody>
                                     <tr>
                                         <th width="40%">Application ID:</th>
-                                        <td className="fw-bold text-primary">DCC-{Math.floor(100000 + Math.random() * 900000)}</td>
-                                    </tr>
+                                        <td className="fw-bold text-primary">{submittedData.applicationId}</td>                                    </tr>
                                     <tr>
                                         <th>Study Center:</th>
                                         <td>{submittedData.branch}</td>
