@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
-    db,
     doc,
     getDoc,
     setDoc,
@@ -13,6 +12,7 @@ import {
     where,
     getDocs
 } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification } from "../../services/emailService";
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
