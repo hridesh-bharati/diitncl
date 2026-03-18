@@ -75,10 +75,10 @@ export default function Header() {
     <>
       <header className="google-header-advanced sticky-top bg-white">
         <div className="header-container container-fluid px-3 px-lg-4">
-          <div className="header-left d-flex align-items-center w-100">
-            <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
-              <img src="/images/icon/logo.png" alt="Drishtee" height="32" loading="eager" />
-            </Link>
+          <div className="header-left d-flex align-items-center w-auto">
+                        <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
+            <img src="/images/icon/logo.png" alt="Drishtee" height="32" loading="eager" />
+          </Link>
 
             <nav className="nav-links d-none d-lg-flex mx-auto">
               <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
@@ -129,8 +129,9 @@ export default function Header() {
             </nav>
           </div>
 
-          <div className="searchBox">
-            <GlobleSearchBox routes={RouteLinks} placeholder="Search courses..." />
+          <div className="searchBox w-100" style={{ maxWidth: '600px' }}>
+            {/* maxWidth isliye taaki desktop pe bahut zyada lamba na ho jaye, mobile pe ye 100% rahega */}
+            <GlobleSearchBox routes={RouteLinks} />
           </div>
 
           <div className="header-right d-flex align-items-center gap-2 gap-md-3">
@@ -219,8 +220,8 @@ export default function Header() {
         </NavLink>
 
         <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
-          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '26px', height: '26px' }}>
-            <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="User" />
+          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
+            <img src={userData.photo} className="w-100 h-100 object-fit-cover mb-1" alt="." />
           </div>
           <span className="nav-text-color mobile-nav-label">Account</span>
         </button>

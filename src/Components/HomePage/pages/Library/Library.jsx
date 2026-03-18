@@ -6,10 +6,10 @@ import LibraryFeatures from "./LibraryFeatures";
 
 /* ================= DATA ================= */
 const STATS = [
-  { icon: "bi-lightning-charge-fill", value: "1 Gbps", label: "Fiber Internet" },
-  { icon: "bi-people-fill", value: "150+", label: "Study Seats" },
-  { icon: "bi-door-open-fill", value: "24×7", label: "Open Hours" },
-  { icon: "bi-shield-lock-fill", value: "News Paper", label: "Daily News" },
+  { icon: "bi-lightning-charge-fill", value: "1 Gbps", label: "Fiber Internet", color: "linear-gradient(135deg, #0072ff 0%, #00c6ff 100%)" }, // Electric Blue
+  { icon: "bi-people-fill", value: "150+", label: "Study Seats", color: "linear-gradient(135deg, #0ba360 0%, #3cba92 100%)" }, // Deep Emerald
+  { icon: "bi-door-open-fill", value: "24×7", label: "Open Hours", color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" }, // Bright Pink/Red
+  { icon: "bi-newspaper", value: "Daily", label: "News Paper", color: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)" }, // Sunset Orange
 ];
 
 const TESTIMONIALS = [
@@ -66,19 +66,27 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= STATS OVERLAP ================= */}
-      <section className="container position-relative" style={{ marginTop: "-50px", zIndex: 10 }}>
-        <div className="row g-2 g-md-4 justify-content-center px-2">
-          {STATS.map((s, i) => (
-            <div key={i} className="col-6 col-md-3 zoom-in">
-              <div className="bg-white rounded-4 p-3 p-md-4 shadow-lg text-center border-0 h-100 transition-hover">
-                <i className={`bi ${s.icon} fs-1 text-primary mb-2 d-block`} />
-                <h4 className="fw-bold mb-0">{s.value}</h4>
-                <small className="text-muted fw-semibold">{s.label}</small>
-              </div>
-            </div>
-          ))}
+     <section className="container position-relative" style={{ marginTop: "-50px", zIndex: 10 }}>
+  <div className="row g-2 g-md-4 justify-content-center px-2">
+    {STATS.map((s, i) => (
+      <div key={i} className="col-6 col-md-3 zoom-in">
+        <div 
+          className="rounded-4 p-3 p-md-4 shadow-lg text-center border-0 h-100 transition-hover"
+          style={{ 
+            background: s.color, 
+            color: "white",
+            transition: "transform 0.3s ease" 
+          }}
+        >
+          {/* Icon white color mein zyada acha lagega gradient par */}
+          <i className={`bi ${s.icon} fs-2 text-white opacity-75 mb-2 d-block`} />
+          <h4 className="fw-bold mb-0 text-white">{s.value}</h4>
+          <small className="text-white-50 fw-semibold d-block">{s.label}</small>
         </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* ================= ABOUT SECTION ================= */}
       <section className="container py-5 mt-4">
@@ -89,7 +97,7 @@ export default function DrishteeLibrary() {
             </div>
             <div className="col-md-11">
               <h2 className="fw-bold text-primary mb-3">About Drishtee Library</h2>
-              <p className="text-muted fs-5">
+              <p className="text-muted">
                 Drishtee Digital Library is built for students who demand discipline, focus and consistency. 
                 From early morning to late night, our library provides a calm academic environment where 
                 distractions are kept outside and productivity stays inside.
