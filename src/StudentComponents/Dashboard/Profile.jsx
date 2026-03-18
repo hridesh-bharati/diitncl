@@ -3,27 +3,28 @@ import React, { useEffect, useState, useMemo } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
+// Simplified Info Item (Copy Feature Removed)
 const InfoItem = ({ icon, label, value }) => (
   <div className="d-flex align-items-center p-3 mb-2 bg-white rounded-4 border-0 shadow-sm border-start border-primary border-4">
-    <div className="icon-box bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '45px', height: '45px' }}>
+    <div className="icon-box bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '45px', height: '45px' }}>
       <i className={`bi ${icon} text-primary fs-5`}></i>
     </div>
     <div className="overflow-hidden">
-      <p className="text-muted mb-0 small text-uppercase fw-bold ls-1" style={{ fontSize: '0.65rem' }}>{label}</p>
+      <p className="text-muted mb-0 fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>{label.toUpperCase()}</p>
       <p className="mb-0 fw-semibold text-dark text-truncate">{value || "N/A"}</p>
     </div>
   </div>
 );
 
-const QuickStat = ({ label, value, icon, gradient }) => (
+const QuickStat = ({ label, value, icon, color }) => (
   <div className="col-4">
-    <div className="p-3 rounded-4 text-center shadow-sm h-100 border-0" style={{ background: '#f8f9fa' }}>
-      <div className="mx-auto mb-2 rounded-circle d-flex align-items-center justify-content-center"
-        style={{ width: '40px', height: '40px', background: gradient, color: 'white' }}>
+    <div className={`p-3 rounded-4 text-center shadow-sm h-100 bg-white border-bottom border-3 border-${color}`}>
+      <div className={`mx-auto mb-2 rounded-circle d-flex align-items-center justify-content-center bg-${color} text-white shadow-sm`}
+        style={{ width: '40px', height: '40px' }}>
         <i className={`bi ${icon} fs-5`}></i>
       </div>
-      <h6 className="fw-bold mb-0" style={{ fontSize: '0.9rem' }}>{value || "0"}</h6>
-      <small className="text-muted" style={{ fontSize: '0.7rem' }}>{label}</small>
+      <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: '0.9rem' }}>{value || "0"}</h6>
+      <small className="text-muted fw-medium" style={{ fontSize: '0.65rem' }}>{label}</small>
     </div>
   </div>
 );
@@ -31,6 +32,7 @@ const QuickStat = ({ label, value, icon, gradient }) => (
 export default function Profile() {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -54,37 +56,39 @@ export default function Profile() {
     { icon: "bi-fingerprint", label: "Aadhar Card", value: student?.aadharNo },
   ], [student]);
 
-  if (loading) return <div className="d-flex justify-content-center align-items-center vh-100"><div className="spinner-border text-primary" /></div>;
-  if (!student) return <div className="container mt-5 alert alert-danger text-center rounded-4">डाटा उपलब्ध नहीं है।</div>;
+  if (loading) return <div className="d-flex justify-content-center align-items-center vh-100 bg-light"><div className="spinner-border text-primary" /></div>;
+  if (!student) return <div className="container mt-5 alert alert-danger text-center rounded-4 shadow-sm">डाटा उपलब्ध नहीं है।</div>;
+
+  const profileImg = student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}&background=0d6efd&color=fff`;
 
   return (
-    <div className="pb-5 mb-4 mb-lg-0" style={{ background: '#f4f7f6', minHeight: '100vh' }}>
-      <div className="position-relative mb-5" style={{ height: '220px', background: 'linear-gradient(135deg, #013788 0%, #0a58ca 100%)', borderRadius: '0 0 40px 40px' }}>
-        <div className="container pt-4 text-white text-center"><h4 className="fw-bolder">Student Profile</h4></div>
-        <div className="position-absolute start-50 translate-middle-x" style={{ top: '50%' }}>
-          <div className="bg-white p-2 rounded-circle shadow-lg">
-            <img src={student.photoUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"} alt="Profile" className="rounded-circle shadow-sm" style={{ width: 130, height: 130, objectFit: "cover", border: '4px solid white' }} />
+    <div className="pb-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <div className="position-relative mb-5 shadow-sm" style={{ height: '110px', background: 'linear-gradient(135deg, #013788 0%, #1e40af 100%)', borderRadius: '0 0 35px 35px' }}>
+      <h5 className="fw-bold text-white  text-center pt-3 small opacity-75">MY  DRISHTEE  PROFILE</h5>
+        <div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-55px' }}>
+          <div className="rounded-circle p-1 bg-white shadow-lg" style={{ cursor: 'pointer' }} onClick={() => setShowModal(true)}>
+            <img src={profileImg} alt="Profile" className="rounded-circle" style={{ width: 110, height: 110, objectFit: "cover", border: '3px solid #f8fafc' }} />
           </div>
         </div>
       </div>
 
-      <div className="container mt-5 pt-4 text-center">
-        <h3 className="fw-bold text-dark">{student.name}</h3>
-        <p className="text-muted mb-3"><i className="bi bi-envelope me-2"></i>{student.email}</p>
+      <div className="container mt-5 pt-3 text-center">
+        <h3 className="fw-bolder text-dark mt-2 mb-1">{student.name} <i className="bi bi-patch-check-fill text-primary small"></i></h3>
+        <p className="text-muted mb-3 small fw-medium">{student.email}</p>
 
         <div className="d-flex justify-content-center gap-2 mb-4">
-          <span className="badge rounded-pill px-3 py-2 bg-primary-subtle text-primary border border-primary-subtle uppercase small">{student.course}</span>
-          <span className="badge rounded-pill px-3 py-2 bg-dark text-white uppercase small">{student.regNo}</span>
+          <span className="badge rounded-pill px-3 py-2 bg-white text-primary shadow-sm border border-primary-subtle small">{student.course}</span>
+          <span className="badge rounded-pill px-3 py-2 bg-dark text-white shadow-sm small">{student.regNo}</span>
         </div>
 
         <div className="row g-3 mb-4 px-2">
-          <QuickStat label="Percentage" value={`${student.percentage}%`} icon="bi-lightning-charge" gradient="linear-gradient(45deg, #28a745, #85e09b)" />
-          <QuickStat label="Joined" value={student.admissionDate} icon="bi-calendar-check" gradient="linear-gradient(45deg, #0d6efd, #6ea8fe)" />
-          <QuickStat label="Status" value="Active" icon="bi-shield-check" gradient="linear-gradient(45deg, #ffc107, #ffe082)" />
+          <QuickStat label="Academic" value={`${student.percentage}%`} icon="bi-graph-up-arrow" color="success" />
+          <QuickStat label="Joined" value={student.admissionDate?.split('-')[0] || '2026'} icon="bi-calendar-check" color="primary" />
+          <QuickStat label="Status" value="Active" icon="bi-shield-check" color="warning" />
         </div>
 
         <div className="text-start px-2 mt-4">
-          <h6 className="fw-bold text-secondary mb-3 ps-1">Personal Details</h6>
+          <h6 className="fw-bold text-dark mb-3 ps-1 text-uppercase opacity-75" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>Personal Details</h6>
           <div className="row g-2">
             {personalData.map((item, idx) => (
               <div key={idx} className={item.label === "Aadhar Card" ? "col-12" : "col-md-6"}>
@@ -93,18 +97,27 @@ export default function Profile() {
             ))}
           </div>
 
-          <h6 className="fw-bold text-secondary mb-3 ps-1 mt-4">Address & Location</h6>
-          <div className="bg-white p-3 rounded-4 shadow-sm mb-3">
+          <h6 className="fw-bold text-dark mb-3 ps-1 mt-4 text-uppercase opacity-75" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>Address & Location</h6>
+          <div className="bg-white p-3 rounded-4 shadow-sm mb-5 border-0 border-start border-danger border-4">
             <div className="d-flex align-items-start">
               <i className="bi bi-geo-alt-fill text-danger fs-4 me-3"></i>
               <div>
-                <p className="mb-1 fw-bold">{student.address}</p>
+                <p className="mb-1 fw-bold text-dark">{student.address}</p>
                 <p className="text-muted mb-0 small">{student.village}, {student.city}, {student.state} - {student.pincode}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" 
+          style={{ zIndex: 9999, background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(10px)' }}
+          onClick={() => setShowModal(false)}>
+          <img src={profileImg} alt="Profile Full View" className="rounded-circle border border-4 border-white shadow-lg"
+            style={{ width: '300px', height: '300px', objectFit: 'cover' }} />
+        </div>
+      )}
     </div>
   );
 }
