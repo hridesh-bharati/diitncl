@@ -33,12 +33,10 @@ export default function AdmissionProvider({ children }) {
     };
   }, []);
 
-  // 🔹 Naya Update Function (Jo tum missing tha)
   const updateAdmission = async (id, updatedData) => {
     try {
       const docRef = doc(db, "admissions", id);
       await updateDoc(docRef, updatedData);
-      // Toast yahan se handle karne ki zaroorat nahi, Card mein laga hua hai
     } catch (err) {
       console.error("Update Error:", err);
       toast.error("Database update failed");
@@ -46,7 +44,6 @@ export default function AdmissionProvider({ children }) {
     }
   };
 
-  // 🔹 Naya Delete Function (Jo missing tha)
   const deleteAdmission = async (id) => {
     if (!window.confirm("Are you sure you want to delete this student?")) return;
     try {
@@ -57,7 +54,6 @@ export default function AdmissionProvider({ children }) {
     }
   };
 
-  // 🔹 In functions ko 'value' mein add karna zaroori hai
   const value = useMemo(() => ({ 
     admissions, 
     loading, 

@@ -114,7 +114,6 @@ export default function AdmissionForm() {
             setForm(prev => ({ ...prev, address: fullAddr }));
         }
     };
-    const applicationId = "DCC-" + Math.floor(100000 + Math.random() * 900000);
 
 
     const handleSubmit = async (e) => {
@@ -126,11 +125,11 @@ export default function AdmissionForm() {
         if (!isDeclared) return toast.error("Please accept the Declaration");
 
         setLoading(true);
+        const applicationId = "DCC-" + Math.floor(100000 + Math.random() * 900000);
 
         try {
             const email = form.email.trim().toLowerCase();
 
-            // ✅ Direct doc check (BEST METHOD)
             const docRef = doc(db, "admissions", email);
             const existing = await getDoc(docRef);
 
