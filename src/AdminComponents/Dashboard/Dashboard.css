@@ -7,7 +7,6 @@
   background-color: var(--bg-sky);
   min-height: 100vh;
   padding: 15px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* STAT CARDS - Smooth Gradients & Hover */
@@ -65,12 +64,6 @@
   border: 1px solid rgba(255,255,255,0.8);
 }
 
-.avatar-circle {
-  border-radius: 12px; /* Square-ish curves like iOS */
-  background: #f1f5f9;
-  border: 2px solid white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
 
 /* Enquiry Cards */
 .enquiry-card {
