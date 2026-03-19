@@ -6,27 +6,49 @@ const PUSH_API_URL = "/api/send-push"; // 🔥 Push API Endpoint
 /**
  * 📲 Generic Push Notification Function
  */
+// emailService.js Update
 export const sendPushNotification = async (student, title, body, url = "/student/dashboard") => {
-  if (!student?.pushSubscription) return false;
+  if (!student?.fcmToken) return false; // Ab subscription ki jagah fcmToken use karein
 
   try {
-    const response = await fetch(PUSH_API_URL, {
+    const response = await fetch("/api/send-push", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        subscription: JSON.parse(student.pushSubscription),
+        token: student.fcmToken, // String pass karni hai, JSON.parse ki ab zaroorat nahi
         title,
         body,
         url: `https://www.drishteeindia.com${url}`
       }),
     });
-    const data = await response.json().catch(() => ({ success: false }));
+    const data = await response.json();
     return data.success;
   } catch (err) {
-    console.error("Push Notification Error:", err);
+    console.error("FCM Fetch Error:", err);
     return false;
   }
 };
+// export const sendPushNotification = async (student, title, body, url = "/student/dashboard") => {
+//   if (!student?.pushSubscription) return false;
+
+//   try {
+//     const response = await fetch(PUSH_API_URL, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         subscription: JSON.parse(student.pushSubscription),
+//         title,
+//         body,
+//         url: `https://www.drishteeindia.com${url}`
+//       }),
+//     });
+//     const data = await response.json().catch(() => ({ success: false }));
+//     return data.success;
+//   } catch (err) {
+//     console.error("Push Notification Error:", err);
+//     return false;
+//   }
+// };
 
 /**
  * 📧 Generic Email Notification Function

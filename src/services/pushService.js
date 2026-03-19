@@ -1,40 +1,34 @@
-// src/services/pushService.js
+import { getMessaging, getToken } from "firebase/messaging";
+import { app } from "../firebaseConfig"; // Aapka firebase init file
 
-// const PUBLIC_VAPID_KEY = "BOE6KlU4S7LB_0byc-bROXewESsYYefkkL97mLAqz_wuvJvIsJiIDmCzp8SXZCwoq2VK7Tg_PbMZ-KPuQQmBrKo";
-const PUBLIC_VAPID_KEY = import.meta.env.VITE_PUBLIC_VAPID_KEY;
-/**
- * Browser se Push Notification ki permission maangta hai 
- * aur ek unique Subscription object return karta hai.
- */
+const messaging = getMessaging(app);
+
 export const subscribeUser = async () => {
-  // 1. Check karein ki browser service workers support karta hai ya nahi
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    console.warn("Push notifications are not supported in this browser.");
-    return null;
-  }
-
   try {
-    // 2. Wait karein jab tak Service Worker ready na ho jaye
-    const registration = await navigator.serviceWorker.ready;
-
-    // 3. Pehle se koi subscription hai toh check karein
-    let subscription = await registration.pushManager.getSubscription();
-
-    // 4. Agar subscription nahi hai, toh naya banayein
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
-      });
+    // Permission mangna
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      console.error("Permission denied for notifications");
+      return null;
     }
 
-    return subscription; 
+    // FCM Token generate karna
+    const currentToken = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_PUBLIC_VAPID_KEY
+    });
+
+    if (currentToken) {
+      console.log("FCM Token:", currentToken);
+      return currentToken; // Ab ye ek simple string return karega
+    } else {
+      console.warn("No registration token available.");
+      return null;
+    }
   } catch (err) {
-    console.error("Failed to subscribe the user: ", err);
+    console.error("FCM Subscription Error:", err);
     return null;
   }
 };
-
 /**
  * Helper Function: VAPID key string ko Uint8Array mein convert karne ke liye
  * (Ye browser requirements ke liye zaroori hai)
