@@ -38,6 +38,9 @@ const Nielet = lazy(() => import("./Components/HomePage/pages/Course/Nielet"));
 const Banking = lazy(() => import("./Components/HomePage/pages/Course/Banking"));
 const Certificate = lazy(() => import("./Components/HomePage/pages/Course/Ceritificate"));
 
+//  Photo editor
+import PhotoEdit from "./Components/HomePage/pages/PhotoEditor/PhotoEdit";
+
 /* Legal */
 const Discription = lazy(() => import("./Components/HomePage/pages/About/Discription"));
 const FAQ = lazy(() => import("./Components/HomePage/pages/About/FAQ"));
@@ -103,15 +106,15 @@ export default function App() {
   }, []);
 
   // App.jsx ke andar pehle useEffect ke baad ye add karein
-useEffect(() => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW Registered!', reg))
-        .catch(err => console.log('SW Registration failed!', err));
-    });
-  }
-}, []);
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('SW Registered!', reg))
+          .catch(err => console.log('SW Registration failed!', err));
+      });
+    }
+  }, []);
 
 
   /* 📊 Visitor Tracking */
@@ -161,6 +164,8 @@ useEffect(() => {
           <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
           <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
           <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
+          {/* PhotoEditor  */}
+          <Route path="/photo-editor" element={<HelmetManager><PhotoEdit /></HelmetManager>} />
 
           {/* Legal */}
           <Route path="/terms" element={<HelmetManager><Term /></HelmetManager>} />
