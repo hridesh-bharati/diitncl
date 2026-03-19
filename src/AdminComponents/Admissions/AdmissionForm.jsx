@@ -78,6 +78,8 @@ export default function AdmissionForm() {
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
     const [verifying, setVerifying] = useState(false);
+    const [otpExpiry, setOtpExpiry] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(0)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -140,25 +142,37 @@ export default function AdmissionForm() {
         }
         setVerifying(true);
         const newOtp = Math.floor(100000 + Math.random() * 900000);
-        
+
+        // 🔥 2 Minutes ka expiry set kar rahe hain
+        const expiryTime = Date.now() + 2 * 60 * 1000;
+
         const success = await sendEmailNotification(
-            form.email, 
-            "Verify your Email - DIIT Admission", 
+            form.email,
+            "Verify your Email - DIIT Admission",
             otpTemplate(form.name, newOtp)
         );
 
         if (success) {
             setGeneratedOtp(newOtp);
+            setOtpExpiry(expiryTime); // Timestamp save kiya
             setOtpSent(true);
-            toast.success("Verification code sent to " + form.email);
+            setTimeLeft(120);
+            toast.success("Verification code sent! Valid for 2 mins.");
         } else {
-            toast.error("Failed to send OTP. Try again.");
+            toast.error("Failed to send OTP.");
         }
         setVerifying(false);
     };
 
     // ✅ OTP VERIFY LOGIC
     const handleVerifyOtp = () => {
+        if (Date.now() > otpExpiry) {
+            toast.error("OTP Expired! Please resend.");
+            setOtpSent(false);
+            setGeneratedOtp(null);
+            return;
+        }
+
         if (otpInput === String(generatedOtp)) {
             setIsEmailVerified(true);
             toast.success("Email Verified! ✅");
@@ -166,6 +180,19 @@ export default function AdmissionForm() {
             toast.error("Invalid OTP!");
         }
     };
+
+    useEffect(() => {
+        let timer;
+        if (timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft((prev) => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0 && otpSent && !isEmailVerified) {
+            setGeneratedOtp(null); // Expire OTP
+            toast.error("OTP Expired! Please resend.");
+        }
+        return () => clearInterval(timer);
+    }, [timeLeft, otpSent, isEmailVerified]);
 
     const handleAutoAddress = (e) => {
         if (e.target.checked) {
@@ -619,8 +646,8 @@ export default function AdmissionForm() {
                                             required
                                         />
                                         {!isEmailVerified && (
-                                            <button 
-                                                type="button" 
+                                            <button
+                                                type="button"
                                                 className="btn btn-dark btn-sm px-3"
                                                 onClick={handleSendOtp}
                                                 disabled={verifying}
@@ -629,23 +656,35 @@ export default function AdmissionForm() {
                                             </button>
                                         )}
                                     </div>
+
+                                    {/* ⏱️ Timer aur OTP Input Group */}
                                     {otpSent && !isEmailVerified && (
-                                        <div className="mt-2 p-2 border rounded bg-light d-flex gap-2 align-items-center">
-                                            <input
-                                                type="text"
-                                                className="form-control form-control-sm text-center fw-bold"
-                                                placeholder="6-Digit OTP"
-                                                maxLength="6"
-                                                style={{ letterSpacing: '2px' }}
-                                                value={otpInput}
-                                                onChange={(e) => setOtpInput(e.target.value)}
-                                            />
-                                            <button type="button" className="btn btn-success btn-sm px-3" onClick={handleVerifyOtp}>
-                                                VERIFY
-                                            </button>
+                                        <div className="mt-2 p-2 border rounded bg-light shadow-sm">
+                                            <div className="d-flex gap-2 align-items-center mb-1">
+                                                <input
+                                                    type="text"
+                                                    className="form-control form-control-sm text-center fw-bold"
+                                                    placeholder="6-Digit OTP"
+                                                    maxLength="6"
+                                                    value={otpInput}
+                                                    onChange={(e) => setOtpInput(e.target.value)}
+                                                />
+                                                <button type="button" className="btn btn-success btn-sm px-3" onClick={handleVerifyOtp}>
+                                                    VERIFY
+                                                </button>
+                                            </div>
+                                            <div className="text-center">
+                                                <small className={`fw-bold ${timeLeft < 20 ? 'text-danger' : 'text-primary'}`}>
+                                                    {timeLeft > 0 ? (
+                                                        <>OTP Expires in: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</>
+                                                    ) : (
+                                                        "OTP Expired! Please click Resend."
+                                                    )}
+                                                </small>
+                                            </div>
                                         </div>
                                     )}
-                                    {isEmailVerified && <small className="text-success fw-bold">Verified ✅</small>}
+                                    {isEmailVerified && <small className="text-success fw-bold ms-1">Email Verified ✅</small>}
                                 </div>
                             </div>
 
