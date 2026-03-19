@@ -401,3 +401,27 @@ export const certificateTemplate = (student, percent, issDate) => `
     </div>
   </div>
 `;
+
+// ======================================================
+// EMAIL VERIFICATION (OTP) TEMPLATE
+// Sent to STUDENT before admission submission
+// ======================================================
+export const otpTemplate = (name, otp) => `
+  <div style="font-family: 'Segoe UI', sans-serif; max-width: 500px; margin: auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <div style="background: #001529; color: #ffca28; padding: 20px; text-align: center;">
+      <h2 style="margin: 0; font-size: 20px;">Email Verification</h2>
+      <p style="margin: 5px 0 0; color: #fff; font-size: 13px;">Drishtee Computer Centre</p>
+    </div>
+    <div style="padding: 30px; text-align: center; background: #fff;">
+      <p style="color: #444; font-size: 16px;">Hello <b>${name}</b>,</p>
+      <p style="color: #666; font-size: 14px;">Your One-Time Password (OTP) for admission is:</p>
+      <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; display: inline-block; margin: 15px 0;">
+        <span style="font-size: 32px; font-weight: 800; letter-spacing: 5px; color: #001529;">${otp}</span>
+      </div>
+      <p style="color: #888; font-size: 12px; margin-top: 20px;">This OTP is valid for 10 minutes. Do not share it with anyone.</p>
+    </div>
+    <div style="background: #f9f9f9; padding: 15px; text-align: center; color: #bbb; font-size: 11px;">
+      &copy; 2026 Drishtee Computer Centre | Online Admission Portal
+    </div>
+  </div>
+`;
