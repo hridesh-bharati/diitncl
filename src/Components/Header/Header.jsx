@@ -76,9 +76,9 @@ export default function Header() {
       <header className="google-header-advanced sticky-top bg-white">
         <div className="header-container container-fluid px-3 px-lg-4">
           <div className="header-left d-flex align-items-center w-auto">
-                        <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
-            <img src="/images/icon/logo.png" alt="Drishtee" height="32" loading="eager" />
-          </Link>
+            <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
+              <img src="/images/icon/logo.png" alt="Drishtee" height="32" loading="eager" />
+            </Link>
 
             <nav className="nav-links d-none d-lg-flex mx-auto">
               <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
@@ -129,7 +129,7 @@ export default function Header() {
             </nav>
           </div>
 
-          <div className="searchBox w-100" style={{ maxWidth: '600px' }}>
+          <div className="searchBox w-100" style={{ maxWidth: '300px' }}>
             {/* maxWidth isliye taaki desktop pe bahut zyada lamba na ho jaye, mobile pe ye 100% rahega */}
             <GlobleSearchBox routes={RouteLinks} />
           </div>
