@@ -107,7 +107,6 @@ export default function Header() {
 
               <NavLink to="/branch/thoothibari" className={({ isActive }) => isActive ? "active" : ""}>Branch</NavLink>
               <NavLink to="/library" className={({ isActive }) => isActive ? "active" : ""}>Library</NavLink>
-              <NavLink to="/photo-editor" className={({ isActive }) => isActive ? "active" : ""}>Edit</NavLink>
 
               <div className="nav-item-dropdown position-relative mt-2">
                 <span className={`nav-static-link ${location.pathname.includes('admission') ? 'active' : ''}`}>
@@ -153,7 +152,7 @@ export default function Header() {
                       <i className="bi bi-envelope-fill text-danger"></i><span>Contact</span>
                     </Link>
                     <Link to="/photo-editor" className="app-item" onClick={() => setShowApps(false)}>
-                      <i className="bi bi-envelope-fill text-danger"></i><span>Edit</span>
+                      <i className="bi bi-camera-fill text-info"></i><span>Edit</span>
                     </Link>
 
                   </div>

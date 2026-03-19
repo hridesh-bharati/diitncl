@@ -1,5 +1,5 @@
 // diit\src\AdminComponents\Admissions\AdmissionForm.jsx
-
+import { useEffect } from "react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -16,6 +16,7 @@ import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification } from "../../services/emailService";
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const BRANCHES = [
     { id: "DIIT124", name: "DIIT124 - Main Branch" },
@@ -77,6 +78,9 @@ export default function AdmissionForm() {
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
+    // 1. useEffect ko uploadImg function ke NICHE move karein
+    // ya uploadImg ko useEffect se pehle define karein.
+
     const uploadImg = async (file) => {
         if (!file) return;
         if (file.size > 50 * 1024) {
@@ -94,6 +98,7 @@ export default function AdmissionForm() {
                 body: fd
             });
             const data = await res.json();
+            // ✅ State update
             setForm(p => ({ ...p, photoUrl: data.secure_url }));
             toast.success("Photo Uploaded Successfully");
         } catch (e) {
@@ -102,6 +107,31 @@ export default function AdmissionForm() {
             setImgLoading(false);
         }
     };
+
+    // 2. Ab useEffect likhein (uploadImg ke baad)
+    useEffect(() => {
+        const savedPhoto = localStorage.getItem("editedPhoto");
+
+        if (savedPhoto) {
+            const processEditedPhoto = async () => {
+                try {
+                    const res = await fetch(savedPhoto);
+                    const blob = await res.blob();
+
+                    // Check if blob is valid
+                    if (blob.size > 0) {
+                        const file = new File([blob], "edited_photo.jpg", { type: "image/jpeg" });
+                        await uploadImg(file);
+                        localStorage.removeItem("editedPhoto");
+                    }
+                } catch (err) {
+                    console.error("Error processing edited photo:", err);
+                }
+            };
+
+            processEditedPhoto();
+        }
+    }, []);
 
     const handleAutoAddress = (e) => {
         if (e.target.checked) {
@@ -119,8 +149,15 @@ export default function AdmissionForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (form.aadharNo && form.aadharNo.length !== 12) return toast.error("Aadhar must be 12 digits");
+        if (form.aadharNo?.trim()) {
+            if (!/^\d{12}$/.test(form.aadharNo)) {
+                return toast.error("Aadhar must be exactly 12 digits");
+            }
+        }
+
+
         if (form.mobile && form.mobile.length !== 10) return toast.error("Mobile number must be 10 digits");
+        
         if (!form.photoUrl) return toast.error("Please upload Photo");
         if (!isDeclared) return toast.error("Please accept the Declaration");
 
@@ -152,7 +189,9 @@ export default function AdmissionForm() {
                 createdAt: serverTimestamp(),
                 appliedDate: new Date().toISOString()
             };
-
+            if (!finalData.aadharNo) {
+                delete finalData.aadharNo;
+            }
             // ✅ Save data
             await setDoc(docRef, finalData);
 
@@ -403,7 +442,8 @@ export default function AdmissionForm() {
                                             />
                                         </label>
                                     </div>
-                                    <span className="fw-bold text-muted small">STUDENT PHOTO (MAX 50KB)</span>
+                                    <span className="fw-bold text-muted small">STUDENT PHOTO (MAX 50KB)</span> <br />
+                                    <Link to="/photo-editor?mode=admission">Edit</Link>
                                 </div>
                             </div>
 
@@ -470,7 +510,10 @@ export default function AdmissionForm() {
                                     </select>
                                 </div>
                                 <div className="col-md-4">
-                                    <label className="gov-label">Aadhar Number</label>
+                                    <label className="gov-label">
+                                        Aadhar Number <span className="text-muted">(Optional)</span>
+                                    </label>
+
                                     <input
                                         type="text"
                                         className="form-control gov-input"
@@ -478,7 +521,7 @@ export default function AdmissionForm() {
                                         value={form.aadharNo}
                                         onChange={handleChange}
                                         maxLength="12"
-                                        placeholder="12 digit Aadhar"
+                                        placeholder="Enter 12 digit Aadhar (optional)"
                                     />
                                 </div>
                                 <div className="col-md-6">
