@@ -42,25 +42,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 5️⃣ Auto bump version
+            # 5️⃣ Auto bump version
       - name: Bump version
         run: |
-          npm version patch -m "ci: bump version to %s [skip ci]"
+          # Sirf version update karein, commit baad mein ek saath karenge
+          npm version patch --no-git-tag-version 
 
-      # 6️⃣ Build production
+      # 6️⃣ Build production (Ab ye naya version pick karega)
       - name: Build Vite PWA
         run: npm run build
 
      # 7️⃣ Commit & push version bump
       - name: Push changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Remote URL ko token ke saath set karein taaki push permission mile
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git add package.json package-lock.json
-          git commit -m "ci: version bump [skip ci]" || echo "No changes to commit"
-          git push origin main --follow-tags
+          git commit -m "ci: version bump to $(node -p "require('./package.json').version") [skip ci]" || echo "No changes"
+          git push origin main
+
 
       # 8️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
