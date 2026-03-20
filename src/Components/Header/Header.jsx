@@ -183,6 +183,7 @@ export default function Header() {
                           <i className="bi bi-box-arrow-right text-danger"></i> Sign out
                         </button>
                       </div>
+
                     </div>
                   )}
                 </div>
@@ -399,6 +400,8 @@ export default function Header() {
               <button onClick={openLogin} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow">Login to Portal</button>
             )}
           </div>
+          <div className="w-100 text-center p-3"><span>Version: {__APP_VERSION__}</span></div>
+
         </div>
       </div>
 

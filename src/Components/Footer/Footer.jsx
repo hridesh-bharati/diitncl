@@ -2,10 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const footerData = {
-  brand: { 
-    name: "DIIT Center", 
-    logo: "images/icon/icon-192.png", 
-    desc: "Crafting digital careers since 2007. Building professionals for global tech." 
+  brand: {
+    name: "DIIT Center",
+    logo: "images/icon/icon-192.png",
+    desc: "Crafting digital careers since 2007. Building professionals for global tech."
   },
   socials: [
     { icon: "youtube", bg: "bg-danger", link: "#" },
@@ -91,12 +91,14 @@ export default function Footer() {
 
         <div className="mt-5 pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center text-center gap-3">
           <p className="small text-muted mb-0">© 2026 <b>DIIT Center</b>. ISO Certified 9001:2015</p>
+
           <div className="small bg-white shadow-sm px-4 py-2 rounded-pill text-muted">
             Developed by <span className="text-primary fw-bold">Hridesh Bharati</span>
           </div>
+
         </div>
       </div>
-
+      <div className="w-100 text-center"><span>Version: {__APP_VERSION__}</span></div>
       <div className="w-100 overflow-hidden" style={{ height: 80, marginTop: -1 }}>
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-100 h-100">
           <path fill="#00378a" d="M0,96L48,122.7C96,149,192,203,288,218.7C384,235,480,213,576,192C672,171,768,149,864,138.7C960,128,1056,128,1152,149.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L0,320Z" />

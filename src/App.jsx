@@ -103,7 +103,7 @@ export default function App() {
       window.removeEventListener("click", initPush);
       window.removeEventListener("scroll", initPush);
     };
-  }, [user]); // Jab user change ho tab listener active ho
+  }, [user]);  
 
   // --------------------------------------------------------
   // 🔥 FIXED: Foreground Listener
