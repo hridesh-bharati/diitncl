@@ -286,7 +286,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
             <div className="bg-light p-3 rounded-4 mb-3 border border-primary border-opacity-25 animate__animated animate__fadeIn">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="fw-bold mb-0 text-primary small">Finalize / Issue Certificate</h6>
-                <button className="btn btn-success btn-sm rounded-4 fw-bold px-3 shadow-none" onClick={handleMarkDone} disabled={loading || !percent || !admissionDate || !issDate}>Mark Done</button>
+                <button className="btn btn-success btn-sm rounded-4 fw-bold px-3 shadow-none" onClick={handleMarkDone} disabled={loading || !percent || !admissionDate || !issDate}>Done</button>
               </div>
               <label className="small text-muted mb-1 fw-bold">Percentage (%)</label>
               <input type="number" className="form-control form-control-sm mb-2 rounded-0 shadow-none" value={percent} onChange={(e) => setPercent(e.target.value)} />

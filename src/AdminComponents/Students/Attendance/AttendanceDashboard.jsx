@@ -1,353 +1,255 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../../firebase/firebase";
 
 export default function AttendanceDashboard() {
-  
-  // Mock data for visualization
-  const stats = {
-    totalStudents: 156,
-    presentToday: 124,
-    averageAttendance: 78.5,
-    pendingMarks: 3
-  };
+  const [selectedBranch, setSelectedBranch] = useState("DIIT124");
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    presentToday: 0,
+    averageAttendance: 0,
+    pendingMarks: 0,
+  });
+
+  const [weeklyData, setWeeklyData] = useState([]);
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+
+  useEffect(() => {
+    // 1. Total Students Sync (Filtered by Branch)
+    const unsubStudents = onSnapshot(collection(db, "students"), (snap) => {
+      const branchStudents = snap.docs.filter(doc => {
+        const d = doc.data();
+        return (d.branch === selectedBranch || d.centerCode === selectedBranch) && 
+               d.status !== "canceled" && d.status !== "pending";
+      });
+      setStats((prev) => ({ ...prev, totalStudents: branchStudents.length }));
+    });
+
+    // 2. Today's Attendance Sync (Matches AttendanceMark structure)
+    const todayQuery = query(
+      collection(db, "attendance"), 
+      where("date", "==", today),
+      where("branch", "==", selectedBranch)
+    );
+
+    const unsubAttendance = onSnapshot(todayQuery, (snap) => {
+      let present = 0;
+      let markedCount = 0;
+
+      snap.forEach((doc) => {
+        const data = doc.data();
+        if (data.status === "Open" && data.records) {
+          data.records.forEach(r => {
+            markedCount++;
+            if (r.status === "Present") present++;
+          });
+        }
+      });
+
+      setStats((prev) => ({
+        ...prev,
+        presentToday: present,
+        pendingMarks: Math.max(0, prev.totalStudents - markedCount),
+      }));
+    });
+
+    // 3. Weekly Data Sync (Last 7 Days)
+    const unsubWeekly = onSnapshot(
+      query(collection(db, "attendance"), where("branch", "==", selectedBranch)), 
+      (snap) => {
+        const last7 = {};
+        const now = new Date();
+
+        for (let i = 0; i < 7; i++) {
+          const d = new Date();
+          d.setDate(now.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          last7[key] = { total: 0, present: 0 };
+        }
+
+        snap.forEach((doc) => {
+          const data = doc.data();
+          if (last7[data.date] && data.records) {
+            data.records.forEach(r => {
+              last7[data.date].total++;
+              if (r.status === "Present") last7[data.date].present++;
+            });
+          }
+        });
+
+        const chartData = Object.keys(last7).reverse().map((date) => {
+          const { total, present } = last7[date];
+          return {
+            day: new Date(date).toLocaleDateString("en-US", { weekday: "short" }),
+            percentage: total ? Math.round((present / total) * 100) : 0,
+          };
+        });
+
+        setWeeklyData(chartData);
+        
+        const validDays = chartData.filter(d => d.percentage > 0);
+        const avg = validDays.length 
+          ? (validDays.reduce((sum, d) => sum + d.percentage, 0) / validDays.length)
+          : 0;
+
+        setStats((prev) => ({ ...prev, averageAttendance: avg.toFixed(1) }));
+      }
+    );
+
+    return () => {
+      unsubStudents();
+      unsubAttendance();
+      unsubWeekly();
+    };
+  }, [selectedBranch, today]);
 
   const quickActions = [
     {
       to: "/admin/students/attendance/mark",
       title: "Mark Attendance",
-      description: "Record today's attendance",
       emoji: "📝",
       color: "#0d6efd",
       bgColor: "#e3f2fd",
-      stats: `${stats.presentToday}/${stats.totalStudents} Present`
+      val: `${stats.presentToday}/${stats.totalStudents}`,
     },
     {
       to: "/admin/students/attendance/summary",
-      title: "Summary Report",
-      description: "View attendance summary",
+      title: "Summary",
       emoji: "📊",
       color: "#198754",
       bgColor: "#e8f5e9",
-      stats: `${stats.averageAttendance}% Average`
+      val: `${stats.averageAttendance}%`,
     },
     {
       to: "/admin/students/attendance/analytics",
       title: "Analytics",
-      description: "Deep insights & trends",
       emoji: "📈",
       color: "#ffc107",
       bgColor: "#fff3e0",
-      stats: "Last 30 days"
-    }
-  ];
-
-  const recentActivity = [
-    { id: 1, action: "Marked attendance for Batch A", time: "10 min ago", status: "completed" },
-    { id: 2, action: "Generated monthly report", time: "2 hours ago", status: "completed" },
-    { id: 3, action: "Pending: Today's attendance", time: "Due in 2 hours", status: "pending" },
-  ];
-
-  // Weekly data for chart
-  const weeklyData = [
-    { day: "Mon", percentage: 70 },
-    { day: "Tue", percentage: 85 },
-    { day: "Wed", percentage: 65 },
-    { day: "Thu", percentage: 90 },
-    { day: "Fri", percentage: 75 },
-    { day: "Sat", percentage: 50 }
+      val: "Live",
+    },
   ];
 
   return (
-    <div className="container py-4" style={{ maxWidth: "1200px" }}>
+    <div className="container py-4" style={{ maxWidth: "1100px" }}>
       
-      {/* Header with Welcome */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      {/* HEADER & BRANCH SWITCHER */}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
-          <h3 className="fw-bold mb-1">📋 Attendance Dashboard</h3>
-          <p className="text-muted small mb-0">
-            ⏰ {new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </p>
+          <h4 className="fw-bold mb-1">📋 Drishtee Live Dashboard</h4>
+          <span className="badge bg-light text-dark border">{today}</span>
         </div>
-        
-        {/* Quick Stats Card */}
-        <div className="bg-white rounded-4 shadow-sm p-3">
-          <div className="d-flex align-items-center gap-3">
-            <div className="bg-primary bg-opacity-10 p-3 rounded-3">
-              👥
-            </div>
-            <div>
-              <span className="text-muted small">Total Students</span>
-              <h4 className="fw-bold mb-0">{stats.totalStudents}</h4>
-            </div>
-          </div>
+
+        <div className="btn-group bg-white p-1 rounded-pill shadow-sm border">
+          <button 
+            className={`btn btn-sm rounded-pill px-4 fw-bold ${selectedBranch === "DIIT124" ? "btn-primary" : "btn-light"}`}
+            onClick={() => setSelectedBranch("DIIT124")}
+          >Main</button>
+          <button 
+            className={`btn btn-sm rounded-pill px-4 fw-bold ${selectedBranch === "DIIT125" ? "btn-primary" : "btn-light"}`}
+            onClick={() => setSelectedBranch("DIIT125")}
+          >East</button>
         </div>
       </div>
 
-      {/* Main Action Cards - Enhanced Visualization */}
-      <div className="row g-4 mb-4">
-        {quickActions.map((action, index) => {
-          return (
-            <div key={index} className="col-md-4">
-              <Link 
-                to={action.to} 
-                className="text-decoration-none"
-                style={{ display: 'block' }}
-              >
-                <div 
-                  className="card border-0 rounded-4 overflow-hidden shadow-sm hover-lift"
-                  style={{ 
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {/* Animated Gradient Bar */}
-                  <div 
-                    className="w-100" 
-                    style={{ 
-                      height: '4px',
-                      background: `linear-gradient(90deg, ${action.color} 0%, ${action.color}80 100%)`
-                    }}
-                  />
-
-                  <div className="card-body p-4">
-                    <div className="d-flex align-items-center justify-content-between mb-3">
-                      <div 
-                        className="p-3 rounded-3"
-                        style={{ backgroundColor: action.bgColor, fontSize: '28px' }}
-                      >
-                        {action.emoji}
-                      </div>
-                      
-                      {/* Live Indicator */}
-                      <div className="d-flex align-items-center gap-1">
-                        <span 
-                          className="badge rounded-pill px-3 py-2"
-                          style={{ 
-                            backgroundColor: action.bgColor,
-                            color: action.color,
-                            fontSize: '12px'
-                          }}
-                        >
-                          {action.stats}
-                        </span>
-                      </div>
-                    </div>
-
-                    <h5 className="fw-bold mb-1">{action.title}</h5>
-                    <p className="text-muted small mb-3">{action.description}</p>
-
-                    {/* Progress Visualization */}
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div className="d-flex align-items-center gap-2">
-                        <span className="text-muted">📊</span>
-                        <span className="small text-muted">Click to proceed</span>
-                      </div>
-                      <span className="text-muted">→</span>
-                    </div>
+      {/* TOP STATS CARDS */}
+      <div className="row g-3 mb-4">
+        {quickActions.map((item, i) => (
+          <div key={i} className="col-md-4">
+            <Link to={item.to} className="text-decoration-none">
+              <div className="card border-0 shadow-sm p-4 rounded-4 hover-lift h-100">
+                <div className="d-flex justify-content-between align-items-start">
+                  <div className="p-3 rounded-3" style={{ background: item.bgColor, fontSize: "24px" }}>
+                    {item.emoji}
+                  </div>
+                  <div className="text-end">
+                    <h4 className="fw-bold mb-0" style={{ color: item.color }}>{item.val}</h4>
+                    <small className="text-muted">{item.title}</small>
                   </div>
                 </div>
-              </Link>
-            </div>
-          );
-        })}
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
 
-      {/* Additional Visualizations Row */}
       <div className="row g-4">
-        {/* Weekly Overview Card */}
+        {/* CHART SECTION */}
         <div className="col-md-8">
-          <div className="card border-0 rounded-4 shadow-sm">
-            <div className="card-body p-4">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h6 className="fw-bold mb-0">
-                  <span className="me-2">🏆</span>
-                  Weekly Overview
-                </h6>
-                <span className="badge bg-light text-dark px-3 py-2">This Week</span>
-              </div>
-
-              {/* Simple Bar Chart Visualization */}
-              <div className="d-flex align-items-end justify-content-between gap-2 mb-4">
-                {weeklyData.map((item, i) => {
-                  const height = item.percentage;
-                  return (
-                    <div key={item.day} className="text-center flex-grow-1">
-                      <div 
-                        className="rounded-3 mb-2 mx-auto position-relative"
-                        style={{ 
-                          width: '100%',
-                          height: `${height}px`,
-                          background: `linear-gradient(180deg, #0d6efd 0%, #0d6efd80 100%)`,
-                          opacity: 0.7 + (height/200),
-                          minHeight: '20px'
-                        }}
-                      >
-                        {/* Tooltip on hover */}
-                        <span 
-                          className="position-absolute top-0 start-50 translate-middle-x bg-dark text-white px-2 py-1 rounded small"
-                          style={{ 
-                            opacity: 0,
-                            transition: 'opacity 0.2s',
-                            pointerEvents: 'none',
-                            fontSize: '10px',
-                            whiteSpace: 'nowrap',
-                            top: '-25px'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
-                          onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
-                        >
-                          {item.percentage}%
-                        </span>
-                      </div>
-                      <span className="small text-muted">{item.day}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="d-flex justify-content-between">
-                <div>
-                  <span className="text-muted small">Average</span>
-                  <h6 className="fw-bold mb-0">78.5%</h6>
-                </div>
-                <div>
-                  <span className="text-muted small">Best Day</span>
-                  <h6 className="fw-bold mb-0 text-success">Thursday (90%)</h6>
-                </div>
-                <div>
-                  <span className="text-muted small">Total Classes</span>
-                  <h6 className="fw-bold mb-0">24</h6>
-                </div>
-              </div>
+          <div className="card border-0 shadow-sm p-4 rounded-4 h-100">
+            <div className="d-flex justify-content-between mb-4">
+              <h6 className="fw-bold m-0">📊 Weekly Trend ({selectedBranch === "DIIT124" ? "Main" : "East"})</h6>
+              <span className="text-success small">Real-time</span>
             </div>
-          </div>
-        </div>
-
-        {/* Recent Activity Card */}
-        <div className="col-md-4">
-          <div className="card border-0 rounded-4 shadow-sm">
-            <div className="card-body p-4">
-              <h6 className="fw-bold mb-4">📌 Recent Activity</h6>
-              
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="d-flex align-items-center gap-3 mb-3">
+            
+            <div className="d-flex align-items-end gap-3" style={{ height: "200px" }}>
+              {weeklyData.map((d, i) => (
+                <div key={i} className="text-center flex-grow-1">
                   <div 
-                    className="rounded-circle"
+                    className="bg-primary rounded-top position-relative"
                     style={{ 
-                      width: '8px', 
-                      height: '8px',
-                      backgroundColor: activity.status === 'completed' ? '#28a745' : '#ffc107'
+                      height: `${d.percentage}%`, 
+                      minHeight: "4px",
+                      transition: "height 0.6s ease",
+                      background: "linear-gradient(180deg, #0d6efd 0%, #0b5ed7 100%)"
                     }}
-                  />
-                  <div className="flex-grow-1">
-                    <p className="small mb-0 fw-medium">{activity.action}</p>
-                    <span className="text-muted small">{activity.time}</span>
+                  >
+                    {d.percentage > 0 && (
+                      <span className="position-absolute top-0 start-50 translate-middle-x pt-1 text-white fw-bold" style={{ fontSize: "10px" }}>
+                        {d.percentage}%
+                      </span>
+                    )}
                   </div>
-                  <span className="small">
-                    {activity.status === 'completed' ? '✅' : '⏳'}
-                  </span>
+                  <div className="mt-2 small fw-bold text-muted" style={{ fontSize: "11px" }}>{d.day}</div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
 
-              {/* Pending Indicator */}
-              {stats.pendingMarks > 0 && (
-                <div className="mt-4 p-3 bg-warning bg-opacity-10 rounded-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <span>⏰</span>
-                    <span className="small fw-medium">
-                      {stats.pendingMarks} attendance pending
-                    </span>
-                  </div>
-                  {/* Mini Progress Bar */}
-                  <div className="progress mt-2" style={{ height: '4px' }}>
-                    <div 
-                      className="progress-bar bg-warning" 
-                      style={{ width: '70%' }}
-                    />
-                  </div>
-                </div>
-              )}
+        {/* STATUS SECTION */}
+        <div className="col-md-4">
+          <div className="card border-0 shadow-sm p-4 rounded-4 bg-dark text-white h-100">
+            <h6 className="fw-bold mb-4">🔔 System Alerts</h6>
+            
+            <div className="mb-4">
+              <small className="text-secondary d-block mb-1">Unmarked Students</small>
+              <h3 className={stats.pendingMarks > 0 ? "text-warning fw-bold" : "text-success fw-bold"}>
+                {stats.pendingMarks}
+              </h3>
+              <p className="small text-secondary">
+                {stats.pendingMarks > 0 ? "Some batches are still pending." : "All students marked for today!"}
+              </p>
+            </div>
 
-              {/* Quick Stats */}
-              <div className="row g-2 mt-4">
-                <div className="col-6">
-                  <div className="bg-light rounded-3 p-2 text-center">
-                    <span className="d-block small text-muted">Today</span>
-                    <span className="fw-bold">124</span>
-                    <span className="text-success small ms-1">↑8%</span>
-                  </div>
-                </div>
-                <div className="col-6">
-                  <div className="bg-light rounded-3 p-2 text-center">
-                    <span className="d-block small text-muted">Weekly</span>
-                    <span className="fw-bold">78.5%</span>
-                    <span className="text-success small ms-1">↑2%</span>
-                  </div>
-                </div>
+            <div className="pt-3 border-top border-secondary">
+              <div className="d-flex justify-content-between small mb-2">
+                <span>Database Sync</span>
+                <span className="text-success">Active</span>
+              </div>
+              <div className="d-flex justify-content-between small">
+                <span>Branch ID</span>
+                <span className="text-info">{selectedBranch}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Access Footer */}
-      <div className="row my-5 pb-5" >
-        <div className="col-12">
-          <div className="bg-white rounded-4 shadow-sm p-3">
-            <div className="d-flex justify-content-around">
-              <Link to="/admin/students/attendance/mark" className="text-decoration-none text-center">
-                <div className="bg-light rounded-circle p-3 mx-auto mb-2" style={{ width: '50px', height: '50px' }}>
-                  📝
-                </div>
-                <small className="text-dark">Mark</small>
-              </Link>
-              <Link to="/admin/students/attendance/summary" className="text-decoration-none text-center">
-                <div className="bg-light rounded-circle p-3 mx-auto mb-2" style={{ width: '50px', height: '50px' }}>
-                  📊
-                </div>
-                <small className="text-dark">Summary</small>
-              </Link>
-              <Link to="/admin/students/attendance/analytics" className="text-decoration-none text-center">
-                <div className="bg-light rounded-circle p-3 mx-auto mb-2" style={{ width: '50px', height: '50px' }}>
-                  📈
-                </div>
-                <small className="text-dark">Analytics</small>
-              </Link>
-            </div>
-          </div>
+      {/* FOOTER */}
+      <div className="mt-5 text-center">
+        <p className="small text-muted mb-0">Powered by Drishtee ERP System</p>
+        <div className="d-flex justify-content-center gap-2 mt-2">
+          <div className="spinner-grow spinner-grow-sm text-primary" role="status" />
+          <span className="small text-primary fw-bold">Live Stream Syncing...</span>
         </div>
       </div>
 
-      {/* CSS for hover effects */}
       <style>{`
-        .hover-lift:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
-        }
-        
-        .card {
-          transition: all 0.3s ease;
-        }
-        
-        .progress-bar {
-          transition: width 0.3s ease;
-        }
-        
-        .position-relative:hover span {
-          opacity: 1 !important;
-        }
-        
-        @media (max-width: 768px) {
-          .container {
-            padding-left: 15px;
-            padding-right: 15px;
-          }
-        }
+        .hover-lift { transition: all 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important; }
+        .card { border: 1px solid rgba(0,0,0,0.05); }
       `}</style>
     </div>
   );

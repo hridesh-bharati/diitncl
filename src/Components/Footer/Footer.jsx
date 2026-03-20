@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const footerData = {
   brand: { 
     name: "DIIT Center", 
-    logo: "images/icon/ccc.jpg", 
+    logo: "images/icon/icon-192.png", 
     desc: "Crafting digital careers since 2007. Building professionals for global tech." 
   },
   socials: [

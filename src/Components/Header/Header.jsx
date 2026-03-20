@@ -162,7 +162,7 @@ export default function Header() {
 
             <div className="d-none d-lg-block">
               {!user ? (
-                <button className="google-signin-btn" onClick={openLogin}>Login</button>
+                <button className="google-signin-btn btn btn-primary btn-sm" onClick={openLogin}>Login</button>
               ) : (
                 <div className="profile-section" ref={profileRef}>
                   <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
