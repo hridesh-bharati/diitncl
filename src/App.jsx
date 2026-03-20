@@ -1,6 +1,8 @@
 // src/App.jsx
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
+import { subscribeUser } from "./services/pushService";
+
 import "./App.css";
 
 /* Core Components */
@@ -14,7 +16,7 @@ import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 /* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
 import { db } from "./firebase/firebase";
-import { doc, setDoc, increment } from "firebase/firestore";
+import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -61,15 +63,16 @@ const syncStudentPushToken = async (userId) => {
 
     if (snap.exists()) {
       const data = snap.data();
-      // Agar DB mein subscription nahi hai, tabhi permission maango
-      if (!data.pushSubscription) {
-        console.log("Push token missing, requesting permission...");
-        const sub = await subscribeUser();
-        if (sub) {
+
+      if (!data.fcmToken) {
+        console.log("Push token missing...");
+        const token = await subscribeUser();
+
+        if (token) {
           await updateDoc(studentRef, {
-            pushSubscription: JSON.stringify(sub)
+            fcmToken: token
           });
-          console.log("Push Token Synced!");
+          console.log("✅ Token saved");
         }
       }
     }
@@ -104,18 +107,6 @@ export default function App() {
 
     return unsubscribe;
   }, []);
-
-  // App.jsx ke andar pehle useEffect ke baad ye add karein
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW Registered!', reg))
-          .catch(err => console.log('SW Registration failed!', err));
-      });
-    }
-  }, []);
-
 
   /* 📊 Visitor Tracking */
   useEffect(() => {
