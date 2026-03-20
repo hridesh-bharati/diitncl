@@ -10,11 +10,9 @@ export default defineConfig(({ command }) => {
       react({ fastRefresh: isDev }),
 
       VitePWA({
-        strategies: "injectManifest",  
-        srcDir: "src",               
-        filename: "sw.js",           
         registerType: "autoUpdate",
         injectRegister: "auto",
+
         includeAssets: [
           "robots.txt",
           "sitemap.xml",
@@ -23,6 +21,7 @@ export default defineConfig(({ command }) => {
           "images/icon/icon-512.png",
           "images/icon/apple-touch-icon.png"
         ],
+
         manifest: {
           name: "Drishtee Computer Center",
           short_name: "Drishtee",
@@ -47,6 +46,10 @@ export default defineConfig(({ command }) => {
               purpose: "any maskable"
             }
           ]
+        },
+
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,png,svg,ico}"]
         }
       })
     ],
