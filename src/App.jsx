@@ -15,8 +15,12 @@ import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
 /* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
-import { db } from "./firebase/firebase";
+import { db, app } from "./firebase/firebase";
 import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
+import { getMessaging, onMessage } from "firebase/messaging";
+
+
+
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -55,37 +59,88 @@ const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
 const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
 
 
-// 🔥 Helper Function for Background Push Sync
-const syncStudentPushToken = async (userId) => {
-  try {
-    const studentRef = doc(db, "admissions", userId);
-    const snap = await getDoc(studentRef);
-
-    if (snap.exists()) {
-      const data = snap.data();
-
-      if (!data.fcmToken) {
-        console.log("Push token missing...");
-        const token = await subscribeUser();
-
-        if (token) {
-          await updateDoc(studentRef, {
-            fcmToken: token
-          });
-          console.log("✅ Token saved");
-        }
-      }
-    }
-  } catch (err) {
-    console.error("Push Sync Error:", err);
-  }
-};
-
+const messaging = getMessaging(app);
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // --------------------------------------------------------
+  // 🔥 FIXED: Service Worker Registration
+  // --------------------------------------------------------
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then((reg) => console.log("✅ SW Registered:", reg))
+        .catch((err) => console.error("❌ SW Error:", err));
+    }
+  }, []);
+
+  // --------------------------------------------------------
+  // 🔥 FIXED: Interaction based Push Activation
+  // --------------------------------------------------------
+  useEffect(() => {
+    let asked = false;
+
+    const initPush = async () => {
+      // User login hona chahiye aur ek hi baar trigger hona chahiye
+      if (asked || !user?.uid) return;
+      asked = true;
+
+      const token = await subscribeUser();
+      if (token) {
+        console.log("✅ Interaction Token:", token);
+        await setDoc(doc(db, "admissions", user.uid), { fcmToken: token }, { merge: true });
+      }
+    };
+
+    window.addEventListener("click", initPush, { once: true });
+    window.addEventListener("scroll", initPush, { once: true });
+
+    return () => {
+      window.removeEventListener("click", initPush);
+      window.removeEventListener("scroll", initPush);
+    };
+  }, [user]); // Jab user change ho tab listener active ho
+
+  // --------------------------------------------------------
+  // 🔥 FIXED: Foreground Listener
+  // --------------------------------------------------------
+  useEffect(() => {
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log("📩 Foreground Message:", payload);
+
+      // Notification tabhi dikhao jab permission granted ho
+      if (Notification.permission === "granted") {
+        new Notification(payload.notification?.title || "Drishtee Alert", {
+          body: payload.notification?.body,
+          icon: "/logo.png",
+          badge: "/images/icon/icon-192.png",
+          requireInteraction: true
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // --------------------------------------------------------
+  // 🔥 FIXED: Background Sync Helper (Component ke andar)
+  // --------------------------------------------------------
+  const syncStudentPushToken = async (userId) => {
+    try {
+      const studentRef = doc(db, "admissions", userId);
+      const snap = await getDoc(studentRef);
+      if (snap.exists() && !snap.data().fcmToken) {
+        const token = await subscribeUser();
+        if (token) {
+          await updateDoc(studentRef, { fcmToken: token });
+          console.log("✅ Token synced in background");
+        }
+      }
+    } catch (err) { console.error("Sync Error:", err); }
+  };
 
   /* 🔐 Firebase Auth Listener */
   useEffect(() => {
@@ -94,7 +149,6 @@ export default function App() {
         setUser(currentUser);
         const r = await getUserRole(currentUser.uid);
         setRole(r);
-        // 🔥 Trigger Push Sync for Students in background
         if (r === "student") {
           syncStudentPushToken(currentUser.uid);
         }
@@ -104,9 +158,9 @@ export default function App() {
       }
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
+
 
   /* 📊 Visitor Tracking */
   useEffect(() => {
