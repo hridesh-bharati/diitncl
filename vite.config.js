@@ -32,6 +32,7 @@ export default defineConfig(({ command }) => {
         manifest: {
           name: "Drishtee Computer Center",
           short_name: "Drishtee",
+          version: pkg.version,
           description:
             "Govt Registered IT Training Institute in Nichlaul | CCC, ADCA, Python, Web Development",
           start_url: "/",
