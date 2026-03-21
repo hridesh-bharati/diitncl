@@ -25,7 +25,8 @@ export default function HomeOffers() {
     <section className="container my-4">
       <div className="d-flex align-items-center mb-3">
         <div className="bg-danger p-1 rounded-circle me-2 pulse-red"></div>
-        <h4 className="fw-bold m-0 text-dark">Special Offers</h4>
+        {/* FIX: Heading Order (h4 -> h2) */}
+        <h2 className="fw-bold h4 m-0 text-dark">Special Offers</h2>
       </div>
 
       <div className="row g-3">
@@ -37,15 +38,27 @@ export default function HomeOffers() {
                 <i className="bi bi-megaphone text-warning fs-5"></i>
               </div>
 
-              <h5 className="fw-bold text-dark mb-2">{caption}</h5>
+              {/* FIX: Heading Order (h5 -> h3) */}
+              <h3 className="fw-bold text-dark h5 mb-2">{caption}</h3>
               <p className="text-muted small mb-3 line-clamp-2">{details}</p>
               <hr className="opacity-10" />
 
               <div className="d-flex align-items-center justify-content-between">
+
                 <div className="d-flex align-items-center">
-                  <img src={adminPhoto || "/default-avatar.png"} alt="" width="30" height="30" className="rounded-circle me-2 border" />
+                  {adminPhoto && (
+                    <img
+                      src={adminPhoto.replace("/upload/", "/upload/w_60,h_60,c_thumb,g_face,f_auto,q_auto/")}
+                      alt=""
+                      width="30"
+                      height="30"
+                      className="rounded-circle me-2 border"
+                      style={{ objectFit: "cover" }}
+                    />
+                  )}
                   <span className="fw-bold x-small-text text-secondary">{adminName || "Drishtee"}</span>
                 </div>
+
                 <small className="text-muted" style={{ fontSize: '10px' }}>
                   {createdAt?.toDate?.().toLocaleDateString() || ""}
                 </small>

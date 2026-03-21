@@ -70,7 +70,8 @@ export default defineConfig(({ command }) => {
 
     build: {
       target: "es2020",
-      minify: "esbuild"
+      minify: "esbuild",
+      sourcemap: hidden,
     },
 
     resolve: {

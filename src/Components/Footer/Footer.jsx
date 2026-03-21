@@ -60,7 +60,9 @@ export default function Footer() {
 
           <div className="col-lg-4 col-md-6">
             <div className="p-4 rounded-4 shadow-sm bg-light h-100">
-              <h6 className="fw-bold text-uppercase small mb-4 text-primary">Sitemap & Quick Links</h6>
+              <h3 class="h6 fw-bold text-uppercase small mb-4 text-primary">
+                SITEMAP & QUICK LINKS
+              </h3>
               <div className="row g-2">
                 {footerData.sitemap.map((link, i) => (
                   <div key={i} className="col-6">

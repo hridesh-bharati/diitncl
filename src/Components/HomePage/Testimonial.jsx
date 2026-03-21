@@ -35,7 +35,7 @@ const Testimonials = () => {
                 <div className="d-flex align-items-center border-top pt-3">
                   <img src={item.img} alt={item.name} className="rounded-circle border" style={{ width: 45, height: 45, objectFit: "cover" }} />
                   <div className="ms-3 text-start">
-                    <h6 className="mb-0 fw-bold small">{item.name}</h6>
+                   <h3 className="mb-0 fw-bold h6">{item.name}</h3>
                     <small className="text-primary fw-bold" style={{ fontSize: 10 }}>Verified Student</small>
                   </div>
                 </div>
@@ -44,9 +44,15 @@ const Testimonials = () => {
           })}
         </div>
 
-        <div className="d-flex justify-content-center gap-2 mt-4">
+        <div className="d-flex justify-content-center gap-1 mt-4">
           {testimonials.map((_, i) => (
-            <button key={i} onClick={() => setIdx(i)} className={`dot-btn ${idx === i ? 'active' : ''}`} aria-label="View slide" />
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className={`dot-btn ${idx === i ? 'active' : ''}`}
+              aria-label={`Go to slide ${i + 1}`} 
+              title={`Slide ${i + 1}`}
+            />
           ))}
         </div>
       </div>
@@ -58,8 +64,32 @@ const Testimonials = () => {
         .next-card { transform: translateX(45%) scale(0.8); z-index: 1; filter: blur(1px); pointer-events: none; }
         .prev-card { transform: translateX(-45%) scale(0.8); z-index: 1; filter: blur(1px); pointer-events: none; }
         .hidden-card { transform: scale(0.5); opacity: 0; }
-        .dot-btn { width: 8px; height: 8px; background: #cbd5e1; border: none; border-radius: 50%; transition: 0.3s; padding: 0; }
-        .dot-btn.active { width: 20px; background: #0d6efd; border-radius: 10px; }
+        .dot-btn { 
+  width: 8px; 
+  height: 8px; 
+  background: #cbd5e1; 
+  border: none; 
+  border-radius: 50%; 
+  transition: 0.3s; 
+  /* --- Accessibility Fixes --- */
+  padding: 18px; /* Tap area ko 44px tak badhane ke liye */
+  margin: -10px; /* Padding ki wajah se gap na badhe isliye negative margin */
+  background-clip: content-box; /* Rang sirf 8px area mein dikhega */
+  cursor: pointer;
+  display: inline-block;
+}
+
+.dot-btn.active { 
+  width: 20px; 
+  background: #0d6efd; 
+  border-radius: 10px; 
+  padding: 18px 12px; /* Active state ka size adjust karne ke liye */
+}
+
+/* Hover effect for better UX */
+.dot-btn:hover {
+  background-color: #94a3b8;
+}
         .italic { font-style: italic; }
         @media (max-width: 768px) { .next-card, .prev-card { display: none; } .slider-container { max-width: 320px; } }
       `}</style>
