@@ -194,7 +194,7 @@ export default function Header() {
               )}
             </div>
 
-            <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
+            <Link to="/branch/nichlaul/location" aria-label="View our location on Google Maps" className="fs-4 p-0 m-0">
               <i className="bi bi-geo-alt-fill text-danger"></i>
             </Link>
           </div>
@@ -218,7 +218,7 @@ export default function Header() {
         {/* CENTER CAMERA - Darker Blue Gradient */}
         <div className="position-relative" style={{ width: '60px' }}>
           <Link to="/gallery" className="btn custom-camera-btn-dark rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center"
-            style={{ width: '58px', height: '58px', top: '-12px' }}>
+            style={{ width: '58px', height: '58px', top: '-12px' }} aria-label="Open Image Gallery">
             <i className="bi bi-camera-fill fs-4 text-white"></i>
           </Link>
         </div>

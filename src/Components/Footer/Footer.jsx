@@ -8,10 +8,10 @@ const footerData = {
     desc: "Crafting digital careers since 2007. Building professionals for global tech."
   },
   socials: [
-    { icon: "youtube", bg: "bg-danger", link: "#" },
-    { icon: "whatsapp", bg: "bg-success", link: "#" },
-    { icon: "facebook", bg: "bg-primary", link: "#" },
-    { icon: "instagram", bg: "bg-danger", link: "#" }
+    { icon: "youtube", bg: "bg-danger", link: "https://youtube.com/", label: "Visit our YouTube channel" },
+    { icon: "whatsapp", bg: "bg-success", link: "https://wa.me/919918151032", label: "Chat with us on WhatsApp" },
+    { icon: "facebook", bg: "bg-primary", link: "https://facebook.com/", label: "Follow us on Facebook" },
+    { icon: "instagram", bg: "bg-danger", link: "https://instagram.com/", label: "Follow us on Instagram" }
   ],
   sitemap: [
     { name: "Home", path: "/" },
@@ -49,11 +49,22 @@ export default function Footer() {
               </div>
               <p className="text-muted small lh-base">{footerData.brand.desc}</p>
               <div className="d-flex gap-2 mt-3">
-                {footerData.socials.map((s, i) => (
-                  <a key={i} href={s.link} className={`btn ${s.bg} text-white rounded-circle d-flex align-items-center justify-content-center p-0 shadow-sm`} style={{ width: 32, height: 32 }}>
-                    <i className={`bi bi-${s.icon} small`}></i>
-                  </a>
-                ))}
+                <div className="d-flex gap-3 mt-3">
+                  {footerData.socials.map((s, i) => (
+                    <a
+                      key={i}
+                      href={s.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.label}
+                      title={s.label}
+                      className={`btn ${s.bg} text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm`}
+                      style={{ width: 42, height: 42 }}
+                    >
+                      <i className={`bi bi-${s.icon}`}></i>
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

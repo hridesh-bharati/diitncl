@@ -32,7 +32,7 @@ const Team = () => {
                 <p className="text-muted mt-2 mb-2 extra-small">{m.b}</p>
                 {m.gh && <div className="badge bg-dark rounded-pill mb-2 extra-small"><i className="bi bi-github"></i> {m.gh}</div>}
                 <div className="d-flex justify-content-center gap-2 border-top pt-2 mt-auto">
-                  {['telephone', 'whatsapp', 'linkedin'].map(ic => <a key={ic} href="#" className="text-secondary"><i className={`bi bi-${ic}`}></i></a>)}
+                  {['telephone', 'whatsapp', 'linkedin'].map(ic => <a key={ic} href="#" className="text-secondary" aria-label="Drishtee team"><i className={`bi bi-${ic}`}></i></a>)}
                 </div>
               </div>
             </div>

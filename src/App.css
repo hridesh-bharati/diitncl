@@ -86,10 +86,54 @@ body::-webkit-scrollbar {
 .wa-line { 
   position: absolute; bottom: 0; width: 100%; height: 3px; background: white; 
 }
-/* ................. utility css ...................... */
+/* ................. utility globle css ...................... */
 img.rounded-circle {
-  width: 30px;
-  height: 30px;
+  /* width: 30px;
+  height: 30px; */
   object-fit: cover;
   object-position: center;
+}
+/* ................Colore..................... */
+/* 🔥 FINAL CONTRAST SYSTEM */
+
+/* Warning (Gold but readable) */
+.text-warning { 
+  color: #854d0e !important; 
+}
+
+/* Info (Teal darker) */
+.text-info { 
+  color: #0f766e !important; 
+}
+
+/* Primary (Strong Blue) */
+.text-primary { 
+  color: #1d4ed8 !important; 
+}
+
+/* Danger (Readable Red) */
+.text-danger { 
+  color: #b91c1c !important; 
+}
+
+/* Small Text Fix */
+.small, .x-small, .extra-small {
+  color: #334155 !important;
+  font-weight: 600;
+}
+
+/* Badge Fix */
+.badge.bg-primary-subtle {
+  background-color: #dbeafe !important;
+  color: #1e3a8a !important;
+}
+
+.badge.bg-success-subtle {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.badge.bg-danger-subtle {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
 }

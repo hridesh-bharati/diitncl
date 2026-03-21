@@ -44,6 +44,7 @@ const Testimonials = () => {
           })}
         </div>
 
+        {/* --- Updated Pagination Dots --- */}
         <div className="d-flex justify-content-center gap-1 mt-4">
           {testimonials.map((_, i) => (
             <button
@@ -51,7 +52,6 @@ const Testimonials = () => {
               onClick={() => setIdx(i)}
               className={`dot-btn ${idx === i ? 'active' : ''}`}
               aria-label={`Go to slide ${i + 1}`} 
-              title={`Slide ${i + 1}`}
             />
           ))}
         </div>
@@ -64,34 +64,34 @@ const Testimonials = () => {
         .next-card { transform: translateX(45%) scale(0.8); z-index: 1; filter: blur(1px); pointer-events: none; }
         .prev-card { transform: translateX(-45%) scale(0.8); z-index: 1; filter: blur(1px); pointer-events: none; }
         .hidden-card { transform: scale(0.5); opacity: 0; }
+        
+        /* --- Fixed CSS Rules --- */
         .dot-btn { 
-  width: 8px; 
-  height: 8px; 
-  background: #cbd5e1; 
-  border: none; 
-  border-radius: 50%; 
-  transition: 0.3s; 
-  /* --- Accessibility Fixes --- */
-  padding: 18px; /* Tap area ko 44px tak badhane ke liye */
-  margin: -10px; /* Padding ki wajah se gap na badhe isliye negative margin */
-  background-clip: content-box; /* Rang sirf 8px area mein dikhega */
-  cursor: pointer;
-  display: inline-block;
-}
+          width: 12px;
+          height: 6px;
+          background: #cbd5e1;
+          border: none;
+          border-radius: 10px;
+          transition: all 0.4s ease;
+          cursor: pointer;
+          padding: 0;
+          margin: 0 4px;
+        }
 
-.dot-btn.active { 
-  width: 20px; 
-  background: #0d6efd; 
-  border-radius: 10px; 
-  padding: 18px 12px; /* Active state ka size adjust karne ke liye */
-}
+        .dot-btn.active { 
+          width: 32px;
+          background: #00008b; /* Dark Blue */
+        }
 
-/* Hover effect for better UX */
-.dot-btn:hover {
-  background-color: #94a3b8;
-}
+        .dot-btn:hover:not(.active) {
+          background-color: #94a3b8;
+        }
+
         .italic { font-style: italic; }
-        @media (max-width: 768px) { .next-card, .prev-card { display: none; } .slider-container { max-width: 320px; } }
+        @media (max-width: 768px) { 
+          .next-card, .prev-card { display: none; } 
+          .slider-container { max-width: 320px; } 
+        }
       `}</style>
     </section>
   );
