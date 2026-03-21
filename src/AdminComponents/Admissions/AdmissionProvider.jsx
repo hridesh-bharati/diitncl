@@ -10,7 +10,10 @@ export default function AdmissionProvider({ children }) {
 
   useEffect(() => {
     let isMounted = true;
-    const q = query(collection(db, "admissions"), orderBy("createdAt", "desc"));
+    const q = query(
+  collection(db, "admissions"),
+  orderBy("createdAt", "desc")
+);
 
     const unsubscribe = onSnapshot(q, 
       (snap) => {

@@ -81,13 +81,13 @@ export default function AdmissionForm() {
     const [otpExpiry, setOtpExpiry] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0)
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
         if (["mobile", "pincode", "aadharNo"].includes(name)) {
             if (value !== "" && !/^\d+$/.test(value)) return;
         }
         setForm(prev => ({ ...prev, [name]: value }));
-    };
+    });
 
     const uploadImg = async (file) => {
         if (!file) return;
@@ -173,7 +173,7 @@ export default function AdmissionForm() {
             return;
         }
 
-        if (otpInput === String(generatedOtp)) {
+        if (otpInput.trim() === String(generatedOtp)) {
             setIsEmailVerified(true);
             toast.success("Email Verified! ✅");
         } else {
@@ -210,8 +210,9 @@ export default function AdmissionForm() {
         e.preventDefault();
 
         // Check verification first
-        if (!isEmailVerified) return toast.error("Please verify your email first!");
-
+        if (!isEmailVerified || String(otpInput) !== String(generatedOtp)) {
+            return toast.error("Email verification failed. Please verify again.");
+        }
         if (form.aadharNo?.trim()) {
             if (!/^\d{12}$/.test(form.aadharNo)) {
                 return toast.error("Aadhar must be exactly 12 digits");

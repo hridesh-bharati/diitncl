@@ -1,4 +1,3 @@
-// src\AdminComponents\Students\StudentProfile.jsx
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,9 +5,14 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 
+// --- URL ENCODING HELPERS ---
+const encodeID = (id) => btoa(id).replace(/=/g, "");
+const decodeID = (encoded) => {
+  try { return atob(encoded); } catch (e) { return encoded; }
+};
+
 const safe = (val) => (val && val !== "undefined" && val !== "" ? val : "—");
 
-// --- HELPER FOR REGNO PARSING ---
 const getShortReg = (val) => (val && typeof val === "string" ? val.split("/").pop() : val);
 
 // --- MEMOIZED COMPONENTS ---
@@ -28,7 +32,6 @@ const InfoRow = memo(({ label, value, isEditing, onChange, type = "text", icon, 
             type={type}
             className="form-control form-control-sm border-0 border-bottom bg-transparent rounded-0 shadow-none p-0 fw-bold"
             style={{ borderColor: color }}
-            // Input mein sirf short number dikhega
             value={fieldKey === "regNo" ? getShortReg(value) : (value || "")}
             onChange={(e) => onChange(e.target.value)}
           />
@@ -61,12 +64,17 @@ const StatBox = memo(({ label, value, icon, colorClass, isEditing, onChange, typ
   </div>
 ));
 
-// --- MAIN PROFILE CONTENT ---
 const ProfileContent = ({ admissions, loading, error }) => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const student = useMemo(() => admissions?.find((a) => String(a.id) === String(id)), [admissions, id]);
+  const { id: encodedId } = useParams();
+  const id = useMemo(() => decodeID(encodedId), [encodedId]);
 
+  const navigate = useNavigate();
+  const student = useMemo(
+    () => admissions?.find(
+      (a) => a.email?.toLowerCase() === id?.toLowerCase()
+    ),
+    [admissions, id]
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({});
@@ -74,22 +82,18 @@ const ProfileContent = ({ admissions, loading, error }) => {
 
   useEffect(() => { if (student) setFormData(student); }, [student]);
 
-  // --- UPDATED HANDLE CHANGE LOGIC ---
   const handleChange = useCallback((field, value) => {
     setFormData((prev) => {
       let newData = { ...prev };
-
       if (field === "regNo") {
         const parts = (prev.regNo || "").split("/");
         if (parts.length === 3) {
-          // Rebuild full RegNo with new digits (e.g. DIIT125/CDTP/7)
           newData.regNo = `${parts[0]}/${parts[1]}/${value}`;
         } else {
           newData.regNo = value;
         }
       } else if (field === "course") {
         newData.course = value;
-        // If course changes, update the middle part of full regNo
         const parts = (prev.regNo || "").split("/");
         if (parts.length === 3) {
           const newCourseCode = value.replace(/\s+/g, "").toUpperCase().slice(0, 10);
@@ -106,7 +110,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
     try {
       setIsSaving(true);
       let updatedData = { ...formData };
-
       if (selectedImage) {
         const fd = new FormData();
         fd.append("file", selectedImage);
@@ -115,8 +118,8 @@ const ProfileContent = ({ admissions, loading, error }) => {
         const data = await res.json();
         updatedData.photoUrl = data.secure_url;
       }
-
-      await updateDoc(doc(db, "admissions", student.id), updatedData);
+      const docId = student.email.toLowerCase();
+      await updateDoc(doc(db, "admissions", docId), updatedData);
       toast.success("Profile Updated");
       setIsEditing(false);
       setSelectedImage(null);
@@ -137,6 +140,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
       </div>
     </div>
   );
+
   const fields = [
     { label: "Reg No", key: "regNo", icon: "bi-card-list", color: "#000000" },
     { label: "Date of Birth", key: "dob", icon: "bi-calendar-event", color: "#FF9800", type: "date" },
@@ -148,6 +152,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
     { label: "Course", key: "course", icon: "bi-book-half", color: "#673AB7" },
     { label: "Gender", key: "gender", icon: "bi-gender-ambiguous", color: "#2196F3" },
   ];
+
   return (
     <div className="win11-bg pb-5 overflow-auto">
       {/* HEADER */}
@@ -199,7 +204,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
           <p className="text-muted small mb-0">{safe(formData.course)}</p>
           <div className="d-flex justify-content-center gap-2 mt-2">
             <span className="badge rounded-pill bg-primary px-3 shadow-sm">
-              {/* Yahan ID hamesha full format mein aayegi */}
               ID: {safe(formData.regNo)}
             </span>
             <span className="badge rounded-pill bg-dark px-3 shadow-sm">{safe(formData.status)}</span>
@@ -209,20 +213,23 @@ const ProfileContent = ({ admissions, loading, error }) => {
         {/* QUICK BUTTONS */}
         <div className="row g-3 mb-4">
           <div className="col-md-6">
+            {/* Navigating with encoded ID */}
             <button className={`btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2 ${formData.certificateDisabled ? 'opacity-50' : ''}`}
-              onClick={() => !formData.certificateDisabled && navigate(`/admin/students/${id}/certificate`)}>
+              onClick={() => !formData.certificateDisabled && navigate(`/admin/students/${encodedId}/certificate`)}>
               <i className={`bi ${formData.certificateDisabled ? 'bi-lock-fill text-danger' : 'bi-patch-check-fill text-primary'} fs-5`}></i>
               <span className="fw-bold">{formData.certificateDisabled ? 'PORTAL LOCKED' : 'CERTIFICATE'}</span>
             </button>
           </div>
           <div className="col-md-6">
             <button className="btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2"
-              onClick={() => navigate(`/admin/students/${id}/fees`, { state: { studentData: formData } })}>
+              onClick={() => navigate(`/admin/students/${encodedId}/fees`, { state: { studentData: formData } })}>
               <i className="bi bi-cash-stack text-success fs-5"></i>
               <span className="fw-bold">FEE REPORT</span>
             </button>
           </div>
         </div>
+
+        {/* ... (Rest of the code remains exactly same) ... */}
 
         {/* STATS */}
         <div className="row g-3 mb-4">
@@ -304,8 +311,9 @@ const ProfileContent = ({ admissions, loading, error }) => {
               onChange={async () => {
                 const newState = !formData.certificateDisabled;
                 try {
-                  await updateDoc(doc(db, "admissions", student.id), { certificateDisabled: newState });
-                  setFormData(p => ({ ...p, certificateDisabled: newState }));
+                  await updateDoc(doc(db, "admissions", student.email.toLowerCase()), {
+                    certificateDisabled: newState
+                  }); setFormData(p => ({ ...p, certificateDisabled: newState }));
                   toast.info(newState ? "Portal Disabled" : "Portal Enabled");
                 } catch (err) { toast.error("Error"); }
               }} />
