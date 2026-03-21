@@ -103,7 +103,13 @@ const getCourseData = (courseName) => {
 const HeaderSection = ({ student }) => (
     <div className="certificate-header-grid">
         <div>
-            <img src="/images/icon/logo.png" alt="DIIT" className="header-logo-img ms-4" crossOrigin="anonymous" />
+<img 
+  src="/images/icon/logo.png" 
+  alt="Drishtee" 
+  width="32"
+  height="32" 
+  loading="eager" 
+/>            
         </div>
         <div className="d-flex justify-content-start align-items-start ps-5">
             <div className="ps-3">

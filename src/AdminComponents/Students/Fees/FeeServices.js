@@ -114,28 +114,28 @@ const generateA4HTML = (student, paymentsArray, summary, isSingle = false) => {
     </style>
   </head>
   <body onload="window.print(); setTimeout(()=>window.close(), 1000);">
-    <div class="page">
-      <div class="watermark">DRISHTEE CC</div>
+    <div className="page">
+      <div className="watermark">DRISHTEE CC</div>
       
-      <div class="header-container">
+      <div className="header-container">
         <h1>Drishtee Computer Center</h1>
         <p>Managed by Drishtee Educational & Charitable Trust</p>
         <p>An ISO 9001:2015 Certified IT Training Institute</p>
         <p>Paragpur Road , Nichlaul - 221001 | Web: www.drishteeindia.com | Mob: +91 9918151032</p>
       </div>
 
-      <div class="doc-header">${docTitle}</div>
+      <div className="doc-header">${docTitle}</div>
 
-      <div class="student-info">
-        <div class="info-group">
-          <div class="info-row"><b>Student Name:</b> <span>${student?.name?.toUpperCase()}</span></div>
-          <div class="info-row"><b>Registration No:</b> <span>${student?.regNo || 'DCC-' + student?.id?.slice(-5).toUpperCase()}</span></div>
-          <div class="info-row"><b>Course Title:</b> <span>${student?.course}</span></div>
+      <div className="student-info">
+        <div className="info-group">
+          <div className="info-row"><b>Student Name:</b> <span>${student?.name?.toUpperCase()}</span></div>
+          <div className="info-row"><b>Registration No:</b> <span>${student?.regNo || 'DCC-' + student?.id?.slice(-5).toUpperCase()}</span></div>
+          <div className="info-row"><b>Course Title:</b> <span>${student?.course}</span></div>
         </div>
-        <div class="info-group">
-          <div class="info-row"><b>Admission Date:</b> <span>${student?.admissionDate || 'N/A'}</span></div>
-          <div class="info-row"><b>Statement Date:</b> <span>${new Date().toLocaleDateString('en-GB')}</span></div>
-          <div class="info-row"><b>Center Code:</b> <span>DIIT124</span></div>
+        <div className="info-group">
+          <div className="info-row"><b>Admission Date:</b> <span>${student?.admissionDate || 'N/A'}</span></div>
+          <div className="info-row"><b>Statement Date:</b> <span>${new Date().toLocaleDateString('en-GB')}</span></div>
+          <div className="info-row"><b>Center Code:</b> <span>DIIT124</span></div>
         </div>
       </div>
 
@@ -145,46 +145,46 @@ const generateA4HTML = (student, paymentsArray, summary, isSingle = false) => {
             <th width="15%">TRANX DATE</th>
             <th width="45%">PARTICULARS / DESCRIPTION</th>
             <th width="20%">MODE</th>
-            <th width="20%" class="text-right">AMOUNT (INR)</th>
+            <th width="20%" className="text-right">AMOUNT (INR)</th>
           </tr>
         </thead>
         <tbody>
           ${paymentsArray.map((p, index) => `
-            <tr class="${index % 2 === 0 ? '' : 'even'}">
+            <tr className="${index % 2 === 0 ? '' : 'even'}">
               <td>${p.date}</td>
               <td>${p.note || 'Tution Fee Installment'}</td>
               <td>${p.method.toUpperCase()}</td>
-              <td class="text-right">₹ ${p.amount}.00</td>
+              <td className="text-right">₹ ${p.amount}.00</td>
             </tr>
           `).join('')}
         </tbody>
       </table>
 
-      <div class="summary-container">
-        <table class="summary-table">
+      <div className="summary-container">
+        <table className="summary-table">
           <tr>
-            <td class="bg-blue-light">GROSS PAYABLE FEE</td>
-            <td class="text-right bg-blue-light">₹ ${summary.netFee}.00</td>
+            <td className="bg-blue-light">GROSS PAYABLE FEE</td>
+            <td className="text-right bg-blue-light">₹ ${summary.netFee}.00</td>
           </tr>
           <tr>
             <td>TOTAL PAID TO DATE</td>
-            <td class="text-right" style="color: #2e7d32;">₹ ${summary.totalPaid}.00</td>
+            <td className="text-right" style="color: #2e7d32;">₹ ${summary.totalPaid}.00</td>
           </tr>
           <tr>
-            <td class="bg-navy text-white">NET OUTSTANDING DUES</td>
-            <td class="text-right bg-navy text-white">₹ ${summary.balance}.00</td>
+            <td className="bg-navy text-white">NET OUTSTANDING DUES</td>
+            <td className="text-right bg-navy text-white">₹ ${summary.balance}.00</td>
           </tr>
         </table>
       </div>
 
-      <div class="declaration">
+      <div className="declaration">
         <p><b>Amount in Words:</b> ${numberToWords(isSingle ? paymentsArray[0].amount : summary.totalPaid)} Rupees Only.</p>
         <p>* This is an official computer-generated fee statement. In case of any discrepancy, please report to the center office within 7 working days.</p>
       </div>
 
-      <div class="footer-signs">
-        <div class="sign-box">Accountant / Signatory</div>
-        <div class="sign-box">Office Seal & Stamp</div>
+      <div className="footer-signs">
+        <div className="sign-box">Accountant / Signatory</div>
+        <div className="sign-box">Office Seal & Stamp</div>
       </div>
     </div>
   </body>
