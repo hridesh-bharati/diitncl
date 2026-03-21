@@ -98,18 +98,22 @@ const getCourseData = (courseName) => {
     };
 };
 
-
+const getNameFontSize = (name, fatherName) => {
+    const length = (name + " " + fatherName).length;
+    if (length > 40) return "16px";
+    if (length > 30) return "18px";
+    return "22px"; // default
+};
 // =================== REUSABLE COMPONENTS ===================
 const HeaderSection = ({ student }) => (
     <div className="certificate-header-grid">
         <div>
-<img 
-  src="/images/icon/logo.png" 
-  alt="Drishtee" 
-  width="32"
-  height="32" 
-  loading="eager" 
-/>            
+            <img
+                src="/images/icon/logo.png"
+                alt="Drishtee"
+                loading="eager"
+                className="header-logo-img"
+            />
         </div>
         <div className="d-flex justify-content-start align-items-start ps-5">
             <div className="ps-3">
@@ -142,7 +146,10 @@ const StudentInfoSection = ({ student, courseData, grade }) => (
     <div className="certificate-body-grid p-0 m-0 text-center text-black">
         <p className="certificate-awarded-to d-inline pt-2">
             <span className="certificate-body-text">This certificate is awarded to Mr/Miss</span>
-            <span className="certificate-name text-uppercase">
+            <span
+                className="certificate-name text-uppercase"
+                style={{ fontSize: getNameFontSize(student.name, student.fatherName) }}
+            >
                 {student.name} {student.gender === "Female" ? "D/O" : "S/O"} {student.fatherName || ""}
             </span>
         </p>

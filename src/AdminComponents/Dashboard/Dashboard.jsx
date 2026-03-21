@@ -73,11 +73,7 @@ export default function Dashboard() {
     );
   };
 
-  if (loading) return (
-    <div className="vh-100 d-flex justify-content-center align-items-center">
-      <div className="spinner-border text-primary" role="status"></div>
-    </div>
-  );
+  if (loading) return (<p className="text-center text-muted  p-5 m-5">Loading...</p>);
 
   return (
     <div className="container-fluid dashboard-wrapper">
