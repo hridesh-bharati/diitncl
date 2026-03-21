@@ -25,14 +25,14 @@ export default function TopCourseList() {
           </Link>
         </div>
 
-        {/* Grid: PC=3, Mobile=1 */}
+        {/* Grid */}
         <div className="row g-4">
           {courses.map((c) => (
             <div key={c.id} className="col-12 col-md-6 col-lg-4">
               <Link to="/courses" className="text-decoration-none">
                 <article className="premium-course-card d-flex align-items-center p-3 bg-white rounded-4 shadow-sm border-0">
                   
-                  {/* Compact Thumbnail Box */}
+                  {/* Thumbnail Box */}
                   <div 
                     className="flex-shrink-0 rounded-3 overflow-hidden d-flex align-items-center justify-content-center"
                     style={{ 
@@ -45,6 +45,10 @@ export default function TopCourseList() {
                     <img 
                       src={c.src} 
                       alt={c.title} 
+                      // Performance Fix: Explicit dimensions
+                      width="90" 
+                      height="90"
+                      loading="lazy"
                       className="img-fluid p-2" 
                       style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
@@ -76,12 +80,10 @@ export default function TopCourseList() {
         .extra-small { font-size: 11px; }
         .premium-course-card {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          cursor: pointer;
         }
         .premium-course-card:hover {
-          transform: scale(1.02);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
-          background: #fff;
+          transform: translateY(-5px);
+          box-shadow: 0 12px 25px rgba(0,0,0,0.1) !important;
         }
         .premium-course-card:hover img {
           transform: rotate(-5deg) scale(1.1);
