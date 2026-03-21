@@ -2,73 +2,77 @@ import React from "react";
 
 export default function LoadingSpinner({ fullHeight = true }) {
   return (
-    <div className={`d-flex align-items-center justify-content-center ${fullHeight ? 'vh-100' : 'py-5'}`}>
-      <div className="text-center">
-        <div className="spinner-container position-relative" style={{ width: '120px', height: '120px', margin: '0 auto' }}>
+    <div className={`d-flex flex-column align-items-center justify-content-center ${fullHeight ? 'vh-100' : 'py-4'}`}>
+      <div className="diit-loader-wrapper position-relative d-flex align-items-center justify-content-center">
+        
+        {/* Animated Rings (All 3 rings using 1 div + pseudo elements) */}
+        <div className="loader-ring-system"></div>
 
-          {/* Ring 1 - Blue */}
-          <div className="ring-layer border-top border-4 position-absolute w-100 h-100 rounded-circle"
-            style={{ borderColor: '#667eea', animation: 'spin 2s linear infinite' }}></div>
-
-          {/* Ring 2 - Purple (Reverse) */}
-          <div className="ring-layer border-end border-4 position-absolute w-100 h-100 rounded-circle"
-            style={{ borderColor: '#764ba2', animation: 'spin 2s linear infinite reverse' }}></div>
-
-          {/* Ring 3 - Green (Fast) */}
-          <div className="ring-layer border-bottom border-4 position-absolute w-100 h-100 rounded-circle"
-            style={{ borderColor: '#00b09b', animation: 'spin 1.5s linear infinite' }}></div>
-
-          {/* Center DIIT Logo */}
-          <div className="position-absolute top-50 start-50 translate-middle rounded-circle d-flex align-items-center justify-content-center pulse-logo"
-            style={{
-              width: '60px', height: '60px',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4)',
-              zIndex: 2
-            }}>
-            <span className="text-white fw-bold fs-5">DIIT</span>
-          </div>
+        {/* Center Logo */}
+        <div className="loader-logo shadow-sm pulse-animation">
+          DIIT
         </div>
-
-        {/* Loading Text */}
-        <p className="mt-4 fw-bold text-dark animate-fade" style={{ fontSize: '1.2rem' }}>
-          Loading...
-        </p>
       </div>
 
+      <p className="mt-3 small fw-bold text-muted text-uppercase tracking-wider animate-opacity">
+        Loading...
+      </p>
+
       <style>{`
-        .ring-layer {
-          border-top-color: inherit;
-          border-right-color: transparent !important;
-          border-left-color: transparent !important;
-          border-bottom-color: transparent !important;
-        }
-        
-        /* Ring specific overrides to match your old look */
-        .spinner-container div:nth-child(2) { border-top-color: transparent; border-right-color: #764ba2 !important; }
-        .spinner-container div:nth-child(3) { border-top-color: transparent; border-bottom-color: #00b09b !important; }
+        .diit-loader-wrapper { width: 100px; height: 100px; }
 
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        .loader-ring-system, .loader-ring-system::before, .loader-ring-system::after {
+          position: absolute;
+          border: 3px solid transparent;
+          border-radius: 50%;
         }
 
-        .pulse-logo {
-          animation: pulse 2s infinite ease-in-out;
+        /* Ring 1 - Blue */
+        .loader-ring-system {
+          width: 100%; height: 100%;
+          border-top-color: #667eea;
+          animation: diit-spin 1.5s linear infinite;
         }
 
-        @keyframes pulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); }
-          50% { transform: translate(-50%, -50%) scale(1.1); }
+        /* Ring 2 - Purple (Reverse) */
+        .loader-ring-system::before {
+          content: "";
+          top: 5px; left: 5px; right: 5px; bottom: 5px;
+          border-right-color: #764ba2;
+          animation: diit-spin 2s linear infinite reverse;
         }
 
-        .animate-fade {
-          animation: fade 2s infinite;
+        /* Ring 3 - Green (Fast) */
+        .loader-ring-system::after {
+          content: "";
+          top: 15px; left: 15px; right: 15px; bottom: 15px;
+          border-bottom-color: #00b09b;
+          animation: diit-spin 1s linear infinite;
         }
 
-        @keyframes fade {
+        .loader-logo {
+          width: 45px; height: 45px;
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          color: white; font-size: 0.8rem; font-weight: 800;
+          z-index: 5;
+        }
+
+        @keyframes diit-spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .pulse-animation { animation: diit-pulse 1.5s infinite; }
+        @keyframes diit-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+
+        .animate-opacity { animation: diit-fade 2s infinite; }
+        @keyframes diit-fade {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
+          50% { opacity: 0.5; }
         }
       `}</style>
     </div>

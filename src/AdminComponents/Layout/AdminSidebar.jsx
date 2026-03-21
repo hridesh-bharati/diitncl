@@ -36,7 +36,7 @@ export default function AdminSidebar({ open, setOpen }) {
 
       <aside className={`ios-sidebar ${open ? "open" : ""}`}>
         <div className="d-flex flex-column h-100">
-          
+
           {/* Brand Header */}
           <div className="sidebar-header d-flex align-items-center justify-content-between p-4 pb-3">
             <div>
@@ -49,7 +49,7 @@ export default function AdminSidebar({ open, setOpen }) {
           </div>
 
           <nav className="flex-grow-1 custom-scroll overflow-auto px-2">
-            
+
             {/* 1. MAIN MANAGEMENT */}
             <p className="sidebar-label">Management</p>
             {MAIN_MENU.map((item) => (
@@ -62,16 +62,16 @@ export default function AdminSidebar({ open, setOpen }) {
             {/* 2. 🔥 EXAMS SECTION (Accordion Style) */}
             <div className="accordion accordion-flush mt-1" id="examAccordion">
               <div className="accordion-item bg-transparent border-0">
-                <div 
+                <div
                   className={`ios-link accordion-button shadow-none ${!isExamActive ? "collapsed" : ""}`}
-                  data-bs-toggle="collapse" 
+                  data-bs-toggle="collapse"
                   data-bs-target="#examCollapse"
                   style={{ cursor: 'pointer' }}
                 >
                   <i className="bi bi-journal-text"></i>
                   <span>Examinations</span>
                 </div>
-                
+
                 <div id="examCollapse" className={`accordion-collapse collapse ${isExamActive ? "show" : ""}`} data-bs-parent="#examAccordion">
                   <div className="ps-4 ms-3 border-start py-1">
                     {[
@@ -92,16 +92,16 @@ export default function AdminSidebar({ open, setOpen }) {
             {/* 3. ATTENDANCE SECTION */}
             <div className="accordion accordion-flush mt-1" id="studentAccordion">
               <div className="accordion-item bg-transparent border-0">
-                <div 
+                <div
                   className={`ios-link accordion-button shadow-none ${!isAttendanceActive ? "collapsed" : ""}`}
-                  data-bs-toggle="collapse" 
+                  data-bs-toggle="collapse"
                   data-bs-target="#studentCollapse"
                   style={{ cursor: 'pointer' }}
                 >
                   <i className="bi bi-calendar2-check-fill"></i>
                   <span>Attendance</span>
                 </div>
-                
+
                 <div id="studentCollapse" className={`accordion-collapse collapse ${isAttendanceActive ? "show" : ""}`} data-bs-parent="#studentAccordion">
                   <div className="ps-4 ms-3 border-start py-1">
                     {[

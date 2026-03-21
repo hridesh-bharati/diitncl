@@ -5,10 +5,10 @@ import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
 import LanguageTranslator from "../LanguageTranslator/LanguageTranslator";
+import DefaultAvatar from "../../Components/HelperCmp/DefaultAvatar/DefaultAvatar"; // ✅ Added this
 import "./Header.css";
 
 export default function Header() {
-  // Destructure photoURL and displayName directly from useAuth for real-time reactivity
   const { user, student, isAdmin, logout, photoURL, displayName, userProfile } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showApps, setShowApps] = useState(false);
@@ -21,11 +21,16 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // REAL-TIME DATA: No useMemo here to ensure it updates instantly when photoURL changes
+  // ✨ PERFORMANCE: Cloudinary Small Image Optimization
+  const getSmallPhoto = (url) => {
+    if (!url || !url.includes("cloudinary")) return null;
+    return url.replace("/upload/", "/upload/w_120,h_120,c_thumb,g_face,f_auto,q_auto/");
+  };
+
   const userData = {
     name: displayName,
     email: student?.email || user?.email || "student@drishteeindia.com",
-    photo: photoURL,
+    photo: getSmallPhoto(photoURL), // ✅ Optimized URL
     dashboard: isAdmin ? "/admin" : "/student"
   };
 
@@ -130,17 +135,12 @@ export default function Header() {
           </div>
 
           <div className="searchBox w-100" style={{ maxWidth: '300px' }}>
-            {/* maxWidth isliye taaki desktop pe bahut zyada lamba na ho jaye, mobile pe ye 100% rahega */}
             <GlobleSearchBox routes={RouteLinks} />
           </div>
 
           <div className="header-right d-flex align-items-center gap-2 gap-md-3">
             <div className="apps-dropdown position-relative">
-              <button
-                className="google-apps border-0 bg-transparent p-2 rounded-circle"
-                onClick={() => setShowApps(!showApps)}
-                aria-label="Open Apps Menu"
-              >
+              <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
                 <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
               </button>
               {showApps && (
@@ -158,7 +158,6 @@ export default function Header() {
                     <Link to="/photo-editor" className="app-item" onClick={() => setShowApps(false)}>
                       <i className="bi bi-camera-fill text-info"></i><span>Edit</span>
                     </Link>
-
                   </div>
                 </div>
               )}
@@ -170,12 +169,14 @@ export default function Header() {
               ) : (
                 <div className="profile-section" ref={profileRef}>
                   <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                    <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" />
+                    {userData.photo ? <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" /> : <div style={{width:35, height:35}}><DefaultAvatar /></div>}
                   </div>
                   {showProfileMenu && (
                     <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden">
                       <div className="profile-header p-4 text-center bg-light border-bottom">
-                        <img src={userData.photo} alt="user" className="rounded-circle mb-2 border border-3 border-white shadow" width="65" height="65" />
+                        <div className="mx-auto mb-2 overflow-hidden rounded-circle border border-3 border-white shadow" style={{width:65, height:65}}>
+                           {userData.photo ? <img src={userData.photo} alt="user" className="w-100 h-100 object-fit-cover" /> : <DefaultAvatar />}
+                        </div>
                         <h6 className="fw-bold m-0">{userData.name}</h6>
                         <p className="text-muted small m-0 text-truncate">{userData.email}</p>
                       </div>
@@ -187,14 +188,13 @@ export default function Header() {
                           <i className="bi bi-box-arrow-right text-danger"></i> Sign out
                         </button>
                       </div>
-
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            <Link to="/branch/nichlaul/location" aria-label="View our location on Google Maps" className="fs-4 p-0 m-0">
+            <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
               <i className="bi bi-geo-alt-fill text-danger"></i>
             </Link>
           </div>
@@ -215,10 +215,9 @@ export default function Header() {
           <span className="mobile-nav-label">Explore</span>
         </NavLink>
 
-        {/* CENTER CAMERA - Darker Blue Gradient */}
         <div className="position-relative" style={{ width: '60px' }}>
           <Link to="/gallery" className="btn custom-camera-btn-dark rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center"
-            style={{ width: '58px', height: '58px', top: '-12px' }} aria-label="Open Image Gallery">
+            style={{ width: '58px', height: '58px', top: '-12px' }}>
             <i className="bi bi-camera-fill fs-4 text-white"></i>
           </Link>
         </div>
@@ -228,12 +227,9 @@ export default function Header() {
           <span className="mobile-nav-label">Library</span>
         </NavLink>
 
-        <button
-          onClick={toggleMobileMenu}
-          className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none"
-          aria-label="Open Account Menu"
-        >          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
-            <img src={userData.photo} className="w-100 h-100 object-fit-cover mb-1" alt="." />
+        <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
+          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
+            {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover mb-1" alt="." /> : <DefaultAvatar />}
           </div>
           <span className="nav-text-color mobile-nav-label">Account</span>
         </button>
@@ -255,7 +251,9 @@ export default function Header() {
           <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
           <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
             <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
-              <img src={userData.photo} className="rounded-circle border border-3 border-light shadow-sm" width="60" height="60" alt="Profile" />
+              <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{width:60, height:60}}>
+                {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" /> : <DefaultAvatar />}
+              </div>
               <div className="flex-grow-1">
                 <h6 className="m-0 fw-bold text-dark fs-5">{userData.name}</h6>
                 <span className="text-muted small">Go to dashboard</span>
@@ -287,7 +285,6 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Academics Card */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title px-3 pt-3">Academics</div>
               <div className="px-2">
@@ -305,7 +302,6 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Location & Support Card */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title px-3 pt-3">Support & Location</div>
               <div className="px-2">
@@ -327,16 +323,14 @@ export default function Header() {
                     <i className="bi bi-chevron-right text-muted small"></i>
                   </div>
                 </Link>
-
               </div>
             </div>
 
-            {/* Legal & Policies Card */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title px-3 pt-3">Legal</div>
               <div className="px-2">
                 <Link to="/terms" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                  <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
                     <div className="d-flex align-items-center gap-3">
                       <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-file-text-fill"></i></div>
                       <span>Terms & Conditions</span>
@@ -345,7 +339,7 @@ export default function Header() {
                   </div>
                 </Link>
                 <Link to="/privacy-policy" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                  <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
                     <div className="d-flex align-items-center gap-3">
                       <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-shield-lock-fill"></i></div>
                       <span>Privacy Policy</span>
@@ -354,7 +348,7 @@ export default function Header() {
                   </div>
                 </Link>
                 <Link to="/faq" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <div className="ios-menu-item justify-content-between border-bottom border-light">
+                  <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
                     <div className="d-flex align-items-center gap-3">
                       <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-question-circle-fill"></i></div>
                       <span>FAQs</span>
@@ -363,7 +357,7 @@ export default function Header() {
                   </div>
                 </Link>
                 <Link to="/disclaimer" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <div className="ios-menu-item justify-content-between">
+                  <div className="ios-menu-item justify-content-between mx-2">
                     <div className="d-flex align-items-center gap-3">
                       <div className="ios-icon" style={{ background: '#666' }}><i className="bi bi-exclamation-triangle-fill"></i></div>
                       <span>Disclaimer</span>
@@ -374,8 +368,6 @@ export default function Header() {
               </div>
             </div>
 
-
-            {/* Settings Card */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
               <div className="ios-menu-title px-3 pt-3">App Settings</div>
               <div className="ios-menu-item no-hover justify-content-between border-bottom border-light mx-2">
@@ -395,9 +387,6 @@ export default function Header() {
                 </div>
               </div>
             </div>
-
-
-
           </div>
 
           <div className="mt-4 pb-4">
@@ -408,7 +397,6 @@ export default function Header() {
             )}
           </div>
           <div className="w-100 text-center"><span>Version: {__APP_VERSION__}</span></div>
-
         </div>
       </div>
 

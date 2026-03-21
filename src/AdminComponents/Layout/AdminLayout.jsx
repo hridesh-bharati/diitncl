@@ -29,11 +29,11 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="d-flex" style={{ width: "100vw", overflowX: "hidden" }}>
+    <div className="d-flex" style={{ width: "100%", overflowX: "hidden" }}>
       <AdminSidebar open={open} setOpen={setOpen} />
 
       <div
-        className="flex-grow-1 min-vh-100 d-flex flex-column"
+        className="flex-grow-1 d-flex flex-column"
         style={{
           background: "#f8f9fa",
           width: "100%",
@@ -41,7 +41,7 @@ export default function AdminLayout() {
         }}
       >
         <header
-          className="bg-white border-bottom px-3 d-flex align-items-center shadow-sm"
+          className="bg-white border-bottom px-3 pt-1 d-flex align-items-center shadow-sm"
         >
           {/* Sidebar Toggle */}
           <button
