@@ -136,7 +136,11 @@ export default function Header() {
 
           <div className="header-right d-flex align-items-center gap-2 gap-md-3">
             <div className="apps-dropdown position-relative">
-              <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
+              <button
+                className="google-apps border-0 bg-transparent p-2 rounded-circle"
+                onClick={() => setShowApps(!showApps)}
+                aria-label="Open Apps Menu"
+              >
                 <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
               </button>
               {showApps && (
@@ -224,8 +228,11 @@ export default function Header() {
           <span className="mobile-nav-label">Library</span>
         </NavLink>
 
-        <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
-          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
+        <button
+          onClick={toggleMobileMenu}
+          className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none"
+          aria-label="Open Account Menu"
+        >          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
             <img src={userData.photo} className="w-100 h-100 object-fit-cover mb-1" alt="." />
           </div>
           <span className="nav-text-color mobile-nav-label">Account</span>
@@ -400,7 +407,7 @@ export default function Header() {
               <button onClick={openLogin} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow">Login to Portal</button>
             )}
           </div>
-          <div className="w-100 text-center p-3"><span>Version: {__APP_VERSION__}</span></div>
+          <div className="w-100 text-center"><span>Version: {__APP_VERSION__}</span></div>
 
         </div>
       </div>

@@ -1,31 +1,37 @@
 // src\services\pushService.js
-import { getMessaging, getToken } from "firebase/messaging";
+import { getMessaging, getToken, isSupported } from "firebase/messaging";
 import { app } from "../firebase/firebase.js";
-const messaging = getMessaging(app);
 
 export const subscribeUser = async () => {
   try {
-    // Permission mangna
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-      console.error("Permission denied for notifications");
+    const supported = await isSupported();
+
+    if (!supported) {
+      console.warn("🚫 FCM not supported in this browser");
       return null;
     }
 
-    // FCM Token generate karna
+    const messaging = getMessaging(app); 
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.warn("❌ Notification permission denied");
+      return null;
+    }
+
     const currentToken = await getToken(messaging, {
-      vapidKey: import.meta.env.VITE_PUBLIC_VAPID_KEY
+      vapidKey: import.meta.env.VITE_PUBLIC_VAPID_KEY,
     });
 
     if (currentToken) {
-      console.log("FCM Token:", currentToken);
-      return currentToken; // Ab ye ek simple string return karega
+      console.log("✅ FCM Token:", currentToken);
+      return currentToken;
     } else {
-      console.warn("No registration token available.");
+      console.warn("⚠ No token found");
       return null;
     }
   } catch (err) {
-    console.error("FCM Subscription Error:", err);
+    console.error("❌ FCM Error:", err);
     return null;
   }
 };

@@ -65,6 +65,7 @@ export default function CardSlider() {
           <button
             key={i}
             onClick={() => scrollTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
             className="border-0 p-0"
             style={{
               width: i === activeDot ? '28px' : '10px',

@@ -1,6 +1,6 @@
 // src/App.jsx
 import { Route, Routes, Navigate } from "react-router-dom";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { subscribeUser } from "./services/pushService";
 
 import "./App.css";
@@ -17,7 +17,7 @@ import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 import { authListener, getUserRole } from "./firebase/auth";
 import { db, app } from "./firebase/firebase";
 import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
-import { getMessaging, onMessage } from "firebase/messaging";
+import { getMessaging, onMessage, isSupported } from "firebase/messaging";
 
 
 
@@ -45,7 +45,7 @@ const Banking = lazy(() => import("./Components/HomePage/pages/Course/Banking"))
 const Certificate = lazy(() => import("./Components/HomePage/pages/Course/Ceritificate"));
 
 //  Photo editor
-import PhotoEdit from "./Components/HomePage/pages/PhotoEditor/PhotoEdit";
+const PhotoEdit = lazy(() => import("./Components/HomePage/pages/PhotoEditor/PhotoEdit"));
 
 /* Legal */
 const Discription = lazy(() => import("./Components/HomePage/pages/About/Discription"));
@@ -59,12 +59,13 @@ const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
 const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
 
 
-const messaging = getMessaging(app);
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const messagingRef = useRef(null);
 
   // --------------------------------------------------------
   // 🔥 FIXED: Service Worker Registration
@@ -103,26 +104,37 @@ export default function App() {
       window.removeEventListener("click", initPush);
       window.removeEventListener("scroll", initPush);
     };
-  }, [user]);  
+  }, [user]);
 
   // --------------------------------------------------------
   // 🔥 FIXED: Foreground Listener
   // --------------------------------------------------------
   useEffect(() => {
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log("📩 Foreground Message:", payload);
+    let unsubscribe;
 
-      // Notification tabhi dikhao jab permission granted ho
-      if (Notification.permission === "granted") {
-        new Notification(payload.notification?.title || "Drishtee Alert", {
-          body: payload.notification?.body,
-          icon: "/logo.png",
-          badge: "/images/icon/icon-192.png",
-          requireInteraction: true
-        });
-      }
-    });
-    return () => unsubscribe();
+    const initMessaging = async () => {
+      const supported = await isSupported();
+      if (!supported) return;
+
+      messagingRef.current = getMessaging(app);
+
+      unsubscribe = onMessage(messagingRef.current, (payload) => {
+        console.log("📩 Foreground Message:", payload);
+
+        if (Notification.permission === "granted") {
+          new Notification(payload.notification?.title || "Drishtee Alert", {
+            body: payload.notification?.body,
+            icon: "/logo.png",
+          });
+        }
+      });
+    };
+
+    initMessaging();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   // --------------------------------------------------------
@@ -180,7 +192,7 @@ export default function App() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Lock >
+    <  >
       <NetworkStatus />
       <Header />
       <InstallPrompt />
@@ -231,6 +243,6 @@ export default function App() {
           <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
         </Routes>
       </Suspense>
-    </Lock >
+    </  >
   );
 }

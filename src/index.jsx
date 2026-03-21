@@ -8,7 +8,6 @@ import { ToastContainer } from "react-toastify";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,18 +21,15 @@ root.render(
       <AuthProvider>
         <BrowserRouter>
           <App />
-
-          {/* Global Toast Notifications */}
           <ToastContainer
             position="top-right"
-            autoClose={3000}
-            limit={3}
-            hideProgressBar={false}
+            autoClose={2500}
+            limit={2}
+            hideProgressBar
             newestOnTop
             closeOnClick
-            pauseOnHover
-            draggable
-            pauseOnFocusLoss
+            pauseOnHover={false}
+            draggable={false}
             theme="colored"
           />
         </BrowserRouter>

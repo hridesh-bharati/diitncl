@@ -46,7 +46,7 @@ const Testimonials = () => {
 
         <div className="d-flex justify-content-center gap-2 mt-4">
           {testimonials.map((_, i) => (
-            <button key={i} onClick={() => setIdx(i)} className={`dot-btn ${idx === i ? 'active' : ''}`} />
+            <button key={i} onClick={() => setIdx(i)} className={`dot-btn ${idx === i ? 'active' : ''}`} aria-label="View slide" />
           ))}
         </div>
       </div>
