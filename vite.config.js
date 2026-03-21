@@ -72,7 +72,23 @@ export default defineConfig(({ command }) => {
       target: "es2020",
       minify: "esbuild",
       sourcemap: "hidden",
+      // ✨ WHATSAPP OPTIMIZATION: Manual Chunking
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            // Firebase ko alag bundle mein dalo (kaafi heavy hota hai)
+            if (id.includes("firebase")) {
+              return "vendor-firebase";
+            }
+            // React aur core libraries ko alag dalo
+            if (id.includes("node_modules")) {
+              return "vendor-core";
+            }
+          }
+        }
+      }
     },
+
 
     resolve: {
       alias: {

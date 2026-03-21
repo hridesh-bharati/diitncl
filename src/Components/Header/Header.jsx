@@ -1,27 +1,33 @@
-import { useState, useRef, useEffect, useMemo, useTransition } from "react";
+import { useState, useRef, useEffect, useMemo, useTransition, lazy, Suspense } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import GlobleSearchBox from "../GlobleSearch/GlobleSearchBox";
 import RouteLinks from "../GlobleSearch/RouteLinks";
 import LoginForm from "./LoginForm";
-import LanguageTranslator from "../LanguageTranslator/LanguageTranslator";
-import DefaultAvatar from "../../Components/HelperCmp/DefaultAvatar/DefaultAvatar"; // ✅ Added this
+import DefaultAvatar from "../../Components/HelperCmp/DefaultAvatar/DefaultAvatar";
 import "./Header.css";
 
+// ✨ WhatsApp Optimization: Lazy Load
+const LanguageTranslator = lazy(() => import("../LanguageTranslator/LanguageTranslator"));
+
 export default function Header() {
-  const { user, student, isAdmin, logout, photoURL, displayName, userProfile } = useAuth();
+  const { user, student, isAdmin, logout, photoURL, displayName } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showApps, setShowApps] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginType, setLoginType] = useState("student");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [loadTranslator, setLoadTranslator] = useState(false);
 
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✨ PERFORMANCE: Cloudinary Small Image Optimization
+  const prefetchTranslator = () => {
+    import("../LanguageTranslator/LanguageTranslator");
+  };
+
   const getSmallPhoto = (url) => {
     if (!url || !url.includes("cloudinary")) return null;
     return url.replace("/upload/", "/upload/w_120,h_120,c_thumb,g_face,f_auto,q_auto/");
@@ -30,7 +36,7 @@ export default function Header() {
   const userData = {
     name: displayName,
     email: student?.email || user?.email || "student@drishteeindia.com",
-    photo: getSmallPhoto(photoURL), // ✅ Optimized URL
+    photo: getSmallPhoto(photoURL),
     dashboard: isAdmin ? "/admin" : "/student"
   };
 
@@ -68,7 +74,6 @@ export default function Header() {
   ], []);
 
   const toggleMobileMenu = () => startTransition(() => setIsMenuOpen(!isMenuOpen));
-
   const openLogin = () => {
     startTransition(() => {
       setShowLoginModal(true);
@@ -169,13 +174,13 @@ export default function Header() {
               ) : (
                 <div className="profile-section" ref={profileRef}>
                   <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                    {userData.photo ? <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" /> : <div style={{width:35, height:35}}><DefaultAvatar /></div>}
+                    {userData.photo ? <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" /> : <div style={{ width: 35, height: 35 }}><DefaultAvatar /></div>}
                   </div>
                   {showProfileMenu && (
                     <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden">
                       <div className="profile-header p-4 text-center bg-light border-bottom">
-                        <div className="mx-auto mb-2 overflow-hidden rounded-circle border border-3 border-white shadow" style={{width:65, height:65}}>
-                           {userData.photo ? <img src={userData.photo} alt="user" className="w-100 h-100 object-fit-cover" /> : <DefaultAvatar />}
+                        <div className="mx-auto mb-2 overflow-hidden rounded-circle border border-3 border-white shadow" style={{ width: 65, height: 65 }}>
+                          {userData.photo ? <img src={userData.photo} alt="user" className="w-100 h-100 object-fit-cover" /> : <DefaultAvatar />}
                         </div>
                         <h6 className="fw-bold m-0">{userData.name}</h6>
                         <p className="text-muted small m-0 text-truncate">{userData.email}</p>
@@ -193,47 +198,12 @@ export default function Header() {
                 </div>
               )}
             </div>
-
             <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
               <i className="bi bi-geo-alt-fill text-danger"></i>
             </Link>
           </div>
         </div>
       </header>
-
-      {/* MOBILE BOTTOM NAV */}
-      <nav className="fixed-bottom d-lg-none d-flex justify-content-around align-items-center glass-nav-white"
-        style={{ height: "65px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
-
-        <NavLink to="/" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
-          <i className="bi bi-house-door fs-5"></i>
-          <span className="mobile-nav-label">Home</span>
-        </NavLink>
-
-        <NavLink to="/courses" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
-          <i className="bi bi-grid fs-5"></i>
-          <span className="mobile-nav-label">Explore</span>
-        </NavLink>
-
-        <div className="position-relative" style={{ width: '60px' }}>
-          <Link to="/gallery" className="btn custom-camera-btn-dark rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center"
-            style={{ width: '58px', height: '58px', top: '-12px' }}>
-            <i className="bi bi-camera-fill fs-4 text-white"></i>
-          </Link>
-        </div>
-
-        <NavLink to="/library" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
-          <i className="bi bi-book fs-5"></i>
-          <span className="mobile-nav-label">Library</span>
-        </NavLink>
-
-        <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
-          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
-            {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover mb-1" alt="." /> : <DefaultAvatar />}
-          </div>
-          <span className="nav-text-color mobile-nav-label">Account</span>
-        </button>
-      </nav>
 
       {/* MOBILE ACCOUNT DRAWER */}
       <div className={`offcanvas offcanvas-bottom rounded-top-5 border-0 bg-light ${isMenuOpen ? "show" : ""}`}
@@ -251,7 +221,7 @@ export default function Header() {
           <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
           <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
             <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
-              <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{width:60, height:60}}>
+              <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{ width: 60, height: 60 }}>
                 {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" /> : <DefaultAvatar />}
               </div>
               <div className="flex-grow-1">
@@ -301,6 +271,8 @@ export default function Header() {
                 ))}
               </div>
             </div>
+
+
 
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title px-3 pt-3">Support & Location</div>
@@ -375,7 +347,17 @@ export default function Header() {
                   <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
                   <span>Language</span>
                 </div>
-                <div className="language-wrapper-drawer"><LanguageTranslator /></div>
+                <div className="language-wrapper-drawer">
+                  {!loadTranslator ? (
+                    <button className="btn btn-light btn-sm rounded-pill px-3 fw-bold border"
+                      onMouseEnter={prefetchTranslator}
+                      onClick={() => setLoadTranslator(true)}>Change</button>
+                  ) : (
+                    <Suspense fallback={<small className="text-muted">Loading...</small>}>
+                      <LanguageTranslator />
+                    </Suspense>
+                  )}
+                </div>
               </div>
               <div className="ios-menu-item no-hover justify-content-between mx-2">
                 <div className="d-flex align-items-center gap-3">
@@ -399,6 +381,31 @@ export default function Header() {
           <div className="w-100 text-center"><span>Version: {__APP_VERSION__}</span></div>
         </div>
       </div>
+
+      {/* MOBILE BOTTOM NAV */}
+      <nav className="fixed-bottom d-lg-none d-flex justify-content-around align-items-center glass-nav-white"
+        style={{ height: "65px", zIndex: 1000, paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <NavLink to="/" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
+          <i className="bi bi-house-door fs-5"></i><span className="mobile-nav-label">Home</span>
+        </NavLink>
+        <NavLink to="/courses" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
+          <i className="bi bi-grid fs-5"></i><span className="mobile-nav-label">Explore</span>
+        </NavLink>
+        <div className="position-relative" style={{ width: '60px' }}>
+          <Link to="/gallery" className="btn custom-camera-btn-dark rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center" style={{ width: '58px', height: '58px', top: '-12px' }}>
+            <i className="bi bi-camera-fill fs-4 text-white"></i>
+          </Link>
+        </div>
+        <NavLink to="/library" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
+          <i className="bi bi-book fs-5"></i><span className="mobile-nav-label">Library</span>
+        </NavLink>
+        <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none">
+          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
+            {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover mb-1" alt="." /> : <DefaultAvatar />}
+          </div>
+          <span className="nav-text-color mobile-nav-label">Account</span>
+        </button>
+      </nav>
 
       {/* MODALS & OVERLAYS */}
       {showLoginModal && (

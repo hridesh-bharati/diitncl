@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import './LanguageTranslator.css';
 
 const LANGUAGES = [
@@ -20,6 +20,8 @@ const LANGUAGES = [
 export default function GoogleTranslateButton() {
   const [open, setOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState(localStorage.getItem("appLang") || "device");
+  const [isScriptLoaded, setIsScriptLoaded] = useState(window.__gtLoaded || false);
+  const scriptRequestRef = useRef(false); // To prevent multiple script injections
 
   const getTargetCode = (code) => {
     if (code !== "device") return code;
@@ -36,16 +38,26 @@ export default function GoogleTranslateButton() {
     return false;
   }, []);
 
-  useEffect(() => {
-    if (window.__gtLoaded) return;
-    window.__gtLoaded = true;
+  // ✨ Function jo sirf click par script load karegi
+  const initGoogleTranslate = () => {
+    setOpen(true); // UI pehle open karo fast response ke liye
 
+    if (isScriptLoaded || scriptRequestRef.current) {
+      // Agar script pehle se hai, toh sirf combo update karo
+      updateGoogleCombo(selectedLang);
+      return;
+    }
+
+    scriptRequestRef.current = true;
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
         { pageLanguage: "en", autoDisplay: false },
         "google_translate_element"
       );
-      
+
+      window.__gtLoaded = true;
+      setIsScriptLoaded(true);
+
       const interval = setInterval(() => {
         if (updateGoogleCombo(selectedLang)) clearInterval(interval);
       }, 400);
@@ -55,7 +67,18 @@ export default function GoogleTranslateButton() {
     script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     script.async = true;
     document.body.appendChild(script);
-  }, [selectedLang, updateGoogleCombo]);
+  };
+
+  // Naya effect: Jab user pehle se language select karke rakha ho (LocalStorage)
+  // Tab app load hone ke thodi der baad script load kar sakte hain (Idle time mein)
+  useEffect(() => {
+    if (selectedLang !== "device" && !isScriptLoaded) {
+      // Optional: Agar user ne language set ki hai, toh background mein load karlo 
+      // par 3 second ke delay ke baad taaki initial load fast ho.
+      const timer = setTimeout(initGoogleTranslate, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
@@ -66,6 +89,11 @@ export default function GoogleTranslateButton() {
       localStorage.setItem("appLang", lang);
       setSelectedLang(lang);
       setOpen(false);
+    } else {
+      // Agar script load ho rahi hai tab tak wait karein
+      localStorage.setItem("appLang", lang);
+      setSelectedLang(lang);
+      setOpen(false);
     }
   };
 
@@ -73,19 +101,21 @@ export default function GoogleTranslateButton() {
     <>
       <div id="google_translate_element" style={{ display: "none" }} />
 
-      <button className="notranslate btn border-0 d-flex align-items-center" onClick={() => setOpen(true)}>
+      {/* Button par click karte hi initGoogleTranslate call hoga */}
+      <button className="notranslate btn border-0 d-flex align-items-center" onClick={initGoogleTranslate}>
         <i className="bi bi-translate fs-2 text-primary"></i>
       </button>
 
       <div className={`gt-overlay ${open ? "active" : ""}`} onClick={() => setOpen(false)}>
         <div className="gt-sheet" onClick={(e) => e.stopPropagation()}>
           <div className="gt-drag-handle" />
-          
+
           <div className="gt-header notranslate mt-5 ps-4" translate="no">
             <button className="gt-close-btn" onClick={() => setOpen(false)}>
               <i className="bi bi-arrow-left"></i>
             </button>
             <h6 className="m-0 fw-bold">App Language</h6>
+            {!isScriptLoaded && <small className="text-muted ms-auto pe-4">Loading engine...</small>}
           </div>
 
           <div className="gt-body notranslate" translate="no">

@@ -8,60 +8,34 @@ export default function HomeOffers() {
 
   useEffect(() => {
     const q = query(collection(db, "offers"), orderBy("createdAt", "desc"), limit(5));
-
-    return onSnapshot(q, (snapshot) => {
-      setOffers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    return onSnapshot(q, s => {
+      setOffers(s.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoading(false);
-    }, (err) => {
-      console.error(err);
-      setLoading(false);
-    });
+    }, () => setLoading(false));
   }, []);
 
-  if (loading) return <div className="text-center my-4">Loading...</div>;
-  if (!offers.length) return null;
+  if (loading || !offers.length) return loading ? <p className="text-center small my-4">...</p> : null;
 
   return (
-    <section className="container my-4">
-      <div className="d-flex align-items-center mb-3">
-        <div className="bg-danger p-1 rounded-circle me-2 pulse-red"></div>
-        {/* FIX: Heading Order (h4 -> h2) */}
-        <h2 className="fw-bold h4 m-0 text-dark">Special Offers</h2>
-      </div>
-
-      <div className="row g-3">
+    <section className="container my-3">
+      <h2 className="h6 fw-bold mb-3"><i className="bi bi-circle-fill text-danger small me-2"></i>Special Offers</h2>
+      <div className="row g-2">
         {offers.map(({ id, caption, details, adminPhoto, adminName, createdAt }) => (
-          <div className="col-md-12" key={id}>
-            <div className="offer-card-custom h-100 p-3 shadow-sm border rounded-4">
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <span className="badge rounded-pill bg-danger-subtle text-danger px-3">Limited Time</span>
-                <i className="bi bi-megaphone text-warning fs-5"></i>
+          <div className="col-12" key={id}>
+            <div className="p-3 border rounded-4 bg-white shadow-sm">
+              <div className="d-flex justify-content-between mb-1">
+                <span className="badge rounded-pill bg-danger-subtle text-danger">Offer</span>
+                <i className="bi bi-megaphone text-warning"></i>
               </div>
-
-              {/* FIX: Heading Order (h5 -> h3) */}
-              <h3 className="fw-bold text-dark h5 mb-2">{caption}</h3>
-              <p className="text-muted small mb-3 line-clamp-2">{details}</p>
-              <hr className="opacity-10" />
-
+              <h3 className="h6 fw-bold m-0">{caption}</h3>
+              <p className="text-muted small m-0">{details}</p>
+              <hr className="my-2 opacity-10" />
               <div className="d-flex align-items-center justify-content-between">
-
-                <div className="d-flex align-items-center">
-                  {adminPhoto && (
-                    <img
-                      src={adminPhoto.replace("/upload/", "/upload/w_60,h_60,c_thumb,g_face,f_auto,q_auto/")}
-                      alt=""
-                      width="30"
-                      height="30"
-                      className="rounded-circle me-2 border"
-                      style={{ objectFit: "cover" }}
-                    />
-                  )}
-                  <span className="fw-bold x-small-text text-secondary">{adminName || "Drishtee"}</span>
+                <div className="d-flex align-items-center gap-2">
+                  <img src={adminPhoto?.replace("/upload/", "/upload/w_40,f_auto,q_auto/") || `https://ui-avatars.com/api/?name=${adminName}`} width="20" height="20" className="rounded-circle border" alt="" />
+                  <span className="fw-bold text-secondary" style={{fontSize:9}}>{adminName || "Drishtee"}</span>
                 </div>
-
-                <small className="text-muted" style={{ fontSize: '10px' }}>
-                  {createdAt?.toDate?.().toLocaleDateString() || ""}
-                </small>
+                <small className="text-muted" style={{fontSize:9}}>{createdAt?.toDate?.().toLocaleDateString()}</small>
               </div>
             </div>
           </div>

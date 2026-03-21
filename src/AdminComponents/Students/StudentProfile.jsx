@@ -1,3 +1,4 @@
+// src\AdminComponents\Students\StudentProfile.jsx
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -136,9 +137,9 @@ const ProfileContent = ({ admissions, loading, error }) => {
       </div>
     </div>
   );
-
   const fields = [
     { label: "Reg No", key: "regNo", icon: "bi-card-list", color: "#000000" },
+    { label: "Date of Birth", key: "dob", icon: "bi-calendar-event", color: "#FF9800", type: "date" },
     { label: "Father's Name", key: "fatherName", icon: "bi-person-badge", color: "#3F51B5" },
     { label: "Mother's Name", key: "motherName", icon: "bi-person-badge", color: "#E91E63" },
     { label: "Mobile", key: "mobile", icon: "bi-telephone-fill", color: "#4CAF50" },
@@ -147,7 +148,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
     { label: "Course", key: "course", icon: "bi-book-half", color: "#673AB7" },
     { label: "Gender", key: "gender", icon: "bi-gender-ambiguous", color: "#2196F3" },
   ];
-
   return (
     <div className="win11-bg pb-5 overflow-auto">
       {/* HEADER */}
