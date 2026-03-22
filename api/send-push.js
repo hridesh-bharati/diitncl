@@ -101,38 +101,25 @@ export default async function handler(req, res) {
   }
 
   // 4. FCM Message Structure
-  const message = {
+const message = {
+  notification: {
+    title: title,
+    body: body,
+  },
+  // Browser popup ke liye ye block must hai
+  webpush: {
     notification: {
       title: title,
       body: body,
+      icon: '/images/icon/icon-192.png', // Sahi path check karein
+      badge: '/images/icon/icon-192.png',
     },
-    // Custom data jo app handle kar sakti hai (jaise redirection)
-    data: {
-      url: url || 'https://www.drishteeindia.com/student/dashboard',
-      click_action: 'FLUTTER_NOTIFICATION_CLICK', // Background handling ke liye
-    },
-    // Android specific settings
-    android: {
-      notification: {
-        icon: 'stock_ticker_update',
-        color: '#001529', // Drishtee Theme Color
-      },
-    },
-    // Web (Browser) specific settings
-    webpush: {
-      headers: {
-        Urgency: 'high',
-      },
-      notification: {
-        icon: icon || 'https://www.drishteeindia.com/logo.png',
-        badge: 'https://www.drishteeindia.com/logo.png',
-      },
-      fcm_options: {
-        link: url || 'https://www.drishteeindia.com/student/dashboard',
-      },
-    },
-    token: token, // Receiver ka unique FCM Token
-  };
+    fcm_options: {
+      link: url || 'https://www.drishteeindia.com/student/dashboard'
+    }
+  },
+  token: token,
+};
 
   try {
     // 5. Send Notification via FCM
