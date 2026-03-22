@@ -192,7 +192,7 @@ export default function App() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <  >
+    <Lock>
 
       <NetworkStatus />
       <Header />
@@ -249,6 +249,6 @@ export default function App() {
           </Suspense>
         </SwipeLayout>
       </AnimatePresence>
-    </  >
+    </Lock>
   );
 }
