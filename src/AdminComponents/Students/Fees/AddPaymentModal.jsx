@@ -67,8 +67,8 @@ export default function AddPaymentModal({ student }) {
 
   return (
     <>
-      <button className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" onClick={() => setShow(true)}>
-        + Fee
+      <button className="btn btn-primary rounded-pill px-5 fw-bold shadow-sm" onClick={() => setShow(true)}>
+        + Fee 
       </button>
 
       {show && createPortal(

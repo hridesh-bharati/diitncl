@@ -56,21 +56,40 @@ export default function FeePage() {
   return (
     <div className="win11-bg min-vh-100 py-3">
       <div className="container" style={{ maxWidth: '850px' }}>
-        <div className="glass-panel p-3 mb-4 d-flex align-items-center justify-content-between shadow-sm border-0">
-          <div className="d-flex align-items-center">
-            <button className="btn btn-light rounded-circle me-3" onClick={() => navigate(-1)}>
-              <i className="bi bi-arrow-left"></i>
-            </button>
-            <h5 className="fw-bold mb-0">Fee Management</h5>
-          </div>
-          <div className="d-flex gap-2">
-            <button className="btn btn-dark rounded-pill px-3 shadow-sm" onClick={() => printFullStatement(student, payments, summary)}>
-              <i className="bi bi-printer me-2"></i> Print Statement
-            </button>
-            <AddPaymentModal student={student} />
-          </div>
-        </div>
 
+        <div className="w-100 glass-panel p-2 mb-1">
+
+          {/* Header */}
+          <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+
+            <div className="d-flex align-items-center gap-2">
+              <button
+                className="btn btn-light rounded-circle shadow-s"
+                onClick={() => navigate(-1)}
+              >
+                <i className="bi bi-arrow-left"></i>
+              </button>
+
+              <h5 className="fw-bold mb-0"> Fee Management</h5>
+            </div>
+
+            {/* Actions */}
+            <div className="d-flex gap-2 flex-wrap">
+              <button
+                className="btn btn-dark rounded-pill px-3 shadow-sm d-flex align-items-center"
+                onClick={() =>
+                  printFullStatement(student, payments, summary)
+                }
+              >
+                <i className="bi bi-printer me-2"></i>Print Statement
+              </button>
+
+              <AddPaymentModal student={student} />
+            </div>
+
+          </div>
+
+        </div>
         <FeeSummaryCard student={student} summary={summary} payments={payments} />
 
         <div className="card border-0 shadow-sm rounded-4 mt-4 overflow-hidden text-start">
