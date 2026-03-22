@@ -31,7 +31,7 @@ export default function PaymentTable({ payments = [], student, summary }) {
                   <button className="btn btn-sm p-0 text-dark" onClick={() => printSingleReceipt(student, p, summary)}>
                     <i className="bi bi-printer" style={{ fontSize: '14px' }}></i>
                   </button>
-                  <button className="btn btn-sm p-0 ms-2 text-danger" onClick={() => deletePayment(student.id, p.id)}>
+                  <button className="btn btn-sm p-0 ms-2 text-danger" onClick={() => deletePayment(student.email || student.id, p.id)}>
                     <i className="bi bi-trash3" style={{ fontSize: '14px' }}></i>
                   </button>
                 </div>

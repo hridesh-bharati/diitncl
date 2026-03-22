@@ -11,6 +11,20 @@ export const COURSE_CONFIG = {
   "CCC": { duration: 3, monthly: 1000, adm: 500 },
 };
 
+// 2. Center Wise Configuration (Dynamic Address & Mobile)
+const CENTER_CONFIG = {
+  "DIIT124": {
+    mobile: "+91 9918151032",
+    address: "Paragpur Road, Near Sunshine School, Nichlaul - 273304",
+    centerCode: "DIIT124"
+  },
+  "DIIT125": {
+    mobile: "+91 7398889347",
+    address: "Thoothibari, Pakali Mandi ke pass, Thoothibari - 273305",
+    centerCode: "DIIT125"
+  }
+};
+
 export const getFeeLogic = (courseName, payments = []) => {
   const c = courseName?.toUpperCase() || "";
   const conf = COURSE_CONFIG[c] || { duration: 6, monthly: 700, adm: 500 };
@@ -21,7 +35,6 @@ export const getFeeLogic = (courseName, payments = []) => {
 
 export const addPayment = async (studentEmail, data) => {
   if (!studentEmail) throw new Error("Student Email is required");
-  
   const emailId = studentEmail.toLowerCase().trim();
   await addDoc(collection(db, "admissions", emailId, "payments"), {
     ...data, 
@@ -31,9 +44,15 @@ export const addPayment = async (studentEmail, data) => {
 };
 
 export const deletePayment = async (studentEmail, pid) => {
+  if (!studentEmail || !pid) return;
   if (window.confirm("Delete this payment permanently?")) {
-    const emailId = studentEmail.toLowerCase().trim();
-    await deleteDoc(doc(db, "admissions", emailId, "payments", pid));
+    try {
+      const emailId = studentEmail.toLowerCase().trim();
+      const paymentDocRef = doc(db, "admissions", emailId, "payments", pid);
+      await deleteDoc(paymentDocRef);
+    } catch (error) {
+      alert("Failed to delete payment: " + error.message);
+    }
   }
 };
 
@@ -49,155 +68,169 @@ const numberToWords = (num) => {
   return num > 0 ? makeWords(num) : "Zero";
 };
 
-// --- COLLEGE STYLE A4 TEMPLATE ---
+// --- DYNAMIC A4 TEMPLATE ---
 const generateA4HTML = (student, paymentsArray, summary, isSingle = false) => {
   const docTitle = isSingle ? "OFFICIAL FEE RECEIPT" : "STUDENT FEE LEDGER / STATEMENT";
+  
+  // LOGIC: Check Registration No to decide Center Info
+  const regNo = student?.regNo || "";
+  let activeCenter = CENTER_CONFIG["DIIT124"]; // Default
+  if (regNo.includes("DIIT125")) {
+    activeCenter = CENTER_CONFIG["DIIT125"];
+  }
 
   return `
   <html>
   <head>
-    <title>${student?.name} - Statement</title>
+    <title>Receipt_${student?.name}</title>
     <style>
       @page { size: A4; margin: 0; }
-      body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f0f0; margin: 0; padding: 0; }
+      body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f0f0; margin: 0; padding: 0; color: #333; }
       
-      /* A4 Page Styling */
       .page {
         width: 210mm;
-        min-height: 297mm;
+        height: 297mm;
         padding: 20mm;
         margin: 10mm auto;
         background: white;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         box-sizing: border-box;
         position: relative;
-        border-top: 8px solid #1a237e; /* Navy Blue Theme */
+        display: flex;
+        flex-direction: column;
       }
 
-      /* College Header */
-      .header-container { text-align: center; border-bottom: 2px solid #1a237e; padding-bottom: 15px; margin-bottom: 25px; }
-      .header-container h1 { margin: 0; font-size: 28px; color: #1a237e; text-transform: uppercase; }
-      .header-container p { margin: 2px 0; font-size: 12px; color: #555; letter-spacing: 0.5px; }
-      
-      .doc-header {
-        background: #1a237e; color: white; padding: 8px; font-weight: bold;
-        text-align: center; margin-bottom: 30px; font-size: 14px; border-radius: 4px;
+      .header-container { text-align: center; }
+      .header-container h1 { margin: 0; font-size: 32px; color: #1a237e; font-weight: 800; text-transform: uppercase; }
+      .header-container p { margin: 3px 0; font-size: 13px; color: #444; font-weight: 500; }
+      .header-line { border-bottom: 2.5px solid #1a237e; margin: 15px 0 25px 0; }
+
+      .doc-type {
+        text-align: center; color: #999; font-size: 14px; font-weight: bold;
+        letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase;
       }
 
-      /* Profile Grid */
-      .student-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; font-size: 14px; }
-      .info-row { display: flex; border-bottom: 1px solid #eee; padding: 6px 0; }
-      .info-row b { width: 140px; color: #1a237e; }
+      .info-section { display: grid; grid-template-columns: 1.1fr 0.9fr; column-gap: 50px; row-gap: 12px; margin-bottom: 35px; }
+      .info-item { display: flex; align-items: flex-end; border-bottom: 1.5px solid #e0e0e0; padding-bottom: 4px; }
+      .info-item label { color: #1a237e; font-weight: 800; font-size: 14px; width: 140px; white-space: nowrap; }
+      .info-item span { flex: 1; font-size: 14px; font-weight: 600; color: #000; }
 
-      /* Academic Table */
-      table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-      th { background: #1a237e; color: white; border: 1px solid #1a237e; padding: 10px; font-size: 12px; }
-      td { border: 1px solid #ccc; padding: 10px; font-size: 13px; color: #333; }
+      table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 1.5px solid #1a237e; }
+      th { border: 1px solid #1a237e; padding: 10px; font-size: 11px; color: #999; text-transform: uppercase; font-weight: bold; }
+      td { border: 1px solid #1a237e; padding: 12px; font-size: 14px; font-weight: 600; }
       .text-right { text-align: right; }
-      .even { background: #f9f9f9; }
+      .text-center { text-align: center; }
 
-      /* Summary Table Section */
-      .summary-container { display: flex; justify-content: flex-end; margin-top: -1px; }
-      .summary-table { width: 300px; }
-      .summary-table td { font-weight: bold; padding: 12px; border: 1px solid #1a237e; }
-      .bg-blue-light { background: #e8eaf6; color: #1a237e; }
-      .bg-navy { background: #1a237e; color: white; }
+      .summary-wrapper { display: flex; justify-content: flex-end; margin-top: -1.5px; }
+      .summary-table { width: 340px; border-collapse: collapse; border: 1.5px solid #1a237e; }
+      .summary-table td { padding: 10px 15px; font-weight: 800; font-size: 12px; text-transform: uppercase; border: 1px solid #1a237e; }
+      .label-cell { color: #1a237e; text-align: left; background: #fff; width: 180px; }
+      .value-cell { text-align: right; width: 140px; font-size: 15px; }
+      
+      .paid-text { color: #2e7d32; } 
+      .due-text { color: #888; }   
 
-      /* Footer Area */
-      .declaration { margin-top: 40px; font-size: 12px; color: #666; font-style: italic; }
-      .footer-signs { margin-top: 100px; display: flex; justify-content: space-between; }
-      .sign-box { border-top: 2px solid #1a237e; width: 200px; text-align: center; padding-top: 10px; font-weight: bold; color: #1a237e; }
+      .bottom-notes { margin-top: 40px; font-size: 12px; }
+      .amount-words { margin-bottom: 15px; color: #444; }
+      .disclaimer { color: #666; font-size: 11px; line-height: 1.5; font-style: italic; }
+
+      .signature-section { margin-top: auto; display: flex; justify-content: space-between; padding-bottom: 10px; }
+      .sig-box { width: 220px; border-top: 3px solid #1a237e; text-align: center; padding-top: 8px; font-weight: 800; color: #1a237e; font-size: 14px; }
 
       .watermark {
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg);
-        font-size: 100px; color: rgba(26, 35, 126, 0.04); font-weight: 900; z-index: 0; pointer-events: none;
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+        font-size: 110px; color: rgba(26, 35, 126, 0.03); font-weight: 900; z-index: -1; white-space: nowrap;
       }
 
       @media print {
         body { background: white; }
-        .page { margin: 0; box-shadow: none; border-top: 8px solid #1a237e !important; }
+        .page { margin: 0; box-shadow: none; width: 100%; }
         .no-print { display: none; }
       }
     </style>
   </head>
-  <body onload="window.print(); setTimeout(()=>window.close(), 1000);">
-    <div className="page">
-      <div className="watermark">DRISHTEE CC</div>
-      
-      <div className="header-container">
+  <body onload="window.print();">
+    <div class="page">
+      <div class="watermark">DRISHTEE CC</div>
+
+      <div class="header-container">
         <h1>Drishtee Computer Center</h1>
-        <p>Managed by Drishtee Educational & Charitable Trust</p>
+        <p>A Complete I.T. institute</p>
         <p>An ISO 9001:2015 Certified IT Training Institute</p>
-        <p>Paragpur Road , Nichlaul - 221001 | Web: www.drishteeindia.com | Mob: +91 9918151032</p>
+        <p>${activeCenter.address} | Mob: ${activeCenter.mobile}</p>
+        <div class="header-line"></div>
       </div>
 
-      <div className="doc-header">${docTitle}</div>
+      <div class="doc-type">${docTitle}</div>
 
-      <div className="student-info">
-        <div className="info-group">
-          <div className="info-row"><b>Student Name:</b> <span>${student?.name?.toUpperCase()}</span></div>
-          <div className="info-row"><b>Registration No:</b> <span>${student?.regNo || 'DCC-' + student?.id?.slice(-5).toUpperCase()}</span></div>
-          <div className="info-row"><b>Course Title:</b> <span>${student?.course}</span></div>
+      <div class="info-section">
+        <div>
+           <div class="info-item"><label>Student Name:</label> <span>${student?.name?.toUpperCase()}</span></div>
+           <div class="info-item"><label>Registration No:</label> <span>${student?.regNo || 'DCC-'+student?.course+'/N/A'}</span></div>
+           <div class="info-item"><label>Course Title:</label> <span>${student?.course}</span></div>
         </div>
-        <div className="info-group">
-          <div className="info-row"><b>Admission Date:</b> <span>${student?.admissionDate || 'N/A'}</span></div>
-          <div className="info-row"><b>Statement Date:</b> <span>${new Date().toLocaleDateString('en-GB')}</span></div>
-          <div className="info-row"><b>Center Code:</b> <span>DIIT124</span></div>
+        <div>
+           <div class="info-item"><label>Admission Date:</label> <span>${student?.admissionDate || 'N/A'}</span></div>
+           <div class="info-item"><label>Statement Date:</label> <span>${new Date().toLocaleDateString('en-GB')}</span></div>
+           <div class="info-item"><label>Center Code:</label> <span>${activeCenter.centerCode}</span></div>
         </div>
       </div>
 
       <table>
         <thead>
           <tr>
-            <th width="15%">TRANX DATE</th>
-            <th width="45%">PARTICULARS / DESCRIPTION</th>
-            <th width="20%">MODE</th>
-            <th width="20%" className="text-right">AMOUNT (INR)</th>
+            <th width="18%">TRANX DATE</th>
+            <th width="42%">PARTICULARS / DESCRIPTION</th>
+            <th width="15%">MODE</th>
+            <th width="25%" class="text-right">AMOUNT (INR)</th>
           </tr>
         </thead>
         <tbody>
-          ${paymentsArray.map((p, index) => `
-            <tr className="${index % 2 === 0 ? '' : 'even'}">
-              <td>${p.date}</td>
-              <td>${p.note || 'Tution Fee Installment'}</td>
-              <td>${p.method.toUpperCase()}</td>
-              <td className="text-right">₹ ${p.amount}.00</td>
+          ${paymentsArray.map(p => `
+            <tr>
+              <td class="text-center">${p.date}</td>
+              <td>${p.note || 'Monthly Fee'}</td>
+              <td class="text-center">${p.method.toUpperCase()}</td>
+              <td class="text-right">₹ ${p.amount}.00</td>
             </tr>
           `).join('')}
         </tbody>
       </table>
 
-      <div className="summary-container">
-        <table className="summary-table">
+      <div class="summary-wrapper">
+        <table class="summary-table">
           <tr>
-            <td className="bg-blue-light">GROSS PAYABLE FEE</td>
-            <td className="text-right bg-blue-light">₹ ${summary.netFee}.00</td>
+            <td class="label-cell">Gross Payable Fee</td>
+            <td class="value-cell" style="color:#1a237e">₹ ${summary.netFee}.00</td>
           </tr>
           <tr>
-            <td>TOTAL PAID TO DATE</td>
-            <td className="text-right" style="color: #2e7d32;">₹ ${summary.totalPaid}.00</td>
+            <td class="label-cell">Total Paid to Date</td>
+            <td class="value-cell paid-text">₹ ${summary.totalPaid}.00</td>
           </tr>
           <tr>
-            <td className="bg-navy text-white">NET OUTSTANDING DUES</td>
-            <td className="text-right bg-navy text-white">₹ ${summary.balance}.00</td>
+            <td class="label-cell">Net Outstanding Dues</td>
+            <td class="value-cell due-text">₹ ${summary.balance}.00</td>
           </tr>
         </table>
       </div>
 
-      <div className="declaration">
-        <p><b>Amount in Words:</b> ${numberToWords(isSingle ? paymentsArray[0].amount : summary.totalPaid)} Rupees Only.</p>
-        <p>* This is an official computer-generated fee statement. In case of any discrepancy, please report to the center office within 7 working days.</p>
+      <div class="bottom-notes">
+        <div class="amount-words"><b>Amount in Words:</b> ${numberToWords(isSingle ? paymentsArray[0].amount : summary.totalPaid)} Rupees Only.</div>
+        <div class="disclaimer">
+          * This is an official computer-generated fee statement. In case of any discrepancy, please report to the center office within 7 working days.
+        </div>
       </div>
 
-      <div className="footer-signs">
-        <div className="sign-box">Accountant / Signatory</div>
-        <div className="sign-box">Office Seal & Stamp</div>
+      <div class="signature-section">
+        <div class="sig-box">Accountant / Signatory</div>
+        <div class="sig-box">Office Seal & Stamp</div>
       </div>
     </div>
   </body>
   </html>`;
 };
 
+// 4. Print Handlers
 export const printFullStatement = (student, payments, summary) => {
   const w = window.open("", "_blank");
   w.document.write(generateA4HTML(student, payments, summary, false));
