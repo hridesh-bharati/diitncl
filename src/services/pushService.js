@@ -75,7 +75,6 @@ export const subscribeUser = async () => {
 
     if (currentToken) {
       console.log("✅ FCM Token:", currentToken);
-      // Store token for debugging
       localStorage.setItem('fcm_token', currentToken);
       return currentToken;
     } else {

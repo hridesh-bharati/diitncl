@@ -13,7 +13,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
-// 🔥 Import otpTemplate for the verification mail
 import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification, otpTemplate } from "../../services/emailService";
 
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
