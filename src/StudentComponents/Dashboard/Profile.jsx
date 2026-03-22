@@ -1,9 +1,8 @@
-// src/StudentComponents/Dashboard/Profile.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { auth, db } from "../../firebase/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+// Important: doc aur getDoc ko yahan add kiya gaya hai
+import { doc, getDoc } from "firebase/firestore";
 
-// Simplified Info Item (Copy Feature Removed)
 const InfoItem = ({ icon, label, value }) => (
   <div className="d-flex align-items-center p-3 mb-2 bg-white rounded-4 border-0 shadow-sm border-start border-primary border-4">
     <div className="icon-box bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '45px', height: '45px' }}>
@@ -39,11 +38,21 @@ export default function Profile() {
     const fetchProfile = async () => {
       if (!user?.email) return;
       try {
-        const q = query(collection(db, "admissions"), where("email", "==", user.email.trim().toLowerCase()));
-        const snap = await getDocs(q);
-        if (!snap.empty) setStudent(snap.docs[0].data());
-      } catch (err) { console.error(err); } 
-      finally { setLoading(false); }
+        const emailId = user.email.trim().toLowerCase();
+        // Direct document access kyunki email hi ID hai
+        const docRef = doc(db, "admissions", emailId);
+        const snap = await getDoc(docRef);
+        
+        if (snap.exists()) {
+          setStudent(snap.data());
+        } else {
+          console.log("No such student document for ID:", emailId);
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProfile();
   }, [user]);
@@ -57,14 +66,21 @@ export default function Profile() {
   ], [student]);
 
   if (loading) return <div className="d-flex justify-content-center align-items-center vh-100 bg-light"><div className="spinner-border text-primary" /></div>;
-  if (!student) return <div className="container mt-5 alert alert-danger text-center rounded-4 shadow-sm">डाटा उपलब्ध नहीं है।</div>;
+  
+  if (!student) return (
+    <div className="container mt-5">
+      <div className="alert alert-danger text-center rounded-4 shadow-sm">
+        डाटा उपलब्ध नहीं है। कृपया एडमिन से संपर्क करें।
+      </div>
+    </div>
+  );
 
   const profileImg = student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}&background=0d6efd&color=fff`;
 
   return (
     <div className="pb-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
       <div className="position-relative mb-5 shadow-sm" style={{ height: '110px', background: 'linear-gradient(135deg, #013788 0%, #1e40af 100%)', borderRadius: '0 0 35px 35px' }}>
-      <h5 className="fw-bold text-white  text-center pt-3 small opacity-75">MY  DRISHTEE  PROFILE</h5>
+      <h5 className="fw-bold text-white text-center pt-3 small opacity-75">MY DRISHTEE PROFILE</h5>
         <div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-55px' }}>
           <div className="rounded-circle p-1 bg-white shadow-lg" style={{ cursor: 'pointer' }} onClick={() => setShowModal(true)}>
             <img src={profileImg} alt="Profile" className="rounded-circle" style={{ width: 110, height: 110, objectFit: "cover", border: '3px solid #f8fafc' }} />

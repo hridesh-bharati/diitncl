@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc, deleteDoc  } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
-
+ 
 // --- URL ENCODING HELPERS ---
 const encodeID = (id) => btoa(id).replace(/=/g, "");
 const decodeID = (encoded) => {
@@ -106,30 +106,55 @@ const ProfileContent = ({ admissions, loading, error }) => {
     });
   }, []);
 
-  const handleSave = async () => {
-    try {
-      setIsSaving(true);
-      let updatedData = { ...formData };
-      if (selectedImage) {
-        const fd = new FormData();
-        fd.append("file", selectedImage);
-        fd.append("upload_preset", "hridesh99!");
-        const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { method: "POST", body: fd });
-        const data = await res.json();
-        updatedData.photoUrl = data.secure_url;
-      }
-      const docId = student.email.toLowerCase();
-      await updateDoc(doc(db, "admissions", docId), updatedData);
-      toast.success("Profile Updated");
-      setIsEditing(false);
-      setSelectedImage(null);
-    } catch (err) {
-      toast.error("Update Failed");
-    } finally {
-      setIsSaving(false);
-    }
-  };
+const handleSave = async () => {
+  try {
+    setIsSaving(true);
+    let updatedData = { ...formData };
 
+    // 1. Image Upload Logic (जैसा पहले था)
+    if (selectedImage) {
+      const fd = new FormData();
+      fd.append("file", selectedImage);
+      fd.append("upload_preset", "hridesh99!");
+      const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { 
+        method: "POST", 
+        body: fd 
+      });
+      const data = await res.json();
+      updatedData.photoUrl = data.secure_url;
+    }
+
+    const oldEmailId = student.email.toLowerCase();
+    const newEmailId = updatedData.email.toLowerCase();
+
+    // 2. चेक करें कि क्या ईमेल बदला गया है
+    if (oldEmailId !== newEmailId) {
+      // नया डाक्यूमेंट बनाएँ नए ईमेल के साथ
+      await setDoc(doc(db, "admissions", newEmailId), updatedData);
+      
+      // पुराने डाक्यूमेंट को डिलीट करें
+      await deleteDoc(doc(db, "admissions", oldEmailId));
+      
+      toast.success("Email & Profile Updated");
+      
+      // URL भी अपडेट करना होगा क्योंकि ID बदल गई है
+      const newEncodedId = encodeID(newEmailId);
+      navigate(`/admin/students/${newEncodedId}`, { replace: true });
+    } else {
+      // अगर ईमेल नहीं बदला, तो साधारण अपडेट करें
+      await updateDoc(doc(db, "admissions", oldEmailId), updatedData);
+      toast.success("Profile Updated");
+    }
+
+    setIsEditing(false);
+    setSelectedImage(null);
+  } catch (err) {
+    console.error(err);
+    toast.error("Update Failed");
+  } finally {
+    setIsSaving(false);
+  }
+};
   if (loading) return <div className="win11-bg d-flex justify-content-center align-items-center vh-100"><div className="spinner-border text-primary"></div></div>;
 
   if (error || !student) return (

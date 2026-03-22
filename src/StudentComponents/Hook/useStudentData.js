@@ -8,14 +8,21 @@ export function useStudentData() {
   const user = auth.currentUser;
 
   useEffect(() => {
-    if (!user?.uid) {
+    // user.uid ki jagah user.email use karein kyunki email hi ID hai
+    if (!user?.email) {
       setLoading(false);
       return;
     }
     
-    getDoc(doc(db, "admissions", user.uid))
+    const emailId = user.email.toLowerCase().trim();
+    
+    getDoc(doc(db, "admissions", emailId))
       .then(snap => {
-        if (snap.exists()) setData(snap.data());
+        if (snap.exists()) {
+          setData({ id: snap.id, ...snap.data() });
+        } else {
+          console.log("No student record found for:", emailId);
+        }
       })
       .catch(console.error)
       .finally(() => setLoading(false));

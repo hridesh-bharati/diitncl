@@ -30,29 +30,45 @@ export default function StudentExamPage() {
       if (res.success) navigate(`/student/exams/finish/${admissionId}_${examId}`, { replace: true });
     } catch (err) { console.error("Submission error:", err); }
   }, [admissionId, examId, ans, questions, navigate, submitExam]);
+// 1. Initial Load Fix
+useEffect(() => {
+  const fetchInitialInfo = async () => {
+    if (!user?.email || !examId) return;
+    try {
+      const userEmail = user.email.toLowerCase().trim();
+      setAdmissionId(userEmail); // Email is our ID now
 
-  // 1. Initial Load
-  useEffect(() => {
-    const fetchInitialInfo = async () => {
-      if (!user || !examId) return;
-      try {
-        const studentQ = query(collection(db, "admissions"), where("email", "==", user.email.toLowerCase()));
-        const studentSnap = await getDocs(studentQ);
-        if (!studentSnap.empty) setAdmissionId(studentSnap.docs[0].id);
+      // Get Exam Data
+      const eDoc = await getDoc(doc(db, "exams", examId));
+      if (eDoc.exists()) {
+        setExam(eDoc.data());
+        setTimeLeft(eDoc.data().duration * 3600);
+      }
 
-        const eDoc = await getDoc(doc(db, "exams", examId));
-        if (eDoc.exists()) {
-          setExam(eDoc.data());
-          setTimeLeft(eDoc.data().duration * 3600);
-        }
+      // Get Questions
+      const qSnap = await getDocs(query(collection(db, "examQuestions"), where("examId", "==", examId)));
+      setQuestions(qSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
+  };
+  fetchInitialInfo();
+}, [examId, user]);
 
-        const qSnap = await getDocs(query(collection(db, "examQuestions"), where("examId", "==", examId)));
-        setQuestions(qSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) { console.error(err); }
-      finally { setLoading(false); }
-    };
-    fetchInitialInfo();
-  }, [examId, user]);
+// 3. Real-time Status Listener Fix
+useEffect(() => {
+  if (!user?.email || !examId) return;
+  const userEmail = user.email.toLowerCase().trim();
+  
+  const unsubStatus = onSnapshot(doc(db, "studentExams", `${userEmail}_${examId}`), (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      setDbStatus(data.status);
+      if (data.status === "Ongoing") setExamStarted(true);
+      if (data.status === "Completed") navigate(`/student/exams/finish/${userEmail}_${examId}`);
+    }
+  });
+  return () => unsubStatus();
+}, [examId, user, navigate]);
 
   // 2. Tab Switch Detection (Anti-Cheat)
   useEffect(() => {

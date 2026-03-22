@@ -28,47 +28,35 @@ export default function StudentExamList() {
   }, []);
 
   // 2. 🔥 REAL-TIME LISTENER: Admin toggle karega toh turant yahan update hoga
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (!user?.email) return;
+useEffect(() => {
+  const user = auth.currentUser;
+  if (!user?.email) return;
 
-    // Pehle Admission ID nikalne ke liye ek baar check
-    const getAdmissionAndListen = async () => {
-      const q = query(collection(db, "admissions"), where("email", "==", user.email.toLowerCase()));
-      const studentSnap = await getDocs(q);
+  const userEmail = user.email.toLowerCase().trim();
+  
+  // 🔥 Listen to studentExams real-time using email filter
+  // Admin assign karte waqt studentId mein email daale
+  const examQ = query(collection(db, "studentExams"), where("studentId", "==", userEmail));
 
-      if (!studentSnap.empty) {
-        const admId = studentSnap.docs[0].id;
+  const unsubscribe = onSnapshot(examQ, (snapshot) => {
+    const assignedIds = [];
+    const completedIds = [];
 
-        // 🔥 Listen to studentExams real-time
-        const examQ = query(collection(db, "studentExams"), where("studentId", "==", admId));
-
-        const unsubscribe = onSnapshot(examQ, (snapshot) => {
-          const assignedIds = [];
-          const completedIds = [];
-
-          snapshot.docs.forEach(d => {
-            const data = d.data();
-            assignedIds.push(data.examId);
-            if (data.status === "Completed") {
-              completedIds.push(data.examId);
-            }
-          });
-
-          setAssignedExams(assignedIds);
-          setCompletedExams(completedIds);
-          setFetching(false);
-        });
-
-        return unsubscribe;
+    snapshot.docs.forEach(d => {
+      const data = d.data();
+      assignedIds.push(data.examId);
+      if (data.status === "Completed") {
+        completedIds.push(data.examId);
       }
-    };
+    });
 
-    let unsub;
-    getAdmissionAndListen().then(u => unsub = u);
-    return () => unsub && unsub();
-  }, []);
+    setAssignedExams(assignedIds);
+    setCompletedExams(completedIds);
+    setFetching(false);
+  });
 
+  return () => unsubscribe();
+}, []);
   // Filter exams based on Real-time assignedExams
   const myExams = exams.filter(e =>
     e.isLive &&
