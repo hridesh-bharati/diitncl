@@ -42,8 +42,13 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
+  // 🔥 DIRECT EMAIL ID LISTENER (No Encoding/Decoding)
   useEffect(() => {
-    const docRef = doc(db, "admissions", initialStudent.id);
+    // Hamara document ID student ka email hai (Case-insensitive safety ke liye lowercase)
+    const docId = initialStudent.email?.toLowerCase().trim();
+    if (!docId) return;
+
+    const docRef = doc(db, "admissions", docId);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = { id: docSnap.id, ...docSnap.data() };
@@ -51,7 +56,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       }
     });
     return () => unsubscribe();
-  }, [initialStudent.id]);
+  }, [initialStudent.email]);
 
   const status = useMemo(() => {
     if (student.status === "canceled") return "canceled";
@@ -90,9 +95,9 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       const num = Number(regNum);
       const q = query(collection(db, "admissions"), where("regShort", "==", num), where("branch", "==", branch));
       const snapshot = await getDocs(q);
-      return snapshot.docs.some(doc => doc.id !== student.id);
+      return snapshot.docs.some(doc => doc.id !== student.email.toLowerCase());
     } catch (error) { return false; }
-  }, [student.id]);
+  }, [student.email]);
 
   useEffect(() => {
     const check = async () => {
@@ -110,7 +115,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     if (!isAdmin) return;
     setLoading(true);
     try {
-      await onSave(student.id, { status: newStatus });
+      await onSave(student.email.toLowerCase(), { status: newStatus });
       toast.success(`Application ${newStatus}`);
       setShowRejectConfirm(false);
     } catch {
@@ -118,9 +123,8 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, onSave, student.id]);
+  }, [isAdmin, onSave, student.email]);
 
-  // 🔥 FEATURE: Admission Approved (Email + Push)
   const handleGenerateRegNo = useCallback(async () => {
     if (!isAdmin || !isValidDigit || isDuplicate) return;
     setLoading(true);
@@ -129,26 +133,19 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
       const courseCode = (studentCourse || "CRS").toString().replace(/\s+/g, "").toUpperCase().slice(0, 10);
       const newRegNo = `${studentBranch}/${courseCode}/${cleanRegNum}`;
 
-      await onSave(student.id, {
+      await onSave(student.email.toLowerCase(), {
         branch: studentBranch,
         regNo: newRegNo,
         regShort: Number(cleanRegNum),
         status: "accepted"
       });
 
-      // 📧 Email Logic
       if (student.email) {
         sendEmailNotification(student.email, "Admission Approved - Drishtee", admissionTemplate(student, newRegNo));
       }
 
-      // 📲 Push Logic
       if (student.pushSubscription) {
-        sendPushNotification(
-          student, 
-          "Admission Approved! 🎉", 
-          `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`,
-          "/student/dashboard"
-        );
+        sendPushNotification(student, "Admission Approved! 🎉", `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`, "/student/dashboard");
       }
 
       toast.success("Approved & Notified!");
@@ -160,31 +157,23 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, isValidDigit, isDuplicate, regNumber, studentCourse, studentBranch, onSave, student]);
 
-  // 🔥 FEATURE: Certificate Ready (Email + Push)
   const handleMarkDone = useCallback(async () => {
     if (!isAdmin || !student.regNo || !percent || !admissionDate || !issDate) return toast.error("Fill all details");
     setLoading(true);
     try {
-      await onSave(student.id, {
+      await onSave(student.email.toLowerCase(), {
         status: "done",
         percentage: Number(percent),
         admissionDate,
         issueDate: issDate
       });
 
-      // 📧 Email Logic
       if (student.email) {
         sendEmailNotification(student.email, "Congratulations! Certificate Ready", certificateTemplate(student, percent, issDate));
       }
 
-      // 📲 Push Logic
       if (student.pushSubscription) {
-        sendPushNotification(
-          student,
-          "Course Completed! 🎓",
-          `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`,
-          "/download-certificate"
-        );
+        sendPushNotification(student, "Course Completed! 🎓", `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`, "/download-certificate");
       }
 
       toast.success("Finalized & Notified!");
@@ -196,7 +185,6 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     }
   }, [isAdmin, student, percent, admissionDate, issDate, onSave, studentCourse]);
 
-  // 🔥 FEATURE: Delete Record (Email + Push)
   const handleDelete = useCallback(async () => {
     setLoading(true);
     try {
@@ -204,16 +192,11 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         await sendEmailNotification(student.email, "Student Record Deactivated", deleteAccountTemplate(student));
       }
 
-      // 🔥 Push for Deletion (Optional but good)
       if (student.pushSubscription) {
-        sendPushNotification(
-          student,
-          "Account Deactivated ⚠️",
-          "Your student record has been removed by the administrator."
-        );
+        sendPushNotification(student, "Account Deactivated ⚠️", "Your student record has been removed by the administrator.");
       }
 
-      await onDelete(student.id);
+      await onDelete(student.email.toLowerCase());
       toast.success("Record Deleted & Student Notified");
     } catch (err) {
       toast.error("Delete failed");
@@ -229,7 +212,8 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
 
         <div className="card-body p-3">
           <div className="d-flex align-items-center gap-3 mb-3">
-            <Link to={`/admin/students/${student.id}`}>
+            {/* ✅ DIRECT EMAIL LINK */}
+            <Link to={`/admin/students/${student.email}`}>
               <img src={avatarUrl} alt="" style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "18px" }} />
             </Link>
             <div className="flex-grow-1" style={{ minWidth: 0 }}>

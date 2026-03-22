@@ -1,3 +1,4 @@
+// src\AdminComponents\Students\Fees\FeeServices.js
 import { db } from "../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp, doc, deleteDoc } from "firebase/firestore";
 
@@ -18,15 +19,21 @@ export const getFeeLogic = (courseName, payments = []) => {
   return { ...conf, netFee, totalPaid, balance: netFee - totalPaid };
 };
 
-export const addPayment = async (sid, data) => {
-  await addDoc(collection(db, "admissions", sid, "payments"), {
-    ...data, amount: Number(data.amount), createdAt: serverTimestamp()
+export const addPayment = async (studentEmail, data) => {
+  if (!studentEmail) throw new Error("Student Email is required");
+  
+  const emailId = studentEmail.toLowerCase().trim();
+  await addDoc(collection(db, "admissions", emailId, "payments"), {
+    ...data, 
+    amount: Number(data.amount), 
+    createdAt: serverTimestamp()
   });
 };
 
-export const deletePayment = async (sid, pid) => {
+export const deletePayment = async (studentEmail, pid) => {
   if (window.confirm("Delete this payment permanently?")) {
-    await deleteDoc(doc(db, "admissions", sid, "payments", pid));
+    const emailId = studentEmail.toLowerCase().trim();
+    await deleteDoc(doc(db, "admissions", emailId, "payments", pid));
   }
 };
 

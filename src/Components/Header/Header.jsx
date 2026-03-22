@@ -33,12 +33,12 @@ export default function Header() {
     return url.replace("/upload/", "/upload/w_120,h_120,c_thumb,g_face,f_auto,q_auto/");
   };
 
-  const userData = {
+  const userData = useMemo(() => ({
     name: displayName,
     email: student?.email || user?.email || "student@drishteeindia.com",
     photo: getSmallPhoto(photoURL),
     dashboard: isAdmin ? "/admin" : "/student"
-  };
+  }), [displayName, student?.email, user?.email, photoURL, isAdmin]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -49,6 +49,15 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === "/login") {
+      setShowLoginModal(true);
+    } else {
+      setShowLoginModal(false);
+    }
+  }, [location.pathname]);
+
 
   const handleLogout = async () => {
     try {
@@ -219,19 +228,23 @@ export default function Header() {
 
         <div className="offcanvas-body p-4 pt-0 custom-scrollbar">
           <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
-          <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
-            <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
-              <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{ width: 60, height: 60 }}>
-                {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" /> : <DefaultAvatar />}
+          {user && (
+            <Link
+              to={userData.dashboard}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
+                <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{ width: 60, height: 60 }}>
+                  {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" /> : <DefaultAvatar />}
+                </div>
+                <div className="flex-grow-1">
+                  <h6 className="m-0 fw-bold text-dark">{userData.name}</h6>
+                  <span className="text-muted small">Go to dashboard</span>
+                </div>
+                <i className="bi bi-chevron-right text-muted opacity-50"></i>
               </div>
-              <div className="flex-grow-1">
-                <h6 className="m-0 fw-bold text-dark fs-5">{userData.name}</h6>
-                <span className="text-muted small">Go to dashboard</span>
-              </div>
-              <i className="bi bi-chevron-right text-muted opacity-50"></i>
-            </div>
-          </Link>
-
+            </Link>
+          )}
           <div className="ios-menu">
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title text-primary px-3 pt-3">Admission Portal</div>
@@ -422,8 +435,14 @@ export default function Header() {
                 <button className={`btn rounded-4 fw-bold border-0 transition-all ${loginType === 'admin' ? 'bg-white shadow-sm text-primary' : 'text-muted'}`}
                   onClick={() => setLoginType('admin')}>Admin</button>
               </div>
-              <LoginForm isAdminView={loginType === "admin"} onSuccess={() => setShowLoginModal(false)} isModal={true} />
-            </div>
+              <LoginForm
+                isAdminView={loginType === "admin"}
+                onSuccess={() => {
+                  setShowLoginModal(false);
+                }}
+                isModal={true}
+
+              />            </div>
           </div>
         </div>
       )}

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { auth, db } from "../../firebase/firebase";
-// Important: doc aur getDoc ko yahan add kiya gaya hai
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 
+// --- UI COMPONENTS ---
 const InfoItem = ({ icon, label, value }) => (
   <div className="d-flex align-items-center p-3 mb-2 bg-white rounded-4 border-0 shadow-sm border-start border-primary border-4">
     <div className="icon-box bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '45px', height: '45px' }}>
@@ -10,7 +10,7 @@ const InfoItem = ({ icon, label, value }) => (
     </div>
     <div className="overflow-hidden">
       <p className="text-muted mb-0 fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>{label.toUpperCase()}</p>
-      <p className="mb-0 fw-semibold text-dark text-truncate">{value || "N/A"}</p>
+      <p className="mb-0 fw-semibold text-dark text-truncate">{value || "—"}</p>
     </div>
   </div>
 );
@@ -35,26 +35,32 @@ export default function Profile() {
   const user = auth.currentUser;
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user?.email) return;
-      try {
-        const emailId = user.email.trim().toLowerCase();
-        // Direct document access kyunki email hi ID hai
-        const docRef = doc(db, "admissions", emailId);
-        const snap = await getDoc(docRef);
-        
-        if (snap.exists()) {
-          setStudent(snap.data());
-        } else {
-          console.log("No such student document for ID:", emailId);
-        }
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      } finally {
-        setLoading(false);
+    // 1. Email check (Auth या LocalStorage से)
+    const userEmail = user?.email || localStorage.getItem("user_email");
+    
+    if (!userEmail) {
+      setLoading(false);
+      return;
+    }
+
+    const emailId = userEmail.trim().toLowerCase();
+    const docRef = doc(db, "admissions", emailId);
+
+    // ✅ LIVE LISTENER: No refresh needed for any admin updates
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+      if (snap.exists()) {
+        setStudent(snap.data());
+      } else {
+        console.warn("Profile not found for:", emailId);
+        setStudent(null);
       }
-    };
-    fetchProfile();
+      setLoading(false);
+    }, (err) => {
+      console.error("Firestore error:", err);
+      setLoading(false);
+    });
+
+    return () => unsubscribe(); 
   }, [user]);
 
   const personalData = useMemo(() => [
@@ -65,12 +71,18 @@ export default function Profile() {
     { icon: "bi-fingerprint", label: "Aadhar Card", value: student?.aadharNo },
   ], [student]);
 
-  if (loading) return <div className="d-flex justify-content-center align-items-center vh-100 bg-light"><div className="spinner-border text-primary" /></div>;
+  if (loading) return (
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="spinner-border text-primary" />
+    </div>
+  );
   
   if (!student) return (
     <div className="container mt-5">
-      <div className="alert alert-danger text-center rounded-4 shadow-sm">
-        डाटा उपलब्ध नहीं है। कृपया एडमिन से संपर्क करें।
+      <div className="alert alert-warning text-center rounded-4 shadow-sm p-4">
+        <i className="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
+        <strong>Profile Not Found!</strong><br />
+        Contact administrator to sync your record with <b>{user?.email}</b>.
       </div>
     </div>
   );
@@ -79,8 +91,9 @@ export default function Profile() {
 
   return (
     <div className="pb-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      {/* HEADER SECTION */}
       <div className="position-relative mb-5 shadow-sm" style={{ height: '110px', background: 'linear-gradient(135deg, #013788 0%, #1e40af 100%)', borderRadius: '0 0 35px 35px' }}>
-      <h5 className="fw-bold text-white text-center pt-3 small opacity-75">MY DRISHTEE PROFILE</h5>
+        <h5 className="fw-bold text-white text-center pt-3 small opacity-75">MY DRISHTEE PROFILE</h5>
         <div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-55px' }}>
           <div className="rounded-circle p-1 bg-white shadow-lg" style={{ cursor: 'pointer' }} onClick={() => setShowModal(true)}>
             <img src={profileImg} alt="Profile" className="rounded-circle" style={{ width: 110, height: 110, objectFit: "cover", border: '3px solid #f8fafc' }} />
@@ -88,21 +101,24 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="container mt-5 pt-3 text-center">
+      <div className="container mt-5 pt-3 text-center animate__animated animate__fadeIn">
         <h3 className="fw-bolder text-dark mt-2 mb-1">{student.name} <i className="bi bi-patch-check-fill text-primary small"></i></h3>
         <p className="text-muted mb-3 small fw-medium">{student.email}</p>
 
+        {/* BADGES */}
         <div className="d-flex justify-content-center gap-2 mb-4">
           <span className="badge rounded-pill px-3 py-2 bg-white text-primary shadow-sm border border-primary-subtle small">{student.course}</span>
-          <span className="badge rounded-pill px-3 py-2 bg-dark text-white shadow-sm small">{student.regNo}</span>
+          <span className="badge rounded-pill px-3 py-2 bg-dark text-white shadow-sm small">{student.regNo || "PENDING"}</span>
         </div>
 
+        {/* QUICK STATS */}
         <div className="row g-3 mb-4 px-2">
-          <QuickStat label="Academic" value={`${student.percentage}%`} icon="bi-graph-up-arrow" color="success" />
+          <QuickStat label="Academic" value={student.percentage ? `${student.percentage}%` : "—"} icon="bi-graph-up-arrow" color="success" />
           <QuickStat label="Joined" value={student.admissionDate?.split('-')[0] || '2026'} icon="bi-calendar-check" color="primary" />
-          <QuickStat label="Status" value="Active" icon="bi-shield-check" color="warning" />
+          <QuickStat label="Portal" value={student.certificateDisabled ? "Locked" : "Active"} icon={student.certificateDisabled ? "bi-lock" : "bi-unlock"} color={student.certificateDisabled ? "danger" : "warning"} />
         </div>
 
+        {/* DETAILS SECTION */}
         <div className="text-start px-2 mt-4">
           <h6 className="fw-bold text-dark mb-3 ps-1 text-uppercase opacity-75" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>Personal Details</h6>
           <div className="row g-2">
@@ -118,20 +134,23 @@ export default function Profile() {
             <div className="d-flex align-items-start">
               <i className="bi bi-geo-alt-fill text-danger fs-4 me-3"></i>
               <div>
-                <p className="mb-1 fw-bold text-dark">{student.address}</p>
-                <p className="text-muted mb-0 small">{student.village}, {student.city}, {student.state} - {student.pincode}</p>
+                <p className="mb-1 fw-bold text-dark">{student.address || "No Address Added"}</p>
+                <p className="text-muted mb-0 small">
+                  {student.village || "—"}, {student.city || "—"}, {student.state || "—"} - {student.pincode || "—"}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* FULL IMAGE MODAL */}
       {showModal && (
         <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" 
-          style={{ zIndex: 9999, background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(10px)' }}
+          style={{ zIndex: 9999, background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(8px)' }}
           onClick={() => setShowModal(false)}>
-          <img src={profileImg} alt="Profile Full View" className="rounded-circle border border-4 border-white shadow-lg"
-            style={{ width: '300px', height: '300px', objectFit: 'cover' }} />
+          <img src={profileImg} alt="Profile Full View" className="rounded-4 border border-4 border-white shadow-lg"
+            style={{ maxWidth: '90%', maxHeight: '80%', objectFit: 'contain' }} />
         </div>
       )}
     </div>

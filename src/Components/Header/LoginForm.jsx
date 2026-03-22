@@ -52,6 +52,7 @@ export default function LoginForm({ isAdminView, onSuccess }) {
     checkSignupAllowed();
   }, [isAdminView, ADMIN_ALLOWED_EMAILS]);
 
+  // LoginForm.jsx
   const login = async () => {
     if (!email || !password) return toast.error("Enter email and password");
     setLoading(true);
@@ -85,11 +86,10 @@ export default function LoginForm({ isAdminView, onSuccess }) {
       }
 
       toast.success("Login successful!");
+
       if (!isAdminView) {
         const sub = await subscribeUser();
         if (sub) {
-          // Humein student ka document update karna hai. 
-          // Note: admissions collection mein student ka ID search karke wahan update karein
           const q = query(collection(db, "admissions"), where("email", "==", email.toLowerCase().trim()));
           const snap = await getDocs(q);
           if (!snap.empty) {
@@ -100,16 +100,14 @@ export default function LoginForm({ isAdminView, onSuccess }) {
           }
         }
       }
-
-      onSuccess?.();
-      navigate(isAdminView ? "/admin" : "/student/dashboard");
+      onSuccess?.(); // ✅ modal close kareg
+      navigate(role === "admin" ? "/admin" : "/student/dashboard", { replace: true });
     } catch (e) {
       toast.error(e.message);
     } finally {
       setLoading(false);
     }
   };
-
   const signup = async () => {
     if (isAdminView && !ADMIN_ALLOWED_EMAILS.includes(email.toLowerCase().trim())) {
       return toast.error("You are not allowed to create an admin account");
@@ -131,7 +129,7 @@ export default function LoginForm({ isAdminView, onSuccess }) {
       toast.success(`${isAdminView ? "Admin" : "Student"} account created!`);
       setIsSignup(false);
       onSuccess?.();
-      navigate(isAdminView ? "/admin/dashboard" : "/student/dashboard");
+      navigate(isAdminView ? "/admin" : "/student/dashboard");
     } catch (e) {
       toast.error(e.message);
     } finally {

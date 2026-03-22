@@ -447,3 +447,61 @@ export const otpTemplate = (name, otp) => `
     </div>
   </div>
 `;
+
+// ======================================================
+// Sent Fee report 
+// ======================================================
+export const feePaymentTemplate = (student, payment, summary) => `
+  <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; background-color: #fff;">
+    <div style="background-color: #1a237e; padding: 25px; text-align: center; color: white;">
+      <h2 style="margin: 0; font-size: 20px; letter-spacing: 1px;">FEE PAYMENT RECEIVED</h2>
+      <p style="margin: 5px 0 0; font-size: 14px; opacity: 0.8;">Drishtee Computer Centre</p>
+    </div>
+
+    <div style="padding: 30px; color: #333;">
+      <p style="font-size: 16px;">Dear <b>${student.name}</b>,</p>
+      <p>This is to confirm that we have successfully received your fee payment. Details are as follows:</p>
+      
+      <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0; border: 1px solid #eee;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #666;">Amount Paid:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #2e7d32; font-size: 18px;">₹${payment.amount}.00</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #666;">Date:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 500;">${payment.date}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #666;">Payment Mode:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 500;">${payment.method}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #666;">Payment For:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 500;">${payment.note}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: #e8eaf6; padding: 15px; border-radius: 8px; text-align: center;">
+        <p style="margin: 0; color: #1a237e; font-size: 14px;">
+          <b>Current Outstanding Balance: ₹${summary.balance}.00</b>
+        </p>
+      </div>
+
+      <p style="font-size: 13px; color: #777; margin-top: 25px; line-height: 1.5;">
+        * This is an automated receipt. You can download the official PDF receipt from your student dashboard.
+      </p>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="https://www.drishteeindia.com/student/dashboard" style="background-color: #1a237e; color: white; padding: 12px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
+          View My Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div style="background-color: #f1f1f1; padding: 15px; text-align: center; color: #888; font-size: 11px;">
+      <p style="margin: 0;">Thank you for choosing Drishtee Computer Centre</p>
+    </div>
+  </div>
+`;

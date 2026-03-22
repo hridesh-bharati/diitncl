@@ -1,11 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { authListener, logoutUser, isUserAdmin } from '../firebase/auth';
+// ✅ Fixed: getDoc ko import list mein add kar diya hai
 import { 
-  authListener, 
-  logoutUser, 
-  getUserRole,
-  isUserAdmin
-} from '../firebase/auth';
-import { collection, query, where, getDocs, doc, onSnapshot } from 'firebase/firestore';
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  doc, 
+  onSnapshot, 
+  getDoc 
+} from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
@@ -29,45 +33,61 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // --- 1. Student Data fetch (Using Direct Get for Rules Compatibility) ---
   const fetchStudentData = async (email) => {
+    if (!email) return null;
     try {
-      const q = query(collection(db, "admissions"), where("email", "==", email.toLowerCase()));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        setStudent({ id: snap.docs[0].id, ...snap.docs[0].data() });
-      } else {
-        setStudent(null);
+      const emailId = email.toLowerCase().trim();
+      // ✅ Direct document access (isase rules ka 'get' permission trigger hoga)
+      const docRef = doc(db, "admissions", emailId);
+      const snap = await getDoc(docRef);
+
+      if (snap.exists()) {
+        const studentData = { id: snap.id, ...snap.data() };
+        setStudent(studentData);
+        return studentData;
       }
     } catch (err) {
       console.error("Error fetching student data:", err);
-      setStudent(null);
     }
+    setStudent(null);
+    return null;
   };
 
   useEffect(() => {
     let unsubscribeProfile = () => {};
 
     const unsubscribeAuth = authListener(async (currentUser) => {
+      setLoading(true);
       try {
         setError(null);
         if (currentUser) {
           setUser(currentUser);
           localStorage.setItem("user_email", currentUser.email);
 
-          // ✅ REAL-TIME LISTENER: No refresh needed now
-          unsubscribeProfile = onSnapshot(doc(db, "users", currentUser.uid), (docSnap) => {
+          // 2. Real-time User Role/Profile Listener
+          unsubscribeProfile = onSnapshot(doc(db, "users", currentUser.uid), async (docSnap) => {
             if (docSnap.exists()) {
               const profileData = docSnap.data();
-              setUserProfile(profileData);
               const userRole = profileData.role || 'user';
+              
+              setUserProfile(profileData);
               setRole(userRole);
 
               localStorage.setItem("user_role", userRole);
               localStorage.setItem("user_name", profileData.name || currentUser.displayName || '');
-              localStorage.setItem("user_photo", profileData.photoURL || currentUser.photoURL || '');
 
-              if (userRole === 'student') fetchStudentData(currentUser.email);
+              // 3. Agar student hai toh uska admission data fetch karein
+              if (userRole === 'student') {
+                await fetchStudentData(currentUser.email);
+              }
+              setLoading(false);
+            } else {
+              setLoading(false);
             }
+          }, (err) => {
+            console.error("Profile Listener Error:", err);
+            setLoading(false);
           });
         } else {
           setUser(null);
@@ -76,10 +96,10 @@ export function AuthProvider({ children }) {
           setStudent(null);
           localStorage.clear();
           unsubscribeProfile();
+          setLoading(false);
         }
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     });
@@ -120,5 +140,9 @@ export function AuthProvider({ children }) {
     isUserAdmin: async (uid) => await isUserAdmin(uid)
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 }

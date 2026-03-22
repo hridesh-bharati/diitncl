@@ -1,7 +1,9 @@
+// src\AdminComponents\Students\Fees\AddPaymentModal.jsx
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { addPayment, COURSE_CONFIG } from "./FeeServices";
 import { toast } from "react-toastify";
+import { sendEmailNotification, feePaymentTemplate, sendPushNotification } from "../../../services/emailService"; 
 
 export default function AddPaymentModal({ student }) {
   const [show, setShow] = useState(false);
@@ -25,14 +27,38 @@ export default function AddPaymentModal({ student }) {
     setFormData((prev) => ({ ...prev, note: type, amount: fee }));
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addPayment(student.id, { ...formData, amount: Number(formData.amount) });
-      toast.success("Payment Saved");
+      const targetId = student.email || student.id; 
+      const paymentData = { ...formData, amount: Number(formData.amount) };
+      
+      // 1. Save to Database
+      await addPayment(targetId, paymentData);
+      
+      // 2. Notifications (Background mein chalne do)
+      const currentPayments = []; // Is samay ke payments list agar available ho toh
+      const summary = getFeeLogic(student.course, [...currentPayments, paymentData]);
+
+      // 📧 Send Email
+      sendEmailNotification(
+        student.email,
+        `Fee Payment Received - ₹${paymentData.amount}`,
+        feePaymentTemplate(student, paymentData, summary)
+      );
+
+      // 📲 Send Push Notification
+      sendPushNotification(
+        student,
+        "Fee Paid Successfully ✅",
+        `Received ₹${paymentData.amount} for ${paymentData.note}. Balance: ₹${summary.balance}`
+      );
+      
+      toast.success("Payment Saved & Notification Sent");
       setShow(false);
     } catch (err) {
-      toast.error("Save Failed");
+      console.error(err);
+      toast.error("Save Failed: " + err.message);
     }
   };
 

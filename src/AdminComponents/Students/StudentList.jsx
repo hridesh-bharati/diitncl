@@ -1,20 +1,32 @@
+// src/AdminComponents/Students/StudentList.jsx
 import React, { useState, useMemo } from "react";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 import StudentCard from "./StudentCard";
 
-// 1. Helper: Status Logic
+// 1. Helper: Status Logic (Retained all your logic)
 const getActualStatus = (s) => {
   if (s.status === "canceled") return "canceled";
   return s.regNo && s.issueDate ? "done" : s.regNo ? "accepted" : "pending";
 };
 
-// 2. Helper: CSV Export (Keeping it simple)
+// 2. Helper: CSV Export (Simple & Direct)
 const exportToCSV = (data, filterName) => {
   if (!data.length) return;
   const headers = ["Name", "Course", "Reg No", "Branch", "Status", "Mobile", "Email"];
-  const rows = data.map(s => [s.name, s.course, s.regNo, s.branch || s.centerCode, s.status, s.mobile, s.email]);
+  const rows = data.map(s => [
+    s.name, 
+    s.course, 
+    s.regNo, 
+    s.branch || s.centerCode, 
+    getActualStatus(s), // Using the actual status for CSV
+    s.mobile, 
+    s.email
+  ]);
   
-  const content = [headers, ...rows].map(r => r.map(c => `"${String(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
+  const content = [headers, ...rows]
+    .map(r => r.map(c => `"${String(c || "").replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+
   const link = Object.assign(document.createElement("a"), {
     href: URL.createObjectURL(new Blob([content], { type: "text/csv" })),
     download: `students_${filterName}.csv`
@@ -35,7 +47,7 @@ export default function StudentList() {
           return admissions
             .filter(s => {
               const matchesStatus = statusFilter === "all" || getActualStatus(s) === statusFilter;
-              // 🔍 Search ONLY by Name or RegNo
+              // 🔍 Search ONLY by Name or RegNo (Features kept)
               const matchesSearch = !term || 
                 s.name?.toLowerCase().includes(term) || 
                 s.regNo?.toLowerCase().includes(term);
@@ -53,14 +65,20 @@ export default function StudentList() {
               </button>
             </div>
 
+            {/* Status Tabs */}
             <div className="d-flex gap-2 overflow-auto pb-3 scrollbar-hidden justify-content-lg-center">
               {["all", "pending", "accepted", "done", "canceled"].map(s => (
-                <button key={s} onClick={() => setStatusFilter(s)} className={`btn btn-sm rounded-pill px-3 fw-medium ${statusFilter === s ? "btn-primary shadow-sm" : "btn-outline-secondary"}`}>
+                <button 
+                  key={s} 
+                  onClick={() => setStatusFilter(s)} 
+                  className={`btn btn-sm rounded-pill px-3 fw-medium ${statusFilter === s ? "btn-primary shadow-sm" : "btn-outline-secondary"}`}
+                >
                   {s.charAt(0).toUpperCase() + s.slice(1)}
                 </button>
               ))}
             </div>
 
+            {/* Search Bar */}
             <div className="position-relative mb-4">
               <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
               <input 
@@ -72,16 +90,30 @@ export default function StudentList() {
               />
             </div>
 
+            {/* Student Grid */}
             {loading ? (
-              <div className="text-center py-5 text-muted small"><div className="spinner-border spinner-border-sm me-2"></div>Loading...</div>
+              <div className="text-center py-5 text-muted small">
+                <div className="spinner-border spinner-border-sm me-2 text-primary"></div>
+                Loading student records...
+              </div>
             ) : (
               <div className="row g-3">
                 {filtered.map(student => (
                   <div key={student.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
-                    <StudentCard student={student} onSave={updateAdmission} onDelete={deleteAdmission} />
+                    {/* student.id ab email hi hoga jo Provider se aa raha hai */}
+                    <StudentCard 
+                      student={student} 
+                      onSave={updateAdmission} 
+                      onDelete={deleteAdmission} 
+                    />
                   </div>
                 ))}
-                {!filtered.length && <div className="text-center py-5 text-muted small">No records found.</div>}
+                {!filtered.length && (
+                  <div className="text-center py-5 text-muted animate__animated animate__fadeIn">
+                    <i className="bi bi-person-exclamation fs-1 d-block mb-2 opacity-25"></i>
+                    No records found for "{statusFilter}" status.
+                  </div>
+                )}
               </div>
             )}
           </div>

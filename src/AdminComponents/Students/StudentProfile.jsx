@@ -1,18 +1,12 @@
+// src\AdminComponents\Students\StudentProfile.jsx
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc, setDoc, deleteDoc  } from "firebase/firestore";
+import { doc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
- 
-// --- URL ENCODING HELPERS ---
-const encodeID = (id) => btoa(id).replace(/=/g, "");
-const decodeID = (encoded) => {
-  try { return atob(encoded); } catch (e) { return encoded; }
-};
 
 const safe = (val) => (val && val !== "undefined" && val !== "" ? val : "—");
-
 const getShortReg = (val) => (val && typeof val === "string" ? val.split("/").pop() : val);
 
 // --- MEMOIZED COMPONENTS ---
@@ -65,16 +59,16 @@ const StatBox = memo(({ label, value, icon, colorClass, isEditing, onChange, typ
 ));
 
 const ProfileContent = ({ admissions, loading, error }) => {
-  const { id: encodedId } = useParams();
-  const id = useMemo(() => decodeID(encodedId), [encodedId]);
-
+  // ✅ NO ENCODING: useParams se direct Email mil raha hai
+  const { id: emailParam } = useParams(); 
   const navigate = useNavigate();
+
+  // Student ko direct email se find kar rahe hain
   const student = useMemo(
-    () => admissions?.find(
-      (a) => a.email?.toLowerCase() === id?.toLowerCase()
-    ),
-    [admissions, id]
+    () => admissions?.find((a) => a.email?.toLowerCase() === emailParam?.toLowerCase()),
+    [admissions, emailParam]
   );
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({});
@@ -87,11 +81,8 @@ const ProfileContent = ({ admissions, loading, error }) => {
       let newData = { ...prev };
       if (field === "regNo") {
         const parts = (prev.regNo || "").split("/");
-        if (parts.length === 3) {
-          newData.regNo = `${parts[0]}/${parts[1]}/${value}`;
-        } else {
-          newData.regNo = value;
-        }
+        if (parts.length === 3) newData.regNo = `${parts[0]}/${parts[1]}/${value}`;
+        else newData.regNo = value;
       } else if (field === "course") {
         newData.course = value;
         const parts = (prev.regNo || "").split("/");
@@ -106,55 +97,42 @@ const ProfileContent = ({ admissions, loading, error }) => {
     });
   }, []);
 
-const handleSave = async () => {
-  try {
-    setIsSaving(true);
-    let updatedData = { ...formData };
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      let updatedData = { ...formData };
 
-    // 1. Image Upload Logic (जैसा पहले था)
-    if (selectedImage) {
-      const fd = new FormData();
-      fd.append("file", selectedImage);
-      fd.append("upload_preset", "hridesh99!");
-      const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { 
-        method: "POST", 
-        body: fd 
-      });
-      const data = await res.json();
-      updatedData.photoUrl = data.secure_url;
+      if (selectedImage) {
+        const fd = new FormData();
+        fd.append("file", selectedImage);
+        fd.append("upload_preset", "hridesh99!");
+        const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        updatedData.photoUrl = data.secure_url;
+      }
+
+      const oldEmailId = student.email.toLowerCase();
+      const newEmailId = updatedData.email.toLowerCase();
+
+      if (oldEmailId !== newEmailId) {
+        // Doc ID change logic (Direct Email as ID)
+        await setDoc(doc(db, "admissions", newEmailId), updatedData);
+        await deleteDoc(doc(db, "admissions", oldEmailId));
+        toast.success("Profile & Email Updated");
+        // ✅ Direct Navigation to new Email URL
+        navigate(`/admin/students/${newEmailId}`, { replace: true });
+      } else {
+        await updateDoc(doc(db, "admissions", oldEmailId), updatedData);
+        toast.success("Profile Updated");
+      }
+      setIsEditing(false);
+    } catch (err) {
+      toast.error("Update Failed");
+    } finally {
+      setIsSaving(false);
     }
+  };
 
-    const oldEmailId = student.email.toLowerCase();
-    const newEmailId = updatedData.email.toLowerCase();
-
-    // 2. चेक करें कि क्या ईमेल बदला गया है
-    if (oldEmailId !== newEmailId) {
-      // नया डाक्यूमेंट बनाएँ नए ईमेल के साथ
-      await setDoc(doc(db, "admissions", newEmailId), updatedData);
-      
-      // पुराने डाक्यूमेंट को डिलीट करें
-      await deleteDoc(doc(db, "admissions", oldEmailId));
-      
-      toast.success("Email & Profile Updated");
-      
-      // URL भी अपडेट करना होगा क्योंकि ID बदल गई है
-      const newEncodedId = encodeID(newEmailId);
-      navigate(`/admin/students/${newEncodedId}`, { replace: true });
-    } else {
-      // अगर ईमेल नहीं बदला, तो साधारण अपडेट करें
-      await updateDoc(doc(db, "admissions", oldEmailId), updatedData);
-      toast.success("Profile Updated");
-    }
-
-    setIsEditing(false);
-    setSelectedImage(null);
-  } catch (err) {
-    console.error(err);
-    toast.error("Update Failed");
-  } finally {
-    setIsSaving(false);
-  }
-};
   if (loading) return <div className="win11-bg d-flex justify-content-center align-items-center vh-100"><div className="spinner-border text-primary"></div></div>;
 
   if (error || !student) return (
@@ -167,20 +145,19 @@ const handleSave = async () => {
   );
 
   const fields = [
-    { label: "Reg No", key: "regNo", icon: "bi-card-list", color: "#000000" },
-    { label: "Date of Birth", key: "dob", icon: "bi-calendar-event", color: "#FF9800", type: "date" },
-    { label: "Father's Name", key: "fatherName", icon: "bi-person-badge", color: "#3F51B5" },
-    { label: "Mother's Name", key: "motherName", icon: "bi-person-badge", color: "#E91E63" },
-    { label: "Mobile", key: "mobile", icon: "bi-telephone-fill", color: "#4CAF50" },
-    { label: "Email", key: "email", icon: "bi-envelope-at", color: "#F44336" },
-    { label: "Aadhar", key: "aadharNo", icon: "bi-fingerprint", color: "#009688" },
-    { label: "Course", key: "course", icon: "bi-book-half", color: "#673AB7" },
-    { label: "Gender", key: "gender", icon: "bi-gender-ambiguous", color: "#2196F3" },
+    { label: "Reg No", fKey: "regNo", icon: "bi-card-list", color: "#000000" },
+    { label: "Date of Birth", fKey: "dob", icon: "bi-calendar-event", color: "#FF9800", type: "date" },
+    { label: "Father's Name", fKey: "fatherName", icon: "bi-person-badge", color: "#3F51B5" },
+    { label: "Mother's Name", fKey: "motherName", icon: "bi-person-badge", color: "#E91E63" },
+    { label: "Mobile", fKey: "mobile", icon: "bi-telephone-fill", color: "#4CAF50" },
+    { label: "Email", fKey: "email", icon: "bi-envelope-at", color: "#F44336" },
+    { label: "Aadhar", fKey: "aadharNo", icon: "bi-fingerprint", color: "#009688" },
+    { label: "Course", fKey: "course", icon: "bi-book-half", color: "#673AB7" },
+    { label: "Gender", fKey: "gender", icon: "bi-gender-ambiguous", color: "#2196F3" },
   ];
 
   return (
     <div className="win11-bg pb-5 overflow-auto">
-      {/* HEADER */}
       <div className="glass-panel sticky-top mx-2 mt-2 p-3 d-flex align-items-center justify-content-between z-3">
         <div className="d-flex align-items-center">
           <button className="btn btn-light rounded-circle me-3 border-0 shadow-sm" onClick={() => navigate(-1)}>
@@ -203,7 +180,6 @@ const handleSave = async () => {
       </div>
 
       <div className="container mt-4" style={{ maxWidth: '850px' }}>
-        {/* HERO SECTION */}
         <div className="glass-card p-4 mb-4 text-center">
           <div className="position-relative d-inline-block mb-3">
             <img
@@ -228,33 +204,28 @@ const handleSave = async () => {
           <h4 className="fw-800 mb-1">{safe(formData.name)}</h4>
           <p className="text-muted small mb-0">{safe(formData.course)}</p>
           <div className="d-flex justify-content-center gap-2 mt-2">
-            <span className="badge rounded-pill bg-primary px-3 shadow-sm">
-              ID: {safe(formData.regNo)}
-            </span>
+            <span className="badge rounded-pill bg-primary px-3 shadow-sm">ID: {safe(formData.regNo)}</span>
             <span className="badge rounded-pill bg-dark px-3 shadow-sm">{safe(formData.status)}</span>
           </div>
         </div>
 
-        {/* QUICK BUTTONS */}
+        {/* QUICK BUTTONS - DIRECT EMAIL NAVIGATION */}
         <div className="row g-3 mb-4">
           <div className="col-md-6">
-            {/* Navigating with encoded ID */}
             <button className={`btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2 ${formData.certificateDisabled ? 'opacity-50' : ''}`}
-              onClick={() => !formData.certificateDisabled && navigate(`/admin/students/${encodedId}/certificate`)}>
+              onClick={() => !formData.certificateDisabled && navigate(`/admin/students/${formData.email}/certificate`)}>
               <i className={`bi ${formData.certificateDisabled ? 'bi-lock-fill text-danger' : 'bi-patch-check-fill text-primary'} fs-5`}></i>
               <span className="fw-bold">{formData.certificateDisabled ? 'PORTAL LOCKED' : 'CERTIFICATE'}</span>
             </button>
           </div>
           <div className="col-md-6">
             <button className="btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2"
-              onClick={() => navigate(`/admin/students/${encodedId}/fees`, { state: { studentData: formData } })}>
+              onClick={() => navigate(`/admin/students/${formData.email}/fees`, { state: { studentData: formData } })}>
               <i className="bi bi-cash-stack text-success fs-5"></i>
               <span className="fw-bold">FEE REPORT</span>
             </button>
           </div>
         </div>
-
-        {/* ... (Rest of the code remains exactly same) ... */}
 
         {/* STATS */}
         <div className="row g-3 mb-4">
@@ -269,12 +240,12 @@ const handleSave = async () => {
           <div className="row g-1">
             {fields.map((f) => (
               <InfoRow
-                key={f.key}
+                key={f.fKey}
                 {...f}
-                fieldKey={f.key}
-                value={formData[f.key]}
+                fieldKey={f.fKey}
+                value={formData[f.fKey]}
                 isEditing={isEditing}
-                onChange={(val) => handleChange(f.key, val)}
+                onChange={(val) => handleChange(f.fKey, val)}
               />
             ))}
           </div>
@@ -320,7 +291,7 @@ const handleSave = async () => {
           </div>
         </div>
 
-        {/* PORTAL ACCESS */}
+        {/* PORTAL ACCESS (LIVE UPDATE) */}
         <div className="glass-panel p-3 mb-5 border-0 d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'}`}>
@@ -338,12 +309,14 @@ const handleSave = async () => {
                 try {
                   await updateDoc(doc(db, "admissions", student.email.toLowerCase()), {
                     certificateDisabled: newState
-                  }); setFormData(p => ({ ...p, certificateDisabled: newState }));
+                  }); 
+                  setFormData(p => ({ ...p, certificateDisabled: newState }));
                   toast.info(newState ? "Portal Disabled" : "Portal Enabled");
-                } catch (err) { toast.error("Error"); }
+                } catch (err) { toast.error("Error updating portal status"); }
               }} />
           </div>
         </div>
+
       </div>
     </div>
   );
