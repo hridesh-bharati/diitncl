@@ -57,4 +57,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 16px !important;
   transition: all 0.3s ease;
+}/* Taaki user text select na kare swipe karte waqt */
+.swipe-container {
+  user-select: none;
+  -webkit-user-drag: none;
 }

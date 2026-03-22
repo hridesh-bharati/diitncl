@@ -86,12 +86,13 @@
 /* ==========================================
    4. MOBILE FLOATING NAV (iOS Water)
    ========================================== */
+/* Header.css me ise update karein */
 .glass-nav-white {
     background: var(--glass-white) !important;
     backdrop-filter: blur(25px) saturate(200%);
     -webkit-backdrop-filter: blur(25px) saturate(200%);
-    margin: 5px 15px;
-    border-radius: 30px !important;
+    margin: 5px 10px; /* Margin thoda kam kiya */
+    border-radius: 18px !important; /* 30px se ghatakar 18px kiya */
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     height: 65px !important;
     bottom: 8px !important;

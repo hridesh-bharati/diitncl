@@ -1,10 +1,10 @@
 // src/App.jsx
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { subscribeUser } from "./services/pushService";
-
+import { AnimatePresence } from "framer-motion";
+import SwipeLayout from "./Components/MobileAccessories/SwipeLayout"; 
 import "./App.css";
-
 /* Core Components */
 import Lock from "./Components/HomePage/LockWeb/Lock";
 import Header from "./Components/Header/Header";
@@ -64,7 +64,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const location = useLocation();
   const messagingRef = useRef(null);
 
   // --------------------------------------------------------
@@ -193,56 +193,62 @@ export default function App() {
 
   return (
     <  >
+
       <NetworkStatus />
       <Header />
       <InstallPrompt />
 
-      <Suspense fallback={<p className="text-center text-muted  p-5 m-5">Loading...</p>}>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
-          <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
-          <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
-          <Route path="/branch/thoothibari" element={<HelmetManager><Branch /></HelmetManager>} />
-          <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
-          <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
-          <Route path="/branch/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
-          <Route path="/branch/thoothibari/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
-          <Route path="/download-certificate" element={<HelmetManager><Verification /></HelmetManager>} />
-          <Route path="/contact-us" element={<HelmetManager><QuickSupport /></HelmetManager>} />
-          <Route path="/login" element={<HelmetManager><LoginForm /></HelmetManager>} />
-          <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
-          <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
-          <Route path="/chat" element={<ChatPage />} />
+     <AnimatePresence mode="wait">
+  <SwipeLayout>
 
-          {/* Courses */}
-          <Route path="/courses/computer-language" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
-          <Route path="/courses/designing" element={<HelmetManager><Designing /></HelmetManager>} />
-          <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
-          <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
-          <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
-          {/* PhotoEditor  */}
-          <Route path="/photo-editor" element={<HelmetManager><PhotoEdit /></HelmetManager>} />
+          <Suspense fallback={<p className="text-center text-muted  p-5 m-5">Loading...</p>}>
+            <Routes location={location}>
+              {/* Public Routes */}
+              <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
+              <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
+              <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
+              <Route path="/branch/thoothibari" element={<HelmetManager><Branch /></HelmetManager>} />
+              <Route path="/gallery" element={<HelmetManager><Gallery /></HelmetManager>} />
+              <Route path="/new-admission" element={<HelmetManager><AdmissionForm /></HelmetManager>} />
+              <Route path="/branch/nichlaul/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+              <Route path="/branch/thoothibari/location" element={<HelmetManager><LocationMapCard /></HelmetManager>} />
+              <Route path="/download-certificate" element={<HelmetManager><Verification /></HelmetManager>} />
+              <Route path="/contact-us" element={<HelmetManager><QuickSupport /></HelmetManager>} />
+              <Route path="/login" element={<HelmetManager><LoginForm /></HelmetManager>} />
+              <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
+              <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
+              <Route path="/chat" element={<ChatPage />} />
 
-          {/* Legal */}
-          <Route path="/terms" element={<HelmetManager><Term /></HelmetManager>} />
-          <Route path="/privacy-policy" element={<HelmetManager><PrivacyPolicy /></HelmetManager>} />
-          <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
-          <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
+              {/* Courses */}
+              <Route path="/courses/computer-language" element={<HelmetManager><ComputerLanguage /></HelmetManager>} />
+              <Route path="/courses/designing" element={<HelmetManager><Designing /></HelmetManager>} />
+              <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
+              <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
+              <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
+              {/* PhotoEditor  */}
+              <Route path="/photo-editor" element={<HelmetManager><PhotoEdit /></HelmetManager>} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/admin/*"
-            element={user && role === "admin" ? <AdminRoutes /> : <Navigate to="/login" replace />}
-          />
-          <Route
-            path="/student/*"
-            element={user && role === "student" ? <StudentRoutes /> : <Navigate to="/login" replace />}
-          />
+              {/* Legal */}
+              <Route path="/terms" element={<HelmetManager><Term /></HelmetManager>} />
+              <Route path="/privacy-policy" element={<HelmetManager><PrivacyPolicy /></HelmetManager>} />
+              <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
+              <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
 
-          <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
-        </Routes>
-      </Suspense>
+              {/* Protected Routes */}
+              <Route
+                path="/admin/*"
+                element={user && role === "admin" ? <AdminRoutes /> : <Navigate to="/login" replace />}
+              />
+              <Route
+                path="/student/*"
+                element={user && role === "student" ? <StudentRoutes /> : <Navigate to="/login" replace />}
+              />
+
+              <Route path="*" element={<HelmetManager><PageNotFound /></HelmetManager>} />
+            </Routes>
+          </Suspense>
+        </SwipeLayout>
+      </AnimatePresence>
     </  >
   );
 }
