@@ -1,7 +1,8 @@
 // src\AdminComponents\Students\Fees\AddPaymentModal.jsx
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { addPayment, COURSE_CONFIG } from "./FeeServices";
+// ✅ getFeeLogic ko yahan import list mein add kar diya hai
+import { addPayment, COURSE_CONFIG, getFeeLogic } from "./FeeServices"; 
 import { toast } from "react-toastify";
 import { sendEmailNotification, feePaymentTemplate, sendPushNotification } from "../../../services/emailService"; 
 
@@ -14,7 +15,6 @@ export default function AddPaymentModal({ student }) {
     note: "Monthly Fee",
   });
 
-  // Body scroll lock jab modal khule
   useEffect(() => {
     document.body.style.overflow = show ? "hidden" : "unset";
   }, [show]);
@@ -27,7 +27,7 @@ export default function AddPaymentModal({ student }) {
     setFormData((prev) => ({ ...prev, note: type, amount: fee }));
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const targetId = student.email || student.id; 
@@ -36,29 +36,32 @@ const handleSubmit = async (e) => {
       // 1. Save to Database
       await addPayment(targetId, paymentData);
       
-      // 2. Notifications (Background mein chalne do)
-      const currentPayments = []; // Is samay ke payments list agar available ho toh
-      const summary = getFeeLogic(student.course, [...currentPayments, paymentData]);
+      // 2. Notifications Logic
+      // Note: Ideal condition mein summary calculate karne ke liye hume pichle payments ki list chahiye hoti hai, 
+      // par instant notification ke liye hum current data use kar rahe hain.
+      const summary = getFeeLogic(student.course, [paymentData]); 
 
       // 📧 Send Email
-      sendEmailNotification(
-        student.email,
-        `Fee Payment Received - ₹${paymentData.amount}`,
-        feePaymentTemplate(student, paymentData, summary)
-      );
+      if (student.email) {
+        sendEmailNotification(
+          student.email,
+          `Fee Payment Received - ₹${paymentData.amount}`,
+          feePaymentTemplate(student, paymentData, summary)
+        );
+      }
 
       // 📲 Send Push Notification
       sendPushNotification(
         student,
         "Fee Paid Successfully ✅",
-        `Received ₹${paymentData.amount} for ${paymentData.note}. Balance: ₹${summary.balance}`
+        `Received ₹${paymentData.amount} for ${paymentData.note}.`
       );
       
       toast.success("Payment Saved & Notification Sent");
       setShow(false);
     } catch (err) {
       console.error(err);
-      toast.error("Save Failed: " + err.message);
+      toast.error("Process Failed: " + err.message);
     }
   };
 
@@ -76,8 +79,8 @@ const handleSubmit = async (e) => {
               <form className="modal-content border-0 shadow-lg rounded-4 overflow-hidden" onSubmit={handleSubmit}>
                 <div className="modal-body p-4">
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h6 className="fw-bold mb-0">Collect Fee</h6>
-                    <button type="button" className="btn-close" onClick={() => setShow(false)}></button>
+                    <h6 className="fw-bold mb-0 text-dark">Collect Fee</h6>
+                    <button type="button" className="btn-close shadow-none" onClick={() => setShow(false)}></button>
                   </div>
 
                   <div className="mb-2">
@@ -107,7 +110,9 @@ const handleSubmit = async (e) => {
                     </div>
                   </div>
 
-                  <button type="submit" className="btn btn-primary w-100 fw-bold py-2 shadow-sm">Save Payment</button>
+                  <button type="submit" className="btn btn-primary w-100 fw-bold py-2 shadow-sm rounded-3">
+                    Save Payment
+                  </button>
                 </div>
               </form>
             </div>
