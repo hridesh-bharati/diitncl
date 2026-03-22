@@ -2,21 +2,23 @@
 import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
 import { app } from "../firebase/firebase.js";
 
-const messaging = getMessaging(app);
-
-// 1. Subscribe User (Token Generation)
+// Is function ko hum tabhi call karenge jab browser ready ho
 export const subscribeUser = async () => {
   try {
     if (typeof window === 'undefined' || !window.navigator) return null;
 
-    if (!('serviceWorker' in navigator)) {
-      console.warn("🚫 Service workers not supported");
+    // 1. Sabse pehle support check karein
+    const supported = await isSupported();
+    if (!supported) {
+      console.warn("🚫 FCM not supported in this browser");
       return null;
     }
 
-    const supported = await isSupported();
-    if (!supported) {
-      console.warn("🚫 FCM not supported");
+    // 2. Messaging ko sirf tabhi initialize karein jab support confirm ho
+    const messaging = getMessaging(app);
+
+    if (!('serviceWorker' in navigator)) {
+      console.warn("🚫 Service workers not supported");
       return null;
     }
 
@@ -40,8 +42,25 @@ export const subscribeUser = async () => {
       return null;
     }
 
-    // Get FCM Token
+    // 3. Foreground Message Handler (Isse function ke andar hi set kar dete hain)
+    onMessage(messaging, (payload) => {
+      console.log('🔔 Foreground message received:', payload);
+      const notificationTitle = payload.notification?.title || "Drishtee Alert";
+      const notificationOptions = {
+        body: payload.notification?.body || "New Update Available",
+        icon: '/images/icon/icon-192.png',
+        badge: '/images/icon/icon-192.png',
+      };
+      new Notification(notificationTitle, notificationOptions);
+    });
+
+    // 4. Get FCM Token
     const vapidKey = import.meta.env.VITE_PUBLIC_VAPID_KEY;
+    if (!vapidKey) {
+        console.error("❌ VAPID Key missing in .env");
+        return null;
+    }
+
     const currentToken = await getToken(messaging, {
       vapidKey: vapidKey,
       serviceWorkerRegistration: registration,
@@ -58,23 +77,6 @@ export const subscribeUser = async () => {
     return null;
   }
 };
-
-// 2. Foreground Message Handler (Jab website khuli ho tab popup dikhane ke liye)
-onMessage(messaging, (payload) => {
-  console.log('🔔 Foreground message received:', payload);
-  
-  const notificationTitle = payload.notification?.title || "Drishtee Alert";
-  const notificationOptions = {
-    body: payload.notification?.body || "New Update Available",
-    icon: '/images/icon/icon-192.png', // Check karein ye image public folder mein hai
-    badge: '/images/icon/icon-192.png',
-  };
-
-  // Browser popup trigger
-  if (Notification.permission === "granted") {
-    new Notification(notificationTitle, notificationOptions);
-  }
-});
 
 /**
  * Helper Function: VAPID key string ko Uint8Array mein convert karne ke liye
