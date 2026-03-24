@@ -12,7 +12,7 @@ import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-c';
 import 'prismjs/components/prism-cpp';
-import 'prismjs/themes/prism-tomorrow.css'; // Dark theme for editor
+import 'prismjs/themes/prism-tomorrow.css'; 
 
 export default function AdminAddQuestions() {
   const { examId } = useParams();

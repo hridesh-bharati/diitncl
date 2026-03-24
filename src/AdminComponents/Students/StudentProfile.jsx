@@ -60,7 +60,7 @@ const StatBox = memo(({ label, value, icon, colorClass, isEditing, onChange, typ
 
 const ProfileContent = ({ admissions, loading, error }) => {
   // ✅ NO ENCODING: useParams se direct Email mil raha hai
-  const { id: emailParam } = useParams(); 
+  const { id: emailParam } = useParams();
   const navigate = useNavigate();
 
   // Student ko direct email se find kar rahe hain
@@ -146,6 +146,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
 
   const fields = [
     { label: "Reg No", fKey: "regNo", icon: "bi-card-list", color: "#000000" },
+    { label: "Name", fKey: "name", icon: "bi-person-fill", color: "#009688" },
     { label: "Date of Birth", fKey: "dob", icon: "bi-calendar-event", color: "#FF9800", type: "date" },
     { label: "Father's Name", fKey: "fatherName", icon: "bi-person-badge", color: "#3F51B5" },
     { label: "Mother's Name", fKey: "motherName", icon: "bi-person-badge", color: "#E91E63" },
@@ -201,7 +202,15 @@ const ProfileContent = ({ admissions, loading, error }) => {
               </label>
             )}
           </div>
-          <h4 className="fw-800 mb-1">{safe(formData.name)}</h4>
+          {isEditing ? (
+            <input
+              className="form-control text-center fw-bold border-0 border-bottom shadow-none"
+              value={formData.name || ""}
+              onChange={(e) => handleChange("name", e.target.value)}
+            />
+          ) : (
+            <h4 className="fw-800 mb-1">{safe(formData.name)}</h4>
+          )}
           <p className="text-muted small mb-0">{safe(formData.course)}</p>
           <div className="d-flex justify-content-center gap-2 mt-2">
             <span className="badge rounded-pill bg-primary px-3 shadow-sm">ID: {safe(formData.regNo)}</span>
@@ -309,7 +318,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
                 try {
                   await updateDoc(doc(db, "admissions", student.email.toLowerCase()), {
                     certificateDisabled: newState
-                  }); 
+                  });
                   setFormData(p => ({ ...p, certificateDisabled: newState }));
                   toast.info(newState ? "Portal Disabled" : "Portal Enabled");
                 } catch (err) { toast.error("Error updating portal status"); }

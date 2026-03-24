@@ -419,17 +419,22 @@ export default function AdmissionForm() {
             <div className="container">
                 <div className="admission-card shadow-lg bg-white">
                     <div className="gov-header p-3 p-md-4 text-center">
-                        <div className="row">
-                            <div className="text-center col-md-12">
-                                <h1 className="main-title fw-bold m-0">DRISHTEE COMPUTER CENTER</h1>
-                                <p className="sub-title m-0 fw-semibold text-uppercase">An ISO 9001:2015 Certified I.T. Institute</p>
-                            </div>
+                        <div className="d-flex flex-column align-items-center">
+                            <img src="images/icon/logo.png" width={70} alt="Logo" className="mb-2 shadow-sm" />
+                            <h1 className="main-title fw-bold m-0">DRISHTEE COMPUTER CENTER</h1>
+                            <p className="sub-title m-0 fw-semibold text-uppercase">An ISO 9001:2015 Certified I.T. Institute</p>
                         </div>
+
                         <div className="mt-3">
                             <span className="form-tagline">ONLINE ADMISSION PORTAL - SESSION 2026-27</span>
                         </div>
                     </div>
-
+                    <div className="d-none d-md-block bg-dark text-warning py-1 border-bottom border-warning shadow-sm">
+                        <span className="mx-4 text-uppercase fw-bold">
+                            <i className="bi bi-info-circle-fill me-2"></i>
+                            Important: Please upload your photograph (Max 50KB) as the first step of admission.
+                        </span>
+                    </div>
                     <div className="card-body p-4 p-lg-5">
                         <form onSubmit={handleSubmit}>
                             {/* SECTION I - CENTER & COURSE SELECTION */}
@@ -703,7 +708,7 @@ export default function AdmissionForm() {
                                         required
                                     />
                                 </div>
-                                <div className="col-md-3">
+                                <div className="col-md-6">
                                     <label className="gov-label">Village/Town *</label>
                                     <input
                                         type="text"
@@ -727,7 +732,7 @@ export default function AdmissionForm() {
                                         required
                                     />
                                 </div>
-                                <div className="col-md-3">
+                                <div className="col-md-4">
                                     <label className="gov-label">Police Station *</label>
                                     <input
                                         type="text"

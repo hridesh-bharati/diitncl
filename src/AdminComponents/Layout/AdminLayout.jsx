@@ -23,6 +23,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { icon: "bi-house-door-fill", count: 0, bg: "bg-secondary", link: "/admin" },
+    { icon: "bi-journal-check", count: 0, bg: "bg-secondary", link: "/admin/exams" },
     { icon: "bi-people-fill", count: counts.total, bg: "bg-primary", link: "/admin/admitted-student-list" },
     { icon: "bi-chat-left-dots-fill", count: counts.queries, bg: "bg-danger", link: "/admin/clients-contacts" },
     { icon: "bi-lightning-charge-fill", count: counts.today, bg: "bg-success", link: "/admin/students" }
