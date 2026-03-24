@@ -402,7 +402,7 @@ export default function Header() {
           <i className="bi bi-house-door fs-5"></i><span className="mobile-nav-label">Home</span>
         </NavLink>
         <NavLink to="/courses" className={({ isActive }) => `text-center text-decoration-none d-flex flex-column align-items-center ${isActive ? 'text-primary-active' : 'nav-text-color'}`}>
-          <i className="bi bi-grid fs-5"></i><span className="mobile-nav-label">Explore</span>
+          <i className="bi bi-grid fs-5"></i><span className="mobile-nav-label">Course</span>
         </NavLink>
         <div className="position-relative" style={{ width: '60px' }}>
           <Link to="/gallery" className="btn custom-camera-btn-dark rounded-circle position-absolute start-50 translate-middle shadow-lg d-flex align-items-center justify-content-center" style={{ width: '58px', height: '58px', top: '-12px' }}>

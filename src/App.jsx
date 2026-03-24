@@ -3,8 +3,9 @@ import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { subscribeUser } from "./services/pushService";
 import { AnimatePresence } from "framer-motion";
-import SwipeLayout from "./Components/MobileAccessories/SwipeLayout"; 
+import SwipeLayout from "./Components/MobileAccessories/SwipeLayout";
 import "./App.css";
+
 /* Core Components */
 import Lock from "./Components/HomePage/LockWeb/Lock";
 import Header from "./Components/Header/Header";
@@ -18,6 +19,7 @@ import { authListener, getUserRole } from "./firebase/auth";
 import { db, app } from "./firebase/firebase";
 import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
 import { getMessaging, onMessage, isSupported } from "firebase/messaging";
+import { vibration } from "./Components/MobileAccessories/vibration";
 
 
 
@@ -58,8 +60,6 @@ const AdminRoutes = lazy(() => import("./AdminComponents/AdminRoutes"));
 const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
 const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
 
-
-
 export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
@@ -86,7 +86,6 @@ export default function App() {
     let asked = false;
 
     const initPush = async () => {
-      // User login hona chahiye aur ek hi baar trigger hona chahiye
       if (asked || !user?.uid) return;
       asked = true;
 
@@ -189,6 +188,12 @@ export default function App() {
     trackVisit();
   }, []);
 
+
+  useEffect(() => {
+    vibration();
+  }, [])
+
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -198,8 +203,8 @@ export default function App() {
       <Header />
       <InstallPrompt />
 
-     <AnimatePresence mode="wait">
-  <SwipeLayout>
+      <AnimatePresence mode="wait">
+        <SwipeLayout>
 
           <Suspense fallback={<p className="text-center text-muted  p-5 m-5">Loading...</p>}>
             <Routes location={location}>

@@ -30,9 +30,28 @@ Link,
   text-decoration: none !important;
   color: inherit;
 }
+/* ===== UNIVERSAL SCROLLBAR HIDE ===== */
 
-html,
-body {
+/* Firefox */
+* {
+  scrollbar-width: none !important;
+}
+
+/* IE, Edge (old) */
+* {
+  -ms-overflow-style: none !important;
+}
+
+/* Chrome, Safari, Edge (new) */
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Optional (safe base styles) */
+html, body {
+  overflow: auto; /* scroll kaam karega but dikhega nahi */
   font-family: system-ui, -apple-system, sans-serif;
   color: var(--text-main);
   background-color: #fff;

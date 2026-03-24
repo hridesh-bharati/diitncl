@@ -28,35 +28,35 @@ export default function StudentExamList() {
   }, []);
 
   // 2. 🔥 REAL-TIME LISTENER: Admin toggle karega toh turant yahan update hoga
-useEffect(() => {
-  const user = auth.currentUser;
-  if (!user?.email) return;
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user?.email) return;
 
-  const userEmail = user.email.toLowerCase().trim();
-  
-  // 🔥 Listen to studentExams real-time using email filter
-  // Admin assign karte waqt studentId mein email daale
-  const examQ = query(collection(db, "studentExams"), where("studentId", "==", userEmail));
+    const userEmail = user.email.toLowerCase().trim();
 
-  const unsubscribe = onSnapshot(examQ, (snapshot) => {
-    const assignedIds = [];
-    const completedIds = [];
+    // 🔥 Listen to studentExams real-time using email filter
+    // Admin assign karte waqt studentId mein email daale
+    const examQ = query(collection(db, "studentExams"), where("studentId", "==", userEmail));
 
-    snapshot.docs.forEach(d => {
-      const data = d.data();
-      assignedIds.push(data.examId);
-      if (data.status === "Completed") {
-        completedIds.push(data.examId);
-      }
+    const unsubscribe = onSnapshot(examQ, (snapshot) => {
+      const assignedIds = [];
+      const completedIds = [];
+
+      snapshot.docs.forEach(d => {
+        const data = d.data();
+        assignedIds.push(data.examId);
+        if (data.status === "Completed") {
+          completedIds.push(data.examId);
+        }
+      });
+
+      setAssignedExams(assignedIds);
+      setCompletedExams(completedIds);
+      setFetching(false);
     });
 
-    setAssignedExams(assignedIds);
-    setCompletedExams(completedIds);
-    setFetching(false);
-  });
-
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
   // Filter exams based on Real-time assignedExams
   const myExams = exams.filter(e =>
     e.isLive &&
@@ -95,8 +95,11 @@ useEffect(() => {
               </div>
               <div className="p-2 bg-light bg-opacity-10">
                 {isDone ? (
-                  <Link to={`/student/exams/finish/${auth.currentUser.email.split('@')[0]}_${e.id}`} className="btn btn-outline-success w-100 rounded-0 fw-bold py-2 border-2 shadow-sm small">
-                    <i className="bi bi-file-earmark-bar-graph me-2"></i> VIEW SCORECARD
+                  <Link
+                    to={`/student/exams/finish/${user.email.toLowerCase().trim()}_${e.id}`}
+                    className="btn btn-outline-success w-100..."
+                  >
+                    VIEW SCORECARD
                   </Link>
                 ) : (
                   <button className="btn btn-primary w-100 rounded-0 fw-bold py-2 shadow-sm border-0 small" onClick={() => navigate(`attempt/${e.id}`)}>

@@ -32,38 +32,35 @@ export default function AdminAssignExam() {
   // 🔥 2. REAL-TIME ASSIGNED DATA: Isse reload ki tension khatam
   useEffect(() => {
     if (!examId) return;
-
     const q = query(collection(db, "studentExams"), where("examId", "==", examId));
-
-    // Listen for any changes in studentExams for this specific exam
     const unsubscribe = onSnapshot(q, (snap) => {
       const mapping = {};
       snap.docs.forEach(d => {
         const data = d.data();
+        // Yahan studentId (Email) ko hi key banayein matching ke liye
         mapping[data.studentId] = d.id;
       });
       setAssignedData(mapping);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, [examId]);
 
   // handleToggle function to on/off examination
   const handleToggle = async (student) => {
+    const studentEmail = student.email?.toLowerCase().trim(); // 👈 Yeh line add karein
     const studentAdmissionId = student.id;
-    const isAssigned = !!assignedData[studentAdmissionId];
+    const isAssigned = !!assignedData[studentEmail];
     const docId = `${studentAdmissionId}_${examId}`;
 
     try {
       if (isAssigned) {
-        // 1. Access OFF (Delete Doc)
         await deleteDoc(doc(db, "studentExams", docId));
         toast.info(`Access Revoked for ${student.name}`);
       } else {
-        // 2. Access ON (Set Doc)
         await setDoc(doc(db, "studentExams", docId), {
-          studentId: studentAdmissionId,
+          studentId: studentEmail, // 🔥 ID ki jagah Email save karein
+          admissionId: student.id, // Reference ke liye Admission ID bhi rakh sakte hain
           examId: examId,
           status: "Pending",
           score: 0,
@@ -144,11 +141,9 @@ export default function AdminAssignExam() {
                     <td className="text-center">
                       <div className="form-check form-switch d-inline-block">
                         <input
-                          className="form-check-input border-2 cursor-pointer shadow-none"
                           type="checkbox"
-                          checked={!!assignedData[s.id]}
+                          checked={!!assignedData[s.email?.toLowerCase().trim()]}
                           onChange={() => handleToggle(s)}
-                          style={{ width: '38px', height: '19px' }}
                         />
                       </div>
                     </td>
@@ -157,8 +152,8 @@ export default function AdminAssignExam() {
                         <img src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}`} alt="" style={{ width: "32px", height: "32px", objectFit: "cover", borderRadius: "0" }} />
                         <div>
                           <div className="fw-bold small">{s.name}</div>
-                          <div className={`text-uppercase fw-bold ${assignedData[s.id] ? 'text-success' : 'text-muted'}`} style={{ fontSize: '8px' }}>
-                            {assignedData[s.id] ? '● Permitted' : '○ Access Off'}
+                          <div className={`text-uppercase fw-bold ${assignedData[s.email?.toLowerCase().trim()] ? 'text-success' : 'text-muted'}`} style={{ fontSize: '8px' }}>
+                            {assignedData[s.email?.toLowerCase().trim()] ? '● Permitted' : '○ Access Off'}
                           </div>
                         </div>
                       </div>
