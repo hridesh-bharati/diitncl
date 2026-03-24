@@ -1,0 +1,1 @@
+import{j as r}from"./vendor-core-CT7l4TBI.js";import{C as s}from"./CommanCourse-D4BCGGXk.js";import"./courseData-CeKRB8nL.js";function m(){return r.jsx("div",{className:"pb-5 pb-lg-0",children:r.jsx(s,{targetCourses:["All"],CTitle:"Computer"})})}export{m as default};
