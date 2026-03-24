@@ -37,6 +37,7 @@ export default defineConfig(({ command }) => {
             "Govt Registered IT Training Institute in Nichlaul | CCC, ADCA, Python, Web Development",
           start_url: "/",
           display: "standalone",
+          display_override: ["standalone", "window-controls-overlay"],
           theme_color: "#00378a",
           background_color: "#ffffff",
           orientation: "portrait",
