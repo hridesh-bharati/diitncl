@@ -227,24 +227,24 @@ export default function Header() {
         </div>
 
         <div className="offcanvas-body p-4 pt-0 custom-scrollbar">
-          <h2 className="fw-bolder text-dark mb-3 mt-2">Account</h2>
-          {user && (
-            <Link
-              to={userData.dashboard}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
-                <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{ width: 60, height: 60 }}>
-                  {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" /> : <DefaultAvatar />}
-                </div>
-                <div className="flex-grow-1">
-                  <h6 className="m-0 fw-bold text-dark">{userData.name}</h6>
-                  <span className="text-muted small">Go to dashboard</span>
-                </div>
-                <i className="bi bi-chevron-right text-muted opacity-50"></i>
+          <h2 className="fw-bolder text-dark mb-3 mt-2">Account & Dashboard</h2>
+          <Link
+            to={userData.dashboard}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <div className="d-flex align-items-center gap-3 p-3 bg-white rounded-4 mb-4 shadow-sm border border-white">
+              <div className="overflow-hidden rounded-circle border border-3 border-light shadow-sm" style={{ width: 60, height: 60 }}>
+                {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" /> : <DefaultAvatar />}
               </div>
-            </Link>
-          )}
+              <div className="flex-grow-1">
+                <h6 className="m-0 fw-bold text-dark">{userData.name}</h6>
+                <span className="text-muted small">Go to dashboard</span>
+              </div>
+              <i className="bi bi-chevron-right text-muted opacity-50"></i>
+            </div>
+          </Link>
+
+
           <div className="ios-menu">
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title text-primary px-3 pt-3">Admission Portal</div>
@@ -311,6 +311,39 @@ export default function Header() {
               </div>
             </div>
 
+
+
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
+              <div className="ios-menu-title px-3 pt-3">App Settings</div>
+              <div className="ios-menu-item no-hover justify-content-between border-bottom border-light mx-2">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
+                  <span>Language</span>
+                </div>
+                <div className="language-wrapper-drawer">
+                  {!loadTranslator ? (
+                    <button className="btn btn-light btn-sm rounded-pill px-3 fw-bold border"
+                      onMouseEnter={prefetchTranslator}
+                      onClick={() => setLoadTranslator(true)}>Change</button>
+                  ) : (
+                    <Suspense fallback={<small className="text-muted">Loading...</small>}>
+                      <LanguageTranslator />
+                    </Suspense>
+                  )}
+                </div>
+              </div>
+              <div className="ios-menu-item no-hover justify-content-between mx-2">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}><i className="bi bi-moon-stars-fill"></i></div>
+                  <span>Dark Mode</span>
+                </div>
+                <div className="form-check form-switch">
+                  <input className="form-check-input shadow-none" type="checkbox" role="switch" id="darkModeSwitch" />
+                </div>
+              </div>
+            </div>
+
+
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
               <div className="ios-menu-title px-3 pt-3">Legal</div>
               <div className="px-2">
@@ -353,35 +386,27 @@ export default function Header() {
               </div>
             </div>
 
-            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
-              <div className="ios-menu-title px-3 pt-3">App Settings</div>
-              <div className="ios-menu-item no-hover justify-content-between border-bottom border-light mx-2">
+            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4 overflow-hidden">
+              <div className="ios-menu-title px-3 pt-3">Support</div>
+
+              {/* Poori row ko NavLink bana diya */}
+              <NavLink
+                to="/contact-us"
+                className="ios-menu-item text-decoration-none d-flex align-items-center justify-content-between mx-2 my-1 rounded-3"
+                onClick={() => setIsMenuOpen(false)}
+                style={{ color: 'inherit' }}
+              >
                 <div className="d-flex align-items-center gap-3">
-                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
-                  <span>Language</span>
+                  <div className="ios-icon shadow-sm" style={{ background: 'linear-gradient(135deg, #34C759, #30D158)' }}>
+                    <i className="bi bi-envelope-fill text-white"></i>
+                  </div>
+                  <span className="fw-bold text-dark">Contact Us</span>
                 </div>
-                <div className="language-wrapper-drawer">
-                  {!loadTranslator ? (
-                    <button className="btn btn-light btn-sm rounded-pill px-3 fw-bold border"
-                      onMouseEnter={prefetchTranslator}
-                      onClick={() => setLoadTranslator(true)}>Change</button>
-                  ) : (
-                    <Suspense fallback={<small className="text-muted">Loading...</small>}>
-                      <LanguageTranslator />
-                    </Suspense>
-                  )}
-                </div>
-              </div>
-              <div className="ios-menu-item no-hover justify-content-between mx-2">
-                <div className="d-flex align-items-center gap-3">
-                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}><i className="bi bi-moon-stars-fill"></i></div>
-                  <span>Dark Mode</span>
-                </div>
-                <div className="form-check form-switch">
-                  <input className="form-check-input shadow-none" type="checkbox" role="switch" id="darkModeSwitch" />
-                </div>
-              </div>
+                <i className="bi bi-chevron-right text-muted opacity-50 small"></i>
+              </NavLink>
             </div>
+
+
           </div>
 
           <div className="mt-4 pb-4">

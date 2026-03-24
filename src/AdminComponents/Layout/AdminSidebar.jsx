@@ -1,4 +1,3 @@
-// src/AdminComponents/AdminSidebar.jsx
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./AdminSidebar.css";
@@ -7,148 +6,128 @@ export default function AdminSidebar({ open, setOpen }) {
   const location = useLocation();
   const handleClose = () => setOpen(false);
 
-  // Active state checks for accordions
   const isAttendanceActive = location.pathname.includes("/admin/students/attendance");
   const isExamActive = location.pathname.includes("/admin/exams");
 
-  const MAIN_MENU = [
-    { path: "/admin", label: "Dashboard", icon: "bi-house-door-fill", end: true },
-    { path: "/admin/admitted-student-list", label: "Admitted Students", icon: "bi-shield-check" },
-    { path: "/admin/students", label: "New Admissions", icon: "bi-person-plus-fill" },
-    { path: "/admin/clients-contacts", label: "Inbox (Queries)", icon: "bi-chat-dots-fill" },
-  ];
-
-  const MEDIA_MARKETING = [
-    { path: "/admin/gallery", label: "Upload Media", icon: "bi-cloud-arrow-up-fill" },
-    { path: "/admin/all-images", label: "Gallery", icon: "bi-images" },
-    { path: "/admin/new-offers", label: "Promotions", icon: "bi-megaphone-fill" },
-    { path: "/admin/delete-offers", label: "All Offers", icon: "bi-tags-fill" },
-  ];
-
-  const SYSTEM_LISTS = [
-    { path: "/admin/admin-list", label: "Admin List", icon: "bi-lock-fill" },
-    { path: "/admin/visiters-list", label: "Visitor List", icon: "bi-people-fill" },
-  ];
+  // Reusable NavRow using Bootstrap Utilities
+  const NavRow = ({ item, isAccordion = false, isActive = false, target = "" }) => (
+    <div 
+      className={`d-flex align-items-center p-2 px-3 mx-2 my-1 rounded-3 cursor-pointer transition-all ${isActive ? "bg-primary-subtle text-primary fw-bold" : "text-dark hover-bg-light"}`}
+      data-bs-toggle={isAccordion ? "collapse" : ""} 
+      data-bs-target={target}
+      onClick={!isAccordion ? handleClose : undefined}
+      style={{ textDecoration: 'none' }}
+    >
+      <div 
+        className="d-flex align-items-center justify-content-center rounded-2 me-3 shadow-sm flex-shrink-0" 
+        style={{ backgroundColor: item.color, width: "32px", height: "32px" }}
+      >
+        <i className={`bi ${item.icon} text-white fs-6`}></i>
+      </div>
+      <span className="flex-grow-1 small">{item.label}</span>
+      {isAccordion && (
+        <i className={`bi bi-chevron-down small transition-icon ${isActive ? 'rotate-180' : ''}`}></i>
+      )}
+    </div>
+  );
 
   return (
     <>
-      {open && <div className="ios-backdrop" onClick={handleClose} />}
+      {open && <div className="offcanvas-backdrop fade show d-lg-none" onClick={handleClose} style={{ zIndex: 2040 }}></div>}
 
-      <aside className={`ios-sidebar ${open ? "open" : ""}`}>
-        <div className="d-flex flex-column h-100">
-
-          {/* Brand Header */}
-          <div className="sidebar-header d-flex align-items-center justify-content-between p-4 pb-3">
+      <aside className={`offcanvas offcanvas-end border-0 shadow-lg ${open ? "show" : ""}`} 
+             style={{ visibility: open ? "visible" : "hidden", zIndex: 2050, width: "300px" }}>
+        
+        <div className="d-flex flex-column h-100 bg-white shadow">
+          {/* Header */}
+          <div className="p-4 d-flex align-items-center justify-content-between border-bottom">
             <div>
-              <h5 className="fw-bold mb-0 text-dark tracking-tight">Drishtee</h5>
-              <span className="sidebar-subtitle opacity-50 fw-bold">Admin Console</span>
+              <h5 className="fw-bold mb-0 text-dark" style={{ letterSpacing: '-0.5px' }}>Drishtee</h5>
+              <div className="text-uppercase text-muted fw-bold" style={{ fontSize: '10px', letterSpacing: '1px' }}>Admin Console</div>
             </div>
-            <button className="btn p-0 border-0 fs-3 d-lg-none text-muted" onClick={handleClose}>
-              <i className="bi bi-x-lg"></i>
-            </button>
+            <button type="button" className="btn-close shadow-none" onClick={handleClose}></button>
           </div>
 
-          <nav className="flex-grow-1 custom-scroll overflow-auto px-2">
+          <div className="overflow-auto custom-scroll flex-grow-1 py-3">
+            
+            {/* MANAGEMENT SECTION */}
+            <div className="px-4 text-uppercase text-muted fw-bold mb-2" style={{ fontSize: '11px' }}>Management</div>
+            <NavLink to="/admin" end className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Dashboard", icon: "bi-grid-fill", color: "#4CAF50" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/admitted-student-list" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Admitted Students", icon: "bi-person-check-fill", color: "#2196F3" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/students" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "New Admissions", icon: "bi-person-plus-fill", color: "#FF9800" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/clients-contacts" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Inbox (Queries)", icon: "bi-chat-left-dots-fill", color: "#9C27B0" }} isActive={isActive} />}
+            </NavLink>
 
-            {/* 1. MAIN MANAGEMENT */}
-            <p className="sidebar-label">Management</p>
-            {MAIN_MENU.map((item) => (
-              <NavLink key={item.path} to={item.path} end={item.end} className={({ isActive }) => `ios-link ${isActive ? "active" : ""}`} onClick={handleClose}>
-                <i className={`bi ${item.icon}`}></i>
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-
-            {/* 2. 🔥 EXAMS SECTION (Accordion Style) */}
-            <div className="accordion accordion-flush mt-1" id="examAccordion">
-              <div className="accordion-item bg-transparent border-0">
-                <div
-                  className={`ios-link accordion-button shadow-none ${!isExamActive ? "collapsed" : ""}`}
-                  data-bs-toggle="collapse"
-                  data-bs-target="#examCollapse"
-                  style={{ cursor: 'pointer' }}
-                >
-                  <i className="bi bi-journal-text"></i>
-                  <span>Examinations</span>
-                </div>
-
-                <div id="examCollapse" className={`accordion-collapse collapse ${isExamActive ? "show" : ""}`} data-bs-parent="#examAccordion">
-                  <div className="ps-4 ms-3 border-start py-1">
-                    {[
-                      { path: "/admin/exams", label: "Dashboard" },
-                      { path: "/admin/exams/new", label: "Launch Exam" },
-                      { path: "/admin/exams/live-tracking", label: "Live Tracking" },
-                      { path: "/admin/exams/completed", label: "Reports & Results" }
-                    ].map(sub => (
-                      <NavLink key={sub.path} to={sub.path} className={({ isActive }) => `ios-sublink ${isActive ? "active" : ""}`} onClick={handleClose}>
-                        {sub.label}
-                      </NavLink>
-                    ))}
+            {/* EXAMS ACCORDION */}
+            <div className="accordion accordion-flush mt-1" id="examAcc">
+              <div className="accordion-item border-0 bg-transparent">
+                <NavRow item={{ label: "Examinations", icon: "bi-file-earmark-text-fill", color: "#F44336" }} isAccordion isActive={isExamActive} target="#examCollapse" />
+                <div id="examCollapse" className={`collapse ${isExamActive ? "show" : ""}`} data-bs-parent="#examAcc">
+                  <div className="ms-5 border-start ps-3 py-1 mt-1 d-flex flex-column gap-1">
+                    <NavLink to="/admin/exams" className="sublink-item">Exam Dashboard</NavLink>
+                    <NavLink to="/admin/exams/new" className="sublink-item">Launch New Exam</NavLink>
+                    <NavLink to="/admin/exams/live-tracking" className="sublink-item">Live Tracking</NavLink>
+                    <NavLink to="/admin/exams/completed" className="sublink-item">Reports & Results</NavLink>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* 3. ATTENDANCE SECTION */}
-            <div className="accordion accordion-flush mt-1" id="studentAccordion">
-              <div className="accordion-item bg-transparent border-0">
-                <div
-                  className={`ios-link accordion-button shadow-none ${!isAttendanceActive ? "collapsed" : ""}`}
-                  data-bs-toggle="collapse"
-                  data-bs-target="#studentCollapse"
-                  style={{ cursor: 'pointer' }}
-                >
-                  <i className="bi bi-calendar2-check-fill"></i>
-                  <span>Attendance</span>
-                </div>
-
-                <div id="studentCollapse" className={`accordion-collapse collapse ${isAttendanceActive ? "show" : ""}`} data-bs-parent="#studentAccordion">
-                  <div className="ps-4 ms-3 border-start py-1">
-                    {[
-                      { path: "/admin/students/attendance", label: "Dashboard" },
-                      { path: "/admin/students/attendance/mark", label: "Mark Attendance" },
-                      { path: "/admin/students/attendance/summary", label: "Summary" },
-                      { path: "/admin/students/attendance/analytics", label: "Analytics" }
-                    ].map(sub => (
-                      <NavLink key={sub.path} to={sub.path} className={({ isActive }) => `ios-sublink ${isActive ? "active" : ""}`} onClick={handleClose}>
-                        {sub.label}
-                      </NavLink>
-                    ))}
+            {/* ATTENDANCE ACCORDION */}
+            <div className="accordion accordion-flush mt-1" id="attAcc">
+              <div className="accordion-item border-0 bg-transparent">
+                <NavRow item={{ label: "Attendance", icon: "bi-calendar-check-fill", color: "#009688" }} isAccordion isActive={isAttendanceActive} target="#attCollapse" />
+                <div id="attCollapse" className={`collapse ${isAttendanceActive ? "show" : ""}`} data-bs-parent="#attAcc">
+                  <div className="ms-5 border-start ps-3 py-1 mt-1 d-flex flex-column gap-1">
+                    <NavLink to="/admin/students/attendance" className="sublink-item">Daily Overview</NavLink>
+                    <NavLink to="/admin/students/attendance/mark" className="sublink-item">Mark Attendance</NavLink>
+                    <NavLink to="/admin/students/attendance/summary" className="sublink-item">Monthly Summary</NavLink>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* 4. MEDIA & OFFERS */}
-            <p className="sidebar-label mt-3">Marketing</p>
-            {MEDIA_MARKETING.map((item) => (
-              <NavLink key={item.path} to={item.path} className={({ isActive }) => `ios-link ${isActive ? "active" : ""}`} onClick={handleClose}>
-                <i className={`bi ${item.icon}`}></i>
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
+            {/* MARKETING SECTION */}
+            <div className="px-4 text-uppercase text-muted fw-bold mt-4 mb-2" style={{ fontSize: '11px' }}>Marketing</div>
+            <NavLink to="/admin/gallery" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Upload Media", icon: "bi-cloud-upload-fill", color: "#00BCD4" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/all-images" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Gallery", icon: "bi-images", color: "#E91E63" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/new-offers" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Promotions", icon: "bi-megaphone-fill", color: "#FF5722" }} isActive={isActive} />}
+            </NavLink>
 
-            {/* 5. SYSTEM LISTS */}
-            <p className="sidebar-label mt-3">System</p>
-            {SYSTEM_LISTS.map((item) => (
-              <NavLink key={item.path} to={item.path} className={({ isActive }) => `ios-link ${isActive ? "active" : ""}`} onClick={handleClose}>
-                <i className={`bi ${item.icon}`}></i>
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-          </nav>
+            {/* SYSTEM SECTION */}
+            <div className="px-4 text-uppercase text-muted fw-bold mt-4 mb-2" style={{ fontSize: '11px' }}>System</div>
+            <NavLink to="/admin/admin-list" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Admin List", icon: "bi-key-fill", color: "#607D8B" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/visiters-list" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Visitor List", icon: "bi-people-fill", color: "#3F51B5" }} isActive={isActive} />}
+            </NavLink>
 
-          {/* User Profile Footer */}
-          <div className="sidebar-footer p-3 mt-auto">
-            <NavLink to="/admin/profile" className="profile-card text-decoration-none" onClick={handleClose}>
-              <div className="profile-avatar bg-danger text-white">
-                <i className="bi bi-person-fill"></i>
+          </div>
+
+          {/* Footer Card */}
+          <div className="p-3 border-top bg-light">
+            <NavLink to="/admin/profile" className="d-flex align-items-center p-2 bg-white rounded-3 border text-decoration-none shadow-sm shadow-hover">
+              <div className="bg-danger text-white rounded-2 d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                <i className="bi bi-person-fill fs-5"></i>
               </div>
-              <div className="ms-3 overflow-hidden">
-                <p className="m-0 fw-bold text-dark small text-truncate">Admin Account</p>
-                <p className="m-0 text-muted extra-small">Settings & Privacy</p>
+              <div className="ms-3 flex-grow-1 overflow-hidden">
+                <div className="fw-bold text-dark small text-truncate">Admin Account</div>
+                <div className="text-muted" style={{ fontSize: '10px' }}>Settings & Privacy</div>
               </div>
-              <i className="bi bi-chevron-right ms-auto opacity-25 small"></i>
+              <i className="bi bi-chevron-right text-muted small"></i>
             </NavLink>
           </div>
         </div>

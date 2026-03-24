@@ -1,89 +1,84 @@
-import React, { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { db } from "../../firebase/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+// src/AdminComponents/Layout/AdminLayout.jsx
+
+import React, { useState } from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
+import useAdminCounts from "../../hooks/useAdminCounts";
 
 export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const [counts, setCounts] = useState({ total: 0, today: 0, queries: 0 });
+  const location = useLocation();
+  const { counts } = useAdminCounts();
 
-  useEffect(() => {
-    const todayStr = new Date().toDateString();
-    const unsubStudents = onSnapshot(collection(db, "admissions"), (snap) => {
-      const todayCount = snap.docs.filter(doc => doc.data()?.createdAt?.toDate?.().toDateString() === todayStr).length;
-      setCounts(prev => ({ ...prev, total: snap.size, today: todayCount }));
-    });
-    const unsubQueries = onSnapshot(collection(db, "studentQueries"), (snap) => {
-      setCounts(prev => ({ ...prev, queries: snap.size }));
-    });
-    return () => { unsubStudents(); unsubQueries(); };
-  }, []);
-
+  // Navigation items
   const navItems = [
-    { icon: "bi-house-door-fill", count: 0, bg: "bg-secondary", link: "/admin" },
-    { icon: "bi-journal-check", count: 0, bg: "bg-secondary", link: "/admin/exams" },
-    { icon: "bi-people-fill", count: counts.total, bg: "bg-primary", link: "/admin/admitted-student-list" },
-    { icon: "bi-chat-left-dots-fill", count: counts.queries, bg: "bg-danger", link: "/admin/clients-contacts" },
-    { icon: "bi-lightning-charge-fill", count: counts.today, bg: "bg-success", link: "/admin/students" }
+    { icon: "bi-house-fill", label: "Dashboard", count: 0, link: "/admin" },
+    { icon: "bi-file-text-fill", label: "Exams", count: counts.exams, link: "/admin/exams" },
+    { icon: "bi-people-fill", label: "Students", count: counts.total, link: "/admin/admitted-student-list" },
+    { icon: "bi-chat-dots-fill", label: "Queries", count: counts.queries, link: "/admin/clients-contacts" },
+    { icon: "bi-calendar-check-fill", label: "Today", count: counts.today, link: "/admin/students" },
+    { icon: "bi-plus-circle-fill", label: "Create Post", count: 0, link: "/admin/gallery" },
   ];
 
   return (
-    <div className="d-flex" style={{ width: "100%", overflowX: "hidden" }}>
+    <div className="d-flex vh-100 overflow-hidden bg-light">
       <AdminSidebar open={open} setOpen={setOpen} />
 
-      <div
-        className="flex-grow-1 d-flex flex-column"
-        style={{
-          background: "#f8f9fa",
-          width: "100%",
-          overflowX: "hidden"
-        }}
-      >
+      <div className="flex-grow-1 d-flex flex-column overflow-hidden">
+        {/* Header */}
         <header
-          className="bg-white border-bottom px-3 pt-1 d-flex align-items-center shadow-sm"
+          className="bg-white border-bottom d-flex align-items-center justify-content-between sticky-top p-2 shadow-sm"
+          style={{ zIndex: 1050, minHeight: "60px" }}
         >
-          {/* Sidebar Toggle */}
-          <button
-            className="btn border-0 p-0 text-secondary"
-            onClick={() => setOpen(true)}
-          >
-            <i className="bi bi-list fs-2"></i>
-          </button>
-
-          {/* Nav Icons */}
-          <div className="d-flex align-items-center flex-grow-1 px-3 justify-content-between justify-content-md-end gap-md-5">
-            {navItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="position-relative p-2"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(item.link)}
-              >
-                <i className={`bi ${item.icon} text-secondary fs-4`}></i>
-
-                {item.count > 0 && (
-                  <span
-                    className="position-absolute top-0 mt-2 start-100 translate-middle badge rounded-pill bg-danger border border-white"
-                    style={{ fontSize: "9px" }}
+          {/* Nav items */}
+          <div className="d-flex align-items-center flex-grow-1 overflow-auto p-2" style={{ scrollbarWidth: 'none' }}>
+            <div className="d-flex gap-1 gap-md-5">
+              {navItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex-shrink-0"
+                  onClick={() => navigate(item.link)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div
+                    className={`position-relative d-flex align-items-center px-3 py-1 rounded-pill ${
+                      location.pathname === item.link
+                        ? "bg-secondary-subtle text-dark shadow-sm"
+                        : "text-secondary"
+                    }`}
                   >
-                    {item.count}
-                  </span>
-                )}
-              </div>
-            ))}
+                    <div className="position-relative">
+                      <i className={`bi ${item.icon} fs-5`}></i>
+                      {item.count > 0 && (
+                        <span
+                          className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                          style={{ fontSize: "0.6rem" }}
+                        >
+                          {item.count > 99 ? "99+" : item.count}
+                        </span>
+                      )}
+                    </div>
+                    <span className="d-none d-md-block ms-2 small fw-bold">{item.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sidebar toggle */}
+          <div className="ps-2 border-start">
+            <button className="btn btn-light rounded-circle" onClick={() => setOpen(true)}>
+              <i className="bi bi-list fs-4"></i>
+            </button>
           </div>
         </header>
 
-        <main
-          className="flex-grow-1"
-          style={{
-            overflowX: "hidden",
-            width: "100%"
-          }}
-        >
-          <Outlet />
+        {/* Main content */}
+        <main className="flex-grow-1 overflow-auto">
+          <div className="container-fluid p-0 m-0">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

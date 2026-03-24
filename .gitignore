@@ -9,4 +9,4 @@ node_modules/
 # Logs
 *.log
  
-# gsc-fetcher@hridesh-1700942868104.iam.gserviceaccount.com	
+src/AdminComponents/Students/Exams/admin/Papers/*.json

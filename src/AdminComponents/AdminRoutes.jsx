@@ -77,7 +77,7 @@ export default function AdminRoutes() {
           </Route>
         </Route>
 
-        <Route path="*" element={<Navigate to="" replace />} />
+        <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
     </Routes>
   );

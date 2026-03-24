@@ -1,121 +1,54 @@
-:root {
-  --ios-sidebar-width: 280px;
-  --ios-primary: #00356d;
-  --ios-bg: rgba(255, 255, 255, 0.98);
+/* Custom utility for blur and transitions */
+.offcanvas {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(15px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.ios-sidebar {
-  width: var(--ios-sidebar-width);
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background: var(--ios-bg);
-  backdrop-filter: blur(25px) saturate(200%);
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  transform: translateX(-100%);
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  z-index: 2050;
+.cursor-pointer {
+  cursor: pointer;
 }
 
-.ios-sidebar.open { transform: translateX(0); }
-
-.ios-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-  z-index: 2040;
+.hover-bg-light:hover {
+  background-color: #f8f9fa;
 }
 
-/* Sidebar Labels */
-.sidebar-subtitle { font-size: 9px; letter-spacing: 1.5px; color: #8e8e93; }
-.sidebar-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #8e8e93;
-  padding: 20px 18px 8px;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
-
-/* Main Links */
-.ios-link {
-  display: flex;
-  align-items: center;
-  padding: 10px 16px;
-  margin: 2px 10px;
-  border-radius: 10px;
-  color: #1c1c1e;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  background: transparent;
-  border: none !important;
-}
-
-.ios-link i {
-  font-size: 1.1rem;
-  margin-right: 12px;
-  color: var(--ios-primary);
-  width: 24px;
-  text-align: center;
-}
-
-.ios-link:hover { background: rgba(0, 0, 0, 0.04); }
-.ios-link.active {
-  background: rgba(0, 53, 109, 0.08) !important;
-  color: var(--ios-primary) !important;
-  font-weight: 700;
-}
-
-/* Sublinks (Attendance) */
-.ios-sublink {
+/* Sublink Styling */
+.sublink-item {
   display: block;
-  padding: 8px 12px;
-  margin: 2px 0;
-  color: #636366;
-  text-decoration: none;
+  padding: 6px 10px;
+  color: #555 !important;
+  text-decoration: none !important;
   font-size: 13px;
   border-radius: 6px;
   transition: 0.2s;
 }
 
-.ios-sublink:hover { color: var(--ios-primary); background: rgba(0,0,0,0.03); }
-.ios-sublink.active { color: var(--ios-primary); font-weight: 600; background: rgba(0, 53, 109, 0.04); }
-
-/* Accordion Fixes */
-.accordion-button::after {
-  background-size: 0.8rem;
-  transition: transform 0.2s ease;
+.sublink-item:hover,
+.sublink-item.active {
+  background-color: #f1f3f5;
+  color: #0d6efd !important;
 }
 
-/* Footer Profile Card */
-.profile-card {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  background: #fdfdfd;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+/* Icons and Rotation */
+.transition-icon {
+  transition: transform 0.3s ease;
 }
 
-.profile-avatar {
-  width: 36px;
-  height: 36px;
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
 }
 
-.extra-small { font-size: 10px; color: #8e8e93; }
-.tracking-tight { letter-spacing: -0.5px; }
-
-/* Custom Scroll */
-.custom-scroll::-webkit-scrollbar { width: 4px; }
-.custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+/* Shadow on hover for profile card */
+.shadow-hover:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
