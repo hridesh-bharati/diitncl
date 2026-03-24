@@ -15,15 +15,14 @@ export default function StudentExamList() {
     if (!currentUser) return;
     const fetchMyExams = async () => {
       try {
-        // Fetch exams assigned to this specific student
         const q = query(
           collection(db, "studentExams"),
-          where("studentId", "==", currentUser.uid)
+          where("studentId", "==", currentUser.email.toLowerCase().trim())
         );
         const snap = await getDocs(q);
         setMyExams(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Fetch Error:", err);
       } finally {
         setLoading(false);
       }

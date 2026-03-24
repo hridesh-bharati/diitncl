@@ -47,36 +47,45 @@ export default function AdminAssignExam() {
   }, [examId]);
 
   // handleToggle function to on/off examination
-  const handleToggle = async (student) => {
-    const studentEmail = student.email?.toLowerCase().trim(); // 👈 Yeh line add karein
-    const studentAdmissionId = student.id;
+const handleToggle = async (student) => {
+    // 1. Force lowercase and trim for consistency
+    const studentEmail = student.email?.toLowerCase().trim(); 
+    
+    if (!studentEmail) {
+      toast.error("Student has no email address!");
+      return;
+    }
+
     const isAssigned = !!assignedData[studentEmail];
-    const docId = `${studentAdmissionId}_${examId}`;
+    
+    // 🔥 FIX: Document ID must start with email to match your security rules
+    // Format: "email_examId"
+    const docId = `${studentEmail}_${examId}`;
 
     try {
       if (isAssigned) {
         await deleteDoc(doc(db, "studentExams", docId));
         toast.info(`Access Revoked for ${student.name}`);
       } else {
+        // Create the permission record
         await setDoc(doc(db, "studentExams", docId), {
-          studentId: studentEmail, // 🔥 ID ki jagah Email save karein
-          admissionId: student.id, // Reference ke liye Admission ID bhi rakh sakte hain
+          studentId: studentEmail, // Store email here for queries
+          admissionId: student.id, 
           examId: examId,
           status: "Pending",
           score: 0,
           assignedAt: serverTimestamp()
         });
 
-        // 3. Nodemailer Email Trigger (Jab Access ON ho)
+        // 3. Email & Notification Logic
         if (student.email) {
-          // Hum await kar rahe hain taaki email success confirm ho sake
           const emailSent = await sendEmailNotification(
             student.email,
             `Examination Permit: ${exam?.title}`,
             examPermitTemplate(student, exam)
           );
 
-          // 🔥 4. PUSH NOTIFICATION TRIGGER  
+          // Push Notification
           if (student.pushSubscription) {
             fetch('/api/send-push', {
               method: 'POST',
@@ -86,25 +95,17 @@ export default function AdminAssignExam() {
                 title: "Exam Permit Issued! 📝",
                 body: `Hi ${student.name}, You are permitted for ${exam?.title}. Best of luck!`
               })
-            })
-              .then(response => {
-                if (!response.ok) console.error("Push API error response:", response.status);
-              })
-              .catch(e => console.error("Exam Push failed", e));
+            }).catch(e => console.error("Push failed", e));
           }
 
-          if (emailSent) {
-            toast.success(`Access Enabled & Permit Sent to ${student.name}`);
-          } else {
-            toast.warning(`Access Enabled, but Permit Email failed.`);
-          }
-        } else {
-          toast.success(`Access Enabled for ${student.name} (No Email)`);
+          emailSent 
+            ? toast.success(`Access Enabled & Permit Sent to ${student.name}`)
+            : toast.warning(`Access Enabled, but Email failed.`);
         }
       }
     } catch (err) {
       console.error("Toggle Error:", err);
-      toast.error("Error updating access.");
+      toast.error("Database Error: Check Firestore Rules");
     }
   };
 

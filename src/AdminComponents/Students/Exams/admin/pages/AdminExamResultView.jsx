@@ -9,7 +9,7 @@ export default function AdminExamResultView() {
   const [result, setResult] = useState(null);
   const [student, setStudent] = useState(null);
   const [exam, setExam] = useState(null);
-  const [fullQuestions, setFullQuestions] = useState([]); // 🔥 To store actual Q data
+  const [fullQuestions, setFullQuestions] = useState([]);  
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 

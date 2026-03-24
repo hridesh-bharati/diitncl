@@ -18,17 +18,17 @@ export const ExamProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     // 1. Realtime Listener for Exams
-  useEffect(() => {
-    const q = query(collection(db, "exams"), orderBy("createdAt", "desc"));
-    const unsub = onSnapshot(q, (snap) => {
-        setExams(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        setLoading(false);
-    }, (error) => {
-        console.error("Exam fetch error:", error);
-        setLoading(false);
-    });
-    return unsub;
-}, []);
+    useEffect(() => {
+        const q = query(collection(db, "exams"), orderBy("createdAt", "desc"));
+        const unsub = onSnapshot(q, (snap) => {
+            setExams(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+            setLoading(false);
+        }, (error) => {
+            console.error("Exam fetch error:", error);
+            setLoading(false);
+        });
+        return unsub;
+    }, []);
 
     // 2. Create Exam Info
     const createExam = async (data) => {
@@ -83,9 +83,12 @@ export const ExamProvider = ({ children }) => {
     };
 
     // 5. Submit Exam
-    const submitExam = async (studentAdmissionId, examId, answers, questions) => {
+    const submitExam = async (studentEmail, examId, answers, questions) => {
         try {
-            const studentExamRef = doc(db, "studentExams", `${studentAdmissionId}_${examId}`);
+            // Generate the same consistent Doc ID
+            const docId = `${studentEmail.toLowerCase().trim()}_${examId}`;
+            const studentExamRef = doc(db, "studentExams", docId);
+
             let score = 0;
             questions.forEach(q => {
                 if (answers[q.id] === q.correctAnswer) {
@@ -97,7 +100,7 @@ export const ExamProvider = ({ children }) => {
                 status: "Completed",
                 answers: answers,
                 score: score,
-              completedAt: serverTimestamp()
+                completedAt: serverTimestamp()
             });
 
             return { success: true, score: score };

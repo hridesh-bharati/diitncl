@@ -25,27 +25,24 @@ export default function StudentExamPage() {
 
   // 🔹 Auth check
   useEffect(() => {
-
     const unsub = onAuthStateChanged(auth, async (u) => {
-
       if (!u) return;
-
       setUser(u);
 
-      const studentExamRef = doc(db, "studentExams", `${u.uid}_${examId}`);
+      // 🔥 FIX: Use email instead of u.uid to match the Admin's docId
+      const studentEmail = u.email.toLowerCase().trim();
+      const studentExamRef = doc(db, "studentExams", `${studentEmail}_${examId}`);
+      
       const snap = await getDoc(studentExamRef);
 
       if (snap.exists()) {
         setExamStarted(true);
         loadQuestions();
       }
-
       setLoading(false);
     });
-
     return () => unsub();
-
-  }, []);
+  }, [examId]);
 
   // 🔹 Load Questions
   const loadQuestions = async () => {
