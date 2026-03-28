@@ -120,20 +120,30 @@ self.addEventListener("fetch", (event) => {
 ========================================= */
 messaging.onBackgroundMessage((payload) => {
   console.log('Background Payload:', payload);
-  const notificationTitle = payload.data?.title || payload.notification?.title || "Drishtee Alert";
+
+  if (payload.notification && !payload.data) return;
+
+  const notificationTitle =
+    payload.data?.title ||
+    payload.notification?.title ||
+    "Drishtee Alert";
+
   const notificationOptions = {
-    body: payload.data?.body || payload.notification?.body || "New message from Drishtee",
+    body:
+      payload.data?.body ||
+      payload.notification?.body ||
+      "New message from Drishtee",
     icon: "/images/icon/icon-192.png",
     badge: "/images/icon/icon-192.png",
     vibrate: [200, 100, 200],
-    tag: 'drishtee-notification',
+    tag: "drishtee-notification",
     renotify: true,
     data: {
-      url: payload.data?.url || payload.notification?.click_action || "/"
+      url: payload.fcmOptions?.link || payload.data?.url || "/"
     }
   };
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 /* =========================================
