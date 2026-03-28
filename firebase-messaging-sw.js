@@ -119,20 +119,21 @@ self.addEventListener("fetch", (event) => {
    🔔 FCM BACKGROUND NOTIFICATION
 ========================================= */
 messaging.onBackgroundMessage((payload) => {
-
-  const title = payload.notification?.title || "Drishtee Alert";
-
-  const options = {
-    body: payload.notification?.body || "New update",
+  console.log('Background Payload:', payload);
+  const notificationTitle = payload.data?.title || payload.notification?.title || "Drishtee Alert";
+  const notificationOptions = {
+    body: payload.data?.body || payload.notification?.body || "New message from Drishtee",
     icon: "/images/icon/icon-192.png",
     badge: "/images/icon/icon-192.png",
     vibrate: [200, 100, 200],
+    tag: 'drishtee-notification',
+    renotify: true,
     data: {
-      url: payload.data?.url || "/"
+      url: payload.data?.url || payload.notification?.click_action || "/"
     }
   };
 
-  self.registration.showNotification(title, options);
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 /* =========================================
