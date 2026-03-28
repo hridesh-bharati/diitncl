@@ -8,5 +8,4 @@ node_modules/
 
 # Logs
 *.log
- 
-src/AdminComponents/Students/Exams/admin/Papers/*.json
+  

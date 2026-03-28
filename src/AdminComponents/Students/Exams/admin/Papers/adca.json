@@ -1,0 +1,641 @@
+[
+  {
+    "question": "Who is known as the father of computers?",
+    "optionA": "Charles Babbage",
+    "optionB": "Alan Turing",
+    "optionC": "John von Neumann",
+    "optionD": "Bill Gates",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "The first electronic computer was called?",
+    "optionA": "ENIAC",
+    "optionB": "UNIVAC",
+    "optionC": "ABC",
+    "optionD": "EDVAC",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which generation of computer used transistors?",
+    "optionA": "Second",
+    "optionB": "First",
+    "optionC": "Third",
+    "optionD": "Fourth",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "MS Word is primarily used for?",
+    "optionA": "Typing and Formatting Documents",
+    "optionB": "Creating Spreadsheets",
+    "optionC": "Video Editing",
+    "optionD": "Web Design",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Excel, which feature is used to automatically fill series?",
+    "optionA": "Fill Handle",
+    "optionB": "Formula Bar",
+    "optionC": "Data Validation",
+    "optionD": "Pivot Table",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "PowerPoint slides can be advanced automatically using?",
+    "optionA": "Slide Transition Timings",
+    "optionB": "Spell Check",
+    "optionC": "AutoFit",
+    "optionD": "Format Painter",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which Photoshop tool is used to remove unwanted background?",
+    "optionA": "Magic Wand Tool",
+    "optionB": "Crop Tool",
+    "optionC": "Lasso Tool",
+    "optionD": "Pen Tool",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "PageMaker is used for?",
+    "optionA": "Desktop Publishing",
+    "optionB": "Photo Editing",
+    "optionC": "Video Creation",
+    "optionD": "Database Management",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "CorelDRAW is best for?",
+    "optionA": "Vector Graphic Design",
+    "optionB": "Spreadsheet Analysis",
+    "optionC": "Video Editing",
+    "optionD": "Web Browsing",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which is a primary storage device?",
+    "optionA": "RAM",
+    "optionB": "Hard Disk",
+    "optionC": "Flash Drive",
+    "optionD": "Optical Disk",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which device is used to project computer display on screen?",
+    "optionA": "Projector",
+    "optionB": "Scanner",
+    "optionC": "Printer",
+    "optionD": "Keyboard",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Blue screen on a computer usually indicates?",
+    "optionA": "System Crash",
+    "optionB": "Low Battery",
+    "optionC": "Network Error",
+    "optionD": "Virus-free system",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "HTML stands for?",
+    "optionA": "HyperText Markup Language",
+    "optionB": "Hyper Transfer Markup Language",
+    "optionC": "HighText Machine Language",
+    "optionD": "Hyperlink Text Markup Language",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "CSS is used for?",
+    "optionA": "Web Page Styling",
+    "optionB": "Programming Logic",
+    "optionC": "Database Management",
+    "optionD": "Email Communication",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "JavaScript is primarily used for?",
+    "optionA": "Adding Interactivity to Web Pages",
+    "optionB": "Text Editing",
+    "optionC": "Video Creation",
+    "optionD": "Accounting",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In C, which symbol is used to end a statement?",
+    "optionA": ";",
+    "optionB": ":",
+    "optionC": ".",
+    "optionD": ",",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which function in C is used to print output?",
+    "optionA": "printf()",
+    "optionB": "scanf()",
+    "optionC": "main()",
+    "optionD": "input()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which operator is used for multiplication in C/C++?",
+    "optionA": "*",
+    "optionB": "+",
+    "optionC": "-",
+    "optionD": "/",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which of the following is a loop in C++?",
+    "optionA": "for",
+    "optionB": "printf",
+    "optionC": "scanf",
+    "optionD": "main",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Excel, which function finds the maximum value?",
+    "optionA": "MAX()",
+    "optionB": "MIN()",
+    "optionC": "SUM()",
+    "optionD": "AVERAGE()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Word, which feature checks spelling?",
+    "optionA": "Spelling & Grammar",
+    "optionB": "Thesaurus",
+    "optionC": "Format Painter",
+    "optionD": "Track Changes",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which Photoshop tool is used to paint color manually?",
+    "optionA": "Brush Tool",
+    "optionB": "Lasso Tool",
+    "optionC": "Magic Wand Tool",
+    "optionD": "Move Tool",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "PageMaker master pages help in?",
+    "optionA": "Consistent Layout",
+    "optionB": "Image Editing",
+    "optionC": "Animation Creation",
+    "optionD": "Video Editing",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "CorelDRAW primarily uses which type of graphics?",
+    "optionA": "Vector Graphics",
+    "optionB": "Raster Graphics",
+    "optionC": "Bitmap Only",
+    "optionD": "3D Graphics",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "A monitor is an example of?",
+    "optionA": "Output Device",
+    "optionB": "Input Device",
+    "optionC": "Storage Device",
+    "optionD": "Processing Device",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "A keyboard malfunction may result in?",
+    "optionA": "Unresponsive Typing",
+    "optionB": "Monitor Damage",
+    "optionC": "Hard Disk Crash",
+    "optionD": "Printer Error",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In HTML, which tag is used for paragraph?",
+    "optionA": "<p>",
+    "optionB": "<h1>",
+    "optionC": "<div>",
+    "optionD": "<body>",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In CSS, which property changes text color?",
+    "optionA": "color",
+    "optionB": "font-style",
+    "optionC": "background-color",
+    "optionD": "text-decoration",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In JavaScript, which function displays an alert box?",
+    "optionA": "alert()",
+    "optionB": "prompt()",
+    "optionC": "console.log()",
+    "optionD": "confirm()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In C++, main() function returns which type?",
+    "optionA": "int",
+    "optionB": "float",
+    "optionC": "void",
+    "optionD": "char",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which shortcut in Word copies text?",
+    "optionA": "Ctrl + C",
+    "optionB": "Ctrl + V",
+    "optionC": "Ctrl + X",
+    "optionD": "Ctrl + Z",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which Excel feature allows sorting data?",
+    "optionA": "Sort & Filter",
+    "optionB": "Conditional Formatting",
+    "optionC": "Data Validation",
+    "optionD": "Pivot Table",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In PowerPoint, which view shows all slides in small thumbnails?",
+    "optionA": "Slide Sorter",
+    "optionB": "Normal View",
+    "optionC": "Notes Page",
+    "optionD": "Slide Show",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, which tool cuts out objects precisely?",
+    "optionA": "Pen Tool",
+    "optionB": "Crop Tool",
+    "optionC": "Brush Tool",
+    "optionD": "Move Tool",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which C++ keyword is used to define a class?",
+    "optionA": "class",
+    "optionB": "struct",
+    "optionC": "object",
+    "optionD": "function",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In CorelDRAW, the 'Bezier Tool' is used for?",
+    "optionA": "Drawing Curves",
+    "optionB": "Adding Text",
+    "optionC": "Applying Colors",
+    "optionD": "Cropping Images",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which device stores data permanently?",
+    "optionA": "Hard Disk",
+    "optionB": "RAM",
+    "optionC": "Cache",
+    "optionD": "Registers",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What is a common cause of system overheating?",
+    "optionA": "Dust in CPU Fan",
+    "optionB": "Full Hard Disk",
+    "optionC": "Mouse Malfunction",
+    "optionD": "Monitor Brightness",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In HTML, which tag is used for headings?",
+    "optionA": "<h1> to <h6>",
+    "optionB": "<p>",
+    "optionC": "<div>",
+    "optionD": "<span>",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which CSS property changes font size?",
+    "optionA": "font-size",
+    "optionB": "text-align",
+    "optionC": "color",
+    "optionD": "background",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In JavaScript, which symbol is used for equality check?",
+    "optionA": "==",
+    "optionB": "=",
+    "optionC": "===",
+    "optionD": "!=",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which C operator is used for addition?",
+    "optionA": "+",
+    "optionB": "-",
+    "optionC": "*",
+    "optionD": "/",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination undoes the last action in most software?",
+    "optionA": "Ctrl + Z",
+    "optionB": "Ctrl + Y",
+    "optionC": "Ctrl + C",
+    "optionD": "Ctrl + V",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Tally, 'Trial Balance' shows?",
+    "optionA": "List of Debit & Credit Totals",
+    "optionB": "Individual Invoices",
+    "optionC": "Employee Data",
+    "optionD": "Stock Prices",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which generation of computer introduced microprocessors?",
+    "optionA": "Fourth",
+    "optionB": "Second",
+    "optionC": "Third",
+    "optionD": "Fifth",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "ENIAC was developed in which year?",
+    "optionA": "1945",
+    "optionB": "1935",
+    "optionC": "1955",
+    "optionD": "1965",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Excel, which function finds the minimum value?",
+    "optionA": "MIN()",
+    "optionB": "MAX()",
+    "optionC": "SUM()",
+    "optionD": "AVERAGE()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Word, which key is used for creating a new document?",
+    "optionA": "Ctrl + N",
+    "optionB": "Ctrl + O",
+    "optionC": "Ctrl + S",
+    "optionD": "Ctrl + P",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In PowerPoint, which key starts the slideshow?",
+    "optionA": "F5",
+    "optionB": "F1",
+    "optionC": "F2",
+    "optionD": "F4",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which Photoshop tool is used to move layers?",
+    "optionA": "Move Tool",
+    "optionB": "Magic Wand Tool",
+    "optionC": "Crop Tool",
+    "optionD": "Brush Tool",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "PageMaker is used for which type of publishing?",
+    "optionA": "Print Media",
+    "optionB": "Video Media",
+    "optionC": "Audio Media",
+    "optionD": "Web Media",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In CorelDRAW, which tool draws straight lines?",
+    "optionA": "Polyline Tool",
+    "optionB": "Bezier Tool",
+    "optionC": "Rectangle Tool",
+    "optionD": "Ellipse Tool",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which is an example of secondary memory?",
+    "optionA": "Hard Disk",
+    "optionB": "RAM",
+    "optionC": "Cache",
+    "optionD": "Registers",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "A malfunctioning mouse may result in?",
+    "optionA": "Cursor not moving",
+    "optionB": "Monitor damage",
+    "optionC": "Hard disk crash",
+    "optionD": "Printer failure",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In HTML, which tag is used for inserting images?",
+    "optionA": "<img>",
+    "optionB": "<picture>",
+    "optionC": "<image>",
+    "optionD": "<src>",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In CSS, 'background-color' property is used to?",
+    "optionA": "Change background color",
+    "optionB": "Change text color",
+    "optionC": "Align text",
+    "optionD": "Set border style",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In JavaScript, which symbol is used for assignment?",
+    "optionA": "=",
+    "optionB": "==",
+    "optionC": "===",
+    "optionD": "!=",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In C++, which symbol is used for accessing class members?",
+    "optionA": ".",
+    "optionB": "->",
+    "optionC": "::",
+    "optionD": "*",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which function in C++ is called first when program starts?",
+    "optionA": "main()",
+    "optionB": "start()",
+    "optionC": "init()",
+    "optionD": "run()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination pastes copied content?",
+    "optionA": "Ctrl + V",
+    "optionB": "Ctrl + C",
+    "optionC": "Ctrl + X",
+    "optionD": "Ctrl + Z",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which Excel function calculates average?",
+    "optionA": "AVERAGE()",
+    "optionB": "SUM()",
+    "optionC": "MAX()",
+    "optionD": "MIN()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Word, 'Track Changes' is used for?",
+    "optionA": "Monitoring edits",
+    "optionB": "Checking spelling",
+    "optionC": "Formatting text",
+    "optionD": "Inserting images",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which Photoshop tool is used to crop images?",
+    "optionA": "Crop Tool",
+    "optionB": "Brush Tool",
+    "optionC": "Magic Wand Tool",
+    "optionD": "Move Tool",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which C operator is used for division?",
+    "optionA": "/",
+    "optionB": "*",
+    "optionC": "+",
+    "optionD": "-",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which C++ keyword defines a function that does not return any value?",
+    "optionA": "void",
+    "optionB": "int",
+    "optionC": "float",
+    "optionD": "char",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In HTML, which tag creates a hyperlink?",
+    "optionA": "<a>",
+    "optionB": "<link>",
+    "optionC": "<href>",
+    "optionD": "<url>",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which CSS property aligns text horizontally?",
+    "optionA": "text-align",
+    "optionB": "font-size",
+    "optionC": "color",
+    "optionD": "background",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which JavaScript function takes input from user?",
+    "optionA": "prompt()",
+    "optionB": "alert()",
+    "optionC": "console.log()",
+    "optionD": "confirm()",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which hardware component may cause slow performance if faulty?",
+    "optionA": "RAM",
+    "optionB": "Monitor",
+    "optionC": "Mouse",
+    "optionD": "Keyboard",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Overheating of CPU is usually caused by?",
+    "optionA": "Faulty fan or heat sink",
+    "optionB": "Low RAM",
+    "optionC": "Hard disk full",
+    "optionD": "Low monitor brightness",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which C++ keyword creates an object of a class?",
+    "optionA": "new",
+    "optionB": "class",
+    "optionC": "struct",
+    "optionD": "void",
+    "correctAnswer": "A",
+    "marks": 1
+  }
+]

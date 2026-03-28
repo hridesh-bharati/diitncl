@@ -1,0 +1,632 @@
+[
+    {
+        "question": "Which shortcut key is used to Save a document in MS Word?",
+        "optionA": "Ctrl + S",
+        "optionB": "Ctrl + P",
+        "optionC": "Ctrl + V",
+        "optionD": "Ctrl + X",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In MS Excel, every formula must begin with which symbol?",
+        "optionA": "@",
+        "optionB": "+",
+        "optionC": "=",
+        "optionD": "#",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which of the following is the extension of a PowerPoint presentation?",
+        "optionA": ".docx",
+        "optionB": ".xlsx",
+        "optionC": ".pptx",
+        "optionD": ".txt",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, which function key is used to select 'Payment Voucher'?",
+        "optionA": "F4",
+        "optionB": "F5",
+        "optionC": "F6",
+        "optionD": "F7",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut key to 'Undo' the last action in Windows?",
+        "optionA": "Ctrl + U",
+        "optionB": "Ctrl + Y",
+        "optionC": "Ctrl + Z",
+        "optionD": "Ctrl + W",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which unit of the CPU performs mathematical calculations?",
+        "optionA": "Control Unit",
+        "optionB": "ALU",
+        "optionC": "Register",
+        "optionD": "Bus",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What does BCC stand for in Email?",
+        "optionA": "Basic Carbon Copy",
+        "optionB": "Blind Carbon Copy",
+        "optionC": "Business Carbon Copy",
+        "optionD": "Blind Communication Copy",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which function in Excel is used to find the largest value in a range?",
+        "optionA": "HIGH",
+        "optionB": "LARGE",
+        "optionC": "MAX",
+        "optionD": "TOP",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In MS Word, 'Portrait' and 'Landscape' are examples of what?",
+        "optionA": "Paper Size",
+        "optionB": "Page Orientation",
+        "optionC": "Page Layout",
+        "optionD": "Margin",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which Tally shortcut is used to delete a voucher or master?",
+        "optionA": "Alt + D",
+        "optionB": "Ctrl + D",
+        "optionC": "Shift + D",
+        "optionD": "Alt + X",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut key to start a Slideshow in PowerPoint?",
+        "optionA": "F1",
+        "optionB": "F2",
+        "optionC": "F5",
+        "optionD": "F11",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which part of the computer is considered the 'Brain'?",
+        "optionA": "RAM",
+        "optionB": "CPU",
+        "optionC": "Monitor",
+        "optionD": "Hard Disk",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the full form of HTTP?",
+        "optionA": "Hyper Text Transfer Protocol",
+        "optionB": "Hyper Terminal Text Program",
+        "optionC": "Hyper Tool Transfer Process",
+        "optionD": "None",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which key is used to rename a selected folder in Windows?",
+        "optionA": "F1",
+        "optionB": "F2",
+        "optionC": "F3",
+        "optionD": "F5",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In MS Word, Ctrl + B is used for?",
+        "optionA": "Italic",
+        "optionB": "Underline",
+        "optionC": "Bold",
+        "optionD": "Border",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the intersection of a row and a column in Excel called?",
+        "optionA": "Box",
+        "optionB": "Block",
+        "optionC": "Cell",
+        "optionD": "Table",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, F11 is used for?",
+        "optionA": "Company Features",
+        "optionB": "Company Configuration",
+        "optionC": "Inventory Info",
+        "optionD": "Accounting Info",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which of the following is a permanent storage device?",
+        "optionA": "RAM",
+        "optionB": "Cache",
+        "optionC": "Hard Disk",
+        "optionD": "Registers",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut to create a 'New Folder' in Windows?",
+        "optionA": "Ctrl + N",
+        "optionB": "Ctrl + Shift + N",
+        "optionC": "Alt + N",
+        "optionD": "Ctrl + Alt + N",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which key is used to check Spelling and Grammar in MS Word?",
+        "optionA": "F1",
+        "optionB": "F2",
+        "optionC": "F7",
+        "optionD": "F9",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, which voucher is used for 'Cash Deposit' in bank?",
+        "optionA": "Journal",
+        "optionB": "Contra",
+        "optionC": "Receipt",
+        "optionD": "Payment",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which function in Excel adds all the numbers in a range?",
+        "optionA": "TOTAL",
+        "optionB": "ADD",
+        "optionC": "SUM",
+        "optionD": "COUNT",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut for 'Cut' in Windows?",
+        "optionA": "Ctrl + C",
+        "optionB": "Ctrl + V",
+        "optionC": "Ctrl + X",
+        "optionD": "Ctrl + Z",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which of the following is an Operating System?",
+        "optionA": "MS Word",
+        "optionB": "Windows 10",
+        "optionC": "Tally",
+        "optionD": "Google Chrome",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the full form of ROM?",
+        "optionA": "Read Only Memory",
+        "optionB": "Random Only Memory",
+        "optionC": "Read Open Memory",
+        "optionD": "None",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In PowerPoint, which view is used to rearrange slides easily?",
+        "optionA": "Normal View",
+        "optionB": "Slide Sorter View",
+        "optionC": "Notes Page View",
+        "optionD": "Reading View",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut key to close the current window in Windows?",
+        "optionA": "Alt + F4",
+        "optionB": "Ctrl + F4",
+        "optionC": "Shift + F4",
+        "optionD": "Ctrl + W",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, 'Sales Voucher' is accessed by which key?",
+        "optionA": "F8",
+        "optionB": "F9",
+        "optionC": "F7",
+        "optionD": "F6",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which of the following is a 'Search Engine'?",
+        "optionA": "Google",
+        "optionB": "Facebook",
+        "optionC": "WhatsApp",
+        "optionD": "MS Word",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In MS Excel, columns are identified by?",
+        "optionA": "Numbers (1, 2, 3)",
+        "optionB": "Letters (A, B, C)",
+        "optionC": "Symbols",
+        "optionD": "Dots",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut to 'Hyperlink' in MS Word?",
+        "optionA": "Ctrl + H",
+        "optionB": "Ctrl + L",
+        "optionC": "Ctrl + K",
+        "optionD": "Ctrl + M",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which part of the email contains the main message?",
+        "optionA": "Subject",
+        "optionB": "Attachment",
+        "optionC": "Body",
+        "optionD": "Signature",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, F9 is used for which voucher?",
+        "optionA": "Sales",
+        "optionB": "Purchase",
+        "optionC": "Payment",
+        "optionD": "Receipt",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the maximum zoom percentage in MS Word?",
+        "optionA": "100%",
+        "optionB": "200%",
+        "optionC": "400%",
+        "optionD": "500%",
+        "correctAnswer": "D",
+        "marks": 1
+    },
+    {
+        "question": "Which command is used to restart a computer via 'Run'?",
+        "optionA": "restart",
+        "optionB": "shutdown -r",
+        "optionC": "reboot",
+        "optionD": "exit",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In Excel, which chart is best for showing trends over time?",
+        "optionA": "Pie Chart",
+        "optionB": "Bar Chart",
+        "optionC": "Line Chart",
+        "optionD": "Scatter Chart",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which shortcut key is used to 'Center Align' text in MS Word?",
+        "optionA": "Ctrl + C",
+        "optionB": "Ctrl + E",
+        "optionC": "Ctrl + R",
+        "optionD": "Ctrl + L",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, 'Alt + F1' is used to?",
+        "optionA": "Shut a company",
+        "optionB": "Select a company",
+        "optionC": "Delete a company",
+        "optionD": "Create a company",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "What is the full form of IP?",
+        "optionA": "Internal Program",
+        "optionB": "Internet Protocol",
+        "optionC": "Instant Process",
+        "optionD": "Internet Page",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which generation of computers used Microprocessors?",
+        "optionA": "First",
+        "optionB": "Second",
+        "optionC": "Third",
+        "optionD": "Fourth",
+        "correctAnswer": "D",
+        "marks": 1
+    },
+    {
+        "question": "In PowerPoint, what is a 'Transition'?",
+        "optionA": "Movement of text inside a slide",
+        "optionB": "Visual effect between two slides",
+        "optionC": "A type of font style",
+        "optionD": "A way to save a file",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut to 'Print' a document?",
+        "optionA": "Ctrl + P",
+        "optionB": "Alt + P",
+        "optionC": "Shift + P",
+        "optionD": "Ctrl + Shift + P",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In Excel, 'A1' refers to?",
+        "optionA": "Column A, Row 1",
+        "optionB": "Row A, Column 1",
+        "optionC": "Sheet 1",
+        "optionD": "Worksheet name",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which of the following is NOT a web browser?",
+        "optionA": "Firefox",
+        "optionB": "Safari",
+        "optionC": "Windows Explorer",
+        "optionD": "Edge",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the default font in MS Word 2010 and above?",
+        "optionA": "Times New Roman",
+        "optionB": "Arial",
+        "optionC": "Calibri",
+        "optionD": "Verdana",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, how many pre-defined groups are there?",
+        "optionA": "25",
+        "optionB": "28",
+        "optionC": "30",
+        "optionD": "15",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What does 'CC' mean in an email?",
+        "optionA": "Create Copy",
+        "optionB": "Carbon Copy",
+        "optionC": "Common Copy",
+        "optionD": "Correct Copy",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which key allows you to exit from a full-screen mode or cancel a process?",
+        "optionA": "Enter",
+        "optionB": "Shift",
+        "optionC": "Esc",
+        "optionD": "Ctrl",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In MS Excel, a file is called a?",
+        "optionA": "Document",
+        "optionB": "Sheet",
+        "optionC": "Workbook",
+        "optionD": "Presentation",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the full form of GUI?",
+        "optionA": "Global User Interface",
+        "optionB": "Graphical User Interface",
+        "optionC": "General User Interface",
+        "optionD": "Graphical Unit Instance",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which shortcut key is used to 'Replace' text in MS Word?",
+        "optionA": "Ctrl + F",
+        "optionB": "Ctrl + H",
+        "optionC": "Ctrl + R",
+        "optionD": "Ctrl + G",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, which shortcut is used to change the current date?",
+        "optionA": "F1",
+        "optionB": "F2",
+        "optionC": "F3",
+        "optionD": "F4",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which of these is used to 'Select All' text/files?",
+        "optionA": "Ctrl + S",
+        "optionB": "Ctrl + A",
+        "optionC": "Ctrl + Shift",
+        "optionD": "Alt + A",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut to open the 'Run' dialog box in Windows?",
+        "optionA": "Win + R",
+        "optionB": "Win + D",
+        "optionC": "Ctrl + R",
+        "optionD": "Alt + R",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In MS Word, which feature is used to send the same letter to many people?",
+        "optionA": "Macros",
+        "optionB": "Mail Merge",
+        "optionC": "Template",
+        "optionD": "Thesaurus",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the extension of an Excel file?",
+        "optionA": ".xls",
+        "optionB": ".xlsx",
+        "optionC": "Both A and B",
+        "optionD": "None",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, 'Capital Account' falls under which group?",
+        "optionA": "Current Asset",
+        "optionB": "Capital Account",
+        "optionC": "Current Liability",
+        "optionD": "Fixed Asset",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut to minimize all windows and go to Desktop?",
+        "optionA": "Win + M",
+        "optionB": "Win + D",
+        "optionC": "Both A and B",
+        "optionD": "None",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the full form of LAN?",
+        "optionA": "Local Area Network",
+        "optionB": "Long Area Network",
+        "optionC": "Large Area Network",
+        "optionD": "Local Access Network",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In PowerPoint, which shortcut is used to insert a New Slide?",
+        "optionA": "Ctrl + N",
+        "optionB": "Ctrl + S",
+        "optionC": "Ctrl + M",
+        "optionD": "Ctrl + O",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "Which key is used to delete the character to the left of the cursor?",
+        "optionA": "Delete",
+        "optionB": "Backspace",
+        "optionC": "Enter",
+        "optionD": "Shift",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In Excel, which symbol is used for multiplication?",
+        "optionA": "x",
+        "optionB": "*",
+        "optionC": "#",
+        "optionD": "&",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, F6 is used for?",
+        "optionA": "Receipt",
+        "optionB": "Payment",
+        "optionC": "Journal",
+        "optionD": "Sales",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "What is the shortcut to 'Permanent Delete' a file in Windows?",
+        "optionA": "Delete",
+        "optionB": "Shift + Delete",
+        "optionC": "Ctrl + Delete",
+        "optionD": "Alt + Delete",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which of the following is a 'Social Networking' site?",
+        "optionA": "Google",
+        "optionB": "Amazon",
+        "optionC": "Facebook",
+        "optionD": "Yahoo",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "In MS Word, 'Thesaurus' tool is used for?",
+        "optionA": "Spelling",
+        "optionB": "Grammar",
+        "optionC": "Synonyms and Antonyms",
+        "optionD": "Translation",
+        "correctAnswer": "C",
+        "marks": 1
+    },
+    {
+        "question": "What is the full form of WAN?",
+        "optionA": "Wide Area Network",
+        "optionB": "World Area Network",
+        "optionC": "Wireless Area Network",
+        "optionD": "None",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which Tally feature is used to manage Stock/Items?",
+        "optionA": "Accounting Info",
+        "optionB": "Inventory Info",
+        "optionC": "Display",
+        "optionD": "Ratio Analysis",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "In PowerPoint, to exit the slide show, we press?",
+        "optionA": "Enter",
+        "optionB": "Esc",
+        "optionC": "Ctrl + X",
+        "optionD": "Alt + F4",
+        "correctAnswer": "B",
+        "marks": 1
+    },
+    {
+        "question": "Which domain is used for 'Government' websites?",
+        "optionA": ".com",
+        "optionB": ".org",
+        "optionC": ".gov",
+        "optionD": ".edu",
+        "correctAnswer": "C",
+        "marks": 1
+    }
+]

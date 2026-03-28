@@ -1,0 +1,515 @@
+[
+    {
+        "question": "Who is known as the father of computers?",
+        "optionA": "Charles Babbage",
+        "optionB": "Alan Turing",
+        "optionC": "John von Neumann",
+        "optionD": "Bill Gates",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "The first electronic computer was called?",
+        "optionA": "ENIAC",
+        "optionB": "UNIVAC",
+        "optionC": "ABC",
+        "optionD": "EDVAC",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which generation of computer used transistors?",
+        "optionA": "Second",
+        "optionB": "First",
+        "optionC": "Third",
+        "optionD": "Fourth",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "What is the main function of the CPU?",
+        "optionA": "Processing Data",
+        "optionB": "Storing Data",
+        "optionC": "Displaying Data",
+        "optionD": "Printing Data",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which device is used to input data into a computer?",
+        "optionA": "Keyboard",
+        "optionB": "Monitor",
+        "optionC": "Printer",
+        "optionD": "Speaker",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which device is used to display the output of a computer?",
+        "optionA": "Monitor",
+        "optionB": "Keyboard",
+        "optionC": "Mouse",
+        "optionD": "Scanner",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "RAM stands for?",
+        "optionA": "Random Access Memory",
+        "optionB": "Read And Memory",
+        "optionC": "Rapid Access Memory",
+        "optionD": "None",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "ROM is a type of?",
+        "optionA": "Permanent Memory",
+        "optionB": "Temporary Memory",
+        "optionC": "Cache Memory",
+        "optionD": "Virtual Memory",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which is a secondary storage device?",
+        "optionA": "Hard Disk",
+        "optionB": "RAM",
+        "optionC": "CPU",
+        "optionD": "Cache",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "MS Word is mainly used for?",
+        "optionA": "Typing Documents",
+        "optionB": "Data Analysis",
+        "optionC": "Presentations",
+        "optionD": "Drawing",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which feature in Word checks spelling?",
+        "optionA": "Spelling & Grammar",
+        "optionB": "Thesaurus",
+        "optionC": "Track Changes",
+        "optionD": "Find & Replace",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Ctrl + C in Word is used for?",
+        "optionA": "Copying Text",
+        "optionB": "Cutting Text",
+        "optionC": "Pasting Text",
+        "optionD": "Undo Action",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "MS Excel is mainly used for?",
+        "optionA": "Calculations",
+        "optionB": "Typing",
+        "optionC": "Presentation",
+        "optionD": "Drawing",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which Excel function finds the maximum value?",
+        "optionA": "MAX()",
+        "optionB": "MIN()",
+        "optionC": "SUM()",
+        "optionD": "AVERAGE()",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "What is the Fill Handle in Excel used for?",
+        "optionA": "Auto-Fill Series",
+        "optionB": "Formatting Cells",
+        "optionC": "Sorting Data",
+        "optionD": "Inserting Charts",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "PowerPoint is mainly used for?",
+        "optionA": "Presentations",
+        "optionB": "Typing",
+        "optionC": "Calculations",
+        "optionD": "Photo Editing",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which PowerPoint feature is used to animate slides?",
+        "optionA": "Slide Transition",
+        "optionB": "Spell Check",
+        "optionC": "Track Changes",
+        "optionD": "Insert Table",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which Photoshop tool is used to paint manually?",
+        "optionA": "Brush Tool",
+        "optionB": "Lasso Tool",
+        "optionC": "Magic Wand Tool",
+        "optionD": "Move Tool",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which Photoshop tool removes unwanted background?",
+        "optionA": "Magic Wand Tool",
+        "optionB": "Crop Tool",
+        "optionC": "Pen Tool",
+        "optionD": "Clone Stamp Tool",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "PageMaker is used for?",
+        "optionA": "Desktop Publishing",
+        "optionB": "Photo Editing",
+        "optionC": "Web Development",
+        "optionD": "Spreadsheet Analysis",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "CorelDRAW is used for?",
+        "optionA": "Vector Graphic Design",
+        "optionB": "Video Editing",
+        "optionC": "Typing Documents",
+        "optionD": "Database Management",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which CorelDRAW tool draws curves?",
+        "optionA": "Bezier Tool",
+        "optionB": "Rectangle Tool",
+        "optionC": "Ellipse Tool",
+        "optionD": "Text Tool",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which device is considered an output device?",
+        "optionA": "Printer",
+        "optionB": "Keyboard",
+        "optionC": "Mouse",
+        "optionD": "Scanner",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which device is considered an input device?",
+        "optionA": "Scanner",
+        "optionB": "Monitor",
+        "optionC": "Printer",
+        "optionD": "Speaker",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "What is an Operating System?",
+        "optionA": "System Software",
+        "optionB": "Application Software",
+        "optionC": "Hardware",
+        "optionD": "Peripheral",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Windows is an example of?",
+        "optionA": "Operating System",
+        "optionB": "Word Processor",
+        "optionC": "Spreadsheet Software",
+        "optionD": "Database",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which software is used for accounting?",
+        "optionA": "Tally",
+        "optionB": "Word",
+        "optionC": "Excel",
+        "optionD": "CorelDRAW",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Internet is used for?",
+        "optionA": "Networking and Communication",
+        "optionB": "Typing Documents",
+        "optionC": "Photo Editing",
+        "optionD": "Presentation",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "WWW stands for?",
+        "optionA": "World Wide Web",
+        "optionB": "World Web Wide",
+        "optionC": "Wide World Web",
+        "optionD": "None",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Email is used for?",
+        "optionA": "Sending Messages",
+        "optionB": "Printing",
+        "optionC": "Calculations",
+        "optionD": "Designing",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Browser is used to?",
+        "optionA": "Access Websites",
+        "optionB": "Write Documents",
+        "optionC": "Edit Photos",
+        "optionD": "Create Presentations",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "URL stands for?",
+        "optionA": "Uniform Resource Locator",
+        "optionB": "Universal Resource Link",
+        "optionC": "Uniform Link Resource",
+        "optionD": "None",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "HTML is used for?",
+        "optionA": "Web Page Structure",
+        "optionB": "Styling Web Pages",
+        "optionC": "Adding Interactivity",
+        "optionD": "Database Management",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "CSS is used for?",
+        "optionA": "Web Page Styling",
+        "optionB": "Web Page Structure",
+        "optionC": "Database Management",
+        "optionD": "Programming Logic",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "JavaScript is used for?",
+        "optionA": "Web Page Interactivity",
+        "optionB": "Typing Documents",
+        "optionC": "Accounting",
+        "optionD": "Photo Editing",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In C, which symbol ends a statement?",
+        "optionA": ";",
+        "optionB": ":",
+        "optionC": ".",
+        "optionD": ",",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which function prints output in C?",
+        "optionA": "printf()",
+        "optionB": "scanf()",
+        "optionC": "main()",
+        "optionD": "input()",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which operator is used for addition in C/C++?",
+        "optionA": "+",
+        "optionB": "-",
+        "optionC": "*",
+        "optionD": "/",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which keyword is used to define a class in C++?",
+        "optionA": "class",
+        "optionB": "struct",
+        "optionC": "object",
+        "optionD": "void",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which C++ keyword defines a function with no return value?",
+        "optionA": "void",
+        "optionB": "int",
+        "optionC": "float",
+        "optionD": "char",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which operator in C++ accesses class members?",
+        "optionA": ".",
+        "optionB": "->",
+        "optionC": "::",
+        "optionD": "*",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which function in JavaScript shows an alert box?",
+        "optionA": "alert()",
+        "optionB": "prompt()",
+        "optionC": "console.log()",
+        "optionD": "confirm()",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which JavaScript function takes input from user?",
+        "optionA": "prompt()",
+        "optionB": "alert()",
+        "optionC": "console.log()",
+        "optionD": "confirm()",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which HTML tag creates a hyperlink?",
+        "optionA": "<a>",
+        "optionB": "<link>",
+        "optionC": "<href>",
+        "optionD": "<url>",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which CSS property changes font size?",
+        "optionA": "font-size",
+        "optionB": "color",
+        "optionC": "text-align",
+        "optionD": "background",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which CSS property changes text color?",
+        "optionA": "color",
+        "optionB": "background-color",
+        "optionC": "font-weight",
+        "optionD": "text-align",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which key combination copies selected text?",
+        "optionA": "Ctrl + C",
+        "optionB": "Ctrl + X",
+        "optionC": "Ctrl + V",
+        "optionD": "Ctrl + Z",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which key combination pastes copied content?",
+        "optionA": "Ctrl + V",
+        "optionB": "Ctrl + C",
+        "optionC": "Ctrl + X",
+        "optionD": "Ctrl + Z",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which key combination undoes the last action?",
+        "optionA": "Ctrl + Z",
+        "optionB": "Ctrl + Y",
+        "optionC": "Ctrl + C",
+        "optionD": "Ctrl + V",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "In Tally, 'Trial Balance' shows?",
+        "optionA": "Debit & Credit Totals",
+        "optionB": "Invoices",
+        "optionC": "Employee Data",
+        "optionD": "Stock Prices",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "A computer virus affects?",
+        "optionA": "System Performance",
+        "optionB": "Monitor Brightness",
+        "optionC": "Mouse Function",
+        "optionD": "Keyboard Layout",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which device stores data permanently?",
+        "optionA": "Hard Disk",
+        "optionB": "RAM",
+        "optionC": "Cache",
+        "optionD": "Registers",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Overheating of CPU is caused by?",
+        "optionA": "Dust in CPU Fan",
+        "optionB": "Low RAM",
+        "optionC": "Full Hard Disk",
+        "optionD": "Monitor Brightness",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which generation of computers used microprocessors?",
+        "optionA": "Fourth",
+        "optionB": "Second",
+        "optionC": "Third",
+        "optionD": "Fifth",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "ENIAC was developed in which year?",
+        "optionA": "1945",
+        "optionB": "1935",
+        "optionC": "1955",
+        "optionD": "1965",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which Excel function calculates average?",
+        "optionA": "AVERAGE()",
+        "optionB": "SUM()",
+        "optionC": "MAX()",
+        "optionD": "MIN()",
+        "correctAnswer": "A",
+        "marks": 1
+    },
+    {
+        "question": "Which PowerPoint key starts the slideshow?",
+        "optionA": "F5",
+        "optionB": "F1",
+        "optionC": "F2",
+        "optionD": "F4",
+        "correctAnswer": "A",
+        "marks": 1
+    }
+]

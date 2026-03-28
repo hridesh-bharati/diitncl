@@ -1,0 +1,632 @@
+[
+  {
+    "question": "Who is known as the 'Father of Computers'?",
+    "optionA": "Alan Turing",
+    "optionB": "Charles Babbage",
+    "optionC": "Bill Gates",
+    "optionD": "Blaise Pascal",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which generation of computer used Vacuum Tubes?",
+    "optionA": "1st Generation",
+    "optionB": "2nd Generation",
+    "optionC": "3rd Generation",
+    "optionD": "4th Generation",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In MS Word, which key is used to increase the font size of selected text?",
+    "optionA": "Ctrl + Shift + >",
+    "optionB": "Ctrl + Shift + <",
+    "optionC": "Alt + +",
+    "optionD": "Ctrl + Up Arrow",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In MS Excel, what is the shortcut to 'AutoSum'?",
+    "optionA": "Alt + =",
+    "optionB": "Ctrl + =",
+    "optionC": "Shift + =",
+    "optionD": "Alt + S",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, which tool is used to remove unwanted spots from an image?",
+    "optionA": "Move Tool",
+    "optionB": "Healing Brush Tool",
+    "optionC": "Gradient Tool",
+    "optionD": "Pen Tool",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In PageMaker, which tool is used to type text?",
+    "optionA": "Pointer Tool",
+    "optionB": "Text Tool (T)",
+    "optionC": "Crop Tool",
+    "optionD": "Line Tool",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "CorelDRAW is a ______ based drawing application.",
+    "optionA": "Bitmap",
+    "optionB": "Vector",
+    "optionC": "Scalar",
+    "optionD": "None",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which of the following is a symptom of a failing Hard Disk?",
+    "optionA": "Clicking sounds",
+    "optionB": "Bright Screen",
+    "optionC": "Fast Typing",
+    "optionD": "Mouse moving slow",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What does the HTML <a> tag define?",
+    "optionA": "An Image",
+    "optionB": "A Hyperlink",
+    "optionC": "A List",
+    "optionD": "A Table",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In JavaScript, which keyword is used to declare a variable?",
+    "optionA": "var",
+    "optionB": "let",
+    "optionC": "const",
+    "optionD": "All of the above",
+    "correctAnswer": "D",
+    "marks": 1
+  },
+  {
+    "question": "W3.CSS is a standard CSS framework for?",
+    "optionA": "Desktop only",
+    "optionB": "Mobile only",
+    "optionC": "Responsive Web Design",
+    "optionD": "None",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "AngularJS is a JavaScript framework maintained by?",
+    "optionA": "Microsoft",
+    "optionB": "Google",
+    "optionC": "Facebook",
+    "optionD": "Oracle",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In C programming, which symbol is used for comments?",
+    "optionA": "//",
+    "optionB": "/* */",
+    "optionC": "Both A and B",
+    "optionD": "None",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In C++, which header file is used for Input/Output?",
+    "optionA": "stdio.h",
+    "optionB": "iostream",
+    "optionC": "conio.h",
+    "optionD": "math.h",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "What is the shortcut key to group objects in CorelDRAW?",
+    "optionA": "Ctrl + G",
+    "optionB": "Ctrl + U",
+    "optionC": "Alt + G",
+    "optionD": "Shift + G",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, what is the default file extension?",
+    "optionA": ".psd",
+    "optionB": ".jpg",
+    "optionC": ".png",
+    "optionD": ".pdf",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "A 'Blue Screen of Death' (BSOD) usually indicates a fault in?",
+    "optionA": "Keyboard",
+    "optionB": "RAM or System Driver",
+    "optionC": "Printer",
+    "optionD": "Internet Connection",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which HTML tag is used for the largest heading?",
+    "optionA": "<h6>",
+    "optionB": "<head>",
+    "optionC": "<h1>",
+    "optionD": "<heading>",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In C, which function is used to print output on the screen?",
+    "optionA": "scanf()",
+    "optionB": "printf()",
+    "optionC": "getch()",
+    "optionD": "clrscr()",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In PowerPoint, which shortcut repeats the last action?",
+    "optionA": "F2",
+    "optionB": "F4",
+    "optionC": "F7",
+    "optionD": "F10",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "The 'Brain' of the computer, CPU, stands for?",
+    "optionA": "Central Processing Unit",
+    "optionB": "Control Power Unit",
+    "optionC": "Central Power Unit",
+    "optionD": "None",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In PageMaker, what is the shortcut key for 'Document Setup'?",
+    "optionA": "Ctrl + Shift + P",
+    "optionB": "Alt + Shift + P",
+    "optionC": "Ctrl + Alt + P",
+    "optionD": "Ctrl + P",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which tool in Photoshop is used to select areas of similar color?",
+    "optionA": "Lasso Tool",
+    "optionB": "Magic Wand Tool",
+    "optionC": "Eraser Tool",
+    "optionD": "Brush Tool",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "What is the shortcut to 'Zoom In' in CorelDRAW?",
+    "optionA": "F2",
+    "optionB": "F3",
+    "optionC": "F4",
+    "optionD": "F9",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "If a computer keeps restarting, what could be the possible hardware issue?",
+    "optionA": "Overheating CPU",
+    "optionB": "Empty Mouse Battery",
+    "optionC": "Keyboard disconnected",
+    "optionD": "Low Speaker Volume",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which CSS property is used to change the background color?",
+    "optionA": "color",
+    "optionB": "background-color",
+    "optionC": "bg-color",
+    "optionD": "color-bg",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In JS, how do you write 'Hello World' in an alert box?",
+    "optionA": "msg('Hello')",
+    "optionB": "alert('Hello')",
+    "optionC": "box('Hello')",
+    "optionD": "display('Hello')",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "What is the size of an 'int' data type in C (usually)?",
+    "optionA": "1 Byte",
+    "optionB": "2 or 4 Bytes",
+    "optionC": "8 Bytes",
+    "optionD": "10 Bytes",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In C++, 'cout' is used for?",
+    "optionA": "Input",
+    "optionB": "Output",
+    "optionC": "Mathematical calculation",
+    "optionD": "None",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which W3.CSS class is used to create a circular image?",
+    "optionA": "w3-round",
+    "optionB": "w3-circle",
+    "optionC": "w3-oval",
+    "optionD": "w3-ring",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "AngularJS expressions are written inside?",
+    "optionA": "[ ]",
+    "optionB": "{ }",
+    "optionC": "{{ }}",
+    "optionD": "( )",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to refresh the active window?",
+    "optionA": "F1",
+    "optionB": "F5",
+    "optionC": "F10",
+    "optionD": "Esc",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In MS Word, Ctrl + I is used for?",
+    "optionA": "Indent",
+    "optionB": "Italic",
+    "optionC": "Insert",
+    "optionD": "Invisible",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In Excel, which function is used to count cells with numbers?",
+    "optionA": "COUNT",
+    "optionB": "SUM",
+    "optionC": "CHECK",
+    "optionD": "TOTAL",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, what is the shortcut for 'Deselect'?",
+    "optionA": "Ctrl + D",
+    "optionB": "Ctrl + X",
+    "optionC": "Ctrl + Z",
+    "optionD": "Ctrl + S",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "PageMaker is a product of which company (now Adobe)?",
+    "optionA": "Microsoft",
+    "optionB": "Aldus",
+    "optionC": "Corel",
+    "optionD": "Google",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which tool in CorelDRAW is used for freehand drawing?",
+    "optionA": "Pick Tool",
+    "optionB": "Freehand Tool",
+    "optionC": "Rectangle Tool",
+    "optionD": "Shape Tool",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Continuous 'Beep' sounds during boot-up usually suggest a problem with?",
+    "optionA": "Mouse",
+    "optionB": "Monitor",
+    "optionC": "RAM/Memory",
+    "optionD": "Speakers",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which HTML tag is used for a line break?",
+    "optionA": "<lb>",
+    "optionB": "<break>",
+    "optionC": "<br>",
+    "optionD": "<hr>",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In C, which header file is required for math functions like sqrt()?",
+    "optionA": "stdio.h",
+    "optionB": "conio.h",
+    "optionC": "math.h",
+    "optionD": "stdlib.h",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In C++, which operator is used for 'Insertion' (Output)?",
+    "optionA": ">>",
+    "optionB": "<<",
+    "optionC": "==",
+    "optionD": "++",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which class in W3.CSS adds a 16px padding to an element?",
+    "optionA": "w3-margin",
+    "optionB": "w3-padding",
+    "optionC": "w3-container",
+    "optionD": "w3-box",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In AngularJS, 'ng-app' directive defines?",
+    "optionA": "A controller",
+    "optionB": "A model",
+    "optionC": "An application",
+    "optionD": "A view",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "The speed of a CPU is measured in?",
+    "optionA": "GB",
+    "optionB": "GHz",
+    "optionC": "Watts",
+    "optionD": "MB/s",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In MS Excel, what is the shortcut key to insert a comment?",
+    "optionA": "Shift + F2",
+    "optionB": "Ctrl + F2",
+    "optionC": "Alt + F2",
+    "optionD": "F2",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, 'Ctrl + T' is used for?",
+    "optionA": "Text",
+    "optionB": "Free Transform",
+    "optionC": "Trim",
+    "optionD": "Transparency",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In PageMaker, the 'Master Page' is used for?",
+    "optionA": "Adding page numbers to all pages",
+    "optionB": "Deleting the file",
+    "optionC": "Drawing a single picture",
+    "optionD": "None",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In CorelDRAW, F12 is the shortcut for?",
+    "optionA": "Outline Pen Dialog",
+    "optionB": "Save As",
+    "optionC": "Print",
+    "optionD": "Export",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What should you check first if the Monitor power light is off?",
+    "optionA": "Internet",
+    "optionB": "Power Cable",
+    "optionC": "Mouse",
+    "optionD": "RAM",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In CSS, how do you make text bold?",
+    "optionA": "font-weight: bold",
+    "optionB": "text-style: bold",
+    "optionC": "font: bold",
+    "optionD": "style: bold",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In JavaScript, how do you call a function named 'myFunc'?",
+    "optionA": "call myFunc()",
+    "optionB": "myFunc()",
+    "optionC": "function myFunc()",
+    "optionD": "run myFunc",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In C, which keyword is used to return a value from a function?",
+    "optionA": "break",
+    "optionB": "continue",
+    "optionC": "return",
+    "optionD": "void",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In C++, 'cin' is used for?",
+    "optionA": "Output",
+    "optionB": "Input",
+    "optionC": "Exit",
+    "optionD": "Printing",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "W3.CSS is designed to be?",
+    "optionA": "Fast and Small",
+    "optionB": "Slow and Large",
+    "optionC": "Used for printing only",
+    "optionD": "None",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In AngularJS, 'ng-model' is used for?",
+    "optionA": "Two-way data binding",
+    "optionB": "Deleting data",
+    "optionC": "Styling data",
+    "optionD": "None",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What was the first mechanical calculating device?",
+    "optionA": "Pascaline",
+    "optionB": "Abacus",
+    "optionC": "Analytical Engine",
+    "optionD": "ENIAC",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In MS Word, 'Ctrl + H' is used for?",
+    "optionA": "Heading",
+    "optionB": "Hyperlink",
+    "optionC": "Replace",
+    "optionD": "Help",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "In Excel, 'VLOOKUP' is used to?",
+    "optionA": "Search for a value in a column",
+    "optionB": "Delete a row",
+    "optionC": "Add numbers",
+    "optionD": "Create a chart",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, what does 'Opacity' control?",
+    "optionA": "Color",
+    "optionB": "Transparency",
+    "optionC": "Brightness",
+    "optionD": "Size",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In PageMaker, what is the default page size?",
+    "optionA": "A4",
+    "optionB": "Letter",
+    "optionC": "Legal",
+    "optionD": "A3",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In CorelDRAW, which shortcut key is used to ungroup objects?",
+    "optionA": "Ctrl + G",
+    "optionB": "Ctrl + U",
+    "optionC": "Alt + U",
+    "optionD": "Shift + U",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "CMOS battery failure results in?",
+    "optionA": "Wrong Date and Time",
+    "optionB": "Monitor screen flicker",
+    "optionC": "Fast Internet",
+    "optionD": "Printer not working",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which HTML tag is used to create a bulleted list?",
+    "optionA": "<ol>",
+    "optionB": "<ul>",
+    "optionC": "<li>",
+    "optionD": "<list>",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In C, every statement must end with?",
+    "optionA": ":",
+    "optionB": ";",
+    "optionC": ".",
+    "optionD": ",",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In C++, which of the following is a logical 'AND' operator?",
+    "optionA": "||",
+    "optionB": "&&",
+    "optionC": "!",
+    "optionD": "&",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In W3.CSS, 'w3-card' is used to create?",
+    "optionA": "A paper-like card with shadow",
+    "optionB": "A visiting card",
+    "optionC": "A table",
+    "optionD": "A menu",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which directive in AngularJS repeats an HTML element?",
+    "optionA": "ng-copy",
+    "optionB": "ng-repeat",
+    "optionC": "ng-iterate",
+    "optionD": "ng-loop",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which device is used to connect a computer to the Internet?",
+    "optionA": "Scanner",
+    "optionB": "Modem",
+    "optionC": "Monitor",
+    "optionD": "Plotter",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "In MS PowerPoint, 'Ctrl + K' is used for?",
+    "optionA": "Insert Hyperlink",
+    "optionB": "Delete Slide",
+    "optionC": "New Slide",
+    "optionD": "None",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "In Photoshop, 'Ctrl + Alt + Z' (in older versions) or 'Ctrl + Z' is used for?",
+    "optionA": "Redo",
+    "optionB": "Undo/Step Backward",
+    "optionC": "Cut",
+    "optionD": "Copy",
+    "correctAnswer": "B",
+    "marks": 1
+  }
+]
