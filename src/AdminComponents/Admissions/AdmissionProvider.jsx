@@ -11,11 +11,11 @@ export default function AdmissionProvider({ children }) {
   useEffect(() => {
     let isMounted = true;
     const q = query(
-  collection(db, "admissions"),
-  orderBy("createdAt", "desc")
-);
+      collection(db, "admissions"),
+      orderBy("createdAt", "desc")
+    );
 
-    const unsubscribe = onSnapshot(q, 
+    const unsubscribe = onSnapshot(q,
       (snap) => {
         if (!isMounted) return;
         const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -57,12 +57,12 @@ export default function AdmissionProvider({ children }) {
     }
   };
 
-  const value = useMemo(() => ({ 
-    admissions, 
-    loading, 
-    error, 
-    updateAdmission, 
-    deleteAdmission 
+  const value = useMemo(() => ({
+    admissions,
+    loading,
+    error,
+    updateAdmission,
+    deleteAdmission
   }), [admissions, loading, error]);
 
   return typeof children === "function" ? children(value) : children;

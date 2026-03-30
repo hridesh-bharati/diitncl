@@ -1,7 +1,7 @@
 // src\AdminComponents\Certificate\StudentCertificate.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, onSnapshot } from "firebase/firestore"; 
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import html2pdf from "html2pdf.js";
@@ -34,7 +34,7 @@ const formatDate = (dateString) => {
     }
 };
 
-const CENTER_CODE = "DIIT124";
+// const CENTER_CODE = "DIIT124";
 
 const getGradeFromPercentage = (percentage) => {
     if (!percentage && percentage !== 0) return "Not Available";
@@ -151,7 +151,8 @@ const FooterSection = ({ student, issueDate }) => (
         </div>
         <div className="d-flex justify-content-between mt-2 fw-bold certificate-footer-reg px-5 py-1" style={{ borderTop: "1px solid darkblue", borderBottom: "1px solid darkblue" }}>
             <div><span className="dbluetext">Student Reg No. :</span> <span className="text-uppercase">{student.regNo || "N/A"}</span></div>
-            <div><span className="dbluetext">Center Code :</span> <span>{CENTER_CODE}</span></div>
+            {/* ✅ Yahan student side se dynamic branch code aayega */}
+            <div><span className="dbluetext">Center Code :</span> <span>{student.branch || "DIIT124"}</span></div>
         </div>
         <div className="text-center">
             <p className="m-0 ftrTExt certificate-footer-text grade border bg-danger-subtle mt-2">Grade Mark : Excellent (81% - 100%), Very Good (71% - 80%), Good(51% - 70%), Satisfactory (50% - 60%)</p>
@@ -166,10 +167,9 @@ const FooterSection = ({ student, issueDate }) => (
         </div>
     </div>
 );
-
 // =================== MAIN COMPONENT ===================
 export default function StudentCertificate({ student: propStudent }) {
-    const { id: urlEmail } = useParams(); 
+    const { id: urlEmail } = useParams();
     const { isAdmin } = useAuth();
     const navigate = useNavigate();
 
@@ -204,7 +204,7 @@ export default function StudentCertificate({ student: propStudent }) {
             setLoading(false);
         });
 
-        return () => unsubscribe(); 
+        return () => unsubscribe();
     }, [urlEmail, propStudent]);
 
     const downloadPDF = useCallback(() => {
