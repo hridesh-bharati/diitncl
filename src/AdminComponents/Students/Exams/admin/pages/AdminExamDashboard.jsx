@@ -5,6 +5,7 @@ import { useExam } from "../../context/ExamProvider";
 import { db } from "../../../../../firebase/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import BackButton from "../../../../../Components/HelperCmp/BackButton/BackButton";
+
 export default function AdminExamDashboard() {
   const navigate = useNavigate();
   const { exams, loading, toggleExamLive, deleteExam } = useExam();
@@ -50,19 +51,18 @@ export default function AdminExamDashboard() {
   );
 
   return (
-    <div className="container-fluid p-0 bg-light  pb-5">
+    <div className="container-fluid p-0 bg-light pb-5">
       <div className="d-flex justify-content-between align-items-center p-2 p-md-3 bg-white border-bottom sticky-top shadow-sm">
-
         <div className="d-flex align-items-center gap-2">
           <BackButton className="border-0"/>
           <h6 className="fw-bold mb-0 text-dark">
-            <i className="bi bi-shield-lock-fill me-1 text-primary"></i>Exam Console</h6>
+            <i className="bi bi-shield-lock-fill me-1 text-primary"></i>Exam Console
+          </h6>
         </div>
 
         <button className="btn btn-primary btn-sm rounded-0 fw-bold" onClick={() => navigate("new")} >
           <i className="bi bi-plus"></i> New Exam
         </button>
-
       </div>
 
       <div className="row g-0">
@@ -136,7 +136,11 @@ export default function AdminExamDashboard() {
                     <i className="bi bi-person-check-fill text-dark h5 mb-1 d-block"></i>
                     <span className="text-muted fw-bold" style={{ fontSize: '9px', textTransform: 'uppercase' }}>Permit</span>
                   </button>
-                  <button className="btn btn-white flex-fill rounded-0 py-2 shadow-none" onClick={() => navigate("completed")}>
+                  {/* Filtered Results Button */}
+                  <button 
+                    className="btn btn-white flex-fill rounded-0 py-2 shadow-none" 
+                    onClick={() => navigate(`completed?examId=${e.id}`)}
+                  >
                     <i className="bi bi-clipboard-data text-success h5 mb-1 d-block"></i>
                     <span className="text-muted fw-bold" style={{ fontSize: '9px', textTransform: 'uppercase' }}>Results</span>
                   </button>

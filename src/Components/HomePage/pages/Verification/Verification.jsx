@@ -32,7 +32,7 @@ export default function Verification() {
   );
 
   return (
-    <div className="vh-100 d-flex align-items-center justify-content-center p-3" style={{ background: "#F5F3FF" }}>
+    <div className=" d-flex align-items-center justify-content-center p-3" style={{ background: "#F5F3FF" }}>
       <AdmissionProvider>
         {({ admissions }) => (
           <div className="card shadow-lg border-0 rounded-4 overflow-hidden" style={{ maxWidth: "380px", width: "100%" }}>

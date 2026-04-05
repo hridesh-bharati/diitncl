@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../../../firebase/firebase";
-import { useAuth } from "../../../../../contexts/AuthContext"; // Ensure path is correct
+import { useAuth } from "../../../../../contexts/AuthContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 export default function StudentExamList() {
