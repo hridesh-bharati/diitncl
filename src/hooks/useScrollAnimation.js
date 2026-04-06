@@ -8,22 +8,17 @@ const useScrollAnimation = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Jab screen par aaye toh class add karo
             entry.target.classList.add("animate-visible");
           } else {
-            // Jab screen se bahar jaye toh class remove kardo (Repeatable animation)
+            // Optional: remove this if you only want it to animate once
             entry.target.classList.remove("animate-visible");
           }
         });
       },
-      {
-        threshold: 0.1, // Thoda jaldi trigger hoga
-        rootMargin: "0px 0px -50px 0px",
-      }
+      { threshold: 0.1 }
     );
 
     elements.forEach((el) => observer.observe(el));
-
     return () => observer.disconnect();
   }, []);
 };

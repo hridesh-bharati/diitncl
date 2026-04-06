@@ -14,73 +14,59 @@ export default function TopCourseList() {
   return (
     <section className="py-5 bg-light" id="programs">
       <div className="container">
-        
-        {/* Header Animation */}
-        <div className="d-flex justify-content-between align-items-end mb-5 px-2 scroll-animate fade-down">
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-end mb-4 px-2">
           <div>
-            <span className="badge bg-danger-subtle text-danger mb-2 px-3 py-2 rounded-pill fw-bold" style={{ fontSize: '10px' }}>
-              🔥 MOST POPULAR
-            </span>
-            <h2 className="display-6 fw-black mb-0 text-dark">Explore <span className="text-primary">Programs</span></h2>
+            <h6 className="text-danger fw-bold mb-1" style={{ letterSpacing: '1px', fontSize: '12px' }}>TOP RATED</h6>
+            <h2 className="h4 fw-bold mb-0 text-dark">Explore Programs</h2>
           </div>
-          <Link to="/courses" className="btn btn-outline-dark rounded-pill px-4 fw-bold transition-all shadow-sm">
-            View All Courses
+          <Link to="/courses" className="btn btn-sm btn-white shadow-sm rounded-pill px-3 fw-bold border text-dark">
+            View All
           </Link>
         </div>
 
-        {/* Grid with Staggered Animation */}
+        {/* Grid */}
         <div className="row g-4">
-          {courses.map((c, i) => (
-            <div 
-              key={c.id} 
-              className={`col-12 col-md-6 col-lg-4 scroll-animate zoom-in delay-${(i % 3) + 1}`}
-            >
+          {courses.map((c) => (
+            <div key={c.id} className="col-12 col-md-6 col-lg-4">
               <Link to="/courses" className="text-decoration-none">
-                <article className="course-card-modern position-relative overflow-hidden bg-white p-3 rounded-4 border border-light-subtle shadow-sm">
+                <article className="premium-course-card d-flex align-items-center p-3 bg-white rounded-4 shadow-sm border-0">
                   
-                  {/* Subtle Background Glow on Hover */}
-                  <div className="hover-glow" style={{ backgroundColor: c.theme }}></div>
+                  {/* Thumbnail Box */}
+                  <div 
+                    className="flex-shrink-0 rounded-3 overflow-hidden d-flex align-items-center justify-content-center"
+                    style={{ 
+                      width: '90px', 
+                      height: '90px', 
+                      backgroundColor: `${c.theme}10`,
+                      border: `1px solid ${c.theme}20` 
+                    }}
+                  >
+                    <img 
+                      src={c.src} 
+                      alt={c.title} 
+                      // Performance Fix: Explicit dimensions
+                      width="90" 
+                      height="90"
+                      loading="lazy"
+                      className="img-fluid p-2" 
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                  </div>
 
-                  <div className="d-flex align-items-center position-relative" style={{ zIndex: 2 }}>
-                    {/* Thumbnail with Dynamic Shadow */}
-                    <div 
-                      className="thumb-container flex-shrink-0 rounded-4 overflow-hidden d-flex align-items-center justify-content-center shadow-sm"
-                      style={{ 
-                        width: '85px', 
-                        height: '85px', 
-                        background: `linear-gradient(135deg, ${c.theme}15, ${c.theme}05)`,
-                        border: `1px solid ${c.theme}20` 
-                      }}
-                    >
-                      <img 
-                        src={c.src} 
-                        alt={c.title} 
-                        width="85" 
-                        height="85"
-                        loading="lazy"
-                        className="img-fluid p-2 object-fit-contain" 
-                      />
+                  {/* Content Area */}
+                  <div className="ms-3 flex-grow-1 overflow-hidden">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <span className="fw-bold extra-small text-uppercase" style={{ color: c.theme }}>{c.title}</span>
+                      <span className="text-muted" style={{ fontSize: '10px' }}>
+                        <i className="bi bi-calendar3 me-1"></i>{c.dur}
+                      </span>
                     </div>
-
-                    {/* Content */}
-                    <div className="ms-3 flex-grow-1">
-                      <div className="d-flex justify-content-between align-items-center mb-1">
-                        <span className="fw-bolder text-uppercase ls-1" style={{ color: c.theme, fontSize: '10px' }}>
-                          {c.title}
-                        </span>
-                        <div className="badge bg-light text-muted fw-normal border" style={{ fontSize: '10px' }}>
-                          <i className="bi bi-clock me-1 text-primary"></i>{c.dur}
-                        </div>
-                      </div>
-                      
-                      <h3 className="h6 fw-bold text-dark mb-1">{c.desc}</h3>
-                      
-                      <div className="d-flex align-items-center justify-content-between mt-2">
-                         <span className="text-muted extra-small">ISO Certified</span>
-                         <span className="enroll-link fw-bold text-primary" style={{ fontSize: '11px' }}>
-                            Join Now <i className="bi bi-arrow-right-short ms-1"></i>
-                         </span>
-                      </div>
+                    <h3 className="h6 fw-bold text-dark mb-1 text-truncate">{c.desc}</h3>
+                    <p className="text-muted mb-0 extra-small">Certified by Drishtee Institute</p>
+                    
+                    <div className="mt-2 d-flex align-items-center text-primary fw-bold" style={{ fontSize: '11px' }}>
+                      Enroll Now <i className="bi bi-arrow-right ms-1"></i>
                     </div>
                   </div>
                 </article>
@@ -91,55 +77,20 @@ export default function TopCourseList() {
       </div>
 
       <style>{`
-        .ls-1 { letter-spacing: 1px; }
         .extra-small { font-size: 11px; }
-        
-        .course-card-modern {
-          transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        .premium-course-card {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .hover-glow {
-          position: absolute;
-          width: 100px;
-          height: 100px;
-          filter: blur(50px);
-          opacity: 0;
-          top: -20px;
-          right: -20px;
-          transition: 0.4s ease;
-          border-radius: 50%;
-          z-index: 1;
+        .premium-course-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 25px rgba(0,0,0,0.1) !important;
         }
-
-        .course-card-modern:hover {
-          transform: translateY(-8px) scale(1.02);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.08) !important;
-          border-color: rgba(0,0,0,0.1) !important;
+        .premium-course-card:hover img {
+          transform: rotate(-5deg) scale(1.1);
         }
-
-        .course-card-modern:hover .hover-glow {
-          opacity: 0.15;
+        .premium-course-card img {
+          transition: 0.3s ease;
         }
-
-        .course-card-modern:hover .thumb-container {
-          transform: scale(1.1) rotate(-3deg);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-        }
-
-        .thumb-container {
-          transition: all 0.4s ease;
-        }
-
-        .enroll-link {
-          transition: 0.3s;
-          position: relative;
-        }
-
-        .course-card-modern:hover .enroll-link {
-          padding-right: 5px;
-        }
-
-        .fw-black { font-weight: 900; }
       `}</style>
     </section>
   );

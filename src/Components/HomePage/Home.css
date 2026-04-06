@@ -1,13 +1,37 @@
+/* --- ROOT VARIABLES (Material You Palette) --- */
 :root {
-  --transition: 0.3s ease;
+  --transition-speed: 0.6s;
+  --transition-curve: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --android-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --card-radius: 28px;
+  --google-blue: #0b57d0;
+  --bg-light: #f8f9fa;
+  --text-dark: #1c1b1f;
+  --text-secondary: #49454f;
+  --icon-bg: #ffffff;
 }
 
-/* HERO */
+/* --- GENERAL RESET --- */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
+
+.modern-home {
+  overflow-x: hidden;
+}
+
+/* --- HERO SECTION --- */
 .hero-viewport {
-  min-height: 90vh;
   position: relative;
+  min-height: 85vh;
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
 }
 
 .hero-bg-img {
@@ -22,136 +46,208 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
   z-index: 2;
 }
 
 .hero-content {
   position: relative;
   z-index: 3;
-  margin-top: -120px;
+  margin-top: -100px;
+  padding: 0 20px;
 }
 
-/* HERO TITLE */
 .hero-title {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
   font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -1px;
-  background: linear-gradient(90deg, #ffffff, #8ab4f8, #4285f4);
+  background: linear-gradient(135deg, #ffffff 0%, #bbd6fb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
 }
 
-/* PORTAL */
+/* --- STUDENT PORTAL CARD --- */
 .portal-section {
   position: relative;
-  z-index: 5;
-  margin-top: -60px;
+  z-index: 10;
+  margin-top: -20px;
+  padding: 0 16px 40px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.portal-btn-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+.portal-card {
+  background: #ffffff;
+  border-radius: var(--card-radius);
+  padding: 32px;
+  box-shadow: var(--android-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.portal-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.portal-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.btn-portal-view {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--google-blue);
+  text-decoration: none;
+  background: #f1f3f4;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: background 0.3s;
+}
+
+.btn-portal-view:hover {
+  background: #e8eaed;
+}
+
+/* --- GRID SYSTEM --- */
+.portal-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10px;
+}
+
+.portal-item-wrapper {
+  text-align: center;
+  padding: 15px 10px;
+  border-radius: 24px;
+  transition: all 0.3s var(--transition-curve);
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+
+.portal-icon-box {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
+  font-size: 1.6rem;
+  border-radius: 20px;
+  /* Squircle style */
+  background: var(--bg-light);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  color: var(--google-blue);
+  transition: transform 0.3s ease;
 }
 
-.portal-hover:hover .portal-btn-icon {
-  transform: translateY(-6px) scale(1.08);
+.portal-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  display: block;
 }
 
-/* ========================= */
-/* 🔥 SCROLL ANIMATION */
-/* ========================= */
-.scroll-animate {
-  opacity: 0;
-  /* Default transform: niche se upar aane ke liye */
-  transform: translateY(40px) scale(0.98);
-  transition:
-    opacity 0.6s ease-out,
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, opacity;
+.badge-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: #e8f0fe;
+  color: var(--google-blue);
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 4px;
 }
 
-/* Jab element visible ho */
-.scroll-animate.animate-visible {
-  opacity: 1;
-  transform: translateY(0) scale(1) translateX(0);
-  /* Resetting all axes */
-}
-
-/* Variants Reset: Ye ensure karta hai ki different animations reset ho sakein */
-.scroll-animate.fade-down {
-  transform: translateY(-40px);
-}
-
-.scroll-animate.fade-left {
-  transform: translateX(-40px);
-}
-
-.scroll-animate.fade-right {
-  transform: translateX(40px);
-}
-
-.scroll-animate.animate-visible.fade-down,
-.scroll-animate.animate-visible.fade-left,
-.scroll-animate.animate-visible.fade-right {
-  transform: translate(0, 0) scale(1);
-}
-
-/* Variants */
-.fade-down {
-  transform: translateY(-60px);
-}
-
-.fade-left {
-  transform: translateX(-60px);
-}
-
-.fade-right {
-  transform: translateX(60px);
-}
-
-.zoom-in {
-  transform: scale(0.85);
-}
-
-/* Stagger */
-.delay-1 {
-  transition-delay: 0.1s;
-}
-
-.delay-2 {
-  transition-delay: 0.2s;
-}
-
-.delay-3 {
-  transition-delay: 0.3s;
-}
-
-.delay-4 {
-  transition-delay: 0.4s;
-}
-
-.delay-5 {
-  transition-delay: 0.5s;
-}
-
-/* MOBILE */
-@media(max-width:768px) {
+/* --- MOBILE OPTIMIZATION (Bsss mobile ke liye main changes) --- */
+@media (max-width: 768px) {
   .hero-viewport {
-    min-height: 75vh;
-    align-items: flex-end;
-    text-align: center;
-    padding-bottom: 120px;
+    min-height: 65vh;
+  }
+
+  .hero-content {
+    margin-top: -80px;
   }
 
   .portal-section {
-    margin-top: -40px;
-    padding: 0 12px;
+    margin-top: -70px;
   }
+
+  .portal-card {
+    padding: 24px 12px;
+    border-radius: 32px;
+  }
+
+  /* 3 Columns for Launcher feel */
+  .col-4 {
+    flex: 0 0 33.333% !important;
+    max-width: 33.333% !important;
+    width: 33.333% !important;
+    padding: 0 !important;
+  }
+
+  .portal-item-wrapper {
+    padding: 12px 5px;
+  }
+
+  .portal-icon-box {
+    width: 58px;
+    height: 58px;
+    font-size: 1.3rem;
+    border-radius: 18px;
+    margin-bottom: 8px;
+  }
+
+  .portal-label {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .badge-tag {
+    display: none;
+    /* Mobile par clean look ke liye hide kiya */
+  }
+
+  /* Ripple-like feedback on touch */
+  .portal-item-wrapper:active {
+    background: #f1f3f4;
+    transform: scale(0.9);
+  }
+}
+
+/* --- DESKTOP HOVER --- */
+@media (min-width: 769px) {
+  .portal-item-wrapper:hover {
+    background: #f8f9fa;
+    transform: translateY(-8px);
+  }
+
+  .portal-item-wrapper:hover .portal-icon-box {
+    background: var(--google-blue);
+    color: white;
+  }
+}
+
+/* --- ANIMATIONS --- */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all var(--transition-speed) var(--transition-curve);
+}
+
+.scroll-animate.animate-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
