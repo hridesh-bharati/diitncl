@@ -7,8 +7,7 @@
   min-height: 90vh;
   position: relative;
   display: flex;
-  align-items: flex-start;
-  /* desktop top */
+  align-items: center;
 }
 
 .hero-bg-img {
@@ -23,33 +22,32 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 2;
 }
 
 .hero-content {
   position: relative;
   z-index: 3;
-  padding-top: 90px;
+  margin-top: -120px;
 }
 
-/* HERO TITLE GRADIENT */
+/* HERO TITLE */
 .hero-title {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -1px;
-  background: linear-gradient(90deg, #ffffff 0%, #d2e3fc 30%, #8ab4f8 60%, #4285f4 100%);
+  background: linear-gradient(90deg, #ffffff, #8ab4f8, #4285f4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
 }
 
 /* PORTAL */
 .portal-section {
   position: relative;
   z-index: 5;
-  margin-top: 10px;
+  margin-top: -60px;
 }
 
 .portal-btn-icon {
@@ -63,11 +61,84 @@
 }
 
 .portal-hover:hover .portal-btn-icon {
-  transform: translateY(-5px) scale(1.05);
+  transform: translateY(-6px) scale(1.08);
 }
 
-.x-small {
-  font-size: 10px;
+/* ========================= */
+/* 🔥 SCROLL ANIMATION */
+/* ========================= */
+.scroll-animate {
+  opacity: 0;
+  /* Default transform: niche se upar aane ke liye */
+  transform: translateY(40px) scale(0.98);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+/* Jab element visible ho */
+.scroll-animate.animate-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1) translateX(0);
+  /* Resetting all axes */
+}
+
+/* Variants Reset: Ye ensure karta hai ki different animations reset ho sakein */
+.scroll-animate.fade-down {
+  transform: translateY(-40px);
+}
+
+.scroll-animate.fade-left {
+  transform: translateX(-40px);
+}
+
+.scroll-animate.fade-right {
+  transform: translateX(40px);
+}
+
+.scroll-animate.animate-visible.fade-down,
+.scroll-animate.animate-visible.fade-left,
+.scroll-animate.animate-visible.fade-right {
+  transform: translate(0, 0) scale(1);
+}
+
+/* Variants */
+.fade-down {
+  transform: translateY(-60px);
+}
+
+.fade-left {
+  transform: translateX(-60px);
+}
+
+.fade-right {
+  transform: translateX(60px);
+}
+
+.zoom-in {
+  transform: scale(0.85);
+}
+
+/* Stagger */
+.delay-1 {
+  transition-delay: 0.1s;
+}
+
+.delay-2 {
+  transition-delay: 0.2s;
+}
+
+.delay-3 {
+  transition-delay: 0.3s;
+}
+
+.delay-4 {
+  transition-delay: 0.4s;
+}
+
+.delay-5 {
+  transition-delay: 0.5s;
 }
 
 /* MOBILE */
@@ -76,20 +147,11 @@
     min-height: 75vh;
     align-items: flex-end;
     text-align: center;
-    padding-bottom: 135px;
-  }
-
-  .hero-title {
-    font-size: 2.2rem;
+    padding-bottom: 120px;
   }
 
   .portal-section {
     margin-top: -40px;
     padding: 0 12px;
-  }
-
-  .hero-content .btn {
-    width: auto;
-    min-width: 120px;
   }
 }
