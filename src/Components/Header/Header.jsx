@@ -252,7 +252,7 @@ export default function Header() {
                 <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
                   <div className="d-flex align-items-center gap-3">
                     <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #0D6EFD, #0a58ca)' }}><i className="bi bi-person-plus-fill"></i></div>
-                    <span className="fw-bold">New Admission 2026</span>
+                    <span className="fw-bold">New Admission</span>
                   </div>
                   <i className="bi bi-chevron-right text-muted small"></i>
                 </div>

@@ -2,95 +2,108 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const courses = [
-  { id: 1, src: "images/course/oLevel.avif", title: "O-Level", desc: "Digital Literacy & IT", dur: "12 Months", theme: "#4f46e5" },
-  { id: 2, src: "images/course/ccc.avif", title: "CCC", desc: "Govt. Literacy Cert.", dur: "3 Months", theme: "#f59e0b" },
-  { id: 3, src: "images/course/software.avif", title: "Software", desc: "Full Stack Mastery", dur: "6 Months", theme: "#10b981" },
-  { id: 4, src: "images/course/reactJs.avif", title: "React", desc: "Frontend Web Dev", dur: "4 Months", theme: "#06b6d4" },
-  { id: 5, src: "images/course/python.avif", title: "Python", desc: "AI & Data Science", dur: "5 Months", theme: "#3b82f6" },
-  { id: 6, src: "images/course/tally.avif", title: "Tally", desc: "ERP & Accounting", dur: "3 Months", theme: "#dc2626" },
+  { id: 1, title: "Angular JS", src: "images/course/angular-js.webp" },
+  { id: 2, title: "Tally Prime", src: "images/course/tally-course.png" },
+  { id: 3, title: "Full Stack Development", src: "images/course/full-stack.png" },
+  { id: 4, title: "Mongo DB", src: "images/course/mongodb.png" },
+  { id: 5, title: "Android Development", src: "images/course/android-dev.jpg" },
+  { id: 6, title: "React JS Advance", src: "images/course/reactjs.jpg" },
+  { id: 7, title: "Python Data Science", src: "images/course/python-training.png" },
+  { id: 8, title: "Java Mastery Course", src: "images/course/Java-full-stack.png" }
 ];
+
+const CourseCard = ({ course }) => (
+  <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden course-card bg-white position-relative w-100">
+
+    {/* Official Image Container */}
+    <div className="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center p-2">
+      <img
+        src={course.src}
+        alt={course.title}
+        className="card-img-top img-fluid"
+        style={{
+          objectFit: 'contain',
+          maxHeight: '100%',
+          filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.05))'
+        }}
+      />
+    </div>
+
+    {/* Card Content */}
+    <div className="card-body p-3 d-flex flex-column text-center">
+      <h5 className="fw-bolder mb-3 mt-1" style={{ color: '#002d5b', fontSize: '1.25rem', letterSpacing: '-0.3px' }}>
+        {course.title}
+      </h5>
+
+      {/* Premium Gradient Button */}
+      <Link to="/courses" className="btn enroll-btn py-2 rounded-pill fw-bold text-white shadow-sm mt-auto mb-2">
+        Enroll Now
+      </Link>
+
+      {/* Branding Label */}
+      <div className="brand-label position-absolute bottom-0 end-0">
+        <div className="bg-dark text-white px-3 py-1 text-end shadow-sm" style={{ borderRadius: '20px 0 0 0', fontSize: '9px' }}>
+          <div className="fw-bold lh-1">DRISHTEE</div>
+          <div className="opacity-75" style={{ fontSize: '7px' }}>Nichlaul</div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function TopCourseList() {
   return (
-    <section className="py-5 bg-light" id="programs">
-      <div className="container">
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-end mb-4 px-2">
-          <div>
-            <h6 className="text-danger fw-bold mb-1" style={{ letterSpacing: '1px', fontSize: '12px' }}>TOP RATED</h6>
-            <h2 className="h4 fw-bold mb-0 text-dark">Explore Programs</h2>
+    <section >
+      <div className="container-fluid p-0 bg-primary-subtle">
+
+        {/* Header Section */}
+        <div className="bg-white p-4">
+          <div className="d-flex justify-content-between align-items-center mb-4 px-2">
+            <div>
+              <h4 className="fw-bold mb-0 text-primary">Top Programs</h4>
+              <p className="text-muted small m-0">Official Certification Courses</p>
+            </div>
+            <Link to="/courses" className="btn btn-outline-primary rounded-pill px-4 btn-sm fw-bold border-2">
+              View All
+            </Link>
           </div>
-          <Link to="/courses" className="btn btn-sm btn-white shadow-sm rounded-pill px-3 fw-bold border text-dark">
-            View All
-          </Link>
         </div>
 
-        {/* Grid */}
-        <div className="row g-4">
-          {courses.map((c) => (
-            <div key={c.id} className="col-12 col-md-6 col-lg-4">
-              <Link to="/courses" className="text-decoration-none">
-                <article className="premium-course-card d-flex align-items-center p-3 bg-white rounded-4 shadow-sm border-0">
-                  
-                  {/* Thumbnail Box */}
-                  <div 
-                    className="flex-shrink-0 rounded-3 overflow-hidden d-flex align-items-center justify-content-center"
-                    style={{ 
-                      width: '90px', 
-                      height: '90px', 
-                      backgroundColor: `${c.theme}10`,
-                      border: `1px solid ${c.theme}20` 
-                    }}
-                  >
-                    <img 
-                      src={c.src} 
-                      alt={c.title} 
-                      // Performance Fix: Explicit dimensions
-                      width="90" 
-                      height="90"
-                      loading="lazy"
-                      className="img-fluid p-2" 
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                  </div>
-
-                  {/* Content Area */}
-                  <div className="ms-3 flex-grow-1 overflow-hidden">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <span className="fw-bold extra-small text-uppercase" style={{ color: c.theme }}>{c.title}</span>
-                      <span className="text-muted" style={{ fontSize: '10px' }}>
-                        <i className="bi bi-calendar3 me-1"></i>{c.dur}
-                      </span>
-                    </div>
-                    <h3 className="h6 fw-bold text-dark mb-1 text-truncate">{c.desc}</h3>
-                    <p className="text-muted mb-0 extra-small">Certified by Drishtee Institute</p>
-                    
-                    <div className="mt-2 d-flex align-items-center text-primary fw-bold" style={{ fontSize: '11px' }}>
-                      Enroll Now <i className="bi bi-arrow-right ms-1"></i>
-                    </div>
-                  </div>
-                </article>
-              </Link>
+        {/* Grid: 1 per row on mobile, 2 on tablet, 4 on desktop */}
+        <div className="row g-4 justify-content-center bg-primary-subtle">
+          {courses.map(course => (
+            <div key={course.id} className="col-12 col-md-6 col-lg-3">
+              <CourseCard course={course} />
             </div>
           ))}
         </div>
+
       </div>
 
       <style>{`
-        .extra-small { font-size: 11px; }
-        .premium-course-card {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .enroll-btn {
+          background: linear-gradient(135deg, #002d5b 0%, #00d2ff 100%);
+          border: none;
+          font-size: 1rem;
+          transition: all 0.3s ease-in-out;
+          letter-spacing: 0.5px;
         }
-        .premium-course-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 25px rgba(0,0,0,0.1) !important;
+        .enroll-btn:hover {
+          background: linear-gradient(135deg, #001a35 0%, #00b8e6 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 6px 15px rgba(0, 210, 255, 0.4);
+          color: white;
         }
-        .premium-course-card:hover img {
-          transform: rotate(-5deg) scale(1.1);
+        .course-card { 
+          transition: all 0.3s ease;
+          border: 1px solid rgba(0,0,0,0.05) !important;
         }
-        .premium-course-card img {
-          transition: 0.3s ease;
+        .course-card:hover { 
+          transform: translateY(-8px); 
+          box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+          border-color: rgba(0, 210, 255, 0.3) !important;
         }
+        .brand-label { z-index: 5; width: 90px; }
       `}</style>
     </section>
   );

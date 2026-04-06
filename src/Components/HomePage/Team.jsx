@@ -6,7 +6,7 @@ const Team = () => {
   useEffect(() => {
     fetch("https://api.github.com/users/hridesh-bharati")
       .then(res => res.json()).then(d => setH({ n: d.name || "Hridesh Rao", i: d.avatar_url, gh: d.public_repos }))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const team = [
@@ -17,7 +17,7 @@ const Team = () => {
   ];
 
   return (
-    <section className="py-5 bg-light" id="team">
+    <section className="py-5" id="team">
       <div className="container text-center">
         <h2 className="fw-bold mb-4">Meet Our <span className="text-primary">Experts</span></h2>
         <div className="row g-3">

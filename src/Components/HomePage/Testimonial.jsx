@@ -17,7 +17,7 @@ const Testimonials = () => {
   }, [T_LEN]);
 
   return (
-    <section className="py-5 overflow-hidden" style={{ background: "#f8fafc" }}>
+    <section className="py-5 overflow-hidden">
       <div className="container text-center">
         <h2 className="fw-bold h3 mb-4">What Students <span className="text-primary">Say</span></h2>
 

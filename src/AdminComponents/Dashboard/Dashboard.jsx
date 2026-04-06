@@ -36,9 +36,9 @@ const StatCard = ({ label, value, icon, bg, onClick, trend }) => (
           <i className={`bi ${icon} fs-4`}></i>
         </div>
         {trend && <span className="badge bg-white text-dark bg-opacity-75" style={{ fontSize: '0.7rem' }}>{trend}</span>}
+        <h1 className="fw-bold mb-0 ps-2 display-6">{value.toLocaleString()}</h1>
       </div>
-      <h1 className="fw-bold mb-0 display-6">{value.toLocaleString()}</h1>
-      <p className="small fw-bold mb-0 mt-1 opacity-75">{label}</p>
+      <p className="small fw-bold mb-0 my-4 opacity-75">{label}</p>
     </div>
   </div>
 );
@@ -180,32 +180,169 @@ export default function Dashboard() {
       {/* Recent Students & Queries */}
       <div className="row g-4 mb-5 pb-5 mb-lg-0 pb-lg-0">
         <div className="col-12 col-lg-6">
-          <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100">
-            <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-primary bg-gradient text-white">
-              <h6 className="fw-bold m-0">Recent Admissions</h6>
-              <Link to="/admin/admitted-student-list" className="small text-decoration-none">View All</Link>
+          <div className="bg-white rounded-4 shadow-sm border-0 h-100 overflow-hidden">
+
+            {/* Header */}
+            <div className="p-3 d-flex justify-content-between align-items-center bg-white border-bottom border-primary border-opacity-10">
+              <div className="d-flex align-items-center">
+                <div className="bg-gradient-primary p-2 rounded-3 me-2 shadow-sm" style={{ background: 'linear-gradient(45deg, #4e54c8, #8f94fb)' }}>
+                  <i className="bi bi-people-fill text-white fs-6"></i>
+                </div>
+                <h6 className="fw-bolder m-0 text-dark" style={{ letterSpacing: '-0.2px' }}>Recent Admissions</h6>
+              </div>
+              <Link to="/admin/admitted-student-list" className="btn btn-sm rounded-pill px-3 fw-bold text-primary border-0 bg-primary-subtle" style={{ fontSize: '11px' }}>
+                View All
+              </Link>
             </div>
-            <table className="table table-hover mb-0">
-              <tbody>
-                {students.map(s => <StudentRow key={s.id} student={s} onClick={(id) => navigate(`/admin/students/${id}`)} />)}
-              </tbody>
-            </table>
+
+            {/* Admission List Area */}
+            <div className="px-3 py-2" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+              {students.length > 0 ? (
+                students.map((s, index) => {
+
+                  // 🔥 REAL-TIME STATUS LOGIC
+                  // 🔥 REAL-TIME STATUS LOGIC (Refined Colors)
+                  const getStatusInfo = () => {
+                    // Canceled: Soft Red
+                    if (s.status === "canceled") return { label: "CANCELED", color: "#d32f2f", bg: "#fff1f0" };
+
+                    // Done: Modern Blue
+                    if (s.status === "done" || (s.regNo && s.issueDate)) return { label: "COMPLETED", color: "#0288d1", bg: "#e0f2fe" };
+
+                    // Accepted: Calm Green
+                    if (s.status === "accepted" || s.regNo) return { label: "ADMITTED", color: "#2e7d32", bg: "#f0fdf4" };
+
+                    // Pending: Muted Peach/Soft Orange (Jo chubhega nahi)
+                    return { label: "PENDING", color: "#ed6c02", bg: "#fff7ed" };
+                  };
+
+                  const statusInfo = getStatusInfo();
+
+                  return (
+                    <div
+                      key={s.id}
+                      onClick={() => navigate(`/admin/students/${s.email}`)}
+                      className="enquiry-item p-3 mb-2 rounded-4 d-flex justify-content-between align-items-center transition-all border-0 shadow-none"
+                      style={{ background: statusInfo.bg, cursor: 'pointer' }}
+                    >
+                      <div className="d-flex align-items-center overflow-hidden">
+                        {/* Photo Section */}
+                        <div className="flex-shrink-0 me-3">
+                          {s.photoUrl ? (
+                            <img
+                              src={s.photoUrl}
+                              alt=""
+                              className="rounded-circle border border-2 border-white shadow-sm"
+                              style={{ width: '42px', height: '42px', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div className="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm"
+                              style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontSize: '14px' }}>
+                              {s.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="overflow-hidden">
+                          <span className="fw-bolder text-dark d-block text-truncate" style={{ fontSize: '14px' }}>
+                            {s.name}
+                          </span>
+                          <p className="mb-0 text-truncate fw-medium" style={{ fontSize: '11px', color: statusInfo.color, opacity: 0.9 }}>
+                            <i className="bi bi-mortarboard-fill me-1"></i> {s.course || "General Course"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Date & Dynamic Badge */}
+                      <div className="text-end ps-2 flex-shrink-0">
+                        <div className="fw-bold mb-1" style={{ fontSize: '10px', color: statusInfo.color }}>
+                          {s.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                        </div>
+                        <span className="badge rounded-pill bg-white shadow-sm border-0"
+                          style={{ fontSize: '8px', fontWeight: '800', color: statusInfo.color }}>
+                          {statusInfo.label}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-5 opacity-50">
+                  <i className="bi bi-person-plus fs-1"></i>
+                  <p className="small mt-2">No Admissions Yet</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+        <div className="col-12 col-lg-6 mt-4 mt-lg-0">
+          <div className="bg-white rounded-4 shadow-sm border-0 h-100 overflow-hidden">
 
-        <div className="col-12 col-lg-6">
-          <div className="bg-white rounded-3 shadow-sm p-3 h-100">
-            <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-primary bg-gradient text-white">
-              <h6 className="fw-bold m-0">Latest Enquiries</h6>
-              <Link to="/admin/clients-contacts" className="small text-decoration-none">View All</Link>
+            {/* Header with Color Accent */}
+            <div className="p-3 d-flex justify-content-between align-items-center bg-white border-bottom border-primary border-opacity-10">
+              <div className="d-flex align-items-center">
+                <div className="bg-gradient-primary p-2 rounded-3 me-2 shadow-sm" style={{ background: 'linear-gradient(45deg, #6366f1, #8b5cf6)' }}>
+                  <i className="bi bi-chat-dots-fill text-white fs-6"></i>
+                </div>
+                <h6 className="fw-bolder m-0 text-dark" style={{ letterSpacing: '-0.2px' }}>Latest Enquiries</h6>
+              </div>
+              <Link to="/admin/clients-contacts" className="btn btn-sm rounded-pill px-3 fw-bold text-primary border-0 bg-primary-subtle" style={{ fontSize: '11px' }}>
+                View All
+              </Link>
             </div>
 
-            <div className="row g-2">
-              {queries.map(q => (
-                <div className="col-12 col-md-6 pb-3" key={q.id}>
-                  <EnquiryCard enquiry={q} onClick={() => navigate("/admin/clients-contacts")} />
+            {/* Colorful Enquiry List */}
+            <div className="px-3 py-2" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+              {queries.length > 0 ? (
+                queries.map((q, index) => {
+                  // Dynamic colors based on index for variety
+                  const colors = [
+                    { bg: '#eef2ff', text: '#4f46e5', border: '#818cf8' }, // Indigo
+                    { bg: '#ecfdf5', text: '#059669', border: '#34d399' }, // Emerald
+                    { bg: '#fff7ed', text: '#d97706', border: '#fbbf24' }, // Amber
+                    { bg: '#fdf2f8', text: '#db2777', border: '#f472b6' }  // Pink
+                  ];
+                  const style = colors[index % colors.length];
+
+                  return (
+                    <div
+                      key={q.id}
+                      onClick={() => navigate("/admin/clients-contacts")}
+                      className="enquiry-item p-3 mb-2 rounded-4 d-flex justify-content-between align-items-center transition-all border-0 shadow-none"
+                      style={{ background: style.bg, cursor: 'pointer' }}
+                    >
+                      <div className="flex-grow-1 overflow-hidden">
+                        <div className="d-flex align-items-center mb-1">
+                          {/* Colorful Dot */}
+                          <div className="me-2 rounded-circle" style={{ width: '8px', height: '8px', background: style.text }}></div>
+                          <span className="fw-bolder text-dark text-truncate" style={{ fontSize: '14px' }}>
+                            {q.fullName || q.name}
+                          </span>
+                        </div>
+
+                        <p className="mb-0 text-truncate fw-medium" style={{ fontSize: '11px', color: style.text, opacity: 0.8 }}>
+                          <i className="bi bi-bookmark-fill me-1"></i> {q.title || "New Admission Query"}
+                        </p>
+                      </div>
+
+                      {/* Date & Time with Style */}
+                      <div className="text-end ps-2 flex-shrink-0">
+                        <div className="fw-bold" style={{ fontSize: '10px', color: style.text }}>
+                          {q.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                        </div>
+                        <div className="text-muted opacity-75" style={{ fontSize: '9px' }}>
+                          {q.createdAt?.toDate?.().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-5 opacity-50">
+                  <i className="bi bi-envelope-heart fs-1 text-primary"></i>
+                  <p className="small mt-2">Inbox is clean!</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>

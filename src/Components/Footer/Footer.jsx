@@ -3,120 +3,197 @@ import { Link } from "react-router-dom";
 
 const footerData = {
   brand: {
-    name: "DIIT Center",
+    name: "DRISHTEE COMPUTER CENTRE",
     logo: "images/icon/icon-192.png",
-    desc: "Crafting digital careers since 2007. Building professionals for global tech."
+    cert: "ISO 9001:2015 Certified Institute",
+    tagline: "An Initiative for Digital Literacy & Vocational Excellence"
   },
-  socials: [
-    { icon: "youtube", bg: "bg-danger", link: "https://youtube.com/", label: "Visit our YouTube channel" },
-    { icon: "whatsapp", bg: "bg-success", link: "https://wa.me/919918151032", label: "Chat with us on WhatsApp" },
-    { icon: "facebook", bg: "bg-primary", link: "https://facebook.com/", label: "Follow us on Facebook" },
-    { icon: "instagram", bg: "bg-danger", link: "https://instagram.com/", label: "Follow us on Instagram" }
-  ],
-  sitemap: [
+  links: [
     { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
-    { name: "Courses", path: "/courses" },
-    { name: "Centers", path: "/branch/thoothibari" },
-    { name: "Verify ID", path: "/download-certificate" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Support", path: "/contact-us" },
-    { name: "Privacy Policy", path: "/privacy-policy" },
-    { name: "Terms & Conditions", path: "/terms" }
+    { name: "About Center", path: "/about" },
+    { name: "Our Courses", path: "/courses" },
+    { name: "Verify Certificate", path: "/download-certificate" },
+    { name: "Student Support", path: "/contact-us" },
+    { name: "Privacy Policy", path: "/privacy-policy" }
   ],
-  contacts: [
-    { name: "Ajay Tiwari", number: "9918151032", role: "Owner" },
-    { name: "Hridesh Bharati", number: "7267995307", role: "Support" }
+  helpline: [
+    { name: "Administrative Office", num: "9918151032" },
+    { name: "Technical Support", num: "7267995307" }
   ]
 };
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-white py-2 pb-lg-0 mb-5 mb-lg-0">
-      <div className="w-100 overflow-hidden" style={{ height: 80, marginBottom: -1 }}>
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-100 h-100">
-          <path fill="#00378a" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3L1440,192L1440,0L0,0Z"></path>
-        </svg>
+    <footer className="footer-gov border-top border-4 border-orange">
+
+      {/* Top Bar: Official Branding Strip */}
+      <div className="gov-top-strip py-2">
+        <div className="container d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center gap-2 text-white">
+            <i className="bi bi-patch-check-fill text-warning"></i>
+            <span className="fw-bold small tracking-wider">OFFICIAL PORTAL OF DIIT CENTER</span>
+          </div>
+          <div className="social-links d-flex gap-3">
+            <a href="https://wa.me/919918151032" className="text-white hover-scale"><i className="bi bi-whatsapp"></i></a>
+            <a href="#" className="text-white hover-scale"><i className="bi bi-facebook"></i></a>
+            <a href="#" className="text-white hover-scale"><i className="bi bi-youtube"></i></a>
+          </div>
+        </div>
       </div>
 
-      <div className="container py-5">
-        <div className="row g-4">
-          <div className="col-lg-4">
-            <div className="p-4 rounded-4 shadow-sm bg-white h-100">
-              <div className="d-flex align-items-center gap-3 mb-3">
-                <img src={footerData.brand.logo} alt="DIIT" className="rounded-circle shadow-sm" style={{ width: 48, height: 48 }} />
-                <h3 className="fw-bold h5 mb-0 text-dark">{footerData.brand.name}</h3>
+      {/* Main Footer Content */}
+      <div className="bg-white py-5">
+        <div className="container">
+          <div className="row g-4">
+
+            {/* Left Column: Branding Section */}
+            <div className="col-12 col-lg-5">
+              <div className="d-flex gap-3 mb-3 align-items-center">
+                <img src={footerData.brand.logo} alt="Logo" className="img-fluid" width={70} />
+                <div className="border-start border-2 ps-3 border-primary">
+                  <h5 className="fw-bold m-0 text-navy">{footerData.brand.name}</h5>
+                  <p className="text-orange small fw-bold mb-0">{footerData.brand.cert}</p>
+                </div>
               </div>
-              <p className="text-muted small lh-base">{footerData.brand.desc}</p>
-              <div className="d-flex gap-2 mt-3">
-                <div className="d-flex gap-3 mt-3">
-                  {footerData.socials.map((s, i) => (
-                    <a
-                      key={i}
-                      href={s.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={s.label}
-                      title={s.label}
-                      className={`btn ${s.bg} text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm`}
-                      style={{ width: 42, height: 42 }}
-                    >
-                      <i className={`bi bi-${s.icon}`}></i>
-                    </a>
+              <p className="text-muted small leading-relaxed">
+                {footerData.brand.tagline}. Dedicated to empowering youth with technical skills since 2007.
+                Recognized for excellence in computer education in Nichlaul.
+              </p>
+            </div>
+
+            {/* Right Column: Links and Numbers Section */}
+            <div className="col-12 col-lg-7">
+
+              {/* 1. Useful Links in 2 Columns */}
+              <div className="mb-4">
+                <h6 className="gov-heading mb-3">USEFUL LINKS</h6>
+                <div className="row row-cols-2 g-2">
+                  {footerData.links.map((link, i) => (
+                    <div key={i} className="col">
+                      <Link to={link.path} className="gov-link-item">
+                        <i className="bi bi-chevron-right me-1"></i> {link.name}
+                      </Link>
+                    </div>
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="col-lg-4 col-md-6">
-            <div className="p-4 rounded-4 shadow-sm bg-light h-100">
-              <h3 className="h6 fw-bold text-uppercase small mb-4 text-primary">
-                SITEMAP & QUICK LINKS
-              </h3>
-              <div className="row g-2">
-                {footerData.sitemap.map((link, i) => (
-                  <div key={i} className="col-6">
-                    <Link to={link.path} className="text-decoration-none text-dark small opacity-75 hover-opacity-100">{link.name}</Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="col-lg-4 col-md-6">
-            <div className="p-4 rounded-4 shadow-sm bg-white h-100">
-              <h6 className="fw-bold text-uppercase small mb-4 text-primary">Helpline</h6>
-              <div className="vstack gap-2">
-                {footerData.contacts.map((c, i) => (
-                  <a key={i} href={`tel:${c.number}`} className="d-flex align-items-center p-2 rounded-pill bg-light text-decoration-none shadow-sm px-3">
-                    <i className="bi bi-telephone-fill text-primary me-3 small"></i>
-                    <div>
-                      <small className="d-block text-muted fw-bold" style={{ fontSize: 9 }}>{c.name}</small>
-                      <span className="text-dark fw-bold small">+91 {c.number}</span>
+              {/* 2. Support Helpline Section (Below Links) */}
+              <div className="pt-3 border-top">
+                <h6 className="gov-heading-sm mb-3 text-muted">SUPPORT HELPLINE</h6>
+                <div className="row g-3">
+                  {footerData.helpline.map((c, i) => (
+                    <div key={i} className="col-md-6">
+                      <div className="contact-card p-2 rounded">
+                        <small className="text-uppercase fw-bold text-muted d-block mb-1" style={{ fontSize: '9px' }}>{c.name}</small>
+                        <a href={`tel:${c.num}`} className="text-decoration-none text-navy fw-bold d-flex align-items-center">
+                          <div className="icon-circle-sm me-2">
+                            <i className="bi bi-telephone-fill"></i>
+                          </div>
+                          +91 {c.num}
+                        </a>
+                      </div>
                     </div>
-                  </a>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Legal Bar */}
+      <div className="gov-bottom-bar py-3 border-top bg-light">
+        <div className="container">
+          <div className="row align-items-center text-center text-md-start">
+            <div className="col-md-6">
+              <p className="mb-0 text-muted small">
+                &copy; {currentYear} <strong>DIIT CENTER</strong>. All Rights Reserved.
+                <span className="d-block d-md-inline ms-md-2 border-md-start ps-md-2">Managed by <b>DRISHTEE NICHLAUL </b></span>
+              </p>
+            </div>
+            <div className="col-md-6 text-md-end mt-3 mt-md-0">
+              <div className="dev-credit d-inline-flex align-items-center px-3 py-1 bg-white border rounded-pill">
+                <span className="text-muted extra-small me-2">Designed by:</span>
+                <span className="fw-bold text-navy extra-small">HRIDESH BHARATI</span>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-5 pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center text-center gap-3">
-          <p className="small text-muted mb-0">© 2026 <b>DIIT Center</b>. ISO Certified 9001:2015</p>
-
-          <div className="small bg-white shadow-sm px-4 py-2 rounded-pill text-muted">
-            Developed by <span className="text-primary fw-bold">Hridesh Bharati</span>
-          </div>
-
-        </div>
       </div>
-      <div className="w-100 text-center"><span>Version: {__APP_VERSION__}</span></div>
-      <div className="w-100 overflow-hidden" style={{ height: 80, marginTop: -1 }}>
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-100 h-100">
-          <path fill="#00378a" d="M0,96L48,122.7C96,149,192,203,288,218.7C384,235,480,213,576,192C672,171,768,149,864,138.7C960,128,1056,128,1152,149.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L0,320Z" />
-        </svg>
+
+      {/* Version Strip */}
+      <div className="bg-navy text-white text-center pt-1 pb-4 pb-lg-0 extra-small opacity-75">
+        Website Version: {__APP_VERSION__} • Updated: {new Date().toLocaleDateString('en-GB')}
       </div>
+
+      <style>{`
+        :root {
+          --navy: #002e5b;
+          --orange: #f48120;
+          --gov-blue: #0056b3;
+        }
+        .text-navy { color: var(--navy); }
+        .bg-navy { background-color: var(--navy); }
+        .text-orange { color: var(--orange); }
+        .border-orange { border-color: var(--orange) !important; }
+        .gov-top-strip { background: linear-gradient(90deg, #002e5b 0%, #0056b3 100%); }
+        
+        // .gov-logo-img { width: 55px; height: 55px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        
+        .gov-heading {
+          font-size: 0.85rem;
+          font-weight: 800;
+          color: var(--navy);
+          position: relative;
+          padding-bottom: 8px;
+        }
+        .gov-heading::after {
+          content: "";
+          position: absolute;
+          bottom: 0; left: 0;
+          width: 35px; height: 3px;
+          background: var(--orange);
+        }
+
+        .gov-heading-sm { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
+
+        .gov-link-item {
+          color: #555;
+          font-size: 13px;
+          text-decoration: none;
+          display: block;
+          transition: 0.2s;
+        }
+        .gov-link-item:hover { color: var(--gov-blue); padding-left: 4px; }
+
+        .contact-card {
+          background: #f8f9fa;
+          border-left: 3px solid var(--gov-blue);
+          transition: 0.3s;
+        }
+        .contact-card:hover { background: #eef2f7; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .icon-circle-sm {
+          width: 24px; height: 24px;
+          background: var(--gov-blue);
+          color: white;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 10px;
+        }
+
+        .extra-small { font-size: 10px; }
+        .tracking-wider { letter-spacing: 1px; }
+        .hover-scale:hover { transform: scale(1.15); transition: 0.2s; }
+
+        @media (max-width: 768px) {
+          footer { margin-bottom: 60px !important; }
+        }
+      `}</style>
     </footer>
   );
 }
