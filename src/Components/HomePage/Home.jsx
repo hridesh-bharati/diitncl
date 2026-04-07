@@ -38,11 +38,10 @@ const PortalItem = memo(({ item }) => (
 function Home() {
   return (
     <div className="home-wrapper bg-primary-subtle min-vh-100">
-      <div className="home-feed container-lg p-0">
+      <div className="home-feed container-lg p-2 p-lg-0">
 
         {/* ================= HERO SECTION ================= */}
-        <div className="hero-card position-relative  overflow-hidden mb-2 shadow-sm bg-dark">
-          <img src="/images/vender/hero.webp" alt="Drishtee" className="w-100 object-fit-cover hero-img opacity-75" />
+<div className="hero-card position-relative rounded-4 rounded-lg-0 overflow-hidden mb-2 shadow-sm bg-dark">          <img src="/images/vender/hero.webp" alt="Drishtee" className="w-100 object-fit-cover hero-img opacity-75" />
           <div className="hero-content position-absolute p-3 p-md-5 w-100 text-white">
             <div className="pulse-badge badge rounded-pill bg-danger mb-2 py-2 px-3 d-inline-flex align-items-center shadow-sm">
               <span className="pulse-dot me-2"></span> Admissions 2026
@@ -91,7 +90,7 @@ function Home() {
             <Features />
           </div>
 
-          <div className="mb-4 p-3 w-100">
+          <div className="mb-4 p-2 w-100">
             <TopCourseList />
           </div>
 

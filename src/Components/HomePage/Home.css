@@ -41,8 +41,10 @@
   .portal-icon { width: 68px; height: 68px; font-size: 1.8rem; }
   .border-end-md { border-right: 1px solid #eee !important; }
   .home-feed { max-width: 100% !important; padding: 40px 20px; }
+   .hero-card {border-radius: 0 !important;}
 }
 
 @media (min-width: 1400px) {
   .home-feed { max-width: 100% !important; }
 }
+ 

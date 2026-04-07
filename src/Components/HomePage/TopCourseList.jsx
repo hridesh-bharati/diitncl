@@ -16,7 +16,7 @@ const CourseCard = ({ course }) => (
   <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden course-card bg-white position-relative w-100">
 
     {/* Official Image Container */}
-    <div className="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center p-2">
+    <div className="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center p-0">
       <img
         src={course.src}
         alt={course.title}
