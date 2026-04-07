@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
-import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification } from "../../services/emailService";
+import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification, otpTemplate } from "../../services/emailService";
 
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -70,13 +70,22 @@ export default function AdmissionForm() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [submittedData, setSubmittedData] = useState(null);
 
+    // 🛡️ OTP STATES
+    const [otpInput, setOtpInput] = useState("");
+    const [generatedOtp, setGeneratedOtp] = useState(null);
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [otpSent, setOtpSent] = useState(false);
+    const [verifying, setVerifying] = useState(false);
+    const [otpExpiry, setOtpExpiry] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(0)
+
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
         if (["mobile", "pincode", "aadharNo"].includes(name)) {
             if (value !== "" && !/^\d+$/.test(value)) return;
         }
         setForm(prev => ({ ...prev, [name]: value }));
-    }, []);
+    });
 
     const uploadImg = async (file) => {
         if (!file) return;
@@ -124,6 +133,65 @@ export default function AdmissionForm() {
         }
     }, []);
 
+    // 📧 OTP SEND LOGIC
+    const handleSendOtp = async () => {
+        if (!form.email || !form.name) {
+            return toast.warning("Please enter Name and Email first!");
+        }
+        setVerifying(true);
+        const newOtp = Math.floor(100000 + Math.random() * 900000);
+
+        // 🔥 2 Minutes ka expiry set kar rahe hain
+        const expiryTime = Date.now() + 2 * 60 * 1000;
+
+        const success = await sendEmailNotification(
+            form.email,
+            "Verify your Email - DIIT Admission",
+            otpTemplate(form.name, newOtp)
+        );
+
+        if (success) {
+            setGeneratedOtp(newOtp);
+            setOtpExpiry(expiryTime); // Timestamp save kiya
+            setOtpSent(true);
+            setTimeLeft(120);
+            toast.success("Verification code sent! Valid for 2 mins.");
+        } else {
+            toast.error("Failed to send OTP.");
+        }
+        setVerifying(false);
+    };
+
+    // ✅ OTP VERIFY LOGIC
+    const handleVerifyOtp = () => {
+        if (Date.now() > otpExpiry) {
+            toast.error("OTP Expired! Please resend.");
+            setOtpSent(false);
+            setGeneratedOtp(null);
+            return;
+        }
+
+        if (otpInput.trim() === String(generatedOtp)) {
+            setIsEmailVerified(true);
+            toast.success("Email Verified! ✅");
+        } else {
+            toast.error("Invalid OTP!");
+        }
+    };
+
+    useEffect(() => {
+        let timer;
+        if (timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft((prev) => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0 && otpSent && !isEmailVerified) {
+            setGeneratedOtp(null); // Expire OTP
+            toast.error("OTP Expired! Please resend.");
+        }
+        return () => clearInterval(timer);
+    }, [timeLeft, otpSent, isEmailVerified]);
+
     const handleAutoAddress = (e) => {
         if (e.target.checked) {
             const { village, post, thana, city, state, pincode } = form;
@@ -139,12 +207,16 @@ export default function AdmissionForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validations
+        // Check verification first
+        if (!isEmailVerified || String(otpInput) !== String(generatedOtp)) {
+            return toast.error("Email verification failed. Please verify again.");
+        }
         if (form.aadharNo?.trim()) {
             if (!/^\d{12}$/.test(form.aadharNo)) {
                 return toast.error("Aadhar must be exactly 12 digits");
             }
         }
+
         if (form.mobile && form.mobile.length !== 10) return toast.error("Mobile number must be 10 digits");
         if (!form.photoUrl) return toast.error("Please upload Photo");
         if (!isDeclared) return toast.error("Please accept the Declaration");
@@ -180,7 +252,7 @@ export default function AdmissionForm() {
             }
             await setDoc(docRef, finalData);
 
-            // Notify Admins via Push
+            // Notify Admins
             const fetchAndNotifyAdmins = async () => {
                 try {
                     const qAdmin = query(collection(db, "users"), where("role", "==", "admin"));
@@ -200,9 +272,9 @@ export default function AdmissionForm() {
                     console.error("Admin Push Error:", err);
                 }
             };
+
             fetchAndNotifyAdmins();
 
-            // Notify Admins via Email
             Promise.all(
                 ADMIN_ALLOWED_EMAILS.map(adminEmail =>
                     sendEmailNotification(
@@ -344,8 +416,8 @@ export default function AdmissionForm() {
     // ===================== FORM VIEW =====================
     return (
         <div className="admission-bg pt-2 pb-5 mb-5">
-            <div className="container p-0 mx-auto">
-                <div className="admission-card shadow-sm bg-white">
+            <div className="container">
+                <div className="admission-card shadow-lg bg-white">
                     <div className="gov-header p-3 p-md-4 text-center">
                         <div className="d-flex flex-column align-items-center">
                             <img src="images/icon/logo.png" width={70} alt="Logo" className="mb-2 shadow-sm" />
@@ -569,14 +641,54 @@ export default function AdmissionForm() {
                                         <span className="input-group-text bg-light"><i className="bi bi-envelope text-muted"></i></span>
                                         <input
                                             type="email"
-                                            className="form-control gov-input"
+                                            className={`form-control gov-input ${isEmailVerified ? 'border-success' : ''}`}
                                             name="email"
                                             value={form.email}
                                             onChange={handleChange}
                                             placeholder="example@mail.com"
+                                            disabled={isEmailVerified}
                                             required
                                         />
+                                        {!isEmailVerified && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-dark btn-sm px-3"
+                                                onClick={handleSendOtp}
+                                                disabled={verifying}
+                                            >
+                                                {verifying ? "..." : otpSent ? "Resend" : "Send OTP"}
+                                            </button>
+                                        )}
                                     </div>
+
+                                    {/* ⏱️ Timer aur OTP Input Group */}
+                                    {otpSent && !isEmailVerified && (
+                                        <div className="mt-2 p-2 border rounded bg-light shadow-sm">
+                                            <div className="d-flex gap-2 align-items-center mb-1">
+                                                <input
+                                                    type="text"
+                                                    className="form-control form-control-sm text-center fw-bold"
+                                                    placeholder="6-Digit OTP"
+                                                    maxLength="6"
+                                                    value={otpInput}
+                                                    onChange={(e) => setOtpInput(e.target.value)}
+                                                />
+                                                <button type="button" className="btn btn-success btn-sm px-3" onClick={handleVerifyOtp}>
+                                                    VERIFY
+                                                </button>
+                                            </div>
+                                            <div className="text-center">
+                                                <small className={`fw-bold ${timeLeft < 20 ? 'text-danger' : 'text-primary'}`}>
+                                                    {timeLeft > 0 ? (
+                                                        <>OTP Expires in: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</>
+                                                    ) : (
+                                                        "OTP Expired! Please click Resend."
+                                                    )}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {isEmailVerified && <small className="text-success fw-bold ms-1">Email Verified ✅</small>}
                                 </div>
                             </div>
 
@@ -701,7 +813,7 @@ export default function AdmissionForm() {
                             <button
                                 type="submit"
                                 className="btn-final-submit w-100 shadow"
-                                disabled={loading}
+                                disabled={loading || !isEmailVerified}
                             >
                                 {loading ? (
                                     <><i className="bi bi-arrow-repeat spin me-2"></i> PROCESSING...</>

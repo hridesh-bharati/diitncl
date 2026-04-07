@@ -53,7 +53,7 @@ export default function Captcha({ onVerify }) {
   };
 
   return (
-    <div className="bg-light p-3 rounded-4 border border-dashed">
+    <div className="bg-light p-3 rounded-4  border-dashed">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <canvas ref={canvasRef} width="180" height="60" className="rounded-3 border bg-white" />
         <button type="button" className="btn btn-light btn-sm rounded-circle shadow-sm" onClick={drawCaptcha}>

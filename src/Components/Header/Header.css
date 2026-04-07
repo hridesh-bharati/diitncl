@@ -22,22 +22,23 @@
     display: flex;
     gap: 5px;
 }
-
+/* PC Navigation Links */
 .nav-links a,
 .nav-static-link {
     padding: 8px 15px;
-    color: var(--text-muted);
-    font-weight: 500;
-    font-size: 14px;
+    color: #1a1a1a !important; 
+    font-weight: 550; 
+    font-size: 14.5px;
     border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
 }
 
 .nav-links a:hover,
 .nav-links a.active,
 .nav-static-link:hover,
 .nav-static-link.active {
-    background-color: var(--bg-light);
-    color: var(--primary-blue);
+    background-color: rgba(0, 122, 255, 0.08); 
+    color: var(--primary-blue) !important;
 }
 
 /* ==========================================

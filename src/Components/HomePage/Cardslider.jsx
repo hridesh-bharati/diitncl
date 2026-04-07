@@ -42,7 +42,7 @@ export default function CardSlider() {
   };
 
   return (
-    <div className="py-3 w-100 overflow-hidden container">
+    <div className="py-3 w-100 overflow-hidden container-fluid">
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
       
       <div 
