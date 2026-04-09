@@ -8,6 +8,8 @@ import Features from "./Features";
 import NoticeBoard from "../HelperCmp/FeaturesUpdate/NoticeBoard";
 import TimeTable from "../HelperCmp/FeaturesUpdate/TimeTable";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
+import RecentStudents from "./pages/RecentStudents/RecentStudents";
+import HomeGallery from "./pages/HomeGallery";
 
 // Lazy Components
 const TopCourseList = lazy(() => import("./TopCourseList"));
@@ -41,7 +43,7 @@ function Home() {
       <div className="home-feed container-lg p-2 p-lg-0">
 
         {/* ================= HERO SECTION ================= */}
-<div className="hero-card position-relative rounded-4 rounded-lg-0 overflow-hidden mb-2 shadow-sm bg-dark">          <img src="/images/vender/hero.webp" alt="Drishtee" className="w-100 object-fit-cover hero-img opacity-75" />
+        <div className="hero-card position-relative rounded-4 rounded-lg-0 overflow-hidden mb-2 shadow-sm bg-dark">          <img src="/images/vender/hero.webp" alt="Drishtee" className="w-100 object-fit-cover hero-img opacity-75" />
           <div className="hero-content position-absolute p-3 p-md-5 w-100 text-white">
             <div className="pulse-badge badge rounded-pill bg-danger mb-2 py-2 px-3 d-inline-flex align-items-center shadow-sm">
               <span className="pulse-dot me-2"></span> Admissions 2026
@@ -89,9 +91,13 @@ function Home() {
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2">
             <Features />
           </div>
+          <RecentStudents />
 
           <div className="mb-4 p-2 w-100">
             <TopCourseList />
+          </div>
+          <div className="m-0 p-0">
+            <HomeGallery />
           </div>
 
           {/* ADMISSION CTA */}
@@ -108,6 +114,8 @@ function Home() {
 
           <div className="mb-4"><CardSlider /></div>
           <div className="mb-4"><HomeOffers /></div>
+
+
 
           {/* NOTICE & TIMETABLE */}
           <div className="row g-3 mb-4">

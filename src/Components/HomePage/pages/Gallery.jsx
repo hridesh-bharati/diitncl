@@ -21,25 +21,37 @@ export default function PublicSocialGallery() {
   const [selectedImg, setSelectedImg] = useState(null);
   const [up, setUp] = useState({ show: false, file: null, preview: "", title: "", loading: false });
 
-  const currentUserId = useMemo(() => user?.uid || (localStorage.getItem("gallery_user_id") || uuidv4()), [user]);
+  // Guest ID logic: User login hai toh UID, varna localStorage se temporary ID
+  const currentUserId = useMemo(() => {
+    let id = user?.uid || localStorage.getItem("gallery_user_id");
+    if (!id) {
+      id = uuidv4();
+      localStorage.setItem("gallery_user_id", id);
+    }
+    return id;
+  }, [user]);
+
   const navigate = useNavigate();
 
-  // ✨ PERFORMANCE: Cloudinary Auto-Transform (DRY)
   const getOptimizedUrl = useCallback((url, type = "thumb") => {
     if (!url?.includes("cloudinary")) return url;
     const transform = type === "thumb" ? "w_600,h_500,c_fill,g_auto,f_auto,q_auto" : "w_1200,f_auto,q_auto";
     return url.replace("/upload/", `/upload/${transform}/`);
   }, []);
 
+  const getEmoji = (name) => {
+    const emojis = { Like: "👍", Love: "❤️", Care: "🥰", Haha: "😆", Wow: "😮", Sad: "😢", Angry: "😡" };
+    return emojis[name] || "👍";
+  };
+
   useEffect(() => {
-    localStorage.setItem("gallery_user_id", currentUserId);
     const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(24));
     const unsubscribe = onSnapshot(q, (s) => {
       setPosts(s.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [currentUserId]);
+  }, []);
 
   const updatePost = useCallback((id, data) => updateDoc(doc(db, "galleryImages", id), data), []);
 
@@ -62,7 +74,7 @@ export default function PublicSocialGallery() {
       await addDoc(collection(db, "galleryImages"), {
         url: secure_url, title: up.title.trim(), uploadedBy: displayName || "Guest",
         uploadedById: currentUserId, userPhoto: photoURL || "", createdAt: serverTimestamp(),
-        likes: [], comments: [], downloadCount: 0
+        likes: [], reactions: {}, comments: [], downloadCount: 0
       });
       setUp({ show: false, file: null, preview: "", title: "", loading: false });
       toast.success("Uploaded!");
@@ -86,26 +98,21 @@ export default function PublicSocialGallery() {
       <main className="container">
         <div className="row g-3">
           {posts.map((p) => {
-            const isLiked = p.likes?.includes(currentUserId);
+            const userReaction = p.reactions?.[currentUserId] || null;
+            const isLiked = !!userReaction;
+            const uniqueReacts = [...new Set(Object.values(p.reactions || {}))];
+
             return (
-              <div key={p.id} className="col-12 col-md-6 col-lg-4">
-                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+              <div key={p.id} className="col-12 col-md-6 col-lg-4 px-2">
+                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white animate-fade-in">
                   
-                  {/* ✨ PC/Mobile Friendly Header with Profile Pic */}
-                  <div className="d-flex align-items-center justify-content-between px-3 pt-3 pb-2">
+                  {/* Header */}
+                  <div className="p-3 d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center gap-2 overflow-hidden" style={{ maxWidth: '85%' }}>
-                      <img
-                        src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random&color=fff`}
-                        className="rounded-circle border shadow-sm flex-shrink-0"
-                        width="32" height="32" alt="u" loading="lazy"
-                      />
+                      <img src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random&color=fff`} className="rounded-circle border shadow-sm flex-shrink-0" width="32" height="32" alt="u" />
                       <div className="d-flex flex-column overflow-hidden">
-                        <h6 className="fw-bold text-dark mb-0 text-truncate" title={p.title} style={{ fontSize: '14px' }}>
-                          {p.title}
-                        </h6>
-                        <small className="text-muted" style={{ fontSize: '10px' }}>
-                          by {p.uploadedBy} • {p.createdAt?.toDate().toLocaleDateString()}
-                        </small>
+                        <h6 className="fw-bold text-dark mb-0 text-truncate" title={p.title} style={{ fontSize: '14px' }}>{p.title}</h6>
+                        <small className="text-muted" style={{ fontSize: '10px' }}>by {p.uploadedBy} • {p.createdAt?.toDate().toLocaleDateString()}</small>
                       </div>
                     </div>
                     {(isAdmin || p.uploadedById === currentUserId) && (
@@ -113,38 +120,62 @@ export default function PublicSocialGallery() {
                     )}
                   </div>
 
-                  {/* Image Body */}
-                  <div className="ratio ratio-4x3 bg-light cursor-zoom-in border-top border-bottom" onClick={() => setSelectedImg(getOptimizedUrl(p.url, "large"))}>
-                    <img src={getOptimizedUrl(p.url, "thumb")} className="object-fit-cover w-100 h-100" alt={p.title} loading="lazy" decoding="async" />
+                  {/* Pic with Blurred BG */}
+                  <div className="post-media position-relative overflow-hidden bg-black" style={{ height: '300px' }} onClick={() => setSelectedImg(p.url)}>
+                    <img src={getOptimizedUrl(p.url, "thumb")} className="position-absolute w-100 h-100" style={{ filter: 'blur(20px)', opacity: '0.4', objectFit: 'cover', transform: 'scale(1.1)' }} alt="bg" />
+                    <img src={getOptimizedUrl(p.url, "thumb")} className="position-relative w-100 h-100 object-fit-contain cursor-zoom-in" alt={p.title} loading="lazy" />
                   </div>
 
-                  {/* Actions Area */}
-                  <div className="card-body p-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div className="d-flex gap-3 align-items-center">
+                  {/* Stats Bar */}
+                  <div className="px-3 py-2 d-flex justify-content-between align-items-center border-bottom mx-2">
+                    <div className="d-flex align-items-center gap-1">
+                      {uniqueReacts.length > 0 && (
+                        <div className="d-flex align-items-center">
+                          {uniqueReacts.slice(0, 3).map((r, i) => (
+                            <span key={r} style={{ fontSize: '14px', marginLeft: i > 0 ? '-5px' : '0', zIndex: 5 - i, textShadow: '0 0 2px white' }}>{getEmoji(r)}</span>
+                          ))}
+                        </div>
+                      )}
+                      <span className="small fw-bold text-muted">{p.likes?.length || 0}</span>
+                    </div>
+                    <div className="cursor-pointer text-secondary d-flex align-items-center gap-1" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
+                        <span className="small fw-bold">{p.comments?.length || 0} Comments</span>
+                    </div>
+                  </div>
+
+                  {/* Actions (Enabled for Guest) */}
+                  <div className="card-body p-1">
+                    <div className="d-flex align-items-center">
                         <Suspense fallback="...">
                           <LikeButton
                             isLiked={isLiked}
-                            count={p.likes?.length || 0}
-                            onClick={() => updatePost(p.id, { likes: isLiked ? arrayRemove(currentUserId) : arrayUnion(currentUserId) })}
+                            userReaction={userReaction}
+                            onClick={(reactionName) => {
+                              const r = { ...(p.reactions || {}) };
+                              if (reactionName) {
+                                r[currentUserId] = reactionName;
+                                updatePost(p.id, { likes: arrayUnion(currentUserId), reactions: r });
+                              } else {
+                                delete r[currentUserId];
+                                updatePost(p.id, { likes: arrayRemove(currentUserId), reactions: r });
+                              }
+                            }}
                           />
                         </Suspense>
-                        <div className="cursor-pointer text-secondary d-flex align-items-center gap-1" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
-                           <i className={`bi ${showComments[p.id] ? 'bi-chat-fill' : 'bi-chat'} fs-5`}></i>
-                           <span className="small fw-bold">{p.comments?.length || 0}</span>
-                        </div>
-                      </div>
-                      <Suspense fallback="...">
-                        <DownloadButton imageUrl={p.url} imageId={p.id} filename={p.title} count={p.downloadCount || 0} />
-                      </Suspense>
+                        <button className="btn flex-grow-1 border-0 bg-transparent text-muted fw-bold btn-sm py-2" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
+                            <i className="bi bi-chat-square me-1"></i> Comment
+                        </button>
+                        <Suspense fallback="...">
+                            <DownloadButton imageUrl={p.url} imageId={p.id} count={p.downloadCount || 0} />
+                        </Suspense>
                     </div>
 
                     {/* Comments Toggle */}
                     {showComments[p.id] && (
-                      <div className="mt-3 pt-3 border-top animate-fade-in">
+                      <div className="mt-2 pt-2 border-top animate-fade-in px-2 pb-2">
                         <div className="overflow-auto mb-2 custom-scroll" style={{ maxHeight: '180px' }}>
                           {p.comments?.map(c => (
-                            <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 border-start border-danger border-3">
+                            <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 border-start border-danger border-3 text-start">
                               <div className="d-flex justify-content-between small fw-bold">
                                 <span>{c.userName}</span>
                                 {(isAdmin || c.userId === currentUserId) && <i className="bi bi-x-circle text-muted cursor-pointer" onClick={() => updatePost(p.id, { comments: arrayRemove(c) })}></i>}
@@ -153,14 +184,23 @@ export default function PublicSocialGallery() {
                             </div>
                           ))}
                         </div>
+                        {/* Comment Form - No login check here */}
                         <form className="input-group input-group-sm mt-2" onSubmit={(e) => {
                           e.preventDefault();
                           const t = comment[p.id]?.trim();
                           if(!t) return;
-                          updatePost(p.id, { comments: arrayUnion({ text: t, userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4(), createdAt: new Date().toISOString() }) });
+                          updatePost(p.id, { 
+                            comments: arrayUnion({ 
+                                text: t, 
+                                userId: currentUserId, 
+                                userName: displayName || "Guest", // guest name use ho raha hai
+                                commentId: uuidv4(), 
+                                createdAt: new Date().toISOString() 
+                            }) 
+                          });
                           setComment({...comment, [p.id]: ""});
                         }}>
-                          <input className="form-control border-0 bg-light rounded-start-pill px-3 shadow-none" placeholder="Add comment..." value={comment[p.id] || ""} onChange={(e) => setComment({ ...comment, [p.id]: e.target.value })} />
+                          <input className="form-control border-0 bg-light rounded-start-pill px-3 shadow-none" placeholder="Write a comment..." value={comment[p.id] || ""} onChange={(e) => setComment({ ...comment, [p.id]: e.target.value })} />
                           <button className="btn btn-danger rounded-end-pill px-3 shadow-none"><i className="bi bi-send-fill"></i></button>
                         </form>
                       </div>
@@ -173,14 +213,13 @@ export default function PublicSocialGallery() {
         </div>
       </main>
 
-      {/* LIGHTBOX */}
+      {/* Lightbox & Upload modal stay as they are... */}
       {selectedImg && (
-        <div className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-black bg-opacity-90 z-3 p-2" style={{zIndex: 5000}} onClick={() => setSelectedImg(null)}>
+        <div className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-black bg-opacity-90 z-3 p-2" onClick={() => setSelectedImg(null)}>
           <img src={selectedImg} className="img-fluid rounded shadow-lg" style={{ maxHeight: '95vh' }} alt="F" />
         </div>
       )}
 
-      {/* UPLOAD MODAL */}
       {up.show && (
         <div className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-75 p-3" style={{ zIndex: 4000 }}>
           <div className="card w-100 shadow-lg border-0 rounded-4" style={{ maxWidth: 450 }}>
@@ -202,7 +241,6 @@ export default function PublicSocialGallery() {
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #dc3545; border-radius: 10px; }
         .cursor-zoom-in { cursor: zoom-in; }
-        .cursor-pointer { cursor: pointer; }
         .animate-fade-in { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
