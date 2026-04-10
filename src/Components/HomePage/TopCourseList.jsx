@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 
 const courses = [
   { id: 1, title: "Angular JS", src: "images/course/angular-js.webp" },
-  { id: 2, title: "Tally Prime", src: "images/course/tally-course.png" },
-  { id: 3, title: "Full Stack Development", src: "images/course/full-stack.png" },
-  { id: 4, title: "Mongo DB", src: "images/course/mongodb.png" },
-  { id: 5, title: "Android Development", src: "images/course/android-dev.jpg" },
-  { id: 6, title: "React JS Advance", src: "images/course/reactjs.jpg" },
-  { id: 7, title: "Python Data Science", src: "images/course/python-training.png" },
-  { id: 8, title: "Java Mastery Course", src: "images/course/Java-full-stack.png" }
+  { id: 2, title: "Tally Prime", src: "images/course/tally-course.webp" },
+  { id: 3, title: "Full Stack Development", src: "images/course/full-stack.webp" },
+  { id: 4, title: "Mongo DB", src: "images/course/mongodb.webp" },
+  { id: 5, title: "Android Development", src: "images/course/android-dev.webp" },
+  { id: 6, title: "React JS Advance", src: "images/course/reactjs.webp" },
+  { id: 7, title: "Python Data Science", src: "images/course/python-training.webp" },
+  { id: 8, title: "Java Mastery Course", src: "images/course/Java-full-stack.webp" }
 ];
 
 const CourseCard = ({ course }) => (

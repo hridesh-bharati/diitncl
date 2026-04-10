@@ -1,4 +1,3 @@
-// src\Components\HomePage\pages\HomeGallery.jsx
 import React, { useEffect, useState, useCallback, useMemo, Suspense, lazy } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
@@ -31,14 +30,12 @@ export default function HomeGallery() {
   }, [user]);
 
   useEffect(() => {
-    // Hum 20 photos fetch kar rahe hain
     const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(20));
     
     const unsubscribe = onSnapshot(q, (s) => {
       const fetchedPosts = s.docs.map(d => ({ id: d.id, ...d.data() }));
       
       setPosts(prevPosts => {
-        // Agar pehle se posts hain, to sirf unka data update karo (shuffle mat karo)
         if (prevPosts.length > 0) {
           return prevPosts.map(p => {
             const updatedDoc = fetchedPosts.find(f => f.id === p.id);
@@ -46,7 +43,6 @@ export default function HomeGallery() {
           });
         }
         
-        // Agar pehli baar data aa raha hai, tab shuffle karke 6 set karo
         return fetchedPosts
           .sort(() => Math.random() - 0.5)
           .slice(0, 6);
@@ -70,8 +66,13 @@ export default function HomeGallery() {
     }
   };
 
-  const getOptimizedUrl = useCallback((url) => {
+  // Optimization: Added type parameter for better sizing control
+  const getOptimizedUrl = useCallback((url, type = "post") => {
     if (!url?.includes("cloudinary")) return url;
+    // Specifically limit avatar size to 100px for performance
+    if (type === "avatar") {
+      return url.replace("/upload/", `/upload/w_100,h_100,c_fill,g_face,f_auto,q_auto/`);
+    }
     return url.replace("/upload/", `/upload/w_600,h_500,c_fill,g_auto,f_auto,q_auto/`);
   }, []);
 
@@ -93,18 +94,26 @@ export default function HomeGallery() {
       </div>
 
       <div className="row g-4">
-        {posts.map((p) => {
+        {posts.map((p, index) => {
           const userReaction = p.reactions?.[currentUserId] || null;
           const isLiked = !!userReaction;
           const uniqueReacts = [...new Set(Object.values(p.reactions || {}))];
 
           return (
-            <div key={p.id} className="col-12 col-md-6 col-lg-4">
+            <div key={p.id} className="col-12 col-md-6 col-lg-4 mx-0 p-1">
               <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white animate-fade-in">
                 
                 <div className="p-3 d-flex align-items-center justify-content-between">
                   <div className="d-flex align-items-center gap-2 overflow-hidden" style={{ maxWidth: '80%' }}>
-                    <img src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random`} className="rounded-circle border" width="32" height="32" alt="u" />
+                    {/* Avatar Optimization applied here */}
+                    <img 
+                      src={p.userPhoto ? getOptimizedUrl(p.userPhoto, "avatar") : `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random`} 
+                      className="rounded-circle border" 
+                      width="32" 
+                      height="32" 
+                      alt="u" 
+                      loading="lazy" 
+                    />
                     <div className="d-flex flex-column overflow-hidden">
                       <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ fontSize: '14px' }}>{p.title}</h6>
                       <small className="text-muted" style={{ fontSize: '10px' }}>by {p.uploadedBy}</small>
@@ -121,8 +130,18 @@ export default function HomeGallery() {
                   )}
                 </div>
 
-                <div className="post-media position-relative bg-black" style={{ height: '280px' }}>
-                    <img src={getOptimizedUrl(p.url)} className="w-100 h-100 object-fit-contain cursor-pointer" alt={p.title} onClick={() => navigate("/gallery")} />
+                <div className="post-media position-relative bg-black" style={{ height: '280px', minHeight: '280px' }}>
+                    {/* Main Image LCP Optimization applied here */}
+                    <img 
+                      src={getOptimizedUrl(p.url)} 
+                      className="w-100 h-100 object-fit-contain cursor-pointer" 
+                      alt={p.title} 
+                      onClick={() => navigate("/gallery")}
+                      loading={index <= 1 ? "eager" : "lazy"}
+                      fetchpriority={index <= 1 ? "high" : "auto"}
+                      width="600"
+                      height="500"
+                    />
                 </div>
 
                 <div className="px-3 py-2 d-flex justify-content-between align-items-center border-bottom mx-2">

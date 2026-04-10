@@ -275,7 +275,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="col-12 col-lg-6 mt-4 mt-lg-0">
+        <div className="col-12 col-lg-6 mt-4">
           <div className="bg-white rounded-4 shadow-sm border-0 h-100 overflow-hidden">
 
             {/* Header with Color Accent */}

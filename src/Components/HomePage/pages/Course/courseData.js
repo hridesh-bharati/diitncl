@@ -4,7 +4,7 @@ export const staticCourses = [
     {
         id: 0,
         name: "ADCA+",
-        description: "Advanced Diploma in Computer Applications Plus - An elite 18-month program including Advanced Web Development and Python",
+        description: "Advanced Diploma in Computer Applications+ - An elite 18-month program including Advanced Web Development and Python",
         duration: 18,
         category: "computer",
         subjects: [

@@ -3,21 +3,21 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Home.css";
 
-// Static Components
+// Static Imports for "Above the Fold" content (Improves FCP)
 import Features from "./Features";
-import NoticeBoard from "../HelperCmp/FeaturesUpdate/NoticeBoard";
-import TimeTable from "../HelperCmp/FeaturesUpdate/TimeTable";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
-import RecentStudents from "./pages/RecentStudents/RecentStudents";
 import HomeGallery from "./pages/HomeGallery";
 
-// Lazy Components
+// Lazy Components for bottom of the page
 const TopCourseList = lazy(() => import("./TopCourseList"));
 const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
 const Testimonials = lazy(() => import("./Testimonial"));
 const HomeOffers = lazy(() => import("./pages/offers/HomeOffers"));
-const Footer = lazy(() => import("../Footer/Footer"))
+const Footer = lazy(() => import("../Footer/Footer"));
+const NoticeBoard = lazy(() => import("../HelperCmp/FeaturesUpdate/NoticeBoard"));
+const TimeTable = lazy(() => import("../HelperCmp/FeaturesUpdate/TimeTable"));
+const RecentStudents = lazy(() => import("./pages/RecentStudents/RecentStudents"));
 
 const PORTAL_ITEMS = [
   { id: 1, label: "Verify", icon: "bi-shield-check", link: "/Download-Certificate", bg: "bg-primary" },
@@ -42,8 +42,14 @@ function Home() {
     <div className="home-wrapper bg-primary-subtle min-vh-100">
       <div className="home-feed container-lg p-2 p-lg-0">
 
-        {/* ================= HERO SECTION ================= */}
-        <div className="hero-card position-relative rounded-4 rounded-lg-0 overflow-hidden mb-2 shadow-sm bg-dark">          <img src="/images/vender/hero.webp" alt="Drishtee" className="w-100 object-fit-cover hero-img opacity-75" />
+        {/* HERO SECTION - Preloaded for Performance */}
+        <div className="hero-card position-relative rounded-4 rounded-lg-0 overflow-hidden mb-2 shadow-sm bg-dark" style={{ minHeight: '240px' }}>
+          <img
+            src="/images/vender/hero.webp"
+            alt="Drishtee Computer Centre"
+            className="w-100 object-fit-cover hero-img opacity-75"
+            fetchpriority="high"
+          />
           <div className="hero-content position-absolute p-3 p-md-5 w-100 text-white">
             <div className="pulse-badge badge rounded-pill bg-danger mb-2 py-2 px-3 d-inline-flex align-items-center shadow-sm">
               <span className="pulse-dot me-2"></span> Admissions 2026
@@ -53,7 +59,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ================= STUDENT PORTAL ================= */}
+        {/* STUDENT PORTAL */}
         <div className="card border-0 rounded-4 shadow-sm p-3 mb-2 bg-white">
           <h6 className="fw-bold mb-3 border-start border-primary border-4 ps-2">Student Portal</h6>
           <div className="row row-cols-3 row-cols-md-6 g-3">
@@ -63,7 +69,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ================= TRUST STATS ================= */}
+        {/* TRUST STATS */}
         <div className="card border-0 rounded-4 shadow-sm p-3 mb-2 bg-white">
           <div className="row g-2 text-center">
             <div className="col-6 col-md-3 border-end border-light">
@@ -85,17 +91,18 @@ function Home() {
           </div>
         </div>
 
-        {/* ================= MAIN FEED ================= */}
+        {/* MAIN FEED - Heavy components wrapped in Suspense */}
         <Suspense fallback={<div className="text-center p-5"><div className="spinner-border text-primary"></div></div>}>
-
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2">
             <Features />
           </div>
+
           <RecentStudents />
 
           <div className="mb-4 p-2 w-100">
             <TopCourseList />
           </div>
+
           <div className="m-0 p-0">
             <HomeGallery />
           </div>
@@ -107,7 +114,8 @@ function Home() {
                 <h5 className="fw-bold mb-1">Join New Batch Today!</h5>
                 <p className="small mb-0 opacity-75">Admission open for Tally, ADCA & Web Design.</p>
               </div>
-              <Link to="/courses"><button className="btn btn-light rounded-pill px-4 fw-bold text-primary mt-3 mt-md-0 shadow">Apply Now</button>
+              <Link to="/courses">
+                <button className="btn btn-light rounded-pill px-4 fw-bold text-primary mt-3 mt-md-0 shadow">Apply Now</button>
               </Link>
             </div>
           </div>
@@ -115,28 +123,18 @@ function Home() {
           <div className="mb-4"><CardSlider /></div>
           <div className="mb-4"><HomeOffers /></div>
 
-
-
           {/* NOTICE & TIMETABLE */}
           <div className="row g-3 mb-4">
-            <div className="col-12 col-md-6">
-              <NoticeBoard />
-            </div>
-            <div className="col-12 col-md-6">
-              <TimeTable />
-
-            </div>
+            <div className="col-12 col-md-6"><NoticeBoard /></div>
+            <div className="col-12 col-md-6"><TimeTable /></div>
           </div>
 
           <div className="mb-4"><Testimonials /></div>
           <div className="mb-4"><Team /></div>
-
-
           <ScrollUp />
+          <Footer />
         </Suspense>
-
       </div>
-      <Footer />
     </div>
   );
 }

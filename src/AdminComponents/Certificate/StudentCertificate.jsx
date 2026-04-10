@@ -117,8 +117,8 @@ const StudentInfoSection = ({ student, courseData, grade }) => (
             </span>
         </p>
         <p className="p-0 m-0"><span className="certificate-body-text">On the successfully completion of a <b>{courseData.duration}</b> ({courseData.hours}) course, titled</span></p>
-        <h4 className="certificate-course-title py-1 m-0">{courseData.fullName}</h4>
-        <p><span className="certificate-body-text">with grade & Percentage </span><span className="certificate-grade-highlight"><u>{grade} & {student.percentage || "N/A"}%</u></span></p>
+        <h4 className="certificate-course-title p-0 m-0">{courseData.fullName}</h4>
+        <p className="p-0 m-0"><span className="certificate-body-text">with grade & Percentage </span><span className="certificate-grade-highlight"><u>{grade} & {student.percentage || "N/A"}%</u></span></p>
         <p className="certificate-body-text">Examination conducted on at all-india basis at <b>Maharajganj / U.P.</b></p>
     </div>
 );
