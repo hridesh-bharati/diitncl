@@ -1,25 +1,28 @@
+// src\StudentComponents\Common\Certificate.jsx
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
-import { doc, onSnapshot } from "firebase/firestore";  
+import { doc, onSnapshot, collection, query, orderBy } from "firebase/firestore";  
 import StudentCertificate from "../../AdminComponents/Certificate/StudentCertificate";
+import { getFeeLogic } from "../../AdminComponents/Students/Fees/FeeServices"; // ✅ Fee logic import karein
 
 export default function CertificateWrapper() {
   const [student, setStudent] = useState(null);
+  const [payments, setPayments] = useState([]); // ✅ Payments state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let unsubscribeSnap = null;
+    let unsubscribePay = null;
 
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       const userEmail = user?.email || localStorage.getItem("user_email");
 
       if (!userEmail) {
-        if (!user && loading) {
-           // Auth load hone ka wait kar raha hai
-        } else {
-           setError("User session not found. Please login again.");
-           setLoading(false);
+        if (!user && loading) { } 
+        else {
+          setError("User session not found. Please login again.");
+          setLoading(false);
         }
         return;
       }
@@ -27,19 +30,24 @@ export default function CertificateWrapper() {
       const emailId = userEmail.toLowerCase().trim();
       const docRef = doc(db, "admissions", emailId);
 
-      if (unsubscribeSnap) unsubscribeSnap();
-
+      // 1. Student Data Listen
       unsubscribeSnap = onSnapshot(docRef, (snap) => {
         if (snap.exists()) {
           setStudent({ id: snap.id, ...snap.data() });
           setError(null);
         } else {
-          setError("No admission record found for " + emailId);
+          setError("No admission record found.");
         }
-        setLoading(false);
+      });
+
+      // 2. Payments Data Listen (Fee check karne ke liye)
+      const payQ = query(collection(db, "admissions", emailId, "payments"), orderBy("date", "desc"));
+      unsubscribePay = onSnapshot(payQ, (pSnap) => {
+        const payList = pSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        setPayments(payList);
+        setLoading(false); // Dono data aane ke baad hi loading false karein
       }, (err) => {
-        console.error("Firestore Error:", err);
-        setError("Database access denied. Please contact admin.");
+        console.error("Payment Error:", err);
         setLoading(false);
       });
     });
@@ -47,42 +55,56 @@ export default function CertificateWrapper() {
     return () => {
       unsubscribeAuth();
       if (unsubscribeSnap) unsubscribeSnap();
+      if (unsubscribePay) unsubscribePay();
     };
   }, []);
 
+  // --- Fee Calculation Logic ---
+  const summary = getFeeLogic(student?.course, payments) || { balance: 0 };
+  const isFeeDue = summary.balance > 0; // ✅ Agar 1 rupaya bhi baki hai to true hoga
+
   if (loading) return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
-      <div className="spinner-border text-primary" role="status"></div>
-      <h6 className="mt-3 text-muted fw-bold animate__animated animate__pulse animate__infinite">
-        Synchronizing Certificate Data...
-      </h6>
+      <div className="spinner-border text-primary"></div>
+      <h6 className="mt-3 text-muted fw-bold">Checking Payment Status...</h6>
     </div>
   );
 
-  if (error) return (
-    <div className="container py-5 text-center animate__animated animate__fadeIn">
-      <div className="alert alert-danger shadow-sm rounded-4 p-4">
-        <i className="bi bi-exclamation-octagon fs-1 d-block mb-2"></i>
-        {error}
-      </div>
-    </div>
-  );
-
+  if (error) return <div className="container py-5 text-center"><div className="alert alert-danger">{error}</div></div>;
   if (!student) return null;
 
+  // 1. Check if Admin manually disabled
   if (student.certificateDisabled) {
     return (
-      <div className="container py-5 animate__animated animate__fadeIn">
-        <div className="card border-0 shadow-lg rounded-4 p-5 bg-white text-center">
+      <div className="container py-5 text-center">
+        <div className="card border-0 shadow-lg p-5">
           <i className="bi bi-shield-lock-fill text-danger display-1 mb-3"></i>
-          <h4 className="fw-bold mb-3">Access Restricted</h4>
-          <p className="text-muted">Your certificate access has been disabled by the administrator.</p>
+          <h4 className="fw-bold">Access Restricted</h4>
+          <p className="text-muted">Disabled by Administrator.</p>
         </div>
       </div>
     );
   }
 
-  // ✅ Important Logic: Marks aur Date dono hone par hi Certificate dikhega
+  // 2. 🔥 Fee Due Check (Aapki requirement)
+  if (isFeeDue) {
+    return (
+      <div className="container py-5 text-center animate__animated animate__shakeX">
+        <div className="card border-0 shadow-lg p-5 bg-white">
+          <div className="bg-danger-subtle rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{width: '80px', height: '80px'}}>
+             <i className="bi bi-cash-stack text-danger fs-1"></i>
+          </div>
+          <h4 className="fw-bold text-danger">Fee Due!</h4>
+          <p className="text-dark fw-bold">Please pay your pending fee of ₹{summary.balance} to view/download your certificate.</p>
+          <div className="mt-3">
+             <small className="text-muted">Contact office for payment details.</small>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Normal logic (Marks/Date check)
   const isIssued = (student.percentage || student.percentage === 0) && student.issueDate;
   const progress = (student.percentage ? 50 : 0) + (student.issueDate ? 50 : 0);
 
@@ -91,17 +113,14 @@ export default function CertificateWrapper() {
       {isIssued ? (
         <StudentCertificate student={student} />
       ) : (
-        <div className="container py-5">
-          <div className="card border-0 shadow-lg rounded-4 p-5 bg-white text-center">
-            <h4 className="fw-bold mb-3">Generation in Progress</h4>
-            <div className="progress rounded-pill mb-3" style={{ height: "20px" }}>
-              <div className="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
-                   style={{ width: `${progress}%`, transition: 'width 0.5s ease' }}>
-                {progress}%
+        <div className="container py-5 text-center">
+           <div className="card border-0 shadow-lg p-5">
+              <h4 className="fw-bold mb-3">Generation in Progress</h4>
+              <div className="progress rounded-pill mb-3" style={{ height: "20px" }}>
+                <div className="progress-bar progress-bar-striped progress-bar-animated" style={{ width: `${progress}%` }}>{progress}%</div>
               </div>
-            </div>
-            <p className="text-muted small">Admin is finalizing your marks and issue date.</p>
-          </div>
+              <p className="text-muted">Marks or Issue Date pending from Admin side.</p>
+           </div>
         </div>
       )}
     </div>
