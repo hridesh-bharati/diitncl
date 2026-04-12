@@ -129,7 +129,7 @@ export default function StudentDashboard() {
           <span className="badge bg-secondary-subtle text-secondary rounded-pill px-3">{payments.length} Records</span>
         </div>
 
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 mb-lg-0">
           <div className="list-group list-group-flush">
             {payments.length > 0 ? (
               payments.map((p) => (

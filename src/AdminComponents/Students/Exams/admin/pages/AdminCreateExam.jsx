@@ -67,7 +67,7 @@ export default function AdminCreateExam() {
           <div className="row g-3">
             <div className="col-12">
               <label className="small fw-bold text-muted mb-1 uppercase">Exam Title *</label>
-              <input type="text" name="title" className="form-control rounded-0 shadow-none" placeholder="Ex: Final Theory Exam." onChange={handleChange} required />
+              <input type="text" name="title" className="form-control rounded-0 shadow-none" placeholder="Ex: Final ADCA Exam." onChange={handleChange} required />
             </div>
 
             <div className="col-12">

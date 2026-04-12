@@ -109,7 +109,7 @@ export default function AdminCompletedExams() {
         />
       </div>
 
-      <div className="row g-2">
+      <div className="row g-2 mb-5 pb-5 ">
         {list.length > 0 ? (
           list.map(item => (
             <div key={item.id} className="col-12 col-md-6 col-lg-4">

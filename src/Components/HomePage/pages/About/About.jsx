@@ -10,7 +10,7 @@ const TIMELINE_DATA = [
   { year: "2007", title: "Foundation", desc: "Drishtee Computer Center established with a vision to empower rural youth with digital skills.", icon: "bi-building", color: "primary" },
   { year: "2012", title: "Expansion", desc: "Opened second branch and introduced advanced diploma programs.", icon: "bi-diagram-3", color: "success" },
   { year: "2018", title: "Digital Innovation Hub", desc: "Launched coding bootcamps and AI/ML certification programs.", icon: "bi-cpu", color: "info" },
-  { year: "2024", title: "10,000+ Students", desc: "Celebrated placement of over 10,000 students in top IT companies.", icon: "bi-trophy", color: "warning" }
+  { year: "2025", title: "10,000+ Students", desc: "Celebrated placement of over 10,000 students in top IT companies.", icon: "bi-trophy", color: "warning" }
 ];
 
 // Core Values
@@ -36,9 +36,9 @@ const HIGHLIGHTS = [
   { stat: "15,000+", label: "Students Trained", icon: "bi-people", bg: "bg-primary" },
   { stat: "98%", label: "Placement Rate", icon: "bi-graph-up", bg: "bg-success" },
   { stat: "50+", label: "Expert Faculty", icon: "bi-person-badge", bg: "bg-info" },
-  { stat: "200+", label: "Partner Companies", icon: "bi-building", bg: "bg-warning" },
   { stat: "25+", label: "Courses", icon: "bi-book", bg: "bg-danger" },
-  { stat: "18", label: "Years of Excellence", icon: "bi-calendar-check", bg: "bg-dark" }
+  { stat: "18", label: "Years of Excellence", icon: "bi-calendar-check", bg: "bg-dark" },
+  { stat: "200+", label: "Partner Companies", icon: "bi-building", bg: "bg-warning" },
 ];
 
 // Achievement Badges
@@ -55,10 +55,10 @@ const About = () => {
   const [activeTab, setActiveTab] = useState("vision");
 
   return (
-    <div className="bg-light overflow-hidden">
+    <div className="bg-primary-subtle overflow-hidden">
       
       {/* 1. HERO SECTION - Drishtee Branding */}
-      <section className="py-5 text-white shadow-lg position-relative" 
+      <section className="py-5 text-white shadow-sm position-relative" 
                style={{ background: "linear-gradient(135deg, #1a2980 0%, #26d0ce 100%)" }}>
         <div className="container py-lg-5 position-relative z-1">
           <div className="row align-items-center g-5">
@@ -115,7 +115,7 @@ const About = () => {
         <div className="row g-3">
           {HIGHLIGHTS.map((item, idx) => (
             <div key={idx} className="col-6 col-md-4 col-lg-2">
-              <div className="card border-0 shadow-lg rounded-4 text-center p-3 bg-white transition-all hover-up">
+              <div className="card border-0 shadow-sm rounded-4 text-center p-3 bg-white transition-all hover-up">
                 <div className={`${item.bg} bg-opacity-10 rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center`} 
                      style={{ width: "50px", height: "50px" }}>
                   <i className={`bi ${item.icon} fs-3 ${item.bg.replace('bg-', 'text-')}`}></i>
@@ -129,7 +129,7 @@ const About = () => {
       </section>
 
       {/* 3. WELCOME & INTRODUCTION */}
-      <section className="container py-5 mt-4">
+      <section className="container-fluid bg-white py-5 mt-4">
         <div className="text-center mb-5">
           <span className="badge bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-pill mb-3">
             <i className="bi bi-chat-heart me-2"></i>Welcome to Drishtee
@@ -142,7 +142,7 @@ const About = () => {
           </p>
         </div>
         
-        <div className="row g-5 align-items-center">
+        <div className="container mx-auto row g-5 align-items-center">
           <div className="col-lg-6">
             <div className="position-relative">
               <img src="/images/vender/std1.jpg" alt="Drishtee Campus" className="img-fluid rounded-4 shadow-lg" />
@@ -154,7 +154,7 @@ const About = () => {
             </div>
           </div>
           <div className="col-lg-6">
-            <div className="card border-0 shadow-lg p-4 p-lg-5 rounded-4">
+            <div className="card border-0 shadow-sm p-4 p-lg-5 rounded-4">
               <h3 className="fw-bold mb-4">Why Choose Drishtee?</h3>
               <div className="vstack gap-3">
                 <div className="d-flex gap-3 align-items-start p-2 rounded-3 hover-bg-light">
@@ -216,6 +216,30 @@ const About = () => {
         </div>
       </section>
 
+
+      {/* 5. CORE VALUES */}
+      <section className="container py-5">
+        <div className="text-center mb-5">
+          <h2 className="display-5 fw-bold">Our <span className="text-primary">Core Values</span></h2>
+          <p className="text-muted">The principles that guide everything we do</p>
+        </div>
+        <div className="row g-4">
+          {CORE_VALUES.map((value, idx) => (
+            <div key={idx} className="col-md-6 col-lg-3">
+              <div className="card h-100 border-0 shadow-sm rounded-4 text-center p-4 transition-all hover-up">
+                <div className={`bg-${value.color} bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center`}
+                     style={{ width: "70px", height: "70px" }}>
+                  <i className={`bi ${value.icon} fs-1 text-${value.color}`}></i>
+                </div>
+                <h5 className="fw-bold mb-2">{value.title}</h5>
+                <p className="small text-muted mb-0">{value.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      
       {/* 4. VISION & MISSION TABS */}
       <section className="container py-5">
         <div className="row justify-content-center">
@@ -275,28 +299,6 @@ const About = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 5. CORE VALUES */}
-      <section className="container py-5">
-        <div className="text-center mb-5">
-          <h2 className="display-5 fw-bold">Our <span className="text-primary">Core Values</span></h2>
-          <p className="text-muted">The principles that guide everything we do</p>
-        </div>
-        <div className="row g-4">
-          {CORE_VALUES.map((value, idx) => (
-            <div key={idx} className="col-md-6 col-lg-3">
-              <div className="card h-100 border-0 shadow-sm rounded-4 text-center p-4 transition-all hover-up">
-                <div className={`bg-${value.color} bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center`}
-                     style={{ width: "70px", height: "70px" }}>
-                  <i className={`bi ${value.icon} fs-1 text-${value.color}`}></i>
-                </div>
-                <h5 className="fw-bold mb-2">{value.title}</h5>
-                <p className="small text-muted mb-0">{value.desc}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 

@@ -202,8 +202,8 @@ export default function AdminExamResultView() {
         })}
       </div>
 
-      <div className="text-center mt-5 no-print">
-        <button className="btn btn-outline-dark rounded-0 px-5 fw-bold" onClick={() => window.print()}>
+      <div className="text-center my-5 pb-5 pb-lg-0 no-print">
+        <button className="btn btn-outline-dark rounded-0 px-4 fw-bold" onClick={() => window.print()}>
           <i className="bi bi-printer-fill me-2"></i> GENERATE FINAL REPORT
         </button>
       </div>

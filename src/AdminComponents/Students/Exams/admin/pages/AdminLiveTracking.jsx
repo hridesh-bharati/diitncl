@@ -87,12 +87,12 @@ useEffect(() => {
           <p className="text-muted small mb-0">Tracking active students in <b>LIVE</b> exams</p>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-1">
           <input
             type="text"
             className="form-control form-control-sm rounded-0 border-2 shadow-none"
             placeholder="Search name or Reg..."
-            style={{ width: '220px' }}
+            style={{ width: '190px' }}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <div className="badge bg-danger rounded-0 p-2 d-flex align-items-center gap-2">

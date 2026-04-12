@@ -125,7 +125,7 @@ export default function CertificateWrapper() {
   if (!hasCompletedExam) {
     return (
       <div className="container py-5 text-center">
-        <div className="card border-0 shadow-lg p-5 rounded-4 bg-white border-start border-4 border-warning">
+        <div className="card border-0 shadow-sm p-5 rounded-4 bg-white border-start border-4 border-warning">
           <i className="bi bi-clipboard-x text-warning display-2 mb-3"></i>
           <h4 className="fw-bold">No Exam Record</h4>
           <p className="text-muted mb-0">We couldn't find a completed exam record for your profile.</p>
