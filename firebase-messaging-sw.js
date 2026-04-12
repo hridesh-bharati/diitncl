@@ -116,36 +116,36 @@ self.addEventListener("fetch", (event) => {
 });
 
 /* =========================================
-   🔔 FCM BACKGROUND NOTIFICATION
+   🔔 FCM BACKGROUND NOTIFICATION (FIXED)
 ========================================= */
 messaging.onBackgroundMessage((payload) => {
-  console.log('Background Payload:', payload);
+  console.log('🔥 Background Payload Received:', payload);
 
-  if (payload.notification && !payload.data) return;
-
-  const notificationTitle =
-    payload.data?.title ||
-    payload.notification?.title ||
-    "Drishtee Alert";
+  // Payload se data nikalna
+  const title = payload.data?.title || payload.notification?.title || "Drishtee Alert";
+  const body = payload.data?.body || payload.notification?.body || "New Update from DIIT";
+  
+  // URL nikalne ka sahi tarika (Backend se 'url' key mein data bhejna best hota hai)
+  const clickUrl = payload.data?.url || payload.fcmOptions?.link || "/student/dashboard";
 
   const notificationOptions = {
-    body:
-      payload.data?.body ||
-      payload.notification?.body ||
-      "New message from Drishtee",
+    body: body,
     icon: "/images/icon/icon-192.png",
-    badge: "/images/icon/icon-192.png",
-    vibrate: [200, 100, 200],
-    tag: "drishtee-notification",
-    renotify: true,
-    data: {
-      url: payload.fcmOptions?.link || payload.data?.url || "/"
-    }
+    badge: "/images/icon/icon-192.png", // Status bar ka chota icon
+    vibrate: [300, 100, 300, 100, 400], // Insta jaisa lamba vibration
+    tag: "drishtee-msg", // Isse multiple notifications group ho jayenge
+    renotify: true,      // Naye message par fir se vibrate karega
+    requireInteraction: true, // Jab tak user touch na kare, notification dikhta rahega
+    actions: [
+      { action: 'open', title: 'View Now' },
+      { action: 'close', title: 'Dismiss' }
+    ],
+    data: { url: clickUrl }
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  // Force show notification
+  return self.registration.showNotification(title, notificationOptions);
 });
-
 /* =========================================
    🖱 NOTIFICATION CLICK HANDLING
 ========================================= */
