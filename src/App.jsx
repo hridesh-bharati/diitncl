@@ -1,13 +1,12 @@
 // src/App.jsx
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
-import { useEffect, useState, useRef, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { subscribeUser } from "./services/pushService";
 import { AnimatePresence } from "framer-motion";
 import SwipeLayout from "./Components/MobileAccessories/SwipeLayout";
 import "./App.css";
 
 /* Core Components */
-import Lock from "./Components/HomePage/LockWeb/Lock";
 import Header from "./Components/Header/Header";
 import NetworkStatus from "./Components/HomePage/LockWeb/NetworkStatus";
 import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
@@ -16,13 +15,9 @@ import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 
 /* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
-import { db, app } from "./firebase/firebase";
+import { db } from "./firebase/firebase";
 import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
-import { getMessaging, onMessage, isSupported } from "firebase/messaging";
 import { vibration } from "./Components/MobileAccessories/vibration";
-
-
-
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -45,8 +40,6 @@ const WebDev = lazy(() => import("./Components/HomePage/pages/Course/WebDev"));
 const Nielet = lazy(() => import("./Components/HomePage/pages/Course/Nielet"));
 const Banking = lazy(() => import("./Components/HomePage/pages/Course/Banking"));
 const Certificate = lazy(() => import("./Components/HomePage/pages/Course/Ceritificate"));
-
-//  Photo editor
 const PhotoEdit = lazy(() => import("./Components/HomePage/pages/PhotoEditor/PhotoEdit"));
 
 /* Legal */
@@ -65,23 +58,18 @@ export default function App() {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const messagingRef = useRef(null);
 
-  // --------------------------------------------------------
-  // 🔥 FIXED: Service Worker Registration
-  // --------------------------------------------------------
+  // 1. Service Worker Registration
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
-        .then((reg) => console.log("✅ SW Registered:", reg))
+        .then((reg) => console.log("✅ SW Registered:", reg.scope))
         .catch((err) => console.error("❌ SW Error:", err));
     }
   }, []);
 
-  // --------------------------------------------------------
-  // 🔥 FIXED: Interaction based Push Activation
-  // --------------------------------------------------------
+  // 2. Interaction based Push Activation (Optimized)
   useEffect(() => {
     let asked = false;
 
@@ -91,63 +79,31 @@ export default function App() {
 
       const token = await subscribeUser();
       if (token) {
-        console.log("✅ Interaction Token:", token);
-        await setDoc(doc(db, "admissions", user.uid), { fcmToken: token }, { merge: true });
+        // Token save in 'users' collection with UID as ID
+        await setDoc(doc(db, "users", user.uid), { fcmToken: token }, { merge: true });
+        console.log("✅ Token Synced");
       }
     };
 
-    window.addEventListener("click", initPush, { once: true });
-    window.addEventListener("scroll", initPush, { once: true });
-
+    ["click", "scroll", "touchstart"].forEach(event =>
+      window.addEventListener(event, initPush, { once: true, passive: true })
+    );
+    
     return () => {
       window.removeEventListener("click", initPush);
       window.removeEventListener("scroll", initPush);
     };
   }, [user]);
 
-  // --------------------------------------------------------
-  // 🔥 FIXED: Foreground Listener
-  // --------------------------------------------------------
-  useEffect(() => {
-    let unsubscribe;
-
-    const initMessaging = async () => {
-      const supported = await isSupported();
-      if (!supported) return;
-
-      messagingRef.current = getMessaging(app);
-
-      unsubscribe = onMessage(messagingRef.current, (payload) => {
-        console.log("📩 Foreground Message:", payload);
-
-        if (Notification.permission === "granted") {
-          new Notification(payload.notification?.title || "Drishtee Alert", {
-            body: payload.notification?.body,
-            icon: "/logo.png",
-          });
-        }
-      });
-    };
-
-    initMessaging();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, []);
-
-  // --------------------------------------------------------
-  // 🔥 FIXED: Background Sync Helper (Component ke andar)
-  // --------------------------------------------------------
+  // 3. Background Sync Helper
   const syncStudentPushToken = async (userId) => {
     try {
-      const studentRef = doc(db, "admissions", userId);
-      const snap = await getDoc(studentRef);
+      const userRef = doc(db, "users", userId);
+      const snap = await getDoc(userRef);
       if (snap.exists() && !snap.data().fcmToken) {
         const token = await subscribeUser();
         if (token) {
-          await updateDoc(studentRef, { fcmToken: token });
-          console.log("✅ Token synced in background");
+          await updateDoc(userRef, { fcmToken: token });
         }
       }
     } catch (err) { console.error("Sync Error:", err); }
@@ -160,6 +116,7 @@ export default function App() {
         setUser(currentUser);
         const r = await getUserRole(currentUser.uid);
         setRole(r);
+
         if (r === "student") {
           syncStudentPushToken(currentUser.uid);
         }
@@ -172,7 +129,6 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-
   /* 📊 Visitor Tracking */
   useEffect(() => {
     const trackVisit = async () => {
@@ -180,35 +136,26 @@ export default function App() {
         try {
           await setDoc(doc(db, "stats", "visitors"), { count: increment(1) }, { merge: true });
           sessionStorage.setItem("drishtee_visitor", "true");
-        } catch (err) {
-          console.error("Visitor tracking error", err);
-        }
+        } catch (err) { console.error("Tracking Error:", err); }
       }
     };
     trackVisit();
   }, []);
 
-
-  useEffect(() => {
-    vibration();
-  }, [])
-
+  useEffect(() => { vibration(); }, []);
 
   if (loading) return <LoadingSpinner />;
 
   return (
-    < >
-
+    <>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
 
       <AnimatePresence mode="wait">
         <SwipeLayout>
-
-          <Suspense fallback={<p className="text-center text-muted  p-5 m-5">Loading...</p>}>
+          <Suspense fallback={<p className="text-center text-muted p-5 m-5">Loading...</p>}>
             <Routes location={location}>
-              {/* Public Routes */}
               <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
               <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
               <Route path="/courses" element={<HelmetManager><OurCourses /></HelmetManager>} />
@@ -230,7 +177,6 @@ export default function App() {
               <Route path="/courses/web-development" element={<HelmetManager><WebDev /></HelmetManager>} />
               <Route path="/courses/nielit" element={<HelmetManager><Nielet /></HelmetManager>} />
               <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
-              {/* PhotoEditor  */}
               <Route path="/photo-editor" element={<HelmetManager><PhotoEdit /></HelmetManager>} />
 
               {/* Legal */}
@@ -254,6 +200,6 @@ export default function App() {
           </Suspense>
         </SwipeLayout>
       </AnimatePresence>
-    </ >
+    </>
   );
 }

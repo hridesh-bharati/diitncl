@@ -55,8 +55,6 @@
 //   }
 // }
 
-
-// api\send-push.js
 import admin from 'firebase-admin';
 
 // 1. Firebase Admin Initialization (Safe check ke sath)
@@ -92,43 +90,71 @@ export default async function handler(req, res) {
   }
 
   // 3. Request Body se Data nikalna
-  // NOTE: Ab hum 'subscription' object ki jagah 'token' (FCM Token string) ka use karenge
-  const { token, title, body, url, icon } = req.body;
+  const { token, title, body, url } = req.body;
 
   // Validation
   if (!token || !title || !body) {
     return res.status(400).json({ success: false, error: "Missing token, title or body" });
   }
 
-  // 4. FCM Message Structure
-const message = {
-  notification: {
-    title: title,
-    body: body,
-  },
-  // Browser popup ke liye ye block must hai
-  webpush: {
+  // 4. 🔥 FCM Message Structure (WhatsApp/Insta Style Priority)
+  const message = {
+    token: token,
+    // Notification block: OS level handling ke liye
     notification: {
       title: title,
       body: body,
-      icon: '/images/icon/icon-192.png', // Sahi path check karein
-      badge: '/images/icon/icon-192.png',
     },
-    fcm_options: {
-      link: url || 'https://www.drishteeindia.com/student/dashboard'
+    // Data block: Service Worker ko full control dene ke liye (Click URL etc.)
+    data: {
+      title: title,
+      body: body,
+      url: url || 'https://www.drishteeindia.com/student/dashboard',
+    },
+    // Android Specific (High Priority for instant delivery)
+    android: {
+      priority: "high",
+      notification: {
+        channelId: "drishtee_alerts", // Android 8+ ke liye channel zaroori hai
+        sound: "default",
+        defaultSound: true,
+        notificationPriority: "PRIORITY_MAX",
+        visibility: "PUBLIC"
+      }
+    },
+    // WebPush Specific (PWA ke liye sabse important)
+    webpush: {
+      headers: {
+        Urgency: "high"
+      },
+      notification: {
+        title: title,
+        body: body,
+        icon: 'https://www.drishteeindia.com/images/icon/icon-192.png', // Always use Absolute URL for reliability
+        badge: 'https://www.drishteeindia.com/images/icon/icon-192.png',
+        vibrate: [200, 100, 200, 100, 400], // Feel like a real app
+        requireInteraction: true, // Notification screen par ruka rahega jab tak student touch na kare
+        actions: [
+          {
+            action: 'open',
+            title: 'View Now'
+          }
+        ]
+      },
+      fcm_options: {
+        link: url || 'https://www.drishteeindia.com/student/dashboard'
+      }
     }
-  },
-  token: token,
-};
+  };
 
   try {
     // 5. Send Notification via FCM
     const response = await admin.messaging().send(message);
-    
+
     console.log('Successfully sent message:', response);
-    return res.status(200).json({ 
-      success: true, 
-      messageId: response 
+    return res.status(200).json({
+      success: true,
+      messageId: response
     });
 
   } catch (error) {
@@ -136,16 +162,16 @@ const message = {
 
     // Agar token invalid ya expire ho gaya ho
     if (error.code === 'messaging/registration-token-not-registered' || error.code === 'messaging/invalid-registration-token') {
-      return res.status(410).json({ 
-        success: false, 
+      return res.status(410).json({
+        success: false,
         error: "Token expired or invalid. Please re-subscribe.",
-        code: error.code 
+        code: error.code
       });
     }
 
-    return res.status(500).json({ 
-      success: false, 
-      error: error.message 
+    return res.status(500).json({
+      success: false,
+      error: error.message
     });
   }
 }

@@ -2,12 +2,19 @@ import React, { useState } from "react";
 import { db } from "../../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { sendEmailNotification, supportTemplate } from "../../../../services/emailService";
+import { 
+  sendEmailNotification, 
+  supportTemplate, 
+  sendPushNotification 
+} from "../../../../services/emailService";
 
 const QuickSupport = () => {
   const init = { fullName: "", mobile: "", email: "", title: "", query: "" };
   const [formData, setFormData] = useState(init);
   const [loading, setLoading] = useState(false);
+
+  // Note: Real scenario mein ADMIN_FCM_TOKEN Firestore se fetch karein
+  const ADMIN_FCM_TOKEN = "YOUR_ADMIN_FCM_TOKEN_HERE"; 
 
   const handleChange = (e) => setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -16,26 +23,37 @@ const QuickSupport = () => {
     try {
       setLoading(true);
 
-      // 1. Firebase mein save karein
+      // 1. Firebase mein query save karein
       await addDoc(collection(db, "studentQueries"), {
         ...formData,
         timestamp: serverTimestamp(),
         status: "pending"
       });
 
-      // 2. Email notification (Await add kiya hai for reliability)
-      const emailSuccess = await sendEmailNotification(
+      // 2. Email notification bhejien
+      const emailPromise = sendEmailNotification(
         "hridesh027@gmail.com",
         `New Inquiry: ${formData.title}`,
         supportTemplate(formData)
       );
 
-      if (emailSuccess) {
+      // 3. Push Notification call (Admin ko alert dene ke liye)
+      const pushPromise = sendPushNotification(
+        { fcmToken: ADMIN_FCM_TOKEN },
+        "New Support Query 📢",
+        `${formData.fullName} has a query about ${formData.title}`,
+        "/admin/support"
+      );
+
+      // Dono calls ka wait karein
+      const [emailSuccess, pushSuccess] = await Promise.all([emailPromise, pushPromise]);
+
+      if (emailSuccess || pushSuccess) {
         new Audio("/audio/ring.mp3").play().catch(() => { });
-        toast.success("Query & Email Sent Successfully!");
+        toast.success("Query Sent Successfully! We'll contact you soon.");
         setFormData(init);
       } else {
-        toast.warning("Query saved, but email notification failed.");
+        toast.warning("Query saved, but notification failed.");
       }
 
     } catch (err) {
@@ -78,7 +96,9 @@ const QuickSupport = () => {
           <i className="bi bi-arrow-counterclockwise text-muted"></i>
         </button>
         <button type="submit" disabled={loading} className="btn btn-primary flex-grow-1 py-3 rounded-pill fw-bold border-0 shadow">
-          {loading ? "SENDING..." : "SEND MESSAGE"}
+          {loading ? (
+            <div className="spinner-border spinner-border-sm text-white" role="status"></div>
+          ) : "SEND MESSAGE"}
         </button>
       </div>
 
