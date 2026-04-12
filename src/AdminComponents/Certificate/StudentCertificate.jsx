@@ -226,7 +226,7 @@ export default function StudentCertificate({ student: propStudent }) {
     if (student?.certificateDisabled && !isAdmin) {
         return (
             <div className="container mt-5">
-                <div className="card border-0 shadow-lg rounded-4 p-5 text-center bg-white">
+                <div className="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
                     <i className="bi bi-lock-fill display-1 text-danger mb-4"></i>
                     <h2 className="fw-bold">Portal Access Locked</h2>
                     <button className="btn btn-primary rounded-pill px-4 mt-3 shadow-sm" onClick={() => navigate("/")}>Go to Home</button>

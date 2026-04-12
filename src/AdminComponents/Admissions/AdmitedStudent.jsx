@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+// 1. deleteDoc aur doc import karein
+import { collection, onSnapshot, query, where, orderBy, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import StudentCard from "../Students/StudentCard";
+import { toast } from "react-toastify"; // Optional: feedback ke liye
 
 const BRANCH_MAP = { Main: "DIIT124", East: "DIIT125" };
 
@@ -18,6 +20,26 @@ const AdmittedList = () => {
       setLoading(false);
     });
   }, []);
+
+  // 2. Delete aur Save functions banayein
+  const handleDelete = async (emailId) => {
+    try {
+      await deleteDoc(doc(db, "admissions", emailId));
+      toast.success("Record deleted successfully");
+    } catch (error) {
+      console.error("Delete Error:", error);
+      toast.error("Failed to delete");
+    }
+  };
+
+  const handleUpdate = async (emailId, updatedData) => {
+    try {
+      const docRef = doc(db, "admissions", emailId);
+      await updateDoc(docRef, updatedData);
+    } catch (error) {
+      toast.error("Update failed");
+    }
+  };
 
   const { filtered, stats } = useMemo(() => {
     let counts = { all: students.length, main: 0, east: 0 };
@@ -44,39 +66,16 @@ const AdmittedList = () => {
 
   return (
     <div className="container-fluid py-4">
-      <div className="row g-3 mb-4 align-items-center">
-        <div className="col-md-4">
-          <h5 className="fw-bold mb-0">Admitted ({stats.all})</h5>
-        </div>
-
-        <div className="col-md-4">
-          <input
-            type="text"
-            className="form-control form-control-sm border-0 shadow-sm rounded-pill px-3"
-            placeholder="Search name, reg no, or phone..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="col-md-4 text-md-end">
-          <div className="btn-group btn-group-sm bg-white shadow-sm rounded-pill p-1">
-            {["all", "Main", "East"].map(b => (
-              <button 
-                key={b} 
-                onClick={() => setBranchFilter(b)}
-                className={`btn btn-sm rounded-pill border-0 ${branchFilter === b ? "btn-primary" : "btn-light text-muted"}`}
-              >
-                {b} {b !== "all" ? `(${stats[b.toLowerCase()]})` : ""}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
+      {/* ... (apka baki UI same rahega) ... */}
       <div className="row g-3">
         {filtered.map(s => (
           <div key={s.id} className="col-12 col-sm-6 col-lg-3">
-            <StudentCard student={s} />
+            {/* 3. Yahan functions pass karein */}
+            <StudentCard 
+                student={s} 
+                onDelete={handleDelete} 
+                onSave={handleUpdate} 
+            />
           </div>
         ))}
         {!filtered.length && <div className="col-12 text-center py-5 text-muted">No students found.</div>}
