@@ -73,7 +73,7 @@ export default function AdminPracticeResults() {
       const list = await Promise.all(snap.docs.map(async (d) => {
         const data = d.id ? { id: d.id, ...d.data() } : d.data();
         const email = data.studentEmail?.toLowerCase().trim();
-        let extra = { photoUrl: "", regNo: "N/A", name: data.studentName }; 
+        let extra = { photoUrl: "", regNo: "N/A", name: data.studentName };
         if (email) {
           const sSnap = await getDoc(doc(db, "admissions", email));
           if (sSnap.exists()) {
@@ -92,7 +92,7 @@ export default function AdminPracticeResults() {
     return () => unsub();
   }, []);
 
-  const filtered = useMemo(() => results.filter(r => 
+  const filtered = useMemo(() => results.filter(r =>
     [r.displayName, r.student?.regNo, r.testTitle].some(f => f?.toLowerCase().includes(searchTerm.toLowerCase()))
   ), [results, searchTerm]);
 
@@ -119,10 +119,10 @@ export default function AdminPracticeResults() {
                   {/* Score aur Percent yahan card par show ho raha hai */}
                   <div className="text-end">
                     <div className="h5 fw-bold mb-0 text-success">{r.score}/{r.totalQuestions}</div>
-                    <div className="text-muted fw-bold" style={{fontSize: '11px'}}>{r.percentage}%</div>
+                    <div className="text-muted fw-bold" style={{ fontSize: '11px' }}>{r.percentage}%</div>
                   </div>
                 </div>
-                
+
                 <div className="bg-light p-2 rounded-3 mb-3 small text-secondary">
                   <i className="bi bi-journal-text me-2"></i>{r.testTitle}
                 </div>
@@ -136,7 +136,7 @@ export default function AdminPracticeResults() {
                       </button>
                     )}
                   </PDFDownloadLink>
-                  <button className="btn btn-outline-danger btn-sm rounded-circle shadow-sm" onClick={() => window.confirm("Delete record?") && deleteDoc(doc(db,"practiceResults", r.id))}><i className="bi bi-trash"></i></button>
+                  <button className="btn btn-outline-danger btn-sm rounded-circle shadow-sm" onClick={() => window.confirm("Delete record?") && deleteDoc(doc(db, "practiceResults", r.id))}><i className="bi bi-trash"></i></button>
                 </div>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function AdminPracticeResults() {
 
       {/* Detail Modal */}
       {selected && (
-        <div className="modal show d-block" style={{background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)'}}>
+        <div className="modal show d-block" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)' }}>
           <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div className="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
               <div className="modal-header bg-dark text-white border-0 py-3">
