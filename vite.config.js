@@ -61,23 +61,15 @@ export default defineConfig(({ command }) => {
       sourcemap: "hidden",
       chunkSizeWarningLimit: 1500, // Warning limit ko 1.5MB tak badhao
       rollupOptions: {
-        output: {
-          // 🔥 Fix 2: Smart Chunking - Vendor bundles ko todna
-          manualChunks(id) {
-            if (id.includes("node_modules")) {
-              // Firebase ko alag bundle
-              if (id.includes("firebase")) return "vendor-firebase";
-              // PDF Renderer aur Charts heavy hote hain, inko alag bundle
-              if (id.includes("@react-pdf") || id.includes("chart.js") || id.includes("html2pdf.js")) {
-                return "vendor-heavy-libs";
-              }
-              // Icons ko alag bundle
-              if (id.includes("bootstrap-icons")) return "vendor-icons";
-              // Baaki core libraries (React, etc.)
-              return "vendor-core";
-            }
-          }
+       output: {
+      manualChunks(id) {
+        if (id.includes("node_modules")) {
+          if (id.includes("firebase")) return "vendor-firebase";
+          if (id.includes("react")) return "vendor-react";
+          return "vendor";
         }
+      }
+    }
       }
     },
 
