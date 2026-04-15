@@ -1,1 +1,0 @@
-import{G as t}from"./vendor-core-GXCzUygL.js";import{C as o}from"./CommanCourse-DbgZg38S.js";import"./vendor-heavy-libs-Cjqce34U.js";import"./courseData-C9ZCdk9Y.js";function m(){const r=["cca","cac"];return t.jsx("div",{className:"MT3",children:t.jsx(o,{targetCourses:r,CTitle:"Computer certificate course"})})}export{m as default};
