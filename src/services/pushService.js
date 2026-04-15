@@ -1,23 +1,36 @@
 import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
 import { app } from "../firebase/firebase.js";
 
-// 1. Initialize Messaging safely
-const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
+/**
+ * 🛠️ Utility to safely get the Messaging instance
+ * This prevents the "addEventListener" undefined error.
+ */
+const getSafeMessaging = async () => {
+  try {
+    const supported = await isSupported();
+    if (!supported) {
+      console.warn("FCM is not supported in this environment (Check HTTPS or Incognito).");
+      return null;
+    }
+    return getMessaging(app);
+  } catch (err) {
+    return null;
+  }
+};
 
 /**
- * 🔔 Foreground Message Listener
- * Ise function ke bahar rakha hai taaki ye sirf ek baar register ho
- * Aur humesha "Live" rahe, bilkul WhatsApp ki tarah
+ * 🔔 Foreground Listener
+ * This is now wrapped in a function so it doesn't crash on load.
  */
-if (messaging) {
+export const initForegroundListener = async () => {
+  const messaging = await getSafeMessaging();
+  if (!messaging) return;
+
   onMessage(messaging, async (payload) => {
     console.log('🔥 Live Foreground Payload:', payload);
 
-    // Browser ka registration check karein
     const registration = await navigator.serviceWorker.getRegistration();
-    
     if (registration) {
-      // Data extract karein (Backend se bheja gaya 'data' prioritze karein)
       const title = payload.data?.title || payload.notification?.title || "Drishtee Alert";
       const body = payload.data?.body || payload.notification?.body || "New Update Available";
       const clickUrl = payload.data?.url || "/student/dashboard";
@@ -26,10 +39,10 @@ if (messaging) {
         body: body,
         icon: "/images/icon/icon-192.png",
         badge: "/images/icon/icon-192.png",
-        vibrate: [300, 100, 300, 100, 400], // Professional vibration pattern
-        tag: "drishtee-msg", // Purane notification ko replace karega (No flooding)
-        renotify: true,      // Naye message par phone fir se vibrate karega
-        requireInteraction: true, // Jab tak student swipe na kare, screen par rahega
+        vibrate: [300, 100, 300, 100, 400],
+        tag: "drishtee-msg",
+        renotify: true,
+        requireInteraction: true,
         data: { url: clickUrl },
         actions: [
           { action: 'open', title: 'View Now' },
@@ -40,7 +53,7 @@ if (messaging) {
       registration.showNotification(title, notificationOptions);
     }
   });
-}
+};
 
 /**
  * 📲 User Subscription Function
@@ -49,46 +62,34 @@ export const subscribeUser = async () => {
   try {
     if (typeof window === 'undefined' || !window.navigator) return null;
 
-    // A. Browser Compatibility Check
-    const supported = await isSupported();
-    if (!supported) {
-      console.warn("🚫 FCM not supported in this browser");
+    // 1. Check support and get messaging instance
+    const messaging = await getSafeMessaging();
+    if (!messaging) {
+      console.error("🚫 FCM not supported/initialized");
       return null;
     }
 
-    if (!('serviceWorker' in navigator)) {
-      console.warn("🚫 Service workers not supported");
-      return null;
+    // 2. Service Worker Registration
+    let registration = await navigator.serviceWorker.getRegistration();
+    
+    if (!registration) {
+      console.log("Registering new service worker...");
+      registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     }
 
-    // B. Service Worker Registration
-    let registration;
-    const existingRegistrations = await navigator.serviceWorker.getRegistrations();
-
-    if (existingRegistrations.length > 0) {
-      // Pehle se registered SW use karein
-      registration = existingRegistrations[0];
-    } else {
-      // Naya register karein
-      const swPath = '/firebase-messaging-sw.js';
-      registration = await navigator.serviceWorker.register(swPath);
-      console.log("✅ Service Worker Registered");
-    }
-
-    // Wait for SW to be active
     await navigator.serviceWorker.ready;
 
-    // C. Permission Request
+    // 3. Permission Request
     const permission = await Notification.requestPermission();
     if (permission !== "granted") {
-      console.error("❌ Notification permission denied by user");
+      console.error("❌ Notification permission denied");
       return null;
     }
 
-    // D. Get & Store FCM Token
+    // 4. Get FCM Token
     const vapidKey = import.meta.env.VITE_PUBLIC_VAPID_KEY;
     if (!vapidKey) {
-      console.error("❌ VAPID Key missing in .env file");
+      console.error("❌ VAPID Key missing in .env");
       return null;
     }
 
@@ -98,7 +99,7 @@ export const subscribeUser = async () => {
     });
 
     if (currentToken) {
-      console.log("✅ Device Token Generated:", currentToken);
+      console.log("✅ Device Token:", currentToken);
       localStorage.setItem('fcm_token', currentToken);
       return currentToken;
     }

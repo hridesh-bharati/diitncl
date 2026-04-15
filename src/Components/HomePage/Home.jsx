@@ -131,9 +131,9 @@ function Home() {
 
           <div className="mb-4"><Testimonials /></div>
           <div className="mb-4"><Team /></div>
-          <ScrollUp />
           <Footer />
         </Suspense>
+        <ScrollUp />
       </div>
     </div>
   );

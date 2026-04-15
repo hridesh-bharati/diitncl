@@ -33,6 +33,14 @@ import AdminCompletedExams from "./Students/Exams/admin/pages/AdminCompletedExam
 import AdminExamResultView from "./Students/Exams/admin/pages/AdminExamResultView";
 import AdminExamDetail from "./Students/Exams/admin/pages/AdminExamDetail.jsx";
 
+
+// Practice Test Imports
+import AdminPracticeUpload from "./Students/TestExamByAdminProvider/AdminPracticeUpload.jsx";
+import AdminPracticeResults from "./Students/TestExamByAdminProvider/AdminPracticeResults.jsx";
+import AdminPracticeLive from "./Students/TestExamByAdminProvider/AdminPracticeLive.jsx";
+import AdminPracticeAssign from "./Students/TestExamByAdminProvider/AdminPracticeAssign.jsx";
+import AdminPracticeQuestionsManage from "./Students/TestExamByAdminProvider/AdminPracticeQuestionsManage.jsx";
+
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -75,6 +83,15 @@ export default function AdminRoutes() {
             <Route path="questions" element={<AdminAddQuestions />} />
             <Route path="assign" element={<AdminAssignExam />} />
           </Route>
+        </Route>
+
+
+        <Route path="practice-tests">
+          <Route index element={<AdminPracticeUpload />} />
+          <Route path="questions" element={<AdminPracticeQuestionsManage />} />
+          <Route path="results" element={<AdminPracticeResults />} />
+          <Route path="live" element={<AdminPracticeLive />} />
+          <Route path="assign/:testId" element={<AdminPracticeAssign />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/admin" replace />} />

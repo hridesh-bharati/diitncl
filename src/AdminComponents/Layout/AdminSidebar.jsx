@@ -9,17 +9,19 @@ export default function AdminSidebar({ open, setOpen }) {
   const isAttendanceActive = location.pathname.includes("/admin/students/attendance");
   const isExamActive = location.pathname.includes("/admin/exams");
 
+  const isPracticeActive = location.pathname.includes("/admin/practice-tests");
+
   // Reusable NavRow using Bootstrap Utilities
   const NavRow = ({ item, isAccordion = false, isActive = false, target = "" }) => (
-    <div 
+    <div
       className={`d-flex align-items-center p-2 px-3 mx-2 my-1 rounded-3 cursor-pointer transition-all ${isActive ? "bg-primary-subtle text-primary fw-bold" : "text-dark hover-bg-light"}`}
-      data-bs-toggle={isAccordion ? "collapse" : ""} 
+      data-bs-toggle={isAccordion ? "collapse" : ""}
       data-bs-target={target}
       onClick={!isAccordion ? handleClose : undefined}
       style={{ textDecoration: 'none' }}
     >
-      <div 
-        className="d-flex align-items-center justify-content-center rounded-2 me-3 shadow-sm flex-shrink-0" 
+      <div
+        className="d-flex align-items-center justify-content-center rounded-2 me-3 shadow-sm flex-shrink-0"
         style={{ backgroundColor: item.color, width: "32px", height: "32px" }}
       >
         <i className={`bi ${item.icon} text-white fs-6`}></i>
@@ -35,9 +37,9 @@ export default function AdminSidebar({ open, setOpen }) {
     <>
       {open && <div className="offcanvas-backdrop fade show d-lg-none" onClick={handleClose} style={{ zIndex: 2040 }}></div>}
 
-      <aside className={`offcanvas offcanvas-end border-0 shadow-lg ${open ? "show" : ""}`} 
-             style={{ visibility: open ? "visible" : "hidden", zIndex: 2050, width: "300px" }}>
-        
+      <aside className={`offcanvas offcanvas-end border-0 shadow-lg ${open ? "show" : ""}`}
+        style={{ visibility: open ? "visible" : "hidden", zIndex: 2050, width: "300px" }}>
+
         <div className="d-flex flex-column h-100 bg-white shadow">
           {/* Header */}
           <div className="p-4 d-flex align-items-center justify-content-between border-bottom">
@@ -49,7 +51,7 @@ export default function AdminSidebar({ open, setOpen }) {
           </div>
 
           <div className="overflow-auto custom-scroll flex-grow-1 py-3">
-            
+
             {/* MANAGEMENT SECTION */}
             <div className="px-4 text-uppercase text-muted fw-bold mb-2" style={{ fontSize: '11px' }}>Management</div>
             <NavLink to="/admin" end className="text-decoration-none">
@@ -93,6 +95,53 @@ export default function AdminSidebar({ open, setOpen }) {
                 </div>
               </div>
             </div>
+
+            {/* PRACTICE TEST ACCORDION */}
+            <div className="accordion accordion-flush mt-1" id="practiceAcc">
+              <div className="accordion-item border-0 bg-transparent">
+                <NavRow
+                  item={{
+                    label: "Practice Tests",
+                    icon: "bi-ui-checks-grid",
+                    color: "#673AB7"
+                  }}
+                  isAccordion
+                  isActive={isPracticeActive}
+                  target="#practiceCollapse"
+                />
+
+                <div
+                  id="practiceCollapse"
+                  className={`collapse ${isPracticeActive ? "show" : ""}`}
+                  data-bs-parent="#practiceAcc"
+                >
+                  <div
+                    id="practiceCollapse"
+                    className={`collapse ${isPracticeActive ? "show" : ""}`}
+                    data-bs-parent="#practiceAcc"
+                  >
+                    <div className="ms-5 border-start ps-3 py-1 mt-1 d-flex flex-column gap-1">
+                      {/* 1. Paper List & Management */}
+                      <NavLink to="/admin/practice-tests" end className="sublink-item text-decoration-none">
+                        <i className="bi bi-file-earmark-plus me-2"></i> Manage Papers
+                      </NavLink>
+
+                      {/* 2. Live Status */}
+                      <NavLink to="/admin/practice-tests/live" className="sublink-item text-decoration-none">
+                        <i className="bi bi-broadcast me-2"></i> Live Monitor
+                      </NavLink>
+
+                      {/* 3. Results */}
+                      <NavLink to="/admin/practice-tests/results" className="sublink-item text-decoration-none">
+                        <i className="bi bi-trophy me-2"></i> View Results
+                      </NavLink>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
 
             {/* MARKETING SECTION */}
             <div className="px-4 text-uppercase text-muted fw-bold mt-4 mb-2" style={{ fontSize: '11px' }}>Marketing</div>
