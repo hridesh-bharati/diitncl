@@ -123,17 +123,17 @@ export default function AdminSidebar({ open, setOpen }) {
                     <div className="ms-5 border-start ps-3 py-1 mt-1 d-flex flex-column gap-1">
                       {/* 1. Paper List & Management */}
                       <NavLink to="/admin/practice-tests" end className="sublink-item text-decoration-none">
-                        <i className="bi bi-file-earmark-plus me-2"></i> Manage Papers
+                        <i className="bi bi-file-earmark-plus me-2"></i> Upload Paper & Assign 
                       </NavLink>
 
                       {/* 2. Live Status */}
                       <NavLink to="/admin/practice-tests/live" className="sublink-item text-decoration-none">
-                        <i className="bi bi-broadcast me-2"></i> Live Monitor
+                        <i className="bi bi-broadcast me-2"></i> Live Testing
                       </NavLink>
 
                       {/* 3. Results */}
                       <NavLink to="/admin/practice-tests/results" className="sublink-item text-decoration-none">
-                        <i className="bi bi-trophy me-2"></i> View Results
+                        <i className="bi bi-trophy me-2"></i> Test Results
                       </NavLink>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import html2pdf from "html2pdf.js";
 
 export default function PracticeMyResults() {
   const [results, setResults] = useState([]);
@@ -32,6 +33,18 @@ export default function PracticeMyResults() {
     return () => unsubAuth();
   }, []);
 
+  const exportPDF = () => {
+    const element = document.getElementById("student-pdf-view");
+    const opt = {
+      margin: 10,
+      filename: `Result_${selectedResult.testTitle}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
   const filtered = useMemo(() => results.filter((r) => 
     r.testTitle?.toLowerCase().includes(searchTerm.toLowerCase())
   ), [results, searchTerm]);
@@ -40,90 +53,76 @@ export default function PracticeMyResults() {
 
   return (
     <div className="container py-4 bg-light min-vh-100">
-      {/* Result List Table */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <div className="card-body p-4">
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            <h5 className="fw-bold mb-0 text-dark">Practice Records</h5>
-            <input type="text" className="form-control form-control-sm rounded-pill px-3 border-0 bg-light w-auto shadow-none" placeholder="Filter by name..." onChange={(e) => setSearchTerm(e.target.value)} />
+            <h5 className="fw-bold mb-0 text-dark">My Results</h5>
+            <input type="text" className="form-control form-control-sm rounded-pill px-3 border-0 bg-light w-auto shadow-none" placeholder="Filter..." onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
 
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
-              <thead className="bg-light">
-                <tr className="small text-muted">
-                  <th>PAPER NAME</th>
-                  <th className="text-center">MARKS</th>
+              <thead className="bg-light text-muted small">
+                <tr>
+                  <th>DATE & PAPER</th>
+                  <th className="text-center">SCORE</th>
                   <th className="text-center">RESULT</th>
-                  <th className="text-end px-3">ACTION</th>
+                  <th className="text-end">ACTION</th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((r) => {
-                  const percent = parseFloat(r.percentage || 0);
-                  const isPass = percent >= 40;
-                  return (
-                    <tr key={r.id}>
-                      <td className="fw-bold small">{r.testTitle}</td>
-                      <td className="text-center fw-bold text-primary">{r.score}/{r.totalQuestions}</td>
-                      <td className="text-center">
-                        <span className={`badge rounded-pill ${isPass ? 'bg-success' : 'bg-danger'}`} style={{fontSize:'10px'}}>
-                          {isPass ? 'PASSED' : 'FAILED'}
-                        </span>
-                      </td>
-                      <td className="text-end px-3">
-                        <button className="btn btn-dark btn-sm rounded-pill px-3 fw-bold" style={{fontSize:'11px'}} onClick={() => setSelectedResult(r)}>Check Review</button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {filtered.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      <div className="fw-bold small">{r.testTitle}</div>
+                      <div className="text-muted" style={{fontSize: '10px'}}>{r.submittedAt?.toDate()?.toLocaleDateString()}</div>
+                    </td>
+                    <td className="text-center fw-bold text-primary">{r.score}/{r.totalQuestions}</td>
+                    <td className="text-center">
+                      <span className={`badge rounded-pill ${parseFloat(r.percentage) >= 40 ? 'bg-success' : 'bg-danger'}`} style={{fontSize:'10px'}}>
+                        {parseFloat(r.percentage) >= 40 ? 'PASSED' : 'FAILED'} ({r.percentage}%)
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <button className="btn btn-dark btn-sm rounded-pill px-3 fw-bold shadow-sm" onClick={() => setSelectedResult(r)}>Review</button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      {/* --- Detailed Review Modal --- */}
       {selectedResult && (
         <div className="modal show d-block" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
           <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div className="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
               <div className="modal-header border-0 bg-white pt-4 px-4 pb-2">
-                <h5 className="fw-bold mb-0">Question Review</h5>
-                <button type="button" className="btn-close" onClick={() => setSelectedResult(null)}></button>
+                <h5 className="fw-bold mb-0">Detailed Review</h5>
+                <div className="ms-auto d-flex gap-2">
+                    <button className="btn btn-primary btn-sm rounded-pill px-3 fw-bold" onClick={exportPDF}>Export PDF</button>
+                    <button type="button" className="btn-close shadow-none" onClick={() => setSelectedResult(null)}></button>
+                </div>
               </div>
-              <div className="modal-body p-4 bg-light">
+              <div className="modal-body p-4 bg-light" id="student-pdf-view">
+                <div className="p-3 mb-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
+                    <h5 className="fw-bold mb-1">{selectedResult.testTitle}</h5>
+                    <p className="small text-muted mb-0">Score: {selectedResult.score}/{selectedResult.totalQuestions} | Percentage: {selectedResult.percentage}%</p>
+                    <p className="small text-muted mb-0">Date: {selectedResult.submittedAt?.toDate()?.toLocaleString()}</p>
+                </div>
                 {selectedResult.fullDetails?.map((item, idx) => (
                   <div key={idx} className="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden">
                     <div className="card-body p-3">
-                      <div className="fw-bold small mb-3">
-                        <span className="text-primary me-2">Q{idx + 1}.</span> {item.question}
-                      </div>
+                      <div className="fw-bold small mb-2 text-dark">Q{idx + 1}. {item.question}</div>
                       <div className="row g-2">
                         {item.options.map((opt, i) => {
                           const isCorrect = i === item.correctOption;
-                          const isStudentChoice = i === item.selectedOption;
-                          
-                          let cardClass = "bg-white border-light-subtle text-muted";
-                          let badge = null;
-
-                          if (isCorrect) {
-                            cardClass = "bg-success-subtle border-success text-success fw-bold shadow-sm";
-                          }
-                          if (isStudentChoice && !isCorrect) {
-                            cardClass = "bg-danger-subtle border-danger text-danger fw-bold";
-                          }
-
-                          if (isStudentChoice) {
-                            badge = <span className="ms-auto badge bg-dark text-white rounded-pill" style={{fontSize:'8px'}}>YOUR CHOICE</span>;
-                          }
-
+                          const isSelected = i === item.selectedOption;
                           return (
                             <div className="col-12" key={i}>
-                              <div className={`p-2 px-3 rounded-3 small border d-flex align-items-center ${cardClass}`}>
-                                <span className="me-2">{String.fromCharCode(65 + i)}.</span> {opt}
-                                {badge}
-                                {isCorrect && isStudentChoice && <i className="bi bi-patch-check-fill ms-2"></i>}
+                              <div className={`p-2 px-3 rounded-3 small border d-flex align-items-center ${isCorrect ? 'bg-success-subtle border-success text-success fw-bold' : isSelected ? 'bg-danger-subtle border-danger text-danger' : 'bg-white text-muted'}`}>
+                                {opt} {isSelected && <span className="ms-auto badge bg-dark rounded-pill" style={{fontSize:'8px'}}>YOUR CHOICE</span>}
                               </div>
                             </div>
                           );
@@ -132,9 +131,6 @@ export default function PracticeMyResults() {
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="modal-footer border-0 p-3 bg-white">
-                <button className="btn btn-secondary w-100 rounded-pill fw-bold" onClick={() => setSelectedResult(null)}>Close Review</button>
               </div>
             </div>
           </div>

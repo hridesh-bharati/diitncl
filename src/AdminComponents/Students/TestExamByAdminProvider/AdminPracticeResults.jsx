@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, deleteDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
+import html2pdf from "html2pdf.js";
 
-export default function PracticeMyResults() {
+export default function AdminPracticeResults() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,16 +14,18 @@ export default function PracticeMyResults() {
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const email = user.email.toLowerCase().trim();
         const q = query(
           collection(db, "practiceResults"), 
-          where("studentEmail", "==", email),
           where("status", "==", "Completed")
         );
 
         const unsubSnap = onSnapshot(q, (snap) => {
           const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          // Sorting: Latest results at top
           setResults(list.sort((a, b) => (b.submittedAt?.seconds || 0) - (a.submittedAt?.seconds || 0)));
+          setLoading(false);
+        }, (error) => {
+          console.error("Firestore Error:", error);
           setLoading(false);
         });
         return () => unsubSnap();
@@ -32,8 +36,33 @@ export default function PracticeMyResults() {
     return () => unsubAuth();
   }, []);
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this result?")) {
+      try {
+        await deleteDoc(doc(db, "practiceResults", id));
+        toast.success("Result deleted successfully");
+      } catch (error) {
+        toast.error("Delete failed");
+      }
+    }
+  };
+
+  const exportToPDF = () => {
+    const element = document.getElementById("admin-pdf-content");
+    const opt = {
+      margin: 10,
+      filename: `${selectedResult.studentName || 'Student'}_Result.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
   const filtered = useMemo(() => results.filter((r) => 
-    r.testTitle?.toLowerCase().includes(searchTerm.toLowerCase())
+    r.testTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.studentEmail?.toLowerCase().includes(searchTerm.toLowerCase())
   ), [results, searchTerm]);
 
   if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary border-4" /></div>;
@@ -41,82 +70,68 @@ export default function PracticeMyResults() {
   return (
     <div className="container py-3 bg-light min-vh-100">
       <div className="d-flex justify-content-between align-items-center mb-4 px-2">
-        <h5 className="fw-bold mb-0 text-dark">My Progress</h5>
+        <h5 className="fw-bold mb-0">Students Examination Records</h5>
         <input type="text" className="form-control form-control-sm rounded-pill px-3 border-0 shadow-sm w-auto" placeholder="Search..." onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
       <div className="row g-3">
         {filtered.map((r) => {
           const percent = parseFloat(r.percentage || 0);
-          const isPass = percent >= 40;
           return (
             <div className="col-12 col-md-6" key={r.id}>
-              <div className="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+              <div className="card border-0 shadow-sm rounded-4 h-100">
                 <div className="card-body p-3">
-                  <div className="d-flex justify-content-between align-items-start mb-2">
-                    <div className="overflow-hidden pe-2">
-                      <div className="fw-bold text-dark text-truncate">{r.testTitle}</div>
-                      <small className="text-muted">{r.submittedAt?.toDate()?.toLocaleDateString()}</small>
+                  <div className="d-flex justify-content-between">
+                    <div className="overflow-hidden">
+                      <div className="fw-bold text-truncate">{r.testTitle}</div>
+                      <div className="text-primary small fw-bold">{r.studentName || "No Name"}</div>
+                      <div className="text-muted small" style={{fontSize:'11px'}}>{r.studentEmail}</div>
                     </div>
-                    {/* 🔥 Student Card Par Score aur Percent */}
-                    <div className="text-end">
-                      <div className={`h5 fw-bold mb-0 ${isPass ? 'text-success' : 'text-danger'}`}>
-                        {r.score}/{r.totalQuestions}
-                      </div>
-                      <div className="fw-bold text-muted" style={{fontSize: '11px'}}>{percent}%</div>
-                    </div>
+                    <button className="btn btn-outline-danger btn-sm border-0" onClick={() => handleDelete(r.id)}>
+                      <i className="bi bi-trash3-fill"></i>
+                    </button>
                   </div>
-
-                  <div className="progress mb-3" style={{ height: '5px' }}>
-                    <div className={`progress-bar ${isPass ? 'bg-success' : 'bg-danger'}`} style={{ width: `${percent}%` }}></div>
+                  <div className="d-flex justify-content-between mt-3 small fw-bold">
+                    <span>Score: {r.score}/{r.totalQuestions}</span>
+                    <span className={percent >= 40 ? 'text-success' : 'text-danger'}>{percent}%</span>
                   </div>
-
-                  <button className="btn btn-dark w-100 rounded-pill py-2 fw-bold btn-sm shadow-sm" onClick={() => setSelectedResult(r)}>
-                    Review Mistakes
-                  </button>
+                  <button className="btn btn-dark w-100 rounded-pill mt-2 btn-sm fw-bold shadow-sm" onClick={() => setSelectedResult(r)}>View Full Review</button>
                 </div>
               </div>
             </div>
           );
         })}
-        {filtered.length === 0 && <div className="text-center py-5 text-muted">No completed tests found.</div>}
       </div>
 
-      {/* --- Detailed Review Modal (Wahi rahega) --- */}
       {selectedResult && (
         <div className="modal show d-block" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)' }}>
           <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div className="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div className="modal-content border-0 rounded-4 shadow-lg">
               <div className="modal-header border-0 bg-white pt-4 px-4 pb-2">
-                <h6 className="fw-bold mb-0">Result Review</h6>
-                <button type="button" className="btn-close shadow-none" onClick={() => setSelectedResult(null)}></button>
+                <h6 className="fw-bold mb-0">Review: {selectedResult.studentName}</h6>
+                <div className="ms-auto d-flex gap-2">
+                    <button className="btn btn-primary btn-sm rounded-pill px-3" onClick={exportToPDF}>Export PDF</button>
+                    <button type="button" className="btn-close" onClick={() => setSelectedResult(null)}></button>
+                </div>
               </div>
-              <div className="modal-body p-4 bg-light">
+              <div className="modal-body p-4 bg-light" id="admin-pdf-content">
+                <div className="p-3 mb-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
+                    <h5 className="fw-bold mb-1">{selectedResult.testTitle}</h5>
+                    <p className="small text-muted mb-0">Student: {selectedResult.studentName} | Email: {selectedResult.studentEmail}</p>
+                    <p className="small text-muted mb-0">Score: {selectedResult.score}/{selectedResult.totalQuestions} ({selectedResult.percentage}%)</p>
+                </div>
                 {selectedResult.fullDetails?.map((item, idx) => (
-                  <div key={idx} className="card border-0 shadow-sm rounded-4 mb-3">
-                    <div className="card-body p-3">
-                      <div className="fw-bold small mb-3">
-                        <span className="text-primary me-2">Q{idx + 1}.</span> {item.question}
-                      </div>
-                      <div className="row g-2">
-                        {item.options.map((opt, i) => {
-                          const isCorrect = i === item.correctOption;
-                          const isStudentChoice = i === item.selectedOption;
-                          let cardClass = "bg-white border-light-subtle text-muted opacity-75";
-                          if (isCorrect) cardClass = "bg-success-subtle border-success text-success fw-bold";
-                          if (isStudentChoice && !isCorrect) cardClass = "bg-danger-subtle border-danger text-danger fw-bold";
-                          
-                          return (
-                            <div className="col-12" key={i}>
-                              <div className={`p-2 px-3 rounded-3 small border d-flex align-items-center ${cardClass}`}>
-                                {opt}
-                                {isStudentChoice && <span className="ms-auto badge bg-dark rounded-pill" style={{fontSize:'8px'}}>YOU TICKED</span>}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                  <div key={idx} className="card border-0 shadow-sm rounded-4 mb-3 p-3">
+                    <div className="fw-bold small mb-2 text-dark">Q{idx + 1}. {item.question}</div>
+                    {item.options.map((opt, i) => {
+                      const isCorrect = i === item.correctOption;
+                      const isSelected = i === item.selectedOption;
+                      return (
+                        <div key={i} className={`p-2 rounded-3 small border mb-1 ${isCorrect ? 'bg-success-subtle border-success text-success fw-bold' : isSelected ? 'bg-danger-subtle border-danger text-danger' : 'bg-white text-muted'}`}>
+                          {opt} {isSelected && <span className="float-end badge bg-dark text-white rounded-pill">CHOICE</span>}
+                        </div>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
