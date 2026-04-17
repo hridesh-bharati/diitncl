@@ -1,27 +1,24 @@
-// src\StudentComponents\Layout\StudentLayout.jsx
 import React, { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { auth, db } from "../../firebase/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, onSnapshot } from "firebase/firestore"; // Import onSnapshot
 import StudentSidebar from "./StudentSidebar";
-import "./StudentLayout.css";
 
 export default function StudentLayout() {
   const [open, setOpen] = useState(false);
   const [userPic, setUserPic] = useState(null);
   const [userName, setUserName] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0); // Notification count state
 
   useEffect(() => {
-    // Auth state listener: यह पक्का करता है कि यूजर लोड होते ही डेटा फेच हो
     const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
       if (user?.email) {
         const emailId = user.email.trim().toLowerCase();
-        
+
+        // 1. Fetch User Profile (One-time)
         try {
-          // ईमेल को ही ID मानकर सीधा डॉक्यूमेंट फेच करना (Sasta और Fast)
           const docRef = doc(db, "admissions", emailId);
           const snap = await getDoc(docRef);
-
           if (snap.exists()) {
             const data = snap.data();
             setUserPic(data.photoUrl);
@@ -30,6 +27,20 @@ export default function StudentLayout() {
         } catch (err) {
           console.error("Layout Fetch Error:", err);
         }
+
+        // 2. Real-time Notifications Listener (FB Jaisa)
+        // Hum 'notifications' collection check kar rahe hain jaha student ki email match ho aur isRead false ho
+        const q = query(
+          collection(db, "notifications"),
+          where("userId", "==", emailId),
+          where("isRead", "==", false)
+        );
+
+        const unsubscribeNotifications = onSnapshot(q, (snapshot) => {
+          setUnreadCount(snapshot.size); // Jitne documents milenge, wahi count hoga
+        });
+
+        return () => unsubscribeNotifications();
       }
     });
 
@@ -37,39 +48,62 @@ export default function StudentLayout() {
   }, []);
 
   return (
-    <div className="student-container">
-      {/* Sidebar - Features kept intact */}
+    <div className="d-flex vh-100 overflow-hidden bg-light">
       <StudentSidebar open={open} setOpen={setOpen} />
 
-      <div className="student-main-wrapper">
-        <header className="student-header border-bottom shadow-sm bg-white py-2">
-          <div className="container-fluid d-flex align-items-center justify-content-between">
-            
-            <div className="d-flex align-items-center">
-              <h5 className="mb-0 fw-bold text-dark d-none d-md-block">Learning Portal</h5>
-              <Link to={"/student/dashboard"} className="ms-2">
-                <i className="bi bi-house-fill fs-2 text-secondary"></i>
-              </Link>
+      <div className="d-flex flex-column flex-grow-1 min-vw-0">
+        <header className="bg-white border-bottom shadow-sm px-3 py-2" style={{ minHeight: '70px', zIndex: 1000 }}>
+          <div className="h-100 d-flex align-items-center justify-content-between">
+
+            <div className="d-flex align-items-center gap-2">
+              <button className="btn btn-light d-lg-none rounded-circle border shadow-sm" onClick={() => setOpen(true)}>
+                <i className="bi bi-list fs-4"></i>
+              </button>
+              <div className="ms-1 ms-md-0">
+                <h5 className="mb-0 fw-bold text-dark d-none d-md-block">Learning Portal</h5>
+              </div>
             </div>
 
-            <div className="user-profile-section">
-              <button className="btn p-0 m-0 border-0 shadow-none" onClick={() => setOpen(true)}>
+            <div className="d-flex align-items-center gap-2 gap-md-3">
+              {/* --- DYNAMIC NOTIFICATION BADGE --- */}
+              <Link to="/student/dashboard" className="btn btn-light rounded-circle border-0 shadow-none">
+                <i className="bi bi-house-door-fill text-secondary fs-5"></i>
+              </Link>
+
+              <Link to="/student/notifications" className="btn btn-light rounded-circle border-0 shadow-none position-relative">
+                <i className="bi bi-bell-fill text-secondary fs-5"></i>
+                {unreadCount > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '10px' }}>
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+
+
+
+              <div
+                className="d-flex align-items-center p-1 pe-md-3 rounded-pill border bg-white shadow-sm"
+                style={{ cursor: 'pointer' }}
+                onClick={() => setOpen(true)}
+              >
                 <img
                   src={userPic || `https://ui-avatars.com/api/?name=${userName || 'User'}&background=4361ee&color=fff&bold=true`}
                   alt="profile"
                   className="rounded-circle shadow-sm border border-2 border-white"
-                  style={{ width: 40, height: 40, objectFit: "cover" }}
-                  onError={(e) => (e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png")}
+                  style={{ width: 35, height: 35, objectFit: "cover" }}
                 />
-              </button>
+                <span className="ms-2 d-none d-md-inline fw-bold small text-muted">
+                  Hi, {userName?.split(' ')[0] || 'Student'}
+                </span>
+              </div>
             </div>
-
           </div>
         </header>
 
-        {/* Content Area */}
-        <main className="student-content-body p-0">
-          <Outlet />
+        <main className="flex-grow-1 overflow-auto bg-light p-md-4">
+          <div className="container-fluid p-0 animate__animated animate__fadeIn">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

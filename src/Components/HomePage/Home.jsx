@@ -92,7 +92,7 @@ function Home() {
         </div>
 
         {/* MAIN FEED - Heavy components wrapped in Suspense */}
-        <Suspense fallback={<div className="text-center p-5"><div className="spinner-border text-primary"></div></div>}>
+        <Suspense fallback={null}>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2">
             <Features />
           </div>
@@ -131,10 +131,11 @@ function Home() {
 
           <div className="mb-4"><Testimonials /></div>
           <div className="mb-4"><Team /></div>
-          <Footer />
         </Suspense>
-        <ScrollUp />
+
       </div>
+      <Footer />
+      <ScrollUp />
     </div>
   );
 }

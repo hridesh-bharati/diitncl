@@ -51,9 +51,9 @@ const AdmittedList = () => {
       if (bCode === BRANCH_MAP.East) counts.east++;
 
       const matchesBranch = branchFilter === "all" || bCode === BRANCH_MAP[branchFilter];
-      const matchesSearch = 
-        (s.name || "").toLowerCase().includes(search) || 
-        (s.regNo || "").toLowerCase().includes(search) || 
+      const matchesSearch =
+        (s.name || "").toLowerCase().includes(search) ||
+        (s.regNo || "").toLowerCase().includes(search) ||
         (s.phone || "").includes(search);
 
       return matchesBranch && matchesSearch;
@@ -66,15 +66,42 @@ const AdmittedList = () => {
 
   return (
     <div className="container-fluid py-4">
+      <div className="d-flex flex-column flex-md-row gap-2 mb-4">
+        {/* Search - Grows to fill space */}
+        <input
+          type="text"
+          className="form-control shadow-sm border-0 bg-light"
+          placeholder="Search name, phone..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        {/* Filter Group - DRY using Map */}
+        <div className="d-flex gap-1">
+          {['Main', 'East'].map((b) => (
+            <button
+              key={b}
+              className={`btn btn-sm flex-fill px-3 border-0 shadow-sm ${branchFilter === b ? 'btn-primary' : 'btn-white bg-white text-primary'}`}
+              onClick={() => setBranchFilter(branchFilter === b ? 'all' : b)}
+            >
+              {b}({stats[b.toLowerCase()]})
+            </button>
+          ))}
+
+          <button className="btn btn-sm btn-warning shadow-sm border-0 px-3" disabled>
+            Total({students.length})
+          </button>
+        </div>
+      </div>
       {/* ... (apka baki UI same rahega) ... */}
       <div className="row g-3">
         {filtered.map(s => (
           <div key={s.id} className="col-12 col-sm-6 col-lg-3">
             {/* 3. Yahan functions pass karein */}
-            <StudentCard 
-                student={s} 
-                onDelete={handleDelete} 
-                onSave={handleUpdate} 
+            <StudentCard
+              student={s}
+              onDelete={handleDelete}
+              onSave={handleUpdate}
             />
           </div>
         ))}

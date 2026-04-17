@@ -38,7 +38,11 @@ export default function AdminSidebar({ open, setOpen }) {
       {open && <div className="offcanvas-backdrop fade show d-lg-none" onClick={handleClose} style={{ zIndex: 2040 }}></div>}
 
       <aside className={`offcanvas offcanvas-end border-0 shadow-lg ${open ? "show" : ""}`}
-        style={{ visibility: open ? "visible" : "hidden", zIndex: 2050, width: "300px" }}>
+        style={{
+          visibility: open ? "visible" : "hidden",
+          zIndex: 2050,
+          width: window.innerWidth < 576 ? "100%" : "300px"
+        }}>
 
         <div className="d-flex flex-column h-100 bg-white shadow">
           {/* Header */}
@@ -123,7 +127,7 @@ export default function AdminSidebar({ open, setOpen }) {
                     <div className="ms-5 border-start ps-3 py-1 mt-1 d-flex flex-column gap-1">
                       {/* 1. Paper List & Management */}
                       <NavLink to="/admin/practice-tests" end className="sublink-item text-decoration-none">
-                        <i className="bi bi-file-earmark-plus me-2"></i> Upload Paper & Assign 
+                        <i className="bi bi-file-earmark-plus me-2"></i> Upload Paper & Assign
                       </NavLink>
 
                       {/* 2. Live Status */}
@@ -167,8 +171,8 @@ export default function AdminSidebar({ open, setOpen }) {
           </div>
 
           {/* Footer Card */}
-          <div className="p-3 border-top bg-light">
-            <NavLink to="/admin/profile" className="d-flex align-items-center p-2 bg-white rounded-3 border text-decoration-none shadow-sm shadow-hover">
+          <div className="p-3 border-top">
+            <NavLink to="/admin/profile" className="d-flex align-items-center p-2 text-decoration-none shadow-sm shadow-hover">
               <div className="bg-danger text-white rounded-2 d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
                 <i className="bi bi-person-fill fs-5"></i>
               </div>

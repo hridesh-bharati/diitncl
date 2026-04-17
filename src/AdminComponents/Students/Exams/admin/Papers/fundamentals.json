@@ -1,0 +1,569 @@
+[
+  {
+    "question": "Which device is used to point and click on the screen?",
+    "optionA": "Keyboard",
+    "optionB": "Mouse",
+    "optionC": "Printer",
+    "optionD": "Scanner",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to move the cursor to the next line?",
+    "optionA": "Shift",
+    "optionB": "Esc",
+    "optionC": "Enter",
+    "optionD": "Ctrl",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of CPU?",
+    "optionA": "Central Process Unit",
+    "optionB": "Central Processing Unit",
+    "optionC": "Computer Processing Unit",
+    "optionD": "Control Program Unit",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which device is used to print documents on paper?",
+    "optionA": "Monitor",
+    "optionB": "Mouse",
+    "optionC": "Printer",
+    "optionD": "Keyboard",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is temporary memory?",
+    "optionA": "ROM",
+    "optionB": "Hard Disk",
+    "optionC": "RAM",
+    "optionD": "DVD",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to delete text to the right of cursor?",
+    "optionA": "Backspace",
+    "optionB": "Delete",
+    "optionC": "Insert",
+    "optionD": "Tab",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which software is used for typing documents?",
+    "optionA": "MS Word",
+    "optionB": "Paint",
+    "optionC": "Calculator",
+    "optionD": "Chrome",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of UPS?",
+    "optionA": "Universal Power Supply",
+    "optionB": "Uninterruptible Power Supply",
+    "optionC": "United Power Source",
+    "optionD": "User Power System",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used for capital letters continuously?",
+    "optionA": "Shift",
+    "optionB": "Ctrl",
+    "optionC": "Caps Lock",
+    "optionD": "Tab",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which device displays output on screen?",
+    "optionA": "Monitor",
+    "optionB": "Keyboard",
+    "optionC": "Mouse",
+    "optionD": "CPU",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to give space between words?",
+    "optionA": "Enter",
+    "optionB": "Spacebar",
+    "optionC": "Shift",
+    "optionD": "Tab",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which storage device can store large amount of data?",
+    "optionA": "Hard Disk",
+    "optionB": "RAM",
+    "optionC": "Cache",
+    "optionD": "Register",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of WWW?",
+    "optionA": "World Wide Web",
+    "optionB": "World Web Window",
+    "optionC": "Wide World Web",
+    "optionD": "Web World Wide",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to move to next tab/field?",
+    "optionA": "Shift",
+    "optionB": "Tab",
+    "optionC": "Esc",
+    "optionD": "Alt",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which device is used to scan documents?",
+    "optionA": "Printer",
+    "optionB": "Scanner",
+    "optionC": "Speaker",
+    "optionD": "Plotter",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which software is used for calculations?",
+    "optionA": "MS Excel",
+    "optionB": "MS Paint",
+    "optionC": "Notepad",
+    "optionD": "WordPad",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used with another key for shortcut commands?",
+    "optionA": "Ctrl",
+    "optionB": "Enter",
+    "optionC": "Space",
+    "optionD": "Caps Lock",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which bar shows current date and time in Windows?",
+    "optionA": "Menu Bar",
+    "optionB": "Taskbar",
+    "optionC": "Title Bar",
+    "optionD": "Status Bar",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which button is used to close a window?",
+    "optionA": "Minimize",
+    "optionB": "Maximize",
+    "optionC": "Close (X)",
+    "optionD": "Restore",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of USB?",
+    "optionA": "Universal Serial Bus",
+    "optionB": "United Service Bus",
+    "optionC": "Universal System Board",
+    "optionD": "User Serial Board",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which device is used to hear sound from computer?",
+    "optionA": "Monitor",
+    "optionB": "Speaker",
+    "optionC": "Scanner",
+    "optionD": "Printer",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used for one-time capital letter?",
+    "optionA": "Shift",
+    "optionB": "Tab",
+    "optionC": "Ctrl",
+    "optionD": "Alt",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which program is used for drawing pictures?",
+    "optionA": "MS Word",
+    "optionB": "Paint",
+    "optionC": "Excel",
+    "optionD": "Chrome",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of PDF?",
+    "optionA": "Portable Document Format",
+    "optionB": "Public Data File",
+    "optionC": "Print Document File",
+    "optionD": "Personal Data Format",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to cancel an operation?",
+    "optionA": "Esc",
+    "optionB": "Enter",
+    "optionC": "Tab",
+    "optionD": "Shift",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is permanent memory?",
+    "optionA": "RAM",
+    "optionB": "ROM",
+    "optionC": "Cache",
+    "optionD": "Register",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which browser is developed by Google?",
+    "optionA": "Firefox",
+    "optionB": "Safari",
+    "optionC": "Chrome",
+    "optionD": "Opera",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to insert a new line in paragraph?",
+    "optionA": "Ctrl",
+    "optionB": "Enter",
+    "optionC": "Shift",
+    "optionD": "Alt",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which is an input device?",
+    "optionA": "Monitor",
+    "optionB": "Printer",
+    "optionC": "Keyboard",
+    "optionD": "Speaker",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of LAN?",
+    "optionA": "Local Area Network",
+    "optionB": "Long Area Network",
+    "optionC": "Large Area Network",
+    "optionD": "Line Area Network",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which software is used to make presentations?",
+    "optionA": "MS Word",
+    "optionB": "MS Excel",
+    "optionC": "PowerPoint",
+    "optionD": "Notepad",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to erase left side character?",
+    "optionA": "Delete",
+    "optionB": "Backspace",
+    "optionC": "Insert",
+    "optionD": "Home",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which symbol is used in email address?",
+    "optionA": "#",
+    "optionB": "@",
+    "optionC": "&",
+    "optionD": "*",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which menu is used to save file?",
+    "optionA": "File",
+    "optionB": "View",
+    "optionC": "Insert",
+    "optionD": "Help",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key moves cursor to beginning of line?",
+    "optionA": "End",
+    "optionB": "Home",
+    "optionC": "PgDn",
+    "optionD": "Insert",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key moves cursor to end of line?",
+    "optionA": "Home",
+    "optionB": "End",
+    "optionC": "Tab",
+    "optionD": "Ctrl",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which is an output device?",
+    "optionA": "Keyboard",
+    "optionB": "Mouse",
+    "optionC": "Monitor",
+    "optionD": "Scanner",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of WAN?",
+    "optionA": "Wide Area Network",
+    "optionB": "Wire Area Network",
+    "optionC": "Web Area Network",
+    "optionD": "World Access Network",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which application is used for internet browsing?",
+    "optionA": "Browser",
+    "optionB": "Paint",
+    "optionC": "Calculator",
+    "optionD": "Excel",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination copies selected text?",
+    "optionA": "Ctrl + X",
+    "optionB": "Ctrl + C",
+    "optionC": "Ctrl + V",
+    "optionD": "Ctrl + Z",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination pastes copied text?",
+    "optionA": "Ctrl + C",
+    "optionB": "Ctrl + X",
+    "optionC": "Ctrl + V",
+    "optionD": "Ctrl + A",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination selects all items?",
+    "optionA": "Ctrl + A",
+    "optionB": "Ctrl + S",
+    "optionC": "Ctrl + P",
+    "optionD": "Ctrl + D",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination saves a file?",
+    "optionA": "Ctrl + O",
+    "optionB": "Ctrl + S",
+    "optionC": "Ctrl + N",
+    "optionD": "Ctrl + P",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination opens print dialog?",
+    "optionA": "Ctrl + P",
+    "optionB": "Ctrl + H",
+    "optionC": "Ctrl + K",
+    "optionD": "Ctrl + B",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination undoes last action?",
+    "optionA": "Ctrl + Y",
+    "optionB": "Ctrl + Z",
+    "optionC": "Ctrl + U",
+    "optionD": "Ctrl + R",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination redoes last action?",
+    "optionA": "Ctrl + Z",
+    "optionB": "Ctrl + X",
+    "optionC": "Ctrl + Y",
+    "optionD": "Ctrl + C",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which software is used to watch videos?",
+    "optionA": "Media Player",
+    "optionB": "Word",
+    "optionC": "Excel",
+    "optionD": "Paint",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key opens Start menu in Windows?",
+    "optionA": "Windows Key",
+    "optionB": "Shift",
+    "optionC": "Tab",
+    "optionD": "Alt",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which folder stores deleted files temporarily?",
+    "optionA": "Documents",
+    "optionB": "Recycle Bin",
+    "optionC": "Downloads",
+    "optionD": "Desktop",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which file type is an image file?",
+    "optionA": ".jpg",
+    "optionB": ".docx",
+    "optionC": ".xlsx",
+    "optionD": ".pptx",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which file type is a text file?",
+    "optionA": ".mp3",
+    "optionB": ".txt",
+    "optionC": ".jpg",
+    "optionD": ".png",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which device is used for video calling?",
+    "optionA": "Webcam",
+    "optionB": "Printer",
+    "optionC": "Speaker",
+    "optionD": "Scanner",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to refresh a webpage?",
+    "optionA": "F2",
+    "optionB": "F5",
+    "optionC": "F7",
+    "optionD": "F9",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to rename selected file?",
+    "optionA": "F1",
+    "optionB": "F2",
+    "optionC": "F3",
+    "optionD": "F4",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used for help in many programs?",
+    "optionA": "F1",
+    "optionB": "F5",
+    "optionC": "F8",
+    "optionD": "F10",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which symbol is used for multiplication in Excel?",
+    "optionA": "x",
+    "optionB": "*",
+    "optionC": "+",
+    "optionD": "/",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which symbol is used for division in Excel?",
+    "optionA": "/",
+    "optionB": "*",
+    "optionC": "#",
+    "optionD": "&",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key combination cuts selected text?",
+    "optionA": "Ctrl + X",
+    "optionB": "Ctrl + C",
+    "optionC": "Ctrl + V",
+    "optionD": "Ctrl + S",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which company developed Windows?",
+    "optionA": "Apple",
+    "optionB": "Google",
+    "optionC": "Microsoft",
+    "optionD": "Intel",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which company developed Android?",
+    "optionA": "Google",
+    "optionB": "Meta",
+    "optionC": "Intel",
+    "optionD": "IBM",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which device connects computer to internet wirelessly?",
+    "optionA": "Router",
+    "optionB": "Printer",
+    "optionC": "Scanner",
+    "optionD": "Speaker",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to move one page up?",
+    "optionA": "PgUp",
+    "optionB": "PgDn",
+    "optionC": "End",
+    "optionD": "Home",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which key is used to move one page down?",
+    "optionA": "PgUp",
+    "optionB": "PgDn",
+    "optionC": "Home",
+    "optionD": "Esc",
+    "correctAnswer": "B",
+    "marks": 1
+  }
+]
