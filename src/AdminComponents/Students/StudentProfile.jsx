@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc, deleteDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 
@@ -102,32 +102,71 @@ const ProfileContent = ({ admissions, loading, error }) => {
       setIsSaving(true);
       let updatedData = { ...formData };
 
+      // --- SABHI FIELDS KI LIST (Watch List) ---
+      const fieldsToWatch = [
+        { key: "regNo", label: "Reg No" },
+        { key: "name", label: "Name" },
+        { key: "dob", label: "DOB" },
+        { key: "fatherName", label: "Father's Name" },
+        { key: "motherName", label: "Mother's Name" },
+        { key: "mobile", label: "Mobile" },
+        { key: "email", label: "Email" },
+        { key: "aadharNo", label: "Aadhar" },
+        { key: "course", label: "Course" },
+        { key: "gender", label: "Gender" },
+        { key: "status", label: "Status" }
+      ];
+
+      let changeSummary = [];
+
+      fieldsToWatch.forEach(({ key, label }) => {
+        const oldVal = student[key] ? String(student[key]).trim() : "—";
+        const newVal = updatedData[key] ? String(updatedData[key]).trim() : "—";
+
+        if (oldVal !== newVal) {
+          changeSummary.push(`${label}: ${oldVal} ➔ ${newVal}`);
+        }
+      });
+
+      const oldEmailId = student.email.toLowerCase().trim();
+      const newEmailId = updatedData.email.toLowerCase().trim();
+
+      // 1. Image Upload Logic (Cloudinary)
       if (selectedImage) {
         const fd = new FormData();
         fd.append("file", selectedImage);
         fd.append("upload_preset", "hridesh99!");
         const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { method: "POST", body: fd });
-        const data = await res.json();
-        updatedData.photoUrl = data.secure_url;
+        const imgData = await res.json();
+        updatedData.photoUrl = imgData.secure_url;
       }
 
-      const oldEmailId = student.email.toLowerCase();
-      const newEmailId = updatedData.email.toLowerCase();
-
+      // 2. Firestore Write
       if (oldEmailId !== newEmailId) {
-        // Doc ID change logic (Direct Email as ID)
         await setDoc(doc(db, "admissions", newEmailId), updatedData);
         await deleteDoc(doc(db, "admissions", oldEmailId));
-        toast.success("Profile & Email Updated");
-        // ✅ Direct Navigation to new Email URL
         navigate(`/admin/students/${newEmailId}`, { replace: true });
       } else {
         await updateDoc(doc(db, "admissions", oldEmailId), updatedData);
-        toast.success("Profile Updated");
       }
+
+      // 3. Notification Logic (Detailed Changes)
+      if (changeSummary.length > 0) {
+        await addDoc(collection(db, "notifications"), {
+          userId: newEmailId,
+          title: "Profile Updated by Admin",
+          message: changeSummary.join(" | "), // Sabhi changes ek line mein
+          time: serverTimestamp(),
+          isRead: false,
+          type: "profile_update"
+        });
+      }
+
+      toast.success("Profile Updated & Student Notified!");
       setIsEditing(false);
     } catch (err) {
-      toast.error("Update Failed");
+      console.error(err);
+      toast.error("Save Failed!");
     } finally {
       setIsSaving(false);
     }
@@ -313,15 +352,39 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
           <div className="form-check form-switch fs-3">
             <input className="form-check-input" type="checkbox" role="switch" checked={!formData.certificateDisabled}
+              // PORTAL ACCESS (LIVE UPDATE) Logic Fix
               onChange={async () => {
                 const newState = !formData.certificateDisabled;
+                const cleanEmail = student.email.toLowerCase().trim();
+
                 try {
-                  await updateDoc(doc(db, "admissions", student.email.toLowerCase()), {
+                  // 1 Update student profile
+                  await updateDoc(doc(db, "admissions", cleanEmail), {
                     certificateDisabled: newState
                   });
-                  setFormData(p => ({ ...p, certificateDisabled: newState }));
-                  toast.info(newState ? "Portal Disabled" : "Portal Enabled");
-                } catch (err) { toast.error("Error updating portal status"); }
+
+                  // 2 Add notification
+                  await addDoc(collection(db, "notifications"), {
+                    userId: cleanEmail,
+                    title: "Portal Access Updated",
+                    message: newState
+                      ? "Your certificate portal has been disabled by admin."
+                      : "Your certificate portal has been enabled by admin.",
+                    time: serverTimestamp(),
+                    isRead: false,
+                    type: "portal_status"
+                  });
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    certificateDisabled: newState
+                  }));
+
+                  toast.success("Notification Sent!");
+                } catch (err) {
+                  console.error(err);
+                  toast.error("Error updating");
+                }
               }} />
           </div>
         </div>
