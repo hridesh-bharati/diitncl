@@ -3,9 +3,10 @@ import { useParams } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
 import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, onSnapshot, serverTimestamp, query, where } from "firebase/firestore";
 import { toast } from "react-toastify";
+import BackButton from "../../../Components/HelperCmp/BackButton/BackButton";
 
 export default function AdminPracticeAssign() {
-  const { testId: paramTestId } = useParams(); 
+  const { testId: paramTestId } = useParams();
   const [students, setStudents] = useState([]);
   const [assignedMap, setAssignedMap] = useState({});
   const [testTitle, setTestTitle] = useState("");
@@ -46,44 +47,84 @@ export default function AdminPracticeAssign() {
   if (loading) return <div className="text-center p-3 small">Loading...</div>;
 
   return (
-    <div className="container-fluid p-1 bg-light min-vh-100">
-      <div className="card border-0 shadow-sm rounded-3">
-        <div className="card-body p-2">
-          <div className="d-flex justify-content-between align-items-center mb-2 gap-2">
-            <h6 className="fw-bold mb-0 text-truncate" style={{fontSize: '14px'}}>{testTitle}</h6>
-            <input type="text" className="form-control form-control-sm rounded-pill w-auto border-1" placeholder="Search..." onChange={e => setSearchTerm(e.target.value)} />
+    <div className="container-fluid p-2 bg-light min-vh-100 mb-5 pb-5 mb-lg-0 pb-lg-0">
+      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+        {/* Header Section */}
+        <div className="card-header bg-white border-0 py-3 px-3">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <BackButton />
+            <h6 className="fw-bold mb-0 text-dark">Assign Test</h6>
+            <div className="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+              {filtered.length} Students
+            </div>
           </div>
-          <div className="table-responsive">
-            <table className="table table-sm table-hover align-middle mb-0">
-              <thead>
-                <tr className="small text-muted" style={{fontSize: '11px'}}>
-                  <th className="text-center">ON</th>
-                  <th>STUDENT</th>
-                  <th className="text-end">REG</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(s => {
-                  const isOn = !!assignedMap[s.email?.toLowerCase().trim()];
-                  return (
-                    <tr key={s.id} style={{fontSize: '12px'}}>
-                      <td className="text-center p-1">
-                        <div className="form-check form-switch p-0 m-0 d-inline-block">
-                          <input className="form-check-input m-0" type="checkbox" checked={isOn} onChange={() => toggleAccess(s)}/>
-                        </div>
-                      </td>
-                      <td className="p-1">
-                        <div className="d-flex align-items-center gap-1">
-                          <img src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}`} className="rounded-circle" style={{width: 25, height: 25}} alt="" />
-                          <div className="text-truncate" style={{maxWidth: '100px'}}><strong>{s.name}</strong></div>
-                        </div>
-                      </td>
-                      <td className="text-end p-1 text-muted" style={{fontSize: '11px'}}>{s.regNo}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+
+          {/* Title & Search Bar */}
+          <div className="text-center mb-3">
+            <h5 className="fw-bold text-primary mb-0">{testTitle}</h5>
+            <p className="text-muted small">Select students to give access</p>
+          </div>
+
+          <div className="position-relative">
+            <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <input
+              type="text"
+              className="form-control form-control-lg rounded-pill border-light bg-light ps-5 shadow-none"
+              style={{ fontSize: '14px' }}
+              placeholder="Search by name or reg no..."
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* List View (Table se better dikhta hai mobile pe) */}
+        <div className="card-body p-0">
+          <div className="list-group list-group-flush">
+            {filtered.map(s => {
+              const isOn = !!assignedMap[s.email?.toLowerCase().trim()];
+              return (
+                <div key={s.id} className="list-group-item list-group-item-action border-0 px-3 py-2 d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center gap-3">
+                    {/* Profile Image with Ring */}
+                    <div className="position-relative">
+                      <img
+                        src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}&background=random`}
+                        className={`rounded-circle border ${isOn ? 'border-primary' : 'border-light'}`}
+                        style={{ width: 42, height: 42, objectFit: 'cover', padding: '2px' }}
+                        alt=""
+                      />
+                      {isOn && <span className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style={{ width: 12, height: 12 }}></span>}
+                    </div>
+
+                    <div>
+                      <div className="fw-bold mb-0 text-dark" style={{ fontSize: '14px' }}>{s.name}</div>
+                      <div className="text-muted" style={{ fontSize: '11px' }}>
+                        <span className="badge bg-light text-dark fw-normal border">{s.regNo || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Toggle Switch */}
+                  <div className="form-check form-switch m-0">
+                    <input
+                      className="form-check-input shadow-none cursor-pointer"
+                      type="checkbox"
+                      role="switch"
+                      style={{ width: '40px', height: '20px' }}
+                      checked={isOn}
+                      onChange={() => toggleAccess(s)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+
+            {filtered.length === 0 && (
+              <div className="p-5 text-center text-muted">
+                <i className="bi bi-person-exclamation display-4 d-block mb-2"></i>
+                No students found.
+              </div>
+            )}
           </div>
         </div>
       </div>

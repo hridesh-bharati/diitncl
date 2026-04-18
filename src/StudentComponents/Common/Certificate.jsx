@@ -108,7 +108,7 @@ export default function CertificateWrapper() {
   if (isFeeDue) {
     return (
       <div className="container py-5 text-center animate__animated animate__shakeX">
-        <div className="card border-0 shadow-lg p-5 bg-white rounded-4">
+        <div className="card border-0 shadow-sm p-5 bg-white rounded-4">
           <div className="bg-danger-subtle rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{width: '80px', height: '80px'}}>
              <i className="bi bi-cash-stack text-danger fs-1"></i>
           </div>

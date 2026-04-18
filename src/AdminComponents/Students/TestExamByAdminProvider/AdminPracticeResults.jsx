@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import html2pdf from "html2pdf.js";
+import BackButton from "../../../Components/HelperCmp/BackButton/BackButton";
 
 export default function AdminPracticeResults() {
   const [results, setResults] = useState([]);
@@ -15,7 +16,7 @@ export default function AdminPracticeResults() {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         const q = query(
-          collection(db, "practiceResults"), 
+          collection(db, "practiceResults"),
           where("status", "==", "Completed")
         );
 
@@ -59,7 +60,7 @@ export default function AdminPracticeResults() {
     html2pdf().set(opt).from(element).save();
   };
 
-  const filtered = useMemo(() => results.filter((r) => 
+  const filtered = useMemo(() => results.filter((r) =>
     r.testTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     r.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     r.studentEmail?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -69,9 +70,18 @@ export default function AdminPracticeResults() {
 
   return (
     <div className="container py-3 bg-light min-vh-100">
-      <div className="d-flex justify-content-between align-items-center mb-4 px-2">
-        <h5 className="fw-bold mb-0">Students Examination Records</h5>
-        <input type="text" className="form-control form-control-sm rounded-pill px-3 border-0 shadow-sm w-auto" placeholder="Search..." onChange={(e) => setSearchTerm(e.target.value)} />
+      {/* CLEAN HEADER */}
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 bg-white p-3 rounded-4 shadow-sm">
+        <div className="d-flex align-items-center gap-2">
+          <BackButton />
+          <h5 className="fw-bold mb-0">Examination Records</h5>
+        </div>
+        <input
+          type="text"
+          className="form-control form-control-sm rounded-pill px-3 border bg-light shadow-none w-auto"
+          placeholder="Search student or test..."
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       <div className="row g-3">
@@ -85,9 +95,9 @@ export default function AdminPracticeResults() {
                     <div className="overflow-hidden">
                       <div className="fw-bold text-truncate">{r.testTitle}</div>
                       <div className="text-primary small fw-bold">{r.studentName || "No Name"}</div>
-                      <div className="text-muted small" style={{fontSize:'11px'}}>{r.studentEmail}</div>
+                      <div className="text-muted small" style={{ fontSize: '11px' }}>{r.studentEmail}</div>
                     </div>
-                    <button className="btn btn-outline-danger btn-sm border-0" onClick={() => handleDelete(r.id)}>
+                    <button className="btn text-danger btn-sm border-0" onClick={() => handleDelete(r.id)}>
                       <i className="bi bi-trash3-fill"></i>
                     </button>
                   </div>
@@ -110,15 +120,15 @@ export default function AdminPracticeResults() {
               <div className="modal-header border-0 bg-white pt-4 px-4 pb-2">
                 <h6 className="fw-bold mb-0">Review: {selectedResult.studentName}</h6>
                 <div className="ms-auto d-flex gap-2">
-                    <button className="btn btn-primary btn-sm rounded-pill px-3" onClick={exportToPDF}>Export PDF</button>
-                    <button type="button" className="btn-close" onClick={() => setSelectedResult(null)}></button>
+                  <button className="btn btn-primary btn-sm rounded-pill px-3" onClick={exportToPDF}>Export PDF</button>
+                  <button type="button" className="btn-close" onClick={() => setSelectedResult(null)}></button>
                 </div>
               </div>
-              <div className="modal-body p-4 bg-light" id="admin-pdf-content">
+              <div className="modal-body p-2 bg-light" id="admin-pdf-content">
                 <div className="p-3 mb-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
-                    <h5 className="fw-bold mb-1">{selectedResult.testTitle}</h5>
-                    <p className="small text-muted mb-0">Student: {selectedResult.studentName} | Email: {selectedResult.studentEmail}</p>
-                    <p className="small text-muted mb-0">Score: {selectedResult.score}/{selectedResult.totalQuestions} ({selectedResult.percentage}%)</p>
+                  <h5 className="fw-bold mb-1">{selectedResult.testTitle}</h5>
+                  <p className="small text-muted mb-0">Student: {selectedResult.studentName} | Email: {selectedResult.studentEmail}</p>
+                  <p className="small text-muted mb-0">Score: {selectedResult.score}/{selectedResult.totalQuestions} ({selectedResult.percentage}%)</p>
                 </div>
                 {selectedResult.fullDetails?.map((item, idx) => (
                   <div key={idx} className="card border-0 shadow-sm rounded-4 mb-3 p-3">

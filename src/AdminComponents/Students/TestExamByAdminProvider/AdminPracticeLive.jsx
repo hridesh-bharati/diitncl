@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase/firebase";
 import { collection, query, where, onSnapshot, doc, deleteDoc, getDoc } from "firebase/firestore";
+import BackButton from "../../../Components/HelperCmp/BackButton/BackButton";
 
 export default function AdminPracticeLive() {
   const [live, setLive] = useState([]);
@@ -30,7 +31,13 @@ export default function AdminPracticeLive() {
 
   return (
     <div className="container-fluid py-3 bg-light min-vh-100">
-      <h6 className="fw-bold mb-3 px-1">Live Students ({live.length})</h6>
+      <div className="d-flex align-items-center gap-2 mb-3 px-1">
+        <BackButton />
+        <h6 className="fw-bold mb-0 text-dark">
+          Live Students <span className="badge bg-danger-subtle text-danger rounded-pill ms-1">{live.length}</span>
+        </h6>
+      </div>
+
       <div className="row g-2">
         {live.map((s) => (
           <div className="col-12 col-md-4" key={s.id}>

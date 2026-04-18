@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db, auth } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -14,16 +14,20 @@ export default function PracticeAttemptPage() {
   const [answers, setAnswers] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // --- ⏱️ Timer States ---
+  const [timeLeft, setTimeLeft] = useState(null);
+  const timerRef = useRef(null);
 
-  // --- 🔥 Function to Handle Submit (Common for Manual & Auto) ---
+  // --- 🔥 Function to Handle Submit ---
   const autoSubmitTest = useCallback(async (reason = "Manual") => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    if (timerRef.current) clearInterval(timerRef.current); // Stop timer on submit
 
     try {
-      const currentQuestions = questions; // Local copy to avoid closure issues
       let score = 0;
-      const details = currentQuestions.map(q => {
+      const details = questions.map(q => {
         const isCorrect = answers[q.id] === q.correct;
         if (isCorrect) score++;
         return { 
@@ -38,16 +42,18 @@ export default function PracticeAttemptPage() {
       const email = auth.currentUser.email.toLowerCase();
       await setDoc(doc(db, "practiceResults", `${email}_${testId}`), {
         score, 
-        totalQuestions: currentQuestions.length, 
+        totalQuestions: questions.length, 
         status: "Completed",
-        percentage: currentQuestions.length > 0 ? ((score / currentQuestions.length) * 100).toFixed(2) : 0,
+        percentage: questions.length > 0 ? ((score / questions.length) * 100).toFixed(2) : 0,
         submittedAt: serverTimestamp(), 
         fullDetails: details,
-        submitReason: reason // To track if student cheated or submitted manually
+        submitReason: reason 
       }, { merge: true });
 
       if (reason === "Cheating") {
-        toast.error("Tab Switching Detected! Test Submitted Automatically.");
+        toast.error("Tab Switching Detected! Test Submitted.");
+      } else if (reason === "Timeout") {
+        toast.warning("Time is up! Test submitted automatically.");
       } else {
         toast.success("Submitted successfully!");
       }
@@ -58,6 +64,32 @@ export default function PracticeAttemptPage() {
     }
   }, [answers, questions, testId, navigate, isSubmitting]);
 
+  // --- ⏲️ Timer Logic ---
+  useEffect(() => {
+    if (timeLeft === null) return;
+
+    if (timeLeft <= 0) {
+      autoSubmitTest("Timeout");
+      return;
+    }
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, [timeLeft, autoSubmitTest]);
+
+  // Helper to format seconds to MM:SS
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return h > 0 
+      ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+      : `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
     let unsubAssign = null;
     const unsubAuth = onAuthStateChanged(auth, async (user) => {
@@ -67,7 +99,6 @@ export default function PracticeAttemptPage() {
         const resultRef = doc(db, "practiceResults", `${email}_${testId}`);
         const assignRef = doc(db, "practiceAssigned", `${email}_${testId}`);
 
-        // --- 🔒 1. LOCK CHECK (Prevent Re-attempt) ---
         const rSnap = await getDoc(resultRef);
         if (rSnap.exists() && rSnap.data().status === "Completed") {
           toast.warning("You have already completed this test!");
@@ -87,12 +118,18 @@ export default function PracticeAttemptPage() {
         ]);
 
         if (!tDoc.exists()) throw new Error("Test not found");
-        setTestInfo(tDoc.data());
+        const data = tDoc.data();
+        setTestInfo(data);
+        
+        // Initialize Timer (Assuming duration is in minutes)
+        if (data.duration) {
+            setTimeLeft(data.duration * 60);
+        }
 
         const realName = sSnap.exists() ? sSnap.data().name : (user.displayName || email.split('@')[0]);
 
         await setDoc(resultRef, {
-          testId, testTitle: tDoc.data()?.title || "Practice",
+          testId, testTitle: data?.title || "Practice",
           studentEmail: email, studentName: realName,
           status: "Ongoing", startedAt: serverTimestamp(),
         }, { merge: true });
@@ -110,14 +147,13 @@ export default function PracticeAttemptPage() {
     };
   }, [testId, navigate]);
 
-  // --- 🕵️‍♂️ 2. TAB SWITCH DETECTION (Cheating Protection) ---
+  // --- 🕵️‍♂️ Tab Switch Detection ---
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden" && !isSubmitting && questions.length > 0) {
         autoSubmitTest("Cheating");
       }
     };
-
     window.addEventListener("visibilitychange", handleVisibilityChange);
     return () => window.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [autoSubmitTest, isSubmitting, questions]);
@@ -131,7 +167,15 @@ export default function PracticeAttemptPage() {
     <div className="container py-3 bg-light min-vh-100">
       <div className="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden">
         <div className="card-body d-flex justify-content-between align-items-center p-3">
-          <h6 className="fw-bold mb-0 text-truncate me-2">{testInfo?.title}</h6>
+          <div>
+            <h6 className="fw-bold mb-0 text-truncate">{testInfo?.title}</h6>
+            {/* --- ⏱️ LIVE COUNTER UI --- */}
+            {timeLeft !== null && (
+                <span className={`badge ${timeLeft < 60 ? 'bg-danger' : 'bg-dark'} mt-1`}>
+                   ⏱️ {formatTime(timeLeft)}
+                </span>
+            )}
+          </div>
           <button className="btn btn-sm btn-outline-danger border-0 fw-bold" onClick={() => navigate(-1)}>Exit</button>
         </div>
         <div className="progress rounded-0" style={{ height: '4px' }}>
@@ -164,7 +208,9 @@ export default function PracticeAttemptPage() {
               <div className="d-flex gap-2 mb-5">
                 <button className="btn btn-white border-0 shadow-sm rounded-4 flex-grow-1 py-3 fw-bold" onClick={() => setCurrentIndex(c => c - 1)} disabled={currentIndex === 0}>Previous</button>
                 {currentIndex === questions.length - 1 ? (
-                  <button className="btn btn-success border-0 shadow rounded-4 flex-grow-1 py-3 fw-bold" onClick={() => { if(window.confirm("Submit final paper?")) autoSubmitTest("Manual") }}>Finish Test</button>
+                  <button className="btn btn-success border-0 shadow rounded-4 flex-grow-1 py-3 fw-bold" disabled={isSubmitting} onClick={() => { if(window.confirm("Submit final paper?")) autoSubmitTest("Manual") }}>
+                    {isSubmitting ? "Submitting..." : "Finish Test"}
+                  </button>
                 ) : (
                   <button className="btn btn-primary border-0 shadow rounded-4 flex-grow-1 py-3 fw-bold" onClick={() => setCurrentIndex(c => c + 1)}>Next</button>
                 )}
