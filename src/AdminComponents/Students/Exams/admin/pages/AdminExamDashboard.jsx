@@ -76,7 +76,7 @@ export default function AdminExamDashboard() {
         ))}
       </div>
 
-      <div className="p-2 mt-2">
+      <div className="p-2 mt-2 mb-5 mb-lg-0">
         <div className="row g-3">
           {exams.length > 0 ? exams.map(e => (
             <div key={e.id} className="col-12 col-md-6">

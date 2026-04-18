@@ -1,8 +1,7 @@
-// src\AdminComponents\Students\StudentProfile.jsx
 import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc, setDoc, deleteDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AdmissionProvider from "../Admissions/AdmissionProvider";
 
@@ -59,11 +58,9 @@ const StatBox = memo(({ label, value, icon, colorClass, isEditing, onChange, typ
 ));
 
 const ProfileContent = ({ admissions, loading, error }) => {
-  // ✅ NO ENCODING: useParams se direct Email mil raha hai
   const { id: emailParam } = useParams();
   const navigate = useNavigate();
 
-  // Student ko direct email se find kar rahe hain
   const student = useMemo(
     () => admissions?.find((a) => a.email?.toLowerCase() === emailParam?.toLowerCase()),
     [admissions, emailParam]
@@ -101,37 +98,9 @@ const ProfileContent = ({ admissions, loading, error }) => {
     try {
       setIsSaving(true);
       let updatedData = { ...formData };
-
-      // --- SABHI FIELDS KI LIST (Watch List) ---
-      const fieldsToWatch = [
-        { key: "regNo", label: "Reg No" },
-        { key: "name", label: "Name" },
-        { key: "dob", label: "DOB" },
-        { key: "fatherName", label: "Father's Name" },
-        { key: "motherName", label: "Mother's Name" },
-        { key: "mobile", label: "Mobile" },
-        { key: "email", label: "Email" },
-        { key: "aadharNo", label: "Aadhar" },
-        { key: "course", label: "Course" },
-        { key: "gender", label: "Gender" },
-        { key: "status", label: "Status" }
-      ];
-
-      let changeSummary = [];
-
-      fieldsToWatch.forEach(({ key, label }) => {
-        const oldVal = student[key] ? String(student[key]).trim() : "—";
-        const newVal = updatedData[key] ? String(updatedData[key]).trim() : "—";
-
-        if (oldVal !== newVal) {
-          changeSummary.push(`${label}: ${oldVal} ➔ ${newVal}`);
-        }
-      });
-
       const oldEmailId = student.email.toLowerCase().trim();
       const newEmailId = updatedData.email.toLowerCase().trim();
 
-      // 1. Image Upload Logic (Cloudinary)
       if (selectedImage) {
         const fd = new FormData();
         fd.append("file", selectedImage);
@@ -141,7 +110,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
         updatedData.photoUrl = imgData.secure_url;
       }
 
-      // 2. Firestore Write
       if (oldEmailId !== newEmailId) {
         await setDoc(doc(db, "admissions", newEmailId), updatedData);
         await deleteDoc(doc(db, "admissions", oldEmailId));
@@ -150,19 +118,7 @@ const ProfileContent = ({ admissions, loading, error }) => {
         await updateDoc(doc(db, "admissions", oldEmailId), updatedData);
       }
 
-      // 3. Notification Logic (Detailed Changes)
-      if (changeSummary.length > 0) {
-        await addDoc(collection(db, "notifications"), {
-          userId: newEmailId,
-          title: "Profile Updated by Admin",
-          message: changeSummary.join(" | "), // Sabhi changes ek line mein
-          time: serverTimestamp(),
-          isRead: false,
-          type: "profile_update"
-        });
-      }
-
-      toast.success("Profile Updated & Student Notified!");
+      toast.success("Profile Updated!");
       setIsEditing(false);
     } catch (err) {
       console.error(err);
@@ -257,7 +213,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
         </div>
 
-        {/* QUICK BUTTONS - DIRECT EMAIL NAVIGATION */}
         <div className="row g-3 mb-4">
           <div className="col-md-6">
             <button className={`btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2 ${formData.certificateDisabled ? 'opacity-50' : ''}`}
@@ -275,14 +230,12 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
         </div>
 
-        {/* STATS */}
         <div className="row g-3 mb-4">
           <StatBox label="PERCENTAGE" value={formData.percentage} icon="bi-graph-up-arrow" colorClass="text-success" isEditing={isEditing} onChange={(val) => handleChange("percentage", val)} />
           <StatBox label="ADMISSION" value={formData.admissionDate} icon="bi-calendar-check" colorClass="text-primary" isEditing={isEditing} onChange={(val) => handleChange("admissionDate", val)} type="date" />
           <StatBox label="ISSUE DATE" value={formData.issueDate} icon="bi-award" colorClass="text-warning" isEditing={isEditing} onChange={(val) => handleChange("issueDate", val)} type="date" />
         </div>
 
-        {/* INFO GRID */}
         <div className="glass-card p-3 mb-4 border-0">
           <p className="fw-bold text-primary mb-3 ps-2" style={{ fontSize: '12px' }}><i className="bi bi-info-circle me-1"></i> PERSONAL DETAILS</p>
           <div className="row g-1">
@@ -299,7 +252,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
         </div>
 
-        {/* ADDRESS DETAILS */}
         <div className="glass-card p-4 mb-4 border-0">
           <p className="fw-bold text-primary mb-3" style={{ fontSize: '12px' }}>
             <i className="bi bi-geo-alt-fill me-1"></i> ADDRESS DETAILS
@@ -311,7 +263,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
                 {isEditing ? (
                   <input
                     className="form-control form-control-sm border-0 border-bottom bg-transparent rounded-0 shadow-none p-0 fw-bold"
-                    style={{ borderBottom: '1px solid #dee2e6' }}
                     value={formData[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
                   />
@@ -320,26 +271,20 @@ const ProfileContent = ({ admissions, loading, error }) => {
                 )}
               </div>
             ))}
-
             <div className="col-12 mt-3 pt-3 border-top border-white border-opacity-25">
               <small className="text-muted d-block fw-bold text-uppercase mb-1" style={{ fontSize: '9px' }}>Full Address</small>
               {isEditing ? (
-                <textarea
-                  rows={4}
-                  className="form-control bg-white bg-opacity-50 border-0 rounded-3 shadow-none fw-medium"
-                  value={formData.address || ""}
-                  onChange={(e) => handleChange("address", e.target.value)}
+                <textarea rows={4} className="form-control bg-white bg-opacity-50 border-0 rounded-3 shadow-none fw-medium"
+                  value={formData.address || ""} onChange={(e) => handleChange("address", e.target.value)}
                 />
               ) : (
-                <p className="text-dark fw-medium mb-0 mt-1" style={{ lineHeight: '1.4', fontSize: '0.95rem' }}>
-                  {safe(formData.address)}
-                </p>
+                <p className="text-dark fw-medium mb-0 mt-1" style={{ lineHeight: '1.4', fontSize: '0.95rem' }}>{safe(formData.address)}</p>
               )}
             </div>
           </div>
         </div>
 
-        {/* PORTAL ACCESS (LIVE UPDATE) */}
+        {/* --- STATUS SWITCH (NO NOTIFICATIONS) --- */}
         <div className="glass-panel p-3 mb-5 border-0 d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'}`}>
@@ -352,43 +297,20 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
           <div className="form-check form-switch fs-3">
             <input className="form-check-input" type="checkbox" role="switch" checked={!formData.certificateDisabled}
-              // PORTAL ACCESS (LIVE UPDATE) Logic Fix
               onChange={async () => {
                 const newState = !formData.certificateDisabled;
                 const cleanEmail = student.email.toLowerCase().trim();
-
                 try {
-                  // 1 Update student profile
-                  await updateDoc(doc(db, "admissions", cleanEmail), {
-                    certificateDisabled: newState
-                  });
-
-                  // 2 Add notification
-                  await addDoc(collection(db, "notifications"), {
-                    userId: cleanEmail,
-                    title: "Portal Access Updated",
-                    message: newState
-                      ? "Your certificate portal has been disabled by admin."
-                      : "Your certificate portal has been enabled by admin.",
-                    time: serverTimestamp(),
-                    isRead: false,
-                    type: "portal_status"
-                  });
-
-                  setFormData((prev) => ({
-                    ...prev,
-                    certificateDisabled: newState
-                  }));
-
-                  toast.success("Notification Sent!");
+                  await updateDoc(doc(db, "admissions", cleanEmail), { certificateDisabled: newState });
+                  setFormData((prev) => ({ ...prev, certificateDisabled: newState }));
+                  toast.success("Status Updated!");
                 } catch (err) {
-                  console.error(err);
-                  toast.error("Error updating");
+                  toast.error("Error updating status");
                 }
-              }} />
+              }}
+            />
           </div>
         </div>
-
       </div>
     </div>
   );

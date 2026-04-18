@@ -32,7 +32,7 @@ export default function AdminLayout() {
           style={{ zIndex: 1050, minHeight: "60px" }}
         >
           {/* Nav items */}
-          <div className="d-flex align-items-center flex-grow-1 overflow-auto p-2" style={{ scrollbarWidth: 'none' }}>
+          <div className="d-flex align-items-center flex-grow-1 overflow-auto p-0 pt-1" style={{ scrollbarWidth: 'none' }}>
             <div className="d-flex gap-1 gap-md-5">
               {navItems.map((item, idx) => (
                 <div
@@ -42,11 +42,10 @@ export default function AdminLayout() {
                   style={{ cursor: "pointer" }}
                 >
                   <div
-                    className={`position-relative d-flex align-items-center px-3 py-1 rounded-pill ${
-                      location.pathname === item.link
+                    className={`position-relative d-flex align-items-center px-3 py-1 rounded-pill ${location.pathname === item.link
                         ? "bg-secondary-subtle text-dark shadow-sm"
                         : "text-secondary"
-                    }`}
+                      }`}
                   >
                     <div className="position-relative">
                       <i className={`bi ${item.icon} fs-5`}></i>
@@ -67,9 +66,9 @@ export default function AdminLayout() {
           </div>
 
           {/* Sidebar toggle */}
-          <div className="ps-2 border-start">
+          <div className="ps-1 border-start">
             <button className="btn btn-light rounded-circle" onClick={() => setOpen(true)}>
-              <i className="bi bi-list fs-4"></i>
+              <i className="bi bi-list fs-5"></i>
             </button>
           </div>
         </header>
