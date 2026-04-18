@@ -35,13 +35,13 @@ export default function AdminPracticeUpload() {
   return (
     <div className="container py-3 bg-light min-vh-100">
       {/* Header with Back Button */}
-      <div className="d-flex align-items-center gap-2 mb-4">
+      <div className="d-flex align-items-center justify-content-between gap-2 mb-3 bg-white p-2">
         <BackButton />
         <h4 className="fw-bold mb-0">Manage Practice Tests</h4>
       </div>
 
       {/* Quick Create Form */}
-      <div className="card border-0 shadow-sm rounded-4 mb-4">
+      <div className="card border-0 shadow-sm rounded-4 mb-4 ">
         <div className="card-body p-3">
           <form onSubmit={createTest} className="row g-2 align-items-end">
             <div className="col-md-6">
@@ -60,7 +60,7 @@ export default function AdminPracticeUpload() {
       </div>
 
       {/* Grid: PC me 2-2 (col-md-6), Mobile me 1 (col-12) */}
-      <div className="row g-3">
+      <div className="row g-3 mb-4 pb-5 mb-lg-0 pb-lg-0">
         {tests.map((test) => (
           <div className="col-12 col-md-6" key={test.id}>
             <div className="card h-100 border-0 shadow-sm rounded-4">

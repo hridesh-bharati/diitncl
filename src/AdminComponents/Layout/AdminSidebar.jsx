@@ -46,12 +46,13 @@ export default function AdminSidebar({ open, setOpen }) {
 
         <div className="d-flex flex-column h-100 bg-white shadow">
           {/* Header */}
-          <div className="p-4 d-flex align-items-center justify-content-between border-bottom">
-            <div>
-              <h5 className="fw-bold mb-0 text-dark" style={{ letterSpacing: '-0.5px' }}>Drishtee</h5>
-              <div className="text-uppercase text-muted fw-bold" style={{ fontSize: '10px', letterSpacing: '1px' }}>Admin Console</div>
+          <div className="p-3 d-flex align-items-center  border-bottom border-light">
+            <button type="button" className="btn" onClick={handleClose}> <i className="bi bi-arrow-left fs-2 fw-bold"></i>  </button>
+            <div className="text-primary">
+              {/* <h5 className="fw-bold mb-0  " style={{ letterSpacing: '-0.5px' }}>Drishtee</h5> */}
+              {/* <div className="text-uppercase fw-bold " style={{ fontSize: '10px', letterSpacing: '1px' }}>Admin Console</div> */}
+              <div className="text-uppercase fw-bold">Admin Console</div>
             </div>
-            <button type="button" className="btn-close shadow-none" onClick={handleClose}></button>
           </div>
 
           <div className="overflow-auto custom-scroll flex-grow-1 py-3">
@@ -172,7 +173,7 @@ export default function AdminSidebar({ open, setOpen }) {
 
           {/* Footer Card */}
           <div className="p-3 border-top">
-            <NavLink to="/admin/profile" className="d-flex align-items-center p-2 text-decoration-none shadow-sm shadow-hover">
+            <NavLink to="/admin/profile" className="d-flex align-items-center ">
               <div className="bg-danger text-white rounded-2 d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
                 <i className="bi bi-person-fill fs-5"></i>
               </div>
