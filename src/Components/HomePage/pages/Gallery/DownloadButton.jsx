@@ -19,7 +19,7 @@ export default function DownloadButton({ imageUrl, imageId, filename = "Drishtee
       link.download = `${filename.replace(/\s+/g, '_')}.jpg`;
       link.click();
       window.URL.revokeObjectURL(url);
-      
+
       // Update count in Firestore
       if (imageId) {
         await updateDoc(doc(db, "galleryImages", imageId), {
@@ -42,13 +42,13 @@ export default function DownloadButton({ imageUrl, imageId, filename = "Drishtee
 
   return (
     <div className="d-flex align-items-center gap-1">
-      <button 
-        onClick={download} 
+      <button
+        onClick={download}
         disabled={loading}
         className="btn btn-link p-1 text-dark border-0 shadow-none d-flex align-items-center justify-content-center"
       >
         {loading ? (
-          <div className="spinner-border spinner-border-sm text-primary" role="status" style={{width: '18px', height: '18px'}}></div>
+          <div className="spinner-border spinner-border-sm text-primary" role="status" style={{ width: '18px', height: '18px' }}></div>
         ) : (
           <i className="bi bi-download fs-5"></i>
         )}

@@ -20,6 +20,7 @@ import { db, app } from "./firebase/firebase";
 import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
 import { getMessaging, onMessage, isSupported } from "firebase/messaging";
 import { vibration } from "./Components/MobileAccessories/vibration";
+import NotesDownload from "./Components/HomePage/pages/Notes/NotesDownload";
 
 
 
@@ -239,6 +240,8 @@ export default function App() {
               <Route path="/privacy-policy" element={<HelmetManager><PrivacyPolicy /></HelmetManager>} />
               <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
               <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
+              {/* Notes  */}
+              <Route path="/notes-download" element={<HelmetManager><NotesDownload /></HelmetManager>} />
 
               {/* Protected Routes */}
               <Route

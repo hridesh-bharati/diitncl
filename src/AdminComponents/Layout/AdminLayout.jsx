@@ -14,6 +14,7 @@ export default function AdminLayout() {
   // Navigation items
   const navItems = [
     { icon: "bi-house-fill", label: "Dashboard", count: 0, link: "/admin" },
+    { icon: "bi-journal-bookmark-fill", label: "Notes", count: counts.notes || 0, link: "/admin/notes/upload" },
     { icon: "bi-file-text-fill", label: "Exams", count: counts.exams, link: "/admin/exams" },
     { icon: "bi-people-fill", label: "Students", count: counts.total, link: "/admin/admitted-student-list" },
     { icon: "bi-chat-dots-fill", label: "Queries", count: counts.queries, link: "/admin/clients-contacts" },

@@ -20,22 +20,27 @@ const TimeTable = lazy(() => import("../HelperCmp/FeaturesUpdate/TimeTable"));
 const RecentStudents = lazy(() => import("./pages/RecentStudents/RecentStudents"));
 
 const PORTAL_ITEMS = [
-  { id: 1, label: "Verify", icon: "bi-shield-check", link: "/Download-Certificate", bg: "bg-primary" },
-  { id: 2, label: "Results", icon: "bi-bar-chart-line", link: "/Download-Certificate", bg: "bg-success" },
-  { id: 3, label: "Notes", icon: "bi-file-earmark-pdf", link: "/Library", bg: "bg-warning" },
-  { id: 4, label: "Jobs", icon: "bi-person-workspace", link: "/", bg: "bg-info" },
+  { id: 1, label: "Test Paper", icon: "bi-shield-check", link: "/student/practice-tests", bg: "bg-primary" },
+  { id: 2, label: "Main Exam", icon: "bi-person-workspace", link: "/student/exams", bg: "bg-info" },
+  { id: 3, label: "Results", icon: "bi-bar-chart-line", link: "/Download-Certificate", bg: "bg-success" },
+  { id: 4, label: "Notes", icon: "bi-file-earmark-pdf", link: "/notes-download", bg: "bg-warning" },
   { id: 5, label: "LMS", icon: "bi-cpu-fill", link: "/login", bg: "bg-danger" },
-  { id: 6, label: "App", icon: "bi-phone-vibrate", link: "/", bg: "bg-dark" }
+  { id: 6, label: "App", icon: "bi-phone-vibrate", link: "/base.apk", bg: "bg-dark", download: true }
 ];
 
-const PortalItem = memo(({ item }) => (
-  <Link to={item.link} className="col text-center text-decoration-none portal-item">
-    <div className={`portal-icon mx-auto d-flex align-items-center justify-content-center shadow-sm rounded-4 ${item.bg}`}>
-      <i className={`bi ${item.icon} text-white`}></i>
-    </div>
-    <span className="fw-bold d-block mt-2 small text-dark">{item.label}</span>
-  </Link>
-));
+const PortalItem = memo(({ item }) => {
+  const content = (
+    <>
+      <div className={`portal-icon mx-auto d-flex align-items-center justify-content-center shadow-sm rounded-4 ${item.bg}`}>
+        <i className={`bi ${item.icon} text-white`}></i>
+      </div>
+      <span className="fw-bold d-block mt-2 small text-dark">{item.label}</span>
+    </>
+  );
+  return item.download ? (
+    <a href={item.link} download className="col text-center text-decoration-none portal-item">{content}</a>) :
+    (<Link to={item.link} className="col text-center text-decoration-none portal-item"> {content} </Link>);
+});
 
 function Home() {
   return (

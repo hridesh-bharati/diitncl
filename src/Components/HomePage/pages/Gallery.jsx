@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback, useMemo, Suspense, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
-import { 
-  collection, query, orderBy, onSnapshot, updateDoc, doc, 
-  limit, addDoc, serverTimestamp, deleteDoc, arrayUnion, arrayRemove 
+import {
+  collection, query, orderBy, onSnapshot, updateDoc, doc,
+  limit, addDoc, serverTimestamp, deleteDoc, arrayUnion, arrayRemove
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -15,13 +15,24 @@ const LikeButton = lazy(() => import("./Gallery/LikeButton"));
 export default function PublicSocialGallery() {
   const { user, isAdmin, isLoggedIn, displayName, photoURL } = useAuth();
   const [posts, setPosts] = useState([]);
+  const [filterType, setFilterType] = useState("all");
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState({});
   const [showComments, setShowComments] = useState({});
   const [selectedImg, setSelectedImg] = useState(null);
-  const [up, setUp] = useState({ show: false, file: null, preview: "", title: "", loading: false });
 
-  // Guest ID logic: User login hai toh UID, varna localStorage se temporary ID
+  const [up, setUp] = useState({
+    show: false,
+    file: null,
+    preview: "",
+    title: "",
+    loading: false,
+    type: "image",
+  });
+
+  const navigate = useNavigate();
+
+  // ✅ Guest/User ID logic from your comment reference
   const currentUserId = useMemo(() => {
     let id = user?.uid || localStorage.getItem("gallery_user_id");
     if (!id) {
@@ -31,12 +42,13 @@ export default function PublicSocialGallery() {
     return id;
   }, [user]);
 
-  const navigate = useNavigate();
-
-  const getOptimizedUrl = useCallback((url, type = "thumb") => {
-    if (!url?.includes("cloudinary")) return url;
-    const transform = type === "thumb" ? "w_600,h_500,c_fill,g_auto,f_auto,q_auto" : "w_1200,f_auto,q_auto";
-    return url.replace("/upload/", `/upload/${transform}/`);
+  // ✅ Cloudinary PDF Preview Logic
+  const getPdfPreview = useCallback((url) => {
+    if (!url) return "";
+    if (url.includes("cloudinary")) {
+      return url.replace(/\.pdf$/, ".jpg").replace("/upload/", "/upload/w_600,h_800,c_fill,pg_1,f_auto,q_auto/");
+    }
+    return "https://cdn-icons-png.flaticon.com/512/337/337946.png";
   }, []);
 
   const getEmoji = (name) => {
@@ -45,18 +57,18 @@ export default function PublicSocialGallery() {
   };
 
   useEffect(() => {
-    const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(24));
-    const unsubscribe = onSnapshot(q, (s) => {
-      setPosts(s.docs.map(d => ({ id: d.id, ...d.data() })));
+    const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(50));
+    const unsub = onSnapshot(q, (snap) => {
+      setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
       setLoading(false);
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
   const updatePost = useCallback((id, data) => updateDoc(doc(db, "galleryImages", id), data), []);
 
   const handleDelete = async (p) => {
-    if (window.confirm("Delete this image?")) {
+    if (window.confirm("Delete this post?")) {
       await deleteDoc(doc(db, "galleryImages", p.id));
       toast.info("Deleted successfully");
     }
@@ -64,40 +76,77 @@ export default function PublicSocialGallery() {
 
   const handleUpload = async () => {
     if (!up.file || !up.title.trim()) return toast.error("File & Title required");
-    setUp(p => ({ ...p, loading: true }));
+    setUp((p) => ({ ...p, loading: true }));
+
     try {
       const fd = new FormData();
       fd.append("file", up.file);
       fd.append("upload_preset", "hridesh99!");
-      const res = await fetch("https://api.cloudinary.com/v1_1/draowpiml/image/upload", { method: "POST", body: fd });
-      const { secure_url } = await res.json();
-      await addDoc(collection(db, "galleryImages"), {
-        url: secure_url, title: up.title.trim(), uploadedBy: displayName || "Guest",
-        uploadedById: currentUserId, userPhoto: photoURL || "", createdAt: serverTimestamp(),
-        likes: [], reactions: {}, comments: [], downloadCount: 0
+
+      // let resourceType = up.type === "video" ? "video" : "image";
+      // const res = await fetch(`https://api.cloudinary.com/v1_1/draowpiml/${resourceType}/upload`, {
+      //   method: "POST",
+      //   body: fd
+      // });
+
+      // handleUpload function ke andar ye change karein:
+      const res = await fetch(`https://api.cloudinary.com/v1_1/draowpiml/auto/upload`, {
+        method: "POST",
+        body: fd
       });
-      setUp({ show: false, file: null, preview: "", title: "", loading: false });
+
+      const data = await res.json();
+
+      await addDoc(collection(db, "galleryImages"), {
+        url: data.secure_url,
+        title: up.title.trim(),
+        type: up.type,
+        uploadedBy: displayName || "Guest",
+        uploadedById: currentUserId,
+        userPhoto: photoURL || "",
+        createdAt: serverTimestamp(),
+        likes: [],
+        reactions: {},
+        comments: [],
+        downloadCount: 0,
+      });
+
       toast.success("Uploaded!");
-    } catch (e) { toast.error("Upload failed"); setUp(p => ({ ...p, loading: false })); }
+      setUp({ show: false, file: null, preview: "", title: "", loading: false, type: "image" });
+    } catch (err) {
+      toast.error("Upload failed");
+      setUp((p) => ({ ...p, loading: false }));
+    }
   };
 
-  if (loading) return <div className="vh-100 d-flex align-items-center justify-content-center text-danger fw-bold">Loading...</div>;
+  const filteredPosts = filterType === "all" ? posts : posts.filter((p) => p.type === filterType);
+
+  if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center fw-bold text-danger">Loading...</div>;
 
   return (
     <div className="bg-primary-subtle min-vh-100 pb-5">
-      <header className="bg-white border-bottom shadow-sm py-3 mb-3">
+      <header className="bg-white border-bottom shadow-sm py-3 mb-3 sticky-top" style={{ zIndex: 1000 }}>
         <div className="container d-flex justify-content-between align-items-center">
           <h4 className="fw-bold text-dark m-0">Drishtee <span className="text-danger">Gallery</span></h4>
           <button className={`btn btn-${isLoggedIn ? 'danger' : 'outline-danger'} rounded-pill px-4 fw-bold`}
             onClick={() => isLoggedIn ? setUp(p => ({ ...p, show: true })) : navigate("/login")}>
-            {isLoggedIn ? "+ Add Photo" : "Login"}
+            {isLoggedIn ? "+ Add Post" : "Login"}
           </button>
         </div>
       </header>
 
+      {/* Filters */}
+      <div className="container mb-3 d-flex gap-2 overflow-auto pb-1">
+        {[["all", "All"], ["image", "Pics"], ["video", "Reels"], ["pdf", "PDF"]].map(([val, label]) => (
+          <button key={val} onClick={() => setFilterType(val)} className={`btn btn-sm rounded-pill px-3 fw-bold ${filterType === val ? "btn-danger" : "btn-outline-danger"}`}>{label}</button>
+        ))}
+      </div>
+
       <main className="container">
         <div className="row g-3">
-          {posts.map((p) => {
+          {filteredPosts.map((p) => {
+            const isVideo = p.type === "video";
+            const isPdf = p.type === "pdf";
             const userReaction = p.reactions?.[currentUserId] || null;
             const isLiked = !!userReaction;
             const uniqueReacts = [...new Set(Object.values(p.reactions || {}))];
@@ -105,100 +154,121 @@ export default function PublicSocialGallery() {
             return (
               <div key={p.id} className="col-12 col-md-6 col-lg-4 px-2">
                 <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white animate-fade-in">
-                  
-                  {/* Header */}
+
+                  {/* Card Header */}
                   <div className="p-3 d-flex align-items-center justify-content-between">
-                    <div className="d-flex align-items-center gap-2 overflow-hidden" style={{ maxWidth: '85%' }}>
-                      <img src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random&color=fff`} className="rounded-circle border shadow-sm flex-shrink-0" width="32" height="32" alt="u" />
+                    <div className="d-flex align-items-center gap-2 overflow-hidden">
+                      <img src={p.userPhoto || `https://ui-avatars.com/api/?name=${p.uploadedBy}`} className="rounded-circle border" width="32" height="32" alt="" />
                       <div className="d-flex flex-column overflow-hidden">
-                        <h6 className="fw-bold text-dark mb-0 text-truncate" title={p.title} style={{ fontSize: '14px' }}>{p.title}</h6>
-                        <small className="text-muted" style={{ fontSize: '10px' }}>by {p.uploadedBy} • {p.createdAt?.toDate().toLocaleDateString()}</small>
+                        <h6 className="fw-bold mb-0 text-truncate small">{p.title}</h6>
+                        <small className="text-muted" style={{ fontSize: '10px' }}>by {p.uploadedBy}</small>
                       </div>
                     </div>
                     {(isAdmin || p.uploadedById === currentUserId) && (
-                      <i className="bi bi-trash3-fill text-danger cursor-pointer p-1" onClick={() => handleDelete(p)}></i>
+                      <i className="bi bi-trash3-fill text-danger cursor-pointer" onClick={() => handleDelete(p)}></i>
                     )}
                   </div>
 
-                  {/* Pic with Blurred BG */}
-                  <div className="post-media position-relative overflow-hidden bg-black" style={{ height: '300px' }} onClick={() => setSelectedImg(p.url)}>
-                    <img src={getOptimizedUrl(p.url, "thumb")} className="position-absolute w-100 h-100" style={{ filter: 'blur(20px)', opacity: '0.4', objectFit: 'cover', transform: 'scale(1.1)' }} alt="bg" />
-                    <img src={getOptimizedUrl(p.url, "thumb")} className="position-relative w-100 h-100 object-fit-contain cursor-zoom-in" alt={p.title} loading="lazy" />
+                  {/* Media Section */}
+                  <div className="bg-black" style={{ height: '320px' }}>
+                    {isVideo ? (
+                      <video src={p.url} controls className="w-100 h-100 object-fit-cover" />
+                    ) : isPdf ? (
+                      /* ✅ OPEN PDF button remove kar diya hai, ab sirf preview image dikhegi */
+                      <div className="w-100 h-100" onClick={() => window.open(p.url, "_blank")} style={{ cursor: "pointer" }}>
+                        <img
+                          src={getPdfPreview(p.url)}
+                          className="w-100 h-100 object-fit-contain bg-white"
+                          alt="PDF Preview"
+                          onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/337/337946.png"}
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={p.url}
+                        className="w-100 h-100 object-fit-cover cursor-zoom-in"
+                        onClick={() => setSelectedImg(p.url)}
+                        alt=""
+                      />
+                    )}
                   </div>
 
-                  {/* Stats Bar */}
+                  {/* Stats Bar from your reference */}
                   <div className="px-3 py-2 d-flex justify-content-between align-items-center border-bottom mx-2">
                     <div className="d-flex align-items-center gap-1">
                       {uniqueReacts.length > 0 && (
                         <div className="d-flex align-items-center">
                           {uniqueReacts.slice(0, 3).map((r, i) => (
-                            <span key={r} style={{ fontSize: '14px', marginLeft: i > 0 ? '-5px' : '0', zIndex: 5 - i, textShadow: '0 0 2px white' }}>{getEmoji(r)}</span>
+                            <span key={r} style={{ fontSize: '14px', marginLeft: i > 0 ? '-5px' : '0', zIndex: 5 - i }}>{getEmoji(r)}</span>
                           ))}
                         </div>
                       )}
                       <span className="small fw-bold text-muted">{p.likes?.length || 0}</span>
                     </div>
-                    <div className="cursor-pointer text-secondary d-flex align-items-center gap-1" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
-                        <span className="small fw-bold">{p.comments?.length || 0} Comments</span>
+                    <div className="cursor-pointer text-secondary" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
+                      <span className="small fw-bold">{p.comments?.length || 0} Comments</span>
                     </div>
                   </div>
 
-                  {/* Actions (Enabled for Guest) */}
+                  {/* Actions Bar */}
                   <div className="card-body p-1">
                     <div className="d-flex align-items-center">
-                        <Suspense fallback="...">
-                          <LikeButton
-                            isLiked={isLiked}
-                            userReaction={userReaction}
-                            onClick={(reactionName) => {
-                              const r = { ...(p.reactions || {}) };
-                              if (reactionName) {
-                                r[currentUserId] = reactionName;
-                                updatePost(p.id, { likes: arrayUnion(currentUserId), reactions: r });
-                              } else {
-                                delete r[currentUserId];
-                                updatePost(p.id, { likes: arrayRemove(currentUserId), reactions: r });
-                              }
-                            }}
-                          />
-                        </Suspense>
-                        <button className="btn flex-grow-1 border-0 bg-transparent text-muted fw-bold btn-sm py-2" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
-                            <i className="bi bi-chat-square me-1"></i> Comment
-                        </button>
-                        <Suspense fallback="...">
-                            <DownloadButton imageUrl={p.url} imageId={p.id} count={p.downloadCount || 0} />
-                        </Suspense>
+                      <Suspense fallback="...">
+                        <LikeButton
+                          isLiked={isLiked}
+                          userReaction={userReaction}
+                          onClick={(reactionName) => {
+                            const r = { ...(p.reactions || {}) };
+                            if (reactionName) {
+                              r[currentUserId] = reactionName;
+                              updatePost(p.id, { likes: arrayUnion(currentUserId), reactions: r });
+                            } else {
+                              delete r[currentUserId];
+                              updatePost(p.id, { likes: arrayRemove(currentUserId), reactions: r });
+                            }
+                          }}
+                        />
+                      </Suspense>
+
+                      <button className="btn flex-grow-1 border-0 bg-transparent text-muted fw-bold btn-sm py-2" onClick={() => setShowComments(prev => ({ ...prev, [p.id]: !prev[p.id] }))}>
+                        <i className="bi bi-chat-square me-1"></i> Comment
+                      </button>
+
+                      <Suspense fallback="...">
+                        <DownloadButton imageUrl={p.url} imageId={p.id} count={p.downloadCount || 0} filename={p.title} />
+                      </Suspense>
                     </div>
 
-                    {/* Comments Toggle */}
+                    {/* Comments Toggle Section from your reference */}
                     {showComments[p.id] && (
                       <div className="mt-2 pt-2 border-top animate-fade-in px-2 pb-2">
                         <div className="overflow-auto mb-2 custom-scroll" style={{ maxHeight: '180px' }}>
                           {p.comments?.map(c => (
-                            <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 border-start border-danger border-3 text-start">
+                            <div key={c.commentId} className="bg-light rounded-3 p-2 mb-2 border-start border-danger border-3 text-start text-dark">
                               <div className="d-flex justify-content-between small fw-bold">
                                 <span>{c.userName}</span>
-                                {(isAdmin || c.userId === currentUserId) && <i className="bi bi-x-circle text-muted cursor-pointer" onClick={() => updatePost(p.id, { comments: arrayRemove(c) })}></i>}
+                                {(isAdmin || c.userId === currentUserId) && (
+                                  <i className="bi bi-x-circle text-muted cursor-pointer" onClick={() => updatePost(p.id, { comments: arrayRemove(c) })}></i>
+                                )}
                               </div>
                               <div className="small text-muted">{c.text}</div>
                             </div>
                           ))}
                         </div>
-                        {/* Comment Form - No login check here */}
                         <form className="input-group input-group-sm mt-2" onSubmit={(e) => {
                           e.preventDefault();
                           const t = comment[p.id]?.trim();
-                          if(!t) return;
-                          updatePost(p.id, { 
-                            comments: arrayUnion({ 
-                                text: t, 
-                                userId: currentUserId, 
-                                userName: displayName || "Guest", // guest name use ho raha hai
-                                commentId: uuidv4(), 
-                                createdAt: new Date().toISOString() 
-                            }) 
+                          if (!t) return;
+                          updatePost(p.id, {
+                            comments: arrayUnion({
+                              text: t,
+                              userId: currentUserId,
+                              userName: displayName || "Guest",
+                              commentId: uuidv4(),
+                              createdAt: new Date().toISOString()
+                            })
                           });
-                          setComment({...comment, [p.id]: ""});
+                          setComment({ ...comment, [p.id]: "" });
                         }}>
                           <input className="form-control border-0 bg-light rounded-start-pill px-3 shadow-none" placeholder="Write a comment..." value={comment[p.id] || ""} onChange={(e) => setComment({ ...comment, [p.id]: e.target.value })} />
                           <button className="btn btn-danger rounded-end-pill px-3 shadow-none"><i className="bi bi-send-fill"></i></button>
@@ -213,10 +283,10 @@ export default function PublicSocialGallery() {
         </div>
       </main>
 
-      {/* Lightbox & Upload modal stay as they are... */}
+      {/* Modals & Style remains the same */}
       {selectedImg && (
         <div className="fixed-top vh-100 w-100 d-flex align-items-center justify-content-center bg-black bg-opacity-90 z-3 p-2" onClick={() => setSelectedImg(null)}>
-          <img src={selectedImg} className="img-fluid rounded shadow-lg" style={{ maxHeight: '95vh' }} alt="F" />
+          <img src={selectedImg} className="img-fluid rounded shadow-lg" style={{ maxHeight: '95vh' }} alt="" />
         </div>
       )}
 
@@ -228,10 +298,19 @@ export default function PublicSocialGallery() {
               <button className="btn-close" onClick={() => setUp(p => ({ ...p, show: false }))}></button>
             </div>
             <div className="card-body">
-              <input type="file" className="form-control mb-3" accept="image/*" onChange={(e) => setUp(p => ({ ...p, file: e.target.files[0], preview: URL.createObjectURL(e.target.files[0]) }))} />
+              <input type="file" className="form-control mb-3" accept="image/*,video/*,.pdf"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (!file) return;
+                  let type = "image";
+                  if (file.type.startsWith("video/")) type = "video";
+                  else if (file.type === "application/pdf") type = "pdf";
+                  setUp(p => ({ ...p, file, preview: URL.createObjectURL(file), type }));
+                }}
+              />
               {up.preview && <img src={up.preview} className="w-100 rounded border mb-3 shadow-sm" style={{ maxHeight: '200px', objectFit: 'contain' }} alt="" />}
-              <input className="form-control mb-3 fw-bold shadow-none" placeholder="Image Title" value={up.title} onChange={(e) => setUp(p => ({ ...p, title: e.target.value }))} />
-              <button className="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow-sm" onClick={handleUpload} disabled={up.loading}>{up.loading ? "Processing..." : "Publish to Gallery"}</button>
+              <input className="form-control mb-3 fw-bold shadow-none" placeholder="Title" value={up.title} onChange={(e) => setUp(p => ({ ...p, title: e.target.value }))} />
+              <button className="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow-sm" onClick={handleUpload} disabled={up.loading}>{up.loading ? "Processing..." : "Publish"}</button>
             </div>
           </div>
         </div>
