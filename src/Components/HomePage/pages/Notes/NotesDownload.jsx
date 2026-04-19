@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../../firebase/firebase";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-} from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 export default function NotesDownload() {
   const [notes, setNotes] = useState([]);
@@ -23,6 +18,7 @@ export default function NotesDownload() {
         id: doc.id,
         ...doc.data(),
       }));
+
       setNotes(data);
       setLoading(false);
     });
@@ -30,7 +26,18 @@ export default function NotesDownload() {
     return () => unsub();
   }, []);
 
-  // PDF Viewer URL
+  // PDF Thumbnail
+  const getPdfPreview = (url) => {
+    if (!url) return "";
+    if (url.includes("cloudinary")) {
+      return url
+        .replace(/\.pdf$/i, ".jpg")
+        .replace("/upload/", "/upload/pg_1,f_auto,q_auto,w_500/");
+    }
+    return "https://cdn-icons-png.flaticon.com/512/337/337946.png";
+  };
+
+  // ✅ Google Viewer Embed
   const getViewerUrl = (url) => {
     return `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
       url
@@ -38,69 +45,77 @@ export default function NotesDownload() {
   };
 
   if (loading) {
-    return (
-      <div className="text-center p-5 fw-bold">
-        Loading PDFs...
-      </div>
-    );
+    return <div className="text-center p-5 fw-bold">Loading Notes...</div>;
   }
 
   return (
     <div className="container py-4">
       <h3 className="fw-bold mb-4">
-        📚 Notes <span className="text-danger">PDF</span>
+        📚 Study <span className="text-danger">Notes</span>
       </h3>
 
-      {notes.length === 0 ? (
-        <div className="alert alert-warning">
-          No PDFs Found
-        </div>
-      ) : (
-        <div className="row g-3">
-          {notes.map((note) => (
-            <div className="col-md-6" key={note.id}>
-              <div className="card shadow border-0 rounded-4 h-100">
-                <div className="card-body d-flex justify-content-between align-items-center">
-                  <div>
-                    <h6 className="fw-bold mb-1">
-                      📄 {note.title}
-                    </h6>
-                    <small className="text-muted">
-                      {note.uploadedBy || "Admin"}
-                    </small>
-                  </div>
+      <div className="row g-4">
+        {notes.map((note) => (
+          <div className="col-md-4 col-sm-6" key={note.id}>
+            <div className="card border-0 shadow rounded-4 h-100 overflow-hidden">
 
-                  <button
-                    className="btn btn-danger rounded-pill px-4"
-                    onClick={() =>
-                      setSelectedPdf({
-                        title: note.title,
-                        url: note.url,
-                      })
-                    }
-                  >
-                    View
-                  </button>
-                </div>
+              {/* Thumbnail */}
+              <div
+                style={{
+                  height: "220px",
+                  background: "#f8f9fa",
+                  cursor: "pointer",
+                }}
+                onClick={() => setSelectedPdf(note)}
+              >
+                <img
+                  src={getPdfPreview(note.url)}
+                  alt="thumb"
+                  className="w-100 h-100 object-fit-contain"
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <h6
+                  className="m-0 fw-bold text-truncate"
+                  style={{ maxWidth: "180px" }}
+                >
+                  {note.title}
+                </h6>
+
+                <button
+                  className="btn btn-danger btn-sm rounded-pill px-3"
+                  onClick={() => setSelectedPdf(note)}
+                >
+                  View
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
       {/* Modal */}
       {selectedPdf && (
         <div
           className="modal fade show d-block"
-          style={{ background: "rgba(0,0,0,.7)" }}
+          style={{
+            background: "rgba(0,0,0,.8)",
+            zIndex: 9999,
+          }}
         >
-          <div className="modal-dialog modal-xl modal-dialog-centered">
-            <div className="modal-content rounded-4 overflow-hidden">
-
+          <div
+            className="modal-dialog modal-xl modal-dialog-centered"
+            style={{ maxWidth: "96%" }}
+          >
+            <div
+              className="modal-content rounded-4 overflow-hidden border-0"
+              style={{ height: "92vh" }}
+            >
+              {/* Header */}
               <div className="modal-header bg-danger text-white">
-                <h5 className="modal-title">
-                  {selectedPdf.title}
-                </h5>
+                <h5 className="modal-title">{selectedPdf.title}</h5>
 
                 <button
                   className="btn-close btn-close-white"
@@ -108,16 +123,18 @@ export default function NotesDownload() {
                 ></button>
               </div>
 
-              <div className="modal-body p-0">
+              {/* Body */}
+              <div className="modal-body p-0 bg-light" style={{ height: "100%" }}>
                 <iframe
                   src={getViewerUrl(selectedPdf.url)}
+                  title="PDF Viewer"
                   width="100%"
-                  height="650"
-                  title="PDF"
+                  height="100%"
                   style={{ border: "none" }}
                 />
               </div>
 
+              {/* Footer */}
               <div className="modal-footer">
                 <a
                   href={selectedPdf.url}
@@ -125,7 +142,7 @@ export default function NotesDownload() {
                   rel="noreferrer"
                   className="btn btn-outline-danger"
                 >
-                  Open New Tab
+                  Open Full
                 </a>
 
                 <button
@@ -135,7 +152,6 @@ export default function NotesDownload() {
                   Close
                 </button>
               </div>
-
             </div>
           </div>
         </div>

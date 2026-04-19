@@ -14,8 +14,6 @@ import AttendanceDashboard from "./Students/Attendance/AttendanceDashboard";
 import AttendanceMark from "./Students/Attendance/AttendanceMark";
 import AttendanceSummary from "./Students/Attendance/AttendanceSummary";
 import AttendanceAnalytics from "./Students/Attendance/AttendanceAnalytics";
-import AdminGalleryUpload from "./Gallery/GalleryUpload";
-import AllPics from "./Gallery/AllPics";
 import CreateOffer from "./Offers/CreateOffer";
 import DeleteOffer from "./Offers/DeleteOffer";
 import AdminProfile from "./Profile/AdminProfile";
@@ -41,9 +39,6 @@ import AdminPracticeLive from "./Students/TestExamByAdminProvider/AdminPracticeL
 import AdminPracticeAssign from "./Students/TestExamByAdminProvider/AdminPracticeAssign.jsx";
 import AdminPracticeQuestionsManage from "./Students/TestExamByAdminProvider/AdminPracticeQuestionsManage.jsx";
 
-// Notes upload 
-import NotesUpload from "./Notes/NotesUpload.jsx";
-
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -63,8 +58,8 @@ export default function AdminRoutes() {
           <Route path="analytics" element={<AttendanceAnalytics />} />
         </Route>
 
-        <Route path="gallery" element={<AdminGalleryUpload />} />
-        <Route path="all-images" element={<AllPics />} />
+        {/* <Route path="gallery" element={<AdminGalleryUpload />} />
+        <Route path="all-images" element={<AllPics />} /> */}
         <Route path="new-offers" element={<CreateOffer />} />
         <Route path="delete-offers" element={<DeleteOffer />} />
         <Route path="profile" element={<AdminProfile />} />
@@ -95,12 +90,6 @@ export default function AdminRoutes() {
           <Route path="results" element={<AdminPracticeResults />} />
           <Route path="live" element={<AdminPracticeLive />} />
           <Route path="assign/:testId" element={<AdminPracticeAssign />} />
-        </Route>
-
-        <Route path="notes">
-          <Route index element={<NotesUpload />} /> 
-          <Route path="upload" element={<NotesUpload />} />
-          {/* <Route path="manage" element={<AllNotes />} /> */}
         </Route>
 
         <Route path="*" element={<Navigate to="/admin" replace />} />
