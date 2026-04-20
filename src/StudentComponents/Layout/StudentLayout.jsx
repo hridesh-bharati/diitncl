@@ -77,7 +77,7 @@ export default function StudentLayout() {
         </header>
 
         {/* MAIN CONTENT AREA */}
-        <main className="flex-grow-1 overflow-auto bg-light">
+        <main className="flex-grow-1 overflow-auto bg-primary-subtle">
           <div className="container-fluid p-0">
             <Outlet />
           </div>

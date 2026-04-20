@@ -82,7 +82,7 @@ export default function StudentDashboard() {
   );
 
   return (
-    <div className="pb-5 min-vh-100 bg-light animate__animated animate__fadeIn">
+    <div className="pb-5 min-vh-100  bg-light animate__animated animate__fadeIn">
       {/* Blue Header Section */}
       <div className="p-4 mb-4 text-white shadow" style={{ background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", borderRadius: "0 0 25px 25px" }}>
         <div className="container py-2">

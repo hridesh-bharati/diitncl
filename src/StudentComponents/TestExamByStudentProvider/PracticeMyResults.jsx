@@ -45,7 +45,7 @@ export default function PracticeMyResults() {
   if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary" /></div>;
 
   return (
-    <div className="container py-3">
+    <div className="container  py-3">
       {/* Header & Search */}
       <div className="row g-3 align-items-center mb-4">
         <div className="col-12 col-md-6">

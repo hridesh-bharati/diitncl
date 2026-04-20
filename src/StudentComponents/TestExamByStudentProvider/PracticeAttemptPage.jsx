@@ -168,9 +168,9 @@ export default function PracticeAttemptPage() {
   const progress = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
   return (
-    <div className="bg-white  d-flex flex-column">
+    <div className="d-flex flex-column">
       {/* --- 📱 Compact Top Bar --- */}
-      <div className="p-3  bg-white">
+      <div className="p-2 m-1 mb-0 bg-white">
         <div className="d-flex justify-content-between align-items-center small fw-bold mb-2">
           <span className="text-muted text-uppercase">{testInfo?.title}</span>
           {timeLeft !== null && (
@@ -185,7 +185,7 @@ export default function PracticeAttemptPage() {
       </div>
 
       {/* --- 📝 Question Area --- */}
-      <div className="p-4 flex-grow-1 bg-primary-subtle">
+      <div className="p-4 flex-grow-1 bg-white m-1">
         <div className="small text-primary fw-bold mb-1">QUESTION {currentIndex + 1}</div>
         <h5 className="fw-bold mb-4">{currentQ.question}</h5>
 
