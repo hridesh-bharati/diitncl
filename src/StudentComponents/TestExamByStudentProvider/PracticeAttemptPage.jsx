@@ -14,7 +14,7 @@ export default function PracticeAttemptPage() {
   const [answers, setAnswers] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // --- ⏱️ Timer States ---
   const [timeLeft, setTimeLeft] = useState(null);
   const timerRef = useRef(null);
@@ -30,24 +30,24 @@ export default function PracticeAttemptPage() {
       const details = questions.map(q => {
         const isCorrect = answers[q.id] === q.correct;
         if (isCorrect) score++;
-        return { 
-          question: q.question, 
-          options: q.options, 
-          correctOption: q.correct, 
-          selectedOption: answers[q.id] ?? null, 
-          isCorrect 
+        return {
+          question: q.question,
+          options: q.options,
+          correctOption: q.correct,
+          selectedOption: answers[q.id] ?? null,
+          isCorrect
         };
       });
 
       const email = auth.currentUser.email.toLowerCase();
       await setDoc(doc(db, "practiceResults", `${email}_${testId}`), {
-        score, 
-        totalQuestions: questions.length, 
+        score,
+        totalQuestions: questions.length,
         status: "Completed",
         percentage: questions.length > 0 ? ((score / questions.length) * 100).toFixed(2) : 0,
-        submittedAt: serverTimestamp(), 
+        submittedAt: serverTimestamp(),
         fullDetails: details,
-        submitReason: reason 
+        submitReason: reason
       }, { merge: true });
 
       if (reason === "Cheating") {
@@ -85,7 +85,7 @@ export default function PracticeAttemptPage() {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    return h > 0 
+    return h > 0
       ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
       : `${m}:${s.toString().padStart(2, '0')}`;
   };
@@ -120,10 +120,10 @@ export default function PracticeAttemptPage() {
         if (!tDoc.exists()) throw new Error("Test not found");
         const data = tDoc.data();
         setTestInfo(data);
-        
+
         // Initialize Timer (Assuming duration is in minutes)
         if (data.duration) {
-            setTimeLeft(data.duration * 60);
+          setTimeLeft(data.duration * 60);
         }
 
         const realName = sSnap.exists() ? sSnap.data().name : (user.displayName || email.split('@')[0]);
@@ -134,16 +134,20 @@ export default function PracticeAttemptPage() {
           status: "Ongoing", startedAt: serverTimestamp(),
         }, { merge: true });
 
+
         const qSnap = await getDocs(query(collection(db, "practiceQuestions"), where("testId", "==", testId)));
-        setQuestions(qSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) { 
-        console.error(err); 
+        const shuffled = qSnap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .sort(() => Math.random() - 0.5);
+        setQuestions(shuffled);
+      } catch (err) {
+        console.error(err);
       } finally { setLoading(false); }
     });
 
-    return () => { 
-      unsubAuth(); 
-      if (unsubAssign) unsubAssign(); 
+    return () => {
+      unsubAuth();
+      if (unsubAssign) unsubAssign();
     };
   }, [testId, navigate]);
 
@@ -164,63 +168,71 @@ export default function PracticeAttemptPage() {
   const progress = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
   return (
-    <div className="container py-3 bg-light min-vh-100">
-      <div className="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden">
-        <div className="card-body d-flex justify-content-between align-items-center p-3">
-          <div>
-            <h6 className="fw-bold mb-0 text-truncate">{testInfo?.title}</h6>
-            {/* --- ⏱️ LIVE COUNTER UI --- */}
-            {timeLeft !== null && (
-                <span className={`badge ${timeLeft < 60 ? 'bg-danger' : 'bg-dark'} mt-1`}>
-                   ⏱️ {formatTime(timeLeft)}
-                </span>
-            )}
-          </div>
-          <button className="btn btn-sm btn-outline-danger border-0 fw-bold" onClick={() => navigate(-1)}>Exit</button>
+    <div className="bg-white  d-flex flex-column">
+      {/* --- 📱 Compact Top Bar --- */}
+      <div className="p-3  bg-white">
+        <div className="d-flex justify-content-between align-items-center small fw-bold mb-2">
+          <span className="text-muted text-uppercase">{testInfo?.title}</span>
+          {timeLeft !== null && (
+            <span className={timeLeft < 60 ? 'text-danger' : 'text-dark'}>
+              ⏱️ {formatTime(timeLeft)}
+            </span>
+          )}
         </div>
-        <div className="progress rounded-0" style={{ height: '4px' }}>
-          <div className="progress-bar bg-primary transition-all" style={{ width: `${progress}%` }}></div>
+        <div className="progress" style={{ height: '4px' }}>
+          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
         </div>
       </div>
 
-      <div className="row justify-content-center">
-        <div className="col-lg-6">
-          {questions.length > 0 ? (
-            <>
-              <div className="card mb-3 p-4 shadow-sm border-0 rounded-5">
-                <div className="small text-muted mb-2 fw-bold text-uppercase">Question {currentIndex + 1} of {questions.length}</div>
-                <h5 className="fw-bold mb-4">{currentQ.question}</h5>
-                <div className="d-flex flex-column gap-2">
-                  {currentQ.options.map((opt, i) => (
-                    <label key={i} className={`form-check p-3 border rounded-4 cursor-pointer transition-all ${answers[currentQ.id] === i ? 'bg-primary-subtle border-primary' : 'bg-white border-light-subtle'}`} style={{cursor:'pointer'}}>
-                      <input className="form-check-input" type="radio" name={currentQ.id} checked={answers[currentQ.id] === i} onChange={() => setAnswers({ ...answers, [currentQ.id]: i })} hidden />
-                      <div className="d-flex align-items-center">
-                        <div className={`rounded-circle border me-3 d-flex align-items-center justify-content-center ${answers[currentQ.id] === i ? 'bg-primary border-primary text-white' : ''}`} style={{width: '24px', height: '24px', fontSize: '12px'}}>
-                          {String.fromCharCode(65 + i)}
-                        </div>
-                        <span className="fw-medium">{opt}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
+      {/* --- 📝 Question Area --- */}
+      <div className="p-4 flex-grow-1 bg-primary-subtle">
+        <div className="small text-primary fw-bold mb-1">QUESTION {currentIndex + 1}</div>
+        <h5 className="fw-bold mb-4">{currentQ.question}</h5>
 
-              <div className="d-flex gap-2 mb-5">
-                <button className="btn btn-white border-0 shadow-sm rounded-4 flex-grow-1 py-3 fw-bold" onClick={() => setCurrentIndex(c => c - 1)} disabled={currentIndex === 0}>Previous</button>
-                {currentIndex === questions.length - 1 ? (
-                  <button className="btn btn-success border-0 shadow rounded-4 flex-grow-1 py-3 fw-bold" disabled={isSubmitting} onClick={() => { if(window.confirm("Submit final paper?")) autoSubmitTest("Manual") }}>
-                    {isSubmitting ? "Submitting..." : "Finish Test"}
-                  </button>
-                ) : (
-                  <button className="btn btn-primary border-0 shadow rounded-4 flex-grow-1 py-3 fw-bold" onClick={() => setCurrentIndex(c => c + 1)}>Next</button>
-                )}
+        <div className="d-flex flex-column gap-2">
+          {currentQ.options.map((opt, i) => (
+            <div
+              key={i}
+              onClick={() => setAnswers({ ...answers, [currentQ.id]: i })}
+              className={`p-2 rounded-2 border transition-all cursor-pointer  d-flex align-items-center ${answers[currentQ.id] === i ? 'border-primary bg-primary-subtle' : 'border-light-subtle'
+                }`}
+            >
+              <div className={`me-3 small d-flex align-items-center justify-content-center rounded-circle border ${answers[currentQ.id] === i ? 'bg-primary text-white' : 'text-muted'
+                }`} style={{ width: '24px', height: '24px' }}>
+                {String.fromCharCode(65 + i)}
               </div>
-            </>
+              <span className="fw-medium">{opt}</span>
+            </div>
+          ))}
+        </div>
+        {/* --- 🎮 Action Buttons --- */}
+        <div className="p-2 m-2 d-flex gap-2 bg-light">
+          <button
+            className="btn btn-secondary border-0 flex-grow-1 py-2 fw-bold"
+            onClick={() => setCurrentIndex(c => c - 1)}
+            disabled={currentIndex === 0}
+          >
+            Back
+          </button>
+
+          {currentIndex === questions.length - 1 ? (
+            <button
+              className="btn btn-success flex-grow-1 py-2 fw-bold"
+              onClick={() => { if (window.confirm("Submit?")) autoSubmitTest("Manual") }}
+            >
+              Finish
+            </button>
           ) : (
-            <div className="text-center p-5">No questions found.</div>
+            <button
+              className="btn btn-primary flex-grow-1 py-2 fw-bold"
+              onClick={() => setCurrentIndex(c => c + 1)}
+            >
+              Next
+            </button>
           )}
         </div>
       </div>
+
     </div>
   );
 }
