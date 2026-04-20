@@ -40,38 +40,41 @@ export default function StudentLayout() {
         <header className="bg-white border-bottom shadow-sm px-3 py-2" style={{ minHeight: '70px', zIndex: 1000 }}>
           <div className="h-100 d-flex align-items-center justify-content-between">
 
-            {/* LEFT: Menu & Title */}
-            <div className="d-flex align-items-center gap-2">
-              <button className="btn btn-light d-lg-none rounded-circle border shadow-sm" onClick={() => setOpen(true)}>
-                <i className="bi bi-list fs-4"></i>
-              </button>
-              <h5 className="mb-0 fw-bold text-dark d-none d-md-block">Learning Portal</h5>
+            {/* LEFT: PROFILE CHIP (Ab ye left mein rahega) */}
+            <div
+              className="d-flex align-items-center p-1 pe-md-3 rounded-pill border bg-white shadow-sm transition-all"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setOpen(true)}
+            >
+              <img
+                src={userPic || `https://ui-avatars.com/api/?name=${userName || 'User'}&background=4361ee&color=fff&bold=true`}
+                alt="profile"
+                className="rounded-circle border border-2 border-white"
+                style={{ width: 35, height: 35, objectFit: "cover" }}
+              />
+              <span className="ms-2 d-none d-md-inline fw-bold small text-muted">
+                Hi, {userName?.split(' ')[0]}
+              </span>
             </div>
 
-            {/* RIGHT: Home & Profile */}
+            {/* RIGHT: Home, Test & Settings (Ye buttons right side chale jayenge) */}
             <div className="d-flex align-items-center gap-2 gap-md-3">
-              
+
               {/* HOME BUTTON */}
               <Link to="/student/dashboard" className="btn btn-light rounded-circle border-0">
                 <i className="bi bi-house-door-fill text-secondary fs-5"></i>
               </Link>
 
-              {/* PROFILE CHIP */}
-              <div 
-                className="d-flex align-items-center p-1 pe-md-3 rounded-pill border bg-white shadow-sm transition-all" 
-                style={{ cursor: 'pointer' }} 
-                onClick={() => setOpen(true)}
-              >
-                <img
-                  src={userPic || `https://ui-avatars.com/api/?name=${userName || 'User'}&background=4361ee&color=fff&bold=true`}
-                  alt="profile" 
-                  className="rounded-circle border border-2 border-white"
-                  style={{ width: 35, height: 35, objectFit: "cover" }}
-                />
-                <span className="ms-2 d-none d-md-inline fw-bold small text-muted">
-                  Hi, {userName?.split(' ')[0]}
-                </span>
-              </div>
+              {/* Test Exam */}
+              <Link to="/student/practice-tests" className="btn btn-light rounded-circle border-0">
+                <i className="bi-ui-checks-grid text-secondary fs-5"></i>
+              </Link>
+
+              {/* Setting */}
+              <Link to="/student/account" className="btn btn-light rounded-circle border-0">
+                <i className="bi-gear text-secondary fs-5"></i>
+              </Link>
+
             </div>
           </div>
         </header>

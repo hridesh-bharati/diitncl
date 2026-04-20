@@ -55,7 +55,7 @@ export default function AccountSection() {
   };
 
   return (
-    <div className="container bg-light">
+    <div className="container-fluid">
       {/* Profile Header */}
       {/* <div className="text-center py-5">
         <div className="position-relative d-inline-block mb-3">
@@ -73,7 +73,7 @@ export default function AccountSection() {
       </div> */}
 
       {/* Settings Options */}
-      <div className="container">
+      <div className="container bg-white p-4  mt-2">
         <p className="text-uppercase small fw-bold text-muted mt-2">Security & Help</p>
         <p className="text-primary small"><b>Email id: </b>{user?.email}</p>
 
