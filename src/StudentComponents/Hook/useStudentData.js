@@ -9,7 +9,6 @@ export function useStudentData() {
   const [user, setUser] = useState(auth.currentUser);
 
   useEffect(() => {
-    // 1. Auth Listener: Ye check karta rahega ki user login hai ya nahi
     const unsubAuth = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       

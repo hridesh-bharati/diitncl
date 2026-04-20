@@ -1,4 +1,6 @@
+// src\StudentComponents\TestExamByStudentProvider\PracticeMyResults.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import { auth, db } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -9,22 +11,42 @@ export default function PracticeMyResults() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedResult, setSelectedResult] = useState(null);
+  const { testId } = useParams();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) return setLoading(false);
-      const q = query(collection(db, "practiceResults"), 
-                where("studentEmail", "==", user.email.toLowerCase()), 
-                where("status", "==", "Completed"));
-      
+      const q = query(collection(db, "practiceResults"),
+        where("studentEmail", "==", user.email.toLowerCase()),
+        where("status", "==", "Completed"));
+
       return onSnapshot(q, (snap) => {
-        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setResults(data.sort((a, b) => (b.submittedAt?.seconds || 0) - (a.submittedAt?.seconds || 0)));
+        const data = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+
+        const sorted = data.sort(
+          (a, b) =>
+            (b.submittedAt?.seconds || 0) -
+            (a.submittedAt?.seconds || 0)
+        );
+
+        if (testId) {
+          const onlyCurrent = sorted.filter(
+            (item) => item.testId === testId
+          );
+          setResults(onlyCurrent);
+        } else {
+          setResults(sorted);
+        }
+
         setLoading(false);
       });
+
     });
     return () => unsub();
-  }, []);
+  }, [testId]);
 
   const exportPDF = () => {
     const element = document.getElementById("pdf-content");
@@ -37,15 +59,15 @@ export default function PracticeMyResults() {
     html2pdf().set(opt).from(element).save();
   };
 
-  const filtered = useMemo(() => 
-    results.filter(r => r.testTitle?.toLowerCase().includes(searchTerm.toLowerCase())), 
+  const filtered = useMemo(() =>
+    results.filter(r => r.testTitle?.toLowerCase().includes(searchTerm.toLowerCase())),
     [results, searchTerm]
   );
 
   if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary" /></div>;
 
   return (
-    <div className="container  py-3">
+    <div className="container py-3">
       {/* Header & Search */}
       <div className="row g-3 align-items-center mb-4">
         <div className="col-12 col-md-6">
@@ -87,11 +109,11 @@ export default function PracticeMyResults() {
                   <button className="btn-close shadow-none" onClick={() => setSelectedResult(null)}></button>
                 </div>
               </div>
-              
+
               <div className="modal-body p-3 bg-light" id="pdf-content">
                 <div className="bg-white p-3 rounded-3 shadow-sm mb-3 border-start border-4 border-primary">
-                    <h5 className="fw-bold mb-1">{selectedResult.testTitle}</h5>
-                    <p className="small text-muted m-0">Score: {selectedResult.score}/{selectedResult.totalQuestions} ({selectedResult.percentage}%)</p>
+                  <h5 className="fw-bold mb-1">{selectedResult.testTitle}</h5>
+                  <p className="small text-muted m-0">Score: {selectedResult.score}/{selectedResult.totalQuestions} ({selectedResult.percentage}%)</p>
                 </div>
 
                 {selectedResult.fullDetails?.map((item, idx) => (
@@ -99,7 +121,7 @@ export default function PracticeMyResults() {
                     <div className="small fw-bold mb-2">{idx + 1}. {item.question}</div>
                     {item.options.map((opt, i) => (
                       <div key={i} className={`p-2 rounded-2 small mb-1 border ${i === item.correctOption ? 'bg-success-subtle border-success text-success fw-bold' : i === item.selectedOption ? 'bg-danger-subtle border-danger text-danger' : 'bg-white text-muted'}`}>
-                        {opt} {i === item.selectedOption && <span style={{fontSize:'8px'}} className="ms-2 badge bg-dark">YOU</span>}
+                        {opt} {i === item.selectedOption && <span style={{ fontSize: '8px' }} className="ms-2 badge bg-dark">YOU</span>}
                       </div>
                     ))}
                   </div>

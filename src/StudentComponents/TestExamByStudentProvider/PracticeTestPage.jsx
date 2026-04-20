@@ -31,10 +31,21 @@ export default function PracticeTestPage() {
 
         const listPromises = snap.docs.map(async (d) => {
           const tId = d.data().testId;
-          if (tId === "testId") return null;
+          if (!tId) return null;
 
           const tDoc = await getDoc(doc(db, "practiceTests", tId));
-          return tDoc.exists() ? { id: tDoc.id, ...tDoc.data() } : null;
+          if (!tDoc.exists()) return null;
+
+          const resultRef = doc(db, "practiceResults", `${userEmail}_${tId}`);
+          const resultSnap = await getDoc(resultRef);
+
+          return {
+            id: tId,
+            ...tDoc.data(),
+            completed:
+              resultSnap.exists() &&
+              resultSnap.data().status === "Completed",
+          };
         });
 
         const resolved = await Promise.all(listPromises);
@@ -49,7 +60,7 @@ export default function PracticeTestPage() {
   return (
     <div className="container py-4">
       <h3 className="fw-bold mb-4">Practice Hub <span className="badge bg-primary rounded-pill fs-6">{tests.length}</span></h3>
-      <div className="row g-4">
+      <div className="row g-4 mb-5 pb-3 mb-lg-0 pb-lg-0">
         {tests.map((test) => (
           <div className="col-md-4" key={test.id}>
             <div className="card h-100 shadow-sm border-0 rounded-4 p-3 text-center">
@@ -60,12 +71,24 @@ export default function PracticeTestPage() {
               <p className="small text-muted mb-4">⏱ {test.duration} Minutes</p>
 
               {/* Functional Button */}
-              <button
-                className="btn btn-primary w-100 rounded-pill py-2 fw-bold"
-                onClick={() => navigate(`/student/practice-tests/attempt/${test.id}`)}
-              >
-                Start Test
-              </button>
+              {test.completed ? (
+                <button
+                  className="btn btn-success w-100 rounded-pill py-2 fw-bold"
+                  onClick={() =>
+                    navigate(`/student/practice-tests/results/${test.id}`)
+                  }
+                >
+                  View Result
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary w-100 rounded-pill py-2 fw-bold"
+                  onClick={() => navigate(`/student/practice-tests/attempt/${test.id}`)}
+                >
+                  Start Test
+                </button>
+              )}
+
             </div>
           </div>
         ))}

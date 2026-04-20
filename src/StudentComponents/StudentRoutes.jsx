@@ -39,6 +39,7 @@ export default function StudentRoutes() {
           <Route index element={<PracticeTestPage />} />
           <Route path="attempt/:testId" element={<PracticeAttemptPage />} />
           <Route path="results" element={<PracticeMyResults />} />
+          <Route path="results/:testId" element={<PracticeMyResults />} />
         </Route>
 
 

@@ -213,19 +213,27 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
         </div>
 
+        {/* --- ACTION BUTTONS (Certificate, Fees, Test Paper) --- */}
         <div className="row g-3 mb-4">
-          <div className="col-md-6">
+          <div className="col-12 col-md-4">
             <button className={`btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2 ${formData.certificateDisabled ? 'opacity-50' : ''}`}
               onClick={() => !formData.certificateDisabled && navigate(`/admin/students/${formData.email}/certificate`)}>
               <i className={`bi ${formData.certificateDisabled ? 'bi-lock-fill text-danger' : 'bi-patch-check-fill text-primary'} fs-5`}></i>
               <span className="fw-bold">{formData.certificateDisabled ? 'PORTAL LOCKED' : 'CERTIFICATE'}</span>
             </button>
           </div>
-          <div className="col-md-6">
+          <div className="col-6 col-md-4">
             <button className="btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2"
               onClick={() => navigate(`/admin/students/${formData.email}/fees`, { state: { studentData: formData } })}>
               <i className="bi bi-cash-stack text-success fs-5"></i>
               <span className="fw-bold">FEE REPORT</span>
+            </button>
+          </div>
+          <div className="col-6 col-md-4">
+            <button className="btn w-100 py-3 rounded-4 glass-card border-0 d-flex align-items-center justify-content-center gap-2"
+              onClick={() => navigate(`/admin/students/${formData.email}/test-records`)}>
+              <i className="bi bi-file-earmark-text-fill text-warning fs-5"></i>
+              <span className="fw-bold">TEST PAPER</span>
             </button>
           </div>
         </div>
@@ -284,7 +292,6 @@ const ProfileContent = ({ admissions, loading, error }) => {
           </div>
         </div>
 
-        {/* --- STATUS SWITCH (NO NOTIFICATIONS) --- */}
         <div className="glass-panel p-3 mb-5 border-0 d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <div className={`p-3 rounded-circle me-3 ${formData.certificateDisabled ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'}`}>

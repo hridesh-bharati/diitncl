@@ -1,3 +1,4 @@
+// src\StudentComponents\TestExamByStudentProvider\PracticeAttemptPage.jsx
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db, auth } from "../../firebase/firebase";
@@ -21,7 +22,7 @@ export default function PracticeAttemptPage() {
 
   // --- 🔥 Function to Handle Submit ---
   const autoSubmitTest = useCallback(async (reason = "Manual") => {
-    if (isSubmitting) return;
+    if (isSubmitting || questions.length === 0) return;
     setIsSubmitting(true);
     if (timerRef.current) clearInterval(timerRef.current); // Stop timer on submit
 
@@ -39,7 +40,10 @@ export default function PracticeAttemptPage() {
         };
       });
 
-      const email = auth.currentUser.email.toLowerCase();
+      const user = auth.currentUser;
+      if (!user) return;
+      const email = user.email.toLowerCase().trim();
+
       await setDoc(doc(db, "practiceResults", `${email}_${testId}`), {
         score,
         totalQuestions: questions.length,
@@ -57,7 +61,8 @@ export default function PracticeAttemptPage() {
       } else {
         toast.success("Submitted successfully!");
       }
-      navigate("/student/practice-tests/results", { replace: true });
+      navigate(`/student/practice-tests/results/${testId}`,{ replace: true }
+      );
     } catch (err) {
       console.error(err);
       setIsSubmitting(false);
@@ -100,7 +105,10 @@ export default function PracticeAttemptPage() {
         const assignRef = doc(db, "practiceAssigned", `${email}_${testId}`);
 
         const rSnap = await getDoc(resultRef);
-        if (rSnap.exists() && rSnap.data().status === "Completed") {
+        if (
+          rSnap.exists() &&
+          ["Completed", "Submitted"].includes(rSnap.data().status)
+        ) {
           toast.warning("You have already completed this test!");
           return navigate("/student/practice-tests/results", { replace: true });
         }
@@ -164,7 +172,10 @@ export default function PracticeAttemptPage() {
 
   if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary" /></div>;
 
-  const currentQ = questions[currentIndex];
+  const currentQ = questions[currentIndex] || null;
+  if (!currentQ) {
+    return <div className="text-center p-5">No Questions Found</div>;
+  }
   const progress = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
   return (
