@@ -8,13 +8,15 @@ export default function StudentLayout() {
   const [open, setOpen] = useState(false);
   const [userPic, setUserPic] = useState(null);
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState(""); // Email state for public link
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (user?.email) {
         const emailId = user.email.trim().toLowerCase();
+        setUserEmail(emailId); // Save email for route
 
-        // Real-time Student Profile Data (for Image & Name)
+        // Real-time Student Profile Data
         const unsubscribeUser = onSnapshot(doc(db, "admissions", emailId), (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -40,7 +42,7 @@ export default function StudentLayout() {
         <header className="bg-white border-bottom shadow-sm px-3 py-2" style={{ minHeight: '70px', zIndex: 1000 }}>
           <div className="h-100 d-flex align-items-center justify-content-between">
 
-            {/* LEFT: PROFILE CHIP (Ab ye left mein rahega) */}
+            {/* LEFT: PROFILE CHIP */}
             <div
               className="d-flex align-items-center p-1 pe-md-3 rounded-pill border bg-white shadow-sm transition-all"
               style={{ cursor: 'pointer' }}
@@ -57,8 +59,20 @@ export default function StudentLayout() {
               </span>
             </div>
 
-            {/* RIGHT: Home, Test & Settings (Ye buttons right side chale jayenge) */}
+            {/* RIGHT: Buttons */}
             <div className="d-flex align-items-center gap-2 gap-md-3">
+
+              {/* ✨ NEW: PUBLIC PROFILE BUTTON */}
+              {userEmail && (
+                <Link 
+                  to={`/profile/${userEmail}`} 
+                  className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                  style={{ fontSize: '12px' }}
+                >
+                  <i className="bi bi-globe2"></i>
+                  <span className="d-none d-sm-inline">Public Profile</span>
+                </Link>
+              )}
 
               {/* HOME BUTTON */}
               <Link to="/student/dashboard" className="btn btn-light rounded-circle border-0">

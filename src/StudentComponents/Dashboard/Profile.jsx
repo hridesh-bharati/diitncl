@@ -1,3 +1,4 @@
+// src\StudentComponents\Dashboard\Profile.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { doc, onSnapshot } from "firebase/firestore";

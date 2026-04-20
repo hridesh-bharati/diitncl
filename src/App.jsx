@@ -21,6 +21,7 @@ import { doc, setDoc, increment, getDoc, updateDoc } from "firebase/firestore";
 import { getMessaging, onMessage, isSupported } from "firebase/messaging";
 import { vibration } from "./Components/MobileAccessories/vibration";
 import NotesDownload from "./Components/HomePage/pages/Notes/NotesDownload";
+import PublicProfile from "./Components/HomePage/pages/RecentStudents/PublicProfile";
 
 
 
@@ -242,6 +243,9 @@ export default function App() {
               <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
               {/* Notes  */}
               <Route path="/notes-download" element={<HelmetManager><NotesDownload /></HelmetManager>} />
+              {/* Public pofile  */}
+              <Route path="/profile/:userId" element={<PublicProfile />} />
+
 
               {/* Protected Routes */}
               <Route
