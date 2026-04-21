@@ -8,13 +8,11 @@ export default function StudentLayout() {
   const [open, setOpen] = useState(false);
   const [userPic, setUserPic] = useState(null);
   const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState(""); // Email state for public link
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (user?.email) {
         const emailId = user.email.trim().toLowerCase();
-        setUserEmail(emailId); // Save email for route
 
         // Real-time Student Profile Data
         const unsubscribeUser = onSnapshot(doc(db, "admissions", emailId), (docSnap) => {
@@ -39,40 +37,31 @@ export default function StudentLayout() {
 
       <div className="d-flex flex-column flex-grow-1 min-vw-0">
         {/* HEADER */}
-        <header className="bg-white border-bottom shadow-sm px-3 py-2" style={{ minHeight: '70px', zIndex: 1000 }}>
+        <header className="bg-white border-bottom shadow-sm px-3 py-2" style={{ minHeight: "70px", zIndex: 1000 }}>
           <div className="h-100 d-flex align-items-center justify-content-between">
 
             {/* LEFT: PROFILE CHIP */}
             <div
-              className="d-flex align-items-center p-1 pe-md-3 rounded-pill border bg-white shadow-sm transition-all"
-              style={{ cursor: 'pointer' }}
+              className="d-flex align-items-center p-1 pe-md-3 rounded-pill border bg-white shadow-sm"
+              style={{ cursor: "pointer" }}
               onClick={() => setOpen(true)}
             >
               <img
-                src={userPic || `https://ui-avatars.com/api/?name=${userName || 'User'}&background=4361ee&color=fff&bold=true`}
+                src={
+                  userPic ||
+                  `https://ui-avatars.com/api/?name=${userName || "User"}&background=4361ee&color=fff&bold=true`
+                }
                 alt="profile"
                 className="rounded-circle border border-2 border-white"
                 style={{ width: 35, height: 35, objectFit: "cover" }}
               />
               <span className="ms-2 d-none d-md-inline fw-bold small text-muted">
-                Hi, {userName?.split(' ')[0]}
+                Hi, {userName?.split(" ")[0]}
               </span>
             </div>
 
             {/* RIGHT: Buttons */}
             <div className="d-flex align-items-center gap-2 gap-md-3">
-
-              {/* ✨ NEW: PUBLIC PROFILE BUTTON */}
-              {userEmail && (
-                <Link 
-                  to={`/profile/${userEmail}`} 
-                  className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
-                  style={{ fontSize: '12px' }}
-                >
-                  <i className="bi bi-globe2"></i>
-                  <span className="d-none d-sm-inline">Public Profile</span>
-                </Link>
-              )}
 
               {/* HOME BUTTON */}
               <Link to="/student/dashboard" className="btn btn-light rounded-circle border-0">
@@ -81,12 +70,12 @@ export default function StudentLayout() {
 
               {/* Test Exam */}
               <Link to="/student/practice-tests" className="btn btn-light rounded-circle border-0">
-                <i className="bi-ui-checks-grid text-secondary fs-5"></i>
+                <i className="bi bi-ui-checks-grid text-secondary fs-5"></i>
               </Link>
 
               {/* Setting */}
               <Link to="/student/account" className="btn btn-light rounded-circle border-0">
-                <i className="bi-gear text-secondary fs-5"></i>
+                <i className="bi bi-gear text-secondary fs-5"></i>
               </Link>
 
             </div>
