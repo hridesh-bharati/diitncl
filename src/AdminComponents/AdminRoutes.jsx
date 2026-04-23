@@ -39,6 +39,7 @@ import AdminPracticeLive from "./Students/TestExamByAdminProvider/AdminPracticeL
 import AdminPracticeAssign from "./Students/TestExamByAdminProvider/AdminPracticeAssign.jsx";
 import AdminPracticeQuestionsManage from "./Students/TestExamByAdminProvider/AdminPracticeQuestionsManage.jsx";
 import StudentTestRecords from "./Students/TestExamByAdminProvider/StudentTestRecords.jsx";
+import AdminPracticeDashboard from "./Students/TestExamByAdminProvider/AdminPracticeDashboard.jsx";
 
 export default function AdminRoutes() {
   return (
@@ -51,7 +52,7 @@ export default function AdminRoutes() {
         <Route path="students/:id/certificate" element={<StudentCertificate />} />
         <Route path="students/:id/fees" element={<FeePage />} />
         <Route path="students/:id/test-records" element={<StudentTestRecords />} />
-        
+
         {/* Attendance Group */}
         <Route path="students/attendance">
           <Route index element={<AttendanceDashboard />} />
@@ -87,7 +88,8 @@ export default function AdminRoutes() {
 
 
         <Route path="practice-tests">
-          <Route index element={<AdminPracticeUpload />} />
+          <Route index element={<AdminPracticeDashboard />} />
+          <Route path="upload" element={<AdminPracticeUpload />} />
           <Route path="questions" element={<AdminPracticeQuestionsManage />} />
           <Route path="results" element={<AdminPracticeResults />} />
           <Route path="live" element={<AdminPracticeLive />} />

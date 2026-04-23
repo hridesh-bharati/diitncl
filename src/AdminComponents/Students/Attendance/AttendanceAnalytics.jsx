@@ -1,62 +1,44 @@
 import React, { useEffect, useState, useMemo } from "react";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend
-} from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase/firebase";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
 export default function AttendanceAnalytics() {
-
   const [present, setPresent] = useState(0);
   const [absent, setAbsent] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-
+    const fetch = async () => {
       const snap = await getDocs(collection(db, "attendance"));
+      let p = 0, a = 0;
 
-      let p = 0;
-      let a = 0;
-
-      snap.docs.forEach(doc => {
-
-        const records = doc.data().records || [];
-
-        records.forEach(r => {
-          if (r.status === "Present") p++;
-          else a++;
+      snap.forEach(doc => {
+        (doc.data().records || []).forEach(r => {
+          r.status === "Present" ? p++ : a++;
         });
-
       });
 
       setPresent(p);
       setAbsent(a);
     };
 
-    fetchData();
+    fetch();
   }, []);
 
   const data = useMemo(() => ({
     labels: ["Present", "Absent"],
-    datasets: [
-      {
-        data: [present, absent],
-        backgroundColor: ["#198754", "#dc3545"]
-      }
-    ]
+    datasets: [{
+      data: [present, absent],
+      backgroundColor: ["#198754", "#dc3545"],
+      borderWidth: 0
+    }]
   }), [present, absent]);
 
   return (
-    <div className="container py-4">
-      <h4>Attendance Analytics</h4>
+    <div className="container py-3">
+      <h5 className="mb-3">Attendance Analytics</h5>
 
-      <div style={{ width: "100%", maxWidth: 400, height: 300 }}>
+      <div className="border rounded-3 p-3" style={{ maxWidth: 320 }}>
         <Doughnut data={data} />
       </div>
     </div>

@@ -269,7 +269,7 @@ export default function Header() {
             </div>
 
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
-              <div className="ios-menu-title px-3 pt-3">Academics</div>
+              <div className="ios-menu-title text-primary px-3 pt-3">Academics</div>
               <div className="px-2">
                 {courseLinks.map((link, index) => (
                   <Link key={link.to} to={link.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
@@ -288,7 +288,7 @@ export default function Header() {
 
 
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
-              <div className="ios-menu-title px-3 pt-3">Support & Location</div>
+              <div className="ios-menu-title text-primary px-3 pt-3">Support & Location</div>
               <div className="px-2">
                 <Link to="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                   <div className="ios-menu-item justify-content-between">
@@ -314,7 +314,7 @@ export default function Header() {
 
 
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
-              <div className="ios-menu-title px-3 pt-3">App Settings</div>
+              <div className="ios-menu-title text-primary px-3 pt-3">App Settings</div>
               <div className="ios-menu-item no-hover justify-content-between border-bottom border-light mx-2">
                 <div className="d-flex align-items-center gap-3">
                   <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
@@ -345,7 +345,7 @@ export default function Header() {
 
 
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
-              <div className="ios-menu-title px-3 pt-3">Legal</div>
+              <div className="ios-menu-title text-primary px-3 pt-3">Legal</div>
               <div className="px-2">
                 <Link to="/terms" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                   <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
@@ -387,7 +387,7 @@ export default function Header() {
             </div>
 
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4 overflow-hidden">
-              <div className="ios-menu-title px-3 pt-3">Support</div>
+              <div className="ios-menu-title text-primary px-3 pt-3">Support</div>
 
               {/* Poori row ko NavLink bana diya */}
               <NavLink
@@ -411,7 +411,7 @@ export default function Header() {
 
           <div className="mt-4 pb-4">
             {user ? (
-              <button onClick={handleLogout} className="btn btn-white w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0">Sign Out</button>
+              <button onClick={handleLogout} className="btn btn-white bg-white w-100 py-3 rounded-4 fw-bold text-danger shadow-sm border-0">Sign Out</button>
             ) : (
               <button onClick={openLogin} className="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow">Login to Portal</button>
             )}
