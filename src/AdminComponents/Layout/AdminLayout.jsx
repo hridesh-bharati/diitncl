@@ -13,7 +13,8 @@ export default function AdminLayout() {
 
   // Navigation items
   const navItems = [
-    { icon: "bi-house-fill", label: "Dashboard", count: 0, link: "/admin" },
+    { icon: "bi-house-fill", label: "Home", count: 0, link: "/" },
+    { icon: "bi-speedometer2", label: "Dashboard", count: 0, link: "/admin" },
     { icon: "bi-file-text-fill", label: "Exams", count: counts.exams, link: "/admin/exams" },
     { icon: "bi-people-fill", label: "Students", count: counts.total, link: "/admin/admitted-student-list" },
     { icon: "bi-chat-dots-fill", label: "Queries", count: counts.queries, link: "/admin/clients-contacts" },
@@ -43,8 +44,8 @@ export default function AdminLayout() {
                 >
                   <div
                     className={`position-relative d-flex align-items-center px-3 py-1 rounded-pill ${location.pathname === item.link
-                        ? "bg-secondary-subtle text-dark shadow-sm"
-                        : "text-secondary"
+                      ? "bg-secondary-subtle text-dark shadow-sm"
+                      : "text-secondary"
                       }`}
                   >
                     <div className="position-relative">

@@ -20,11 +20,11 @@ export default function PracticeAttemptPage() {
   const [timeLeft, setTimeLeft] = useState(null);
   const timerRef = useRef(null);
 
-  // --- 🔥 Function to Handle Submit ---
+  // --- 🔥 Function to Handle Submit (UPDATED) ---
   const autoSubmitTest = useCallback(async (reason = "Manual") => {
     if (isSubmitting || questions.length === 0) return;
     setIsSubmitting(true);
-    if (timerRef.current) clearInterval(timerRef.current); // Stop timer on submit
+    if (timerRef.current) clearInterval(timerRef.current);
 
     try {
       let score = 0;
@@ -44,7 +44,9 @@ export default function PracticeAttemptPage() {
       if (!user) return;
       const email = user.email.toLowerCase().trim();
 
+      // UPDATED: Yahan testTitle ko save kar rahe hain taaki delete hone par bhi data rahe
       await setDoc(doc(db, "practiceResults", `${email}_${testId}`), {
+        testTitle: testInfo?.title || "Practice Test", // <--- CRITICAL LINE
         score,
         totalQuestions: questions.length,
         status: "Completed",
@@ -61,14 +63,75 @@ export default function PracticeAttemptPage() {
       } else {
         toast.success("Submitted successfully!");
       }
-      navigate(`/student/practice-tests/results/${testId}`,{ replace: true }
-      );
+      navigate(`/student/practice-tests/results/${testId}`, { replace: true });
     } catch (err) {
       console.error(err);
       setIsSubmitting(false);
     }
-  }, [answers, questions, testId, navigate, isSubmitting]);
+  }, [answers, questions, testId, navigate, isSubmitting, testInfo]); // Added testInfo to dependency
 
+  // --- ⏲️ Initial Load & Timer Logic ---
+  useEffect(() => {
+    let unsubAssign = null;
+    const unsubAuth = onAuthStateChanged(auth, async (user) => {
+      if (!user) return navigate("/login");
+      try {
+        const email = user.email.toLowerCase().trim();
+        const resultRef = doc(db, "practiceResults", `${email}_${testId}`);
+        const assignRef = doc(db, "practiceAssigned", `${email}_${testId}`);
+
+        const rSnap = await getDoc(resultRef);
+        if (rSnap.exists() && ["Completed", "Submitted"].includes(rSnap.data().status)) {
+          toast.warning("You have already completed this test!");
+          return navigate("/student/practice-tests", { replace: true });
+        }
+
+        unsubAssign = onSnapshot(assignRef, (snap) => {
+          if (!snap.exists() && !isSubmitting) {
+            toast.error("Access Revoked!");
+            navigate("/student/practice-tests", { replace: true });
+          }
+        });
+
+        const [tDoc, sSnap] = await Promise.all([
+          getDoc(doc(db, "practiceTests", testId)),
+          getDoc(doc(db, "admissions", email))
+        ]);
+
+        if (!tDoc.exists()) throw new Error("Test not found");
+        const data = tDoc.data();
+        setTestInfo(data); // Title yahan se mil raha hai
+
+        if (data.duration) setTimeLeft(data.duration * 60);
+
+        const realName = sSnap.exists() ? sSnap.data().name : (user.displayName || email.split('@')[0]);
+
+        // Initial entry mein hi title save kar dena best practice hai
+        await setDoc(resultRef, {
+          testId,
+          testTitle: data?.title || "Practice Test", // <--- Save title on start
+          studentEmail: email,
+          studentName: realName,
+          status: "Ongoing",
+          startedAt: serverTimestamp(),
+        }, { merge: true });
+
+        const qSnap = await getDocs(query(collection(db, "practiceQuestions"), where("testId", "==", testId)));
+        const shuffled = qSnap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .sort(() => Math.random() - 0.5);
+        setQuestions(shuffled);
+      } catch (err) {
+        console.error(err);
+      } finally { setLoading(false); }
+    });
+
+    return () => {
+      unsubAuth();
+      if (unsubAssign) unsubAssign();
+    };
+  }, [testId, navigate]);
+  
   // --- ⏲️ Timer Logic ---
   useEffect(() => {
     if (timeLeft === null) return;

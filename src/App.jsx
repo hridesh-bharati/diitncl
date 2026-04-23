@@ -197,12 +197,16 @@ export default function App() {
 
 
   if (loading) return <LoadingSpinner />;
-
+  // can remove for alwase visivilaty header 
+  const isStudentDashboard = location.pathname.startsWith("/student");
+  const isAdminDashboard = location.pathname.startsWith("/admin");
   return (
     < >
 
       <NetworkStatus />
-      <Header />
+      {/* <Header /> */}
+      {/* {!isStudentDashboard && !isAdminDashboard && <Header />} */}
+      {!isStudentDashboard && !isAdminDashboard && <Header />}
       <InstallPrompt />
 
       <AnimatePresence mode="wait">
