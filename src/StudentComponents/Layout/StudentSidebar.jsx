@@ -75,7 +75,7 @@ export default function StudentSidebar({ open, setOpen }) {
       </aside>
 
       {/* Mobile Drawer */}
-      <div className="offcanvas offcanvas-start border-0" ref={offcanvasRef} tabIndex="-1" style={{ width: "300px" }}>
+      <div className="offcanvas offcanvas-start border-0" ref={offcanvasRef} tabIndex="-1" style={{ width: "100%" }}>
         <SidebarContent isMobile={true} />
       </div>
     </>

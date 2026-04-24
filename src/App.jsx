@@ -204,9 +204,9 @@ export default function App() {
     < >
 
       <NetworkStatus />
-      {/* <Header /> */}
+      <Header />
       {/* {!isStudentDashboard && !isAdminDashboard && <Header />} */}
-      {!isStudentDashboard && !isAdminDashboard && <Header />}
+      {/* {!isStudentDashboard && !isAdminDashboard && <Header />} */}
       <InstallPrompt />
 
       <AnimatePresence mode="wait">

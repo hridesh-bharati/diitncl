@@ -10,12 +10,6 @@ export default function AdminPracticeDashboard() {
             color: "primary",
         },
         {
-            title: "Manage Questions",
-            path: "/admin/practice-tests/questions",
-            icon: "bi-ui-checks",
-            color: "warning",
-        },
-        {
             title: "Live Monitoring",
             path: "/admin/practice-tests/live",
             icon: "bi-broadcast",

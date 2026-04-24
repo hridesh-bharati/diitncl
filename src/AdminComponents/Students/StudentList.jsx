@@ -57,7 +57,7 @@ export default function StudentList() {
             </div>
 
             {/* App Controls Section */}
-            <div className="bg-white sticky-top pt-2 shadow-none" style={{ zIndex: 1020 }}>
+            <div className="bg-white sticky-top p-2 shadow-none" style={{ zIndex: 1020 }}>
               {/* Branch & Total DRY Buttons */}
               <div className="d-flex justify-content-center gap-2 mb-2">
                 {['Main', 'East'].map(b => {
@@ -114,7 +114,7 @@ export default function StudentList() {
             {loading ? (
               <div className="text-center py-5"><div className="spinner-border spinner-border-sm text-primary"></div></div>
             ) : (
-              <div className="row g-3">
+              <div className="row g-3 mt-1">
                 {filtered.map(student => (
                   <div key={student.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
                     <StudentCard student={student} onSave={updateAdmission} onDelete={deleteAdmission} />

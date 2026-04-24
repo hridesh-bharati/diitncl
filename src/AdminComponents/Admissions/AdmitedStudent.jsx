@@ -93,11 +93,9 @@ const AdmittedList = () => {
           </button>
         </div>
       </div>
-      {/* ... (apka baki UI same rahega) ... */}
-      <div className="row g-3">
+      <div className="row g-2 m-0 p-0 mb-5 mb-lg-0">
         {filtered.map(s => (
-          <div key={s.id} className="col-12 col-sm-6 col-lg-3">
-            {/* 3. Yahan functions pass karein */}
+          <div key={s.id} className="col-12 col-sm-6 col-lg-4 p-0 px-lg-2 m-0 ">
             <StudentCard
               student={s}
               onDelete={handleDelete}

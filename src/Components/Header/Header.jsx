@@ -67,6 +67,8 @@ export default function Header() {
       navigate("/");
     } catch (error) { console.error("Logout error:", error); }
   };
+  const isStudentDashboard = location.pathname.startsWith("/student");
+  const isAdminDashboard = location.pathname.startsWith("/admin");
 
   const courseLinks = useMemo(() => [
     { to: "/courses", label: "All Courses", desc: "Explore our catalog.", icon: "bi-mortarboard", color: "linear-gradient(135deg, #34C759, #30D158)" },
@@ -92,127 +94,131 @@ export default function Header() {
 
   return (
     <>
-      <header className="google-header-advanced sticky-top bg-white">
-        <div className="header-container container-fluid px-3 px-lg-4">
-          <div className="header-left d-flex align-items-center w-auto">
-            <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
-              <img src="/images/icon/logo.png" alt="Drishtee" height="32" loading="eager" />
-            </Link>
-
-            <nav className="nav-links d-none d-lg-flex mx-auto">
-              <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
-              <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""}>About</NavLink>
-
-              <div className="nav-item-dropdown position-relative pt-2">
-                <Link to="/courses" className={location.pathname.startsWith("/courses") ? "active" : ""}>
-                  Courses <i className="bi bi-chevron-down small"></i>
+      {!isStudentDashboard && !isAdminDashboard && (
+        <>
+          <header className="google-header-advanced sticky-top bg-white">
+            <div className="header-container container-fluid px-3 px-lg-4">
+              <div className="header-left d-flex align-items-center w-auto">
+                <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
+                  <img src="/images/icon/logo.png" alt="Drishtee" height="32" loading="eager" />
                 </Link>
-                <div className="nav-dropdown-menu modern-grid-menu shadow-lg border-0">
-                  <div className="dropdown-grid">
-                    {courseLinks.map((link) => (
-                      <Link key={link.to} to={link.to} className="grid-item d-flex align-items-start gap-3 p-3">
-                        <div className="grid-icon flex-shrink-0" style={{ background: link.color }}>
-                          <i className={`bi ${link.icon}`}></i>
-                        </div>
-                        <div className="d-flex flex-column">
-                          <span className="fw-bold text-dark">{link.label}</span>
-                          <small className="text-muted" style={{ fontSize: '11px', lineHeight: '1.2' }}>{link.desc}</small>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
 
-              <NavLink to="/branch/thoothibari" className={({ isActive }) => isActive ? "active" : ""}>Branch</NavLink>
-              <NavLink to="/library" className={({ isActive }) => isActive ? "active" : ""}>Library</NavLink>
+                <nav className="nav-links d-none d-lg-flex mx-auto">
+                  <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
+                  <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""}>About</NavLink>
 
-              <div className="nav-item-dropdown position-relative mt-2">
-                <span className={`nav-static-link ${location.pathname.includes('admission') ? 'active' : ''}`}>
-                  Student Zone <i className="bi bi-chevron-down small"></i>
-                </span>
-                <div className="nav-dropdown-menu modern-grid-menu shadow-lg border-0" style={{ minWidth: '220px' }}>
-                  <div className="dropdown-grid" style={{ gridTemplateColumns: '1fr' }}>
-                    {studentZoneLinks.map((link) => (
-                      <Link key={link.to} to={link.to} className="grid-item">
-                        <div className="grid-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
-                        <span>{link.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <NavLink to="/gallery" className={({ isActive }) => isActive ? "active" : ""}>Gallery</NavLink>
-              <NavLink to="/contact-us" className={({ isActive }) => isActive ? "active" : ""}>Contact</NavLink>
-            </nav>
-          </div>
-
-          <div className="searchBox w-100" style={{ maxWidth: '300px' }}>
-            <GlobleSearchBox routes={RouteLinks} />
-          </div>
-
-          <div className="header-right d-flex align-items-center gap-2 gap-md-3">
-            <div className="apps-dropdown position-relative">
-              <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
-                <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
-              </button>
-              {showApps && (
-                <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3">
-                  <div className="apps-grid">
-                    <Link to="/chat" className="app-item" onClick={() => setShowApps(false)}>
-                      <i className="bi bi-chat-dots-fill text-primary"></i><span>Chat</span>
+                  <div className="nav-item-dropdown position-relative pt-2">
+                    <Link to="/courses" className={location.pathname.startsWith("/courses") ? "active" : ""}>
+                      Courses <i className="bi bi-chevron-down small"></i>
                     </Link>
-                    <Link to="/download-certificate" className="app-item" onClick={() => setShowApps(false)}>
-                      <i className="bi bi-patch-check-fill text-success"></i><span>Verify</span>
-                    </Link>
-                    <Link to="/contact-us" className="app-item" onClick={() => setShowApps(false)}>
-                      <i className="bi bi-envelope-fill text-danger"></i><span>Contact</span>
-                    </Link>
-                    <Link to="/photo-editor" className="app-item" onClick={() => setShowApps(false)}>
-                      <i className="bi bi-camera-fill text-info"></i><span>Edit</span>
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="d-none d-lg-block">
-              {!user ? (
-                <button className="google-signin-btn btn btn-primary btn-sm" onClick={openLogin}>Login</button>
-              ) : (
-                <div className="profile-section" ref={profileRef}>
-                  <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                    {userData.photo ? <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" /> : <div style={{ width: 35, height: 35 }}><DefaultAvatar /></div>}
-                  </div>
-                  {showProfileMenu && (
-                    <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden">
-                      <div className="profile-header p-4 text-center bg-light border-bottom">
-                        <div className="mx-auto mb-2 overflow-hidden rounded-circle border border-3 border-white shadow" style={{ width: 65, height: 65 }}>
-                          {userData.photo ? <img src={userData.photo} alt="user" className="w-100 h-100 object-fit-cover" /> : <DefaultAvatar />}
-                        </div>
-                        <h6 className="fw-bold m-0">{userData.name}</h6>
-                        <p className="text-muted small m-0 text-truncate">{userData.email}</p>
+                    <div className="nav-dropdown-menu modern-grid-menu shadow-lg border-0">
+                      <div className="dropdown-grid">
+                        {courseLinks.map((link) => (
+                          <Link key={link.to} to={link.to} className="grid-item d-flex align-items-start gap-3 p-3">
+                            <div className="grid-icon flex-shrink-0" style={{ background: link.color }}>
+                              <i className={`bi ${link.icon}`}></i>
+                            </div>
+                            <div className="d-flex flex-column">
+                              <span className="fw-bold text-dark">{link.label}</span>
+                              <small className="text-muted" style={{ fontSize: '11px', lineHeight: '1.2' }}>{link.desc}</small>
+                            </div>
+                          </Link>
+                        ))}
                       </div>
-                      <div className="menu-items p-2">
-                        <Link to={userData.dashboard} onClick={() => setShowProfileMenu(false)}>
-                          <i className="bi bi-person-circle text-primary"></i> Dashboard
+                    </div>
+                  </div>
+
+                  <NavLink to="/branch/thoothibari" className={({ isActive }) => isActive ? "active" : ""}>Branch</NavLink>
+                  <NavLink to="/library" className={({ isActive }) => isActive ? "active" : ""}>Library</NavLink>
+
+                  <div className="nav-item-dropdown position-relative mt-2">
+                    <span className={`nav-static-link ${location.pathname.includes('admission') ? 'active' : ''}`}>
+                      Student Zone <i className="bi bi-chevron-down small"></i>
+                    </span>
+                    <div className="nav-dropdown-menu modern-grid-menu shadow-lg border-0" style={{ minWidth: '220px' }}>
+                      <div className="dropdown-grid" style={{ gridTemplateColumns: '1fr' }}>
+                        {studentZoneLinks.map((link) => (
+                          <Link key={link.to} to={link.to} className="grid-item">
+                            <div className="grid-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
+                            <span>{link.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <NavLink to="/gallery" className={({ isActive }) => isActive ? "active" : ""}>Gallery</NavLink>
+                  <NavLink to="/contact-us" className={({ isActive }) => isActive ? "active" : ""}>Contact</NavLink>
+                </nav>
+              </div>
+
+              <div className="searchBox w-100" style={{ maxWidth: '300px' }}>
+                <GlobleSearchBox routes={RouteLinks} />
+              </div>
+
+              <div className="header-right d-flex align-items-center gap-2 gap-md-3">
+                <div className="apps-dropdown position-relative">
+                  <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
+                    <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
+                  </button>
+                  {showApps && (
+                    <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3">
+                      <div className="apps-grid">
+                        <Link to="/chat" className="app-item" onClick={() => setShowApps(false)}>
+                          <i className="bi bi-chat-dots-fill text-primary"></i><span>Chat</span>
                         </Link>
-                        <button onClick={handleLogout} className="logout-btn w-100 border-0 bg-transparent text-start">
-                          <i className="bi bi-box-arrow-right text-danger"></i> Sign out
-                        </button>
+                        <Link to="/download-certificate" className="app-item" onClick={() => setShowApps(false)}>
+                          <i className="bi bi-patch-check-fill text-success"></i><span>Verify</span>
+                        </Link>
+                        <Link to="/contact-us" className="app-item" onClick={() => setShowApps(false)}>
+                          <i className="bi bi-envelope-fill text-danger"></i><span>Contact</span>
+                        </Link>
+                        <Link to="/photo-editor" className="app-item" onClick={() => setShowApps(false)}>
+                          <i className="bi bi-camera-fill text-info"></i><span>Edit</span>
+                        </Link>
                       </div>
                     </div>
                   )}
                 </div>
-              )}
+
+                <div className="d-none d-lg-block">
+                  {!user ? (
+                    <button className="google-signin-btn btn btn-primary btn-sm" onClick={openLogin}>Login</button>
+                  ) : (
+                    <div className="profile-section" ref={profileRef}>
+                      <div className="profile-badge d-flex align-items-center gap-2 cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+                        {userData.photo ? <img src={userData.photo} alt="profile" className="profile-image border shadow-sm" /> : <div style={{ width: 35, height: 35 }}><DefaultAvatar /></div>}
+                      </div>
+                      {showProfileMenu && (
+                        <div className="profile-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 overflow-hidden">
+                          <div className="profile-header p-4 text-center bg-light border-bottom">
+                            <div className="mx-auto mb-2 overflow-hidden rounded-circle border border-3 border-white shadow" style={{ width: 65, height: 65 }}>
+                              {userData.photo ? <img src={userData.photo} alt="user" className="w-100 h-100 object-fit-cover" /> : <DefaultAvatar />}
+                            </div>
+                            <h6 className="fw-bold m-0">{userData.name}</h6>
+                            <p className="text-muted small m-0 text-truncate">{userData.email}</p>
+                          </div>
+                          <div className="menu-items p-2">
+                            <Link to={userData.dashboard} onClick={() => setShowProfileMenu(false)}>
+                              <i className="bi bi-person-circle text-primary"></i> Dashboard
+                            </Link>
+                            <button onClick={handleLogout} className="logout-btn w-100 border-0 bg-transparent text-start">
+                              <i className="bi bi-box-arrow-right text-danger"></i> Sign out
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
+                  <i className="bi bi-geo-alt-fill text-danger"></i>
+                </Link>
+              </div>
             </div>
-            <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
-              <i className="bi bi-geo-alt-fill text-danger"></i>
-            </Link>
-          </div>
-        </div>
-      </header>
+          </header>
+        </>
+      )}
 
       {/* MOBILE ACCOUNT DRAWER */}
       <div className={`offcanvas offcanvas-bottom rounded-top-5 border-0 bg-light ${isMenuOpen ? "show" : ""}`}

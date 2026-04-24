@@ -49,8 +49,6 @@ export default function AdminSidebar({ open, setOpen }) {
           <div className="p-3 d-flex align-items-center  border-bottom border-light">
             <button type="button" className="btn" onClick={handleClose}> <i className="bi bi-arrow-left fs-2 fw-bold"></i>  </button>
             <div className="text-primary">
-              {/* <h5 className="fw-bold mb-0  " style={{ letterSpacing: '-0.5px' }}>Drishtee</h5> */}
-              {/* <div className="text-uppercase fw-bold " style={{ fontSize: '10px', letterSpacing: '1px' }}>Admin Console</div> */}
               <div className="text-uppercase fw-bold">Admin Console</div>
             </div>
           </div>
