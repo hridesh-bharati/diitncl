@@ -56,7 +56,7 @@ export default function StudentLayout() {
           </div>
 
           {/* Navigation - Responsive Gap & Size */}
-          <nav className="d-flex align-items-center justify-content-center gap-1 gap-md-4" style={{ flex: "2 1 0px" }}>
+          <nav className="d-flex align-items-center justify-content-center gap-1 py-lg-5 gap-md-4" style={{ flex: "2 1 0px" }}>
             {navLinks.map((item) => {
               const active = isActive(item.to);
               return (

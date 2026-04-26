@@ -88,15 +88,17 @@ self.addEventListener("fetch", (event) => {
 
   if (isStatic) {
     event.respondWith(
-      caches.match(req).then(cacheRes => {
-        if (cacheRes) return cacheRes;
-
-        return fetch(req).then(networkRes => {
-          return caches.open(CACHE_NAME).then(cache => {
-            cache.put(req, networkRes.clone());
-            return networkRes;
-          });
-        });
+      caches.match(req).then((cached) => {
+        const networkFetch = fetch(req)
+          .then((res) => {
+            const cloned = res.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(req, cloned);
+            });
+            return res;
+          })
+          .catch(() => cached);
+        return cached || networkFetch;
       })
     );
     return;
@@ -124,7 +126,7 @@ messaging.onBackgroundMessage((payload) => {
   // Payload se data nikalna
   const title = payload.data?.title || payload.notification?.title || "Drishtee Alert";
   const body = payload.data?.body || payload.notification?.body || "New Update from DIIT";
-  
+
   // URL nikalne ka sahi tarika (Backend se 'url' key mein data bhejna best hota hai)
   const clickUrl = payload.data?.url || payload.fcmOptions?.link || "/student/dashboard";
 

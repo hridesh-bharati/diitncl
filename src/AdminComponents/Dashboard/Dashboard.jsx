@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import "./Dashboard.css";
+import VisitorCount from "./VisitorCount";
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler);
@@ -106,7 +107,7 @@ export default function Dashboard() {
   if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="container-fluid dashboard-wrapper px-3 px-md-4 py-3">
+    <div className="container-fluid dashboard-wrapper px-2 py-3 px-md-4 ">
       <header className="mb-4 p-3 rounded-4 shadow-sm border-0"
         style={{
           background: 'linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%)',
@@ -176,6 +177,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <VisitorCount />
 
       {/* Recent Students & Queries */}
       <div className="row g-4 mb-5 pb-5 mb-lg-0 pb-lg-0">
@@ -196,7 +198,7 @@ export default function Dashboard() {
             </div>
 
             {/* Admission List Area */}
-            <div className="px-3 py-2" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+            <div className="px-3 py-1" style={{ maxHeight: '420px', overflowY: 'auto' }}>
               {students.length > 0 ? (
                 students.map((s, index) => {
 
@@ -275,6 +277,9 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+
+
         <div className="col-12 col-lg-6 mt-4">
           <div className="bg-white rounded-4 shadow-sm border-0 h-100 overflow-hidden">
 
