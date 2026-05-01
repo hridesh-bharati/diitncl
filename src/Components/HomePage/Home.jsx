@@ -6,7 +6,7 @@ import "./Home.css";
 // Static Imports for "Above the Fold" content (Improves FCP)
 import Features from "./Features";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
-import HomeGallery from "./pages/HomeGallery";
+// import HomeGallery from "./pages/HomeGallery";
 
 // Lazy Components for bottom of the page
 const TopCourseList = lazy(() => import("./TopCourseList"));
