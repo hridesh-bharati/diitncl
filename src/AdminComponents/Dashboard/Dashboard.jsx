@@ -203,7 +203,6 @@ export default function Dashboard() {
                 students.map((s, index) => {
 
                   // 🔥 REAL-TIME STATUS LOGIC
-                  // 🔥 REAL-TIME STATUS LOGIC (Refined Colors)
                   const getStatusInfo = () => {
                     // Canceled: Soft Red
                     if (s.status === "canceled") return { label: "CANCELED", color: "#d32f2f", bg: "#fff1f0" };

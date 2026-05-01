@@ -26,19 +26,8 @@ import { vibration } from "./Components/MobileAccessories/vibration";
 /* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
 import { db, app } from "./firebase/firebase";
-import {
-  doc,
-  setDoc,
-  increment,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
-import {
-  getMessaging,
-  onMessage,
-  isSupported,
-} from "firebase/messaging";
+import { doc,setDoc,increment,getDoc,updateDoc,serverTimestamp,} from "firebase/firestore";
+import {getMessaging,onMessage,isSupported,} from "firebase/messaging";
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));

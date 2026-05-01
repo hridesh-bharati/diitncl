@@ -148,12 +148,12 @@ export default function AdminSidebar({ open, setOpen }) {
 
             {/* MARKETING SECTION */}
             <div className="px-4 text-uppercase text-muted fw-bold mt-4 mb-2" style={{ fontSize: '11px' }}>Marketing</div>
-            {/* <NavLink to="/admin/gallery" className="text-decoration-none">
+            <NavLink to="/admin/gallery" className="text-decoration-none">
               {({ isActive }) => <NavRow item={{ label: "Upload Media", icon: "bi-cloud-upload-fill", color: "#00BCD4" }} isActive={isActive} />}
             </NavLink>
             <NavLink to="/admin/all-images" className="text-decoration-none">
               {({ isActive }) => <NavRow item={{ label: "Gallery", icon: "bi-images", color: "#E91E63" }} isActive={isActive} />}
-            </NavLink> */}
+            </NavLink>
             <NavLink to="/admin/new-offers" className="text-decoration-none">
               {({ isActive }) => <NavRow item={{ label: "Promotions", icon: "bi-megaphone-fill", color: "#FF5722" }} isActive={isActive} />}
             </NavLink>

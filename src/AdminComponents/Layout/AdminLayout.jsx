@@ -28,32 +28,56 @@ export default function AdminLayout() {
         <header className="bg-white d-flex align-items-center justify-content-between sticky-top px-0 shadow-sm" style={{ zIndex: 1050, minHeight: "65px" }}>
 
           <nav className="d-flex align-items-center flex-grow-1 overflow-auto no-scrollbar py-1" style={{ scrollbarWidth: 'none' }}>
-            {/* Mobile: gap-1 aur justify-content-start (jaisa pehle tha)
-      PC (md): gap-md-5 aur justify-content-md-center (beech mein zyada space)
-  */}
             <div className="d-flex gap-1 gap-md-5 px-2 w-100 justify-content-start justify-content-md-center">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.link;
                 return (
                   <div key={item.link} onClick={() => navigate(item.link)} className="flex-shrink-0" style={{ cursor: "pointer" }}>
                     <div
-                      className="d-flex flex-column flex-md-row align-items-center px-2 py-0 m-0 rounded-2 transition-all"
+                      className="d-flex flex-column flex-md-row align-items-center px-3 py-1 m-0 rounded-3 transition-all"
                       style={{
-                        backgroundColor: isActive ? `${item.color}30` : "transparent",
-                        borderBottom: `2.5px solid ${isActive ? item.color : 'transparent'}`
+                        // Active hone par background thoda dark aur non-active par light color
+                        backgroundColor: isActive ? `${item.color}25` : "transparent",
+                        borderBottom: `3px solid ${isActive ? item.color : 'transparent'}`,
+                        transition: "all 0.3s ease"
                       }}
                     >
-                      <div className="position-relative mt-2 p-0">
-                        <i className={`bi ${item.icon} fs-5`} style={{ color: isActive ? item.color : "#6c757d" }}></i>
+                      <div className="position-relative p-0">
+                        <i
+                          className={`bi ${item.icon}`}
+                          style={{
+                            fontSize: "clamp(0.9rem, 5vw, 1.2rem)",
+                            color: item.color,
+                            opacity: isActive ? 1 : 0.8
+                          }}
+                        ></i>
 
                         {item.count > 0 && (
-                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white border-2">
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white border-2 custom-badge"
+                            style={{
+                              fontSize: "clamp(0.55rem, 1.5vw, 0.7rem)",
+                              padding: "2px 5px",
+                              minWidth: "16px",
+                              height: "16px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
                             {item.count > 99 ? "99+" : item.count}
                           </span>
                         )}
                       </div>
 
-                      <span className="ms-md-2 fw-bold text-center pt-lg-2" style={{ fontSize: "clamp(0.58rem, 1.1vw, 0.85rem)", color: isActive ? "#2d3436" : "#6c757d" }}>
+                      <span
+                        className="ms-md-2 fw-bold text-center pt-lg-1"
+                        style={{
+                          fontSize: "clamp(0.65rem, 1.1vw, 0.85rem)",
+                          // Text color bhi item ke specific color se match karega
+                          color: isActive ? "#2d3436" : item.color,
+                          filter: isActive ? "none" : "brightness(0.8)"
+                        }}
+                      >
                         {item.label}
                       </span>
                     </div>
