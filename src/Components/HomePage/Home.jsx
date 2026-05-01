@@ -108,9 +108,11 @@ function Home() {
             <TopCourseList />
           </div>
 
+          {/*
           <div className="m-0 p-0">
             <HomeGallery />
           </div>
+           */}
 
           {/* ADMISSION CTA */}
           <div className="card border-0 rounded-4 shadow-sm m-2 overflow-hidden bg-primary text-white">
