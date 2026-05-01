@@ -120,24 +120,32 @@ self.addEventListener("fetch", (event) => {
 /* =========================================
    🔔 FCM BACKGROUND NOTIFICATION (FIXED)
 ========================================= */
+/* =========================================
+    🔔 FCM BACKGROUND NOTIFICATION (PRO)
+========================================= */
 messaging.onBackgroundMessage((payload) => {
   console.log('🔥 Background Payload Received:', payload);
 
-  // Payload se data nikalna
+  // ✅ App Badge API (Icon par Red Dot/Number dikhane ke liye)
+  // Service Worker context mein 'self.registration' use karna best hai
+  if ('setAppBadge' in self.registration) {
+    self.registration.setAppBadge(1).catch((error) => {
+      console.error("❌ Badge Error:", error);
+    });
+  }
+
   const title = payload.data?.title || payload.notification?.title || "Drishtee Alert";
   const body = payload.data?.body || payload.notification?.body || "New Update from DIIT";
-
-  // URL nikalne ka sahi tarika (Backend se 'url' key mein data bhejna best hota hai)
   const clickUrl = payload.data?.url || payload.fcmOptions?.link || "/student/dashboard";
 
   const notificationOptions = {
     body: body,
     icon: "/images/icon/icon-192.png",
-    badge: "/images/icon/icon-192.png", // Status bar ka chota icon
-    vibrate: [300, 100, 300, 100, 400], // Insta jaisa lamba vibration
-    tag: "drishtee-msg", // Isse multiple notifications group ho jayenge
-    renotify: true,      // Naye message par fir se vibrate karega
-    requireInteraction: true, // Jab tak user touch na kare, notification dikhta rahega
+    badge: "/images/icon/icon-192.png",
+    vibrate: [300, 100, 300, 100, 400],
+    tag: "drishtee-msg",
+    renotify: true,
+    requireInteraction: true,
     actions: [
       { action: 'open', title: 'View Now' },
       { action: 'close', title: 'Dismiss' }
@@ -145,26 +153,39 @@ messaging.onBackgroundMessage((payload) => {
     data: { url: clickUrl }
   };
 
-  // Force show notification
   return self.registration.showNotification(title, notificationOptions);
 });
+
 /* =========================================
-   🖱 NOTIFICATION CLICK HANDLING
+    🖱 NOTIFICATION CLICK HANDLING
 ========================================= */
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+
+  // ✅ Badge clear karein jab user react kare
+  if ('clearAppBadge' in self.registration) {
+    self.registration.clearAppBadge().catch(console.error);
+  }
+
+  // Agar user 'close' action par click kare toh wahi ruk jaye
+  if (event.action === 'close') return;
 
   const url = event.notification.data?.url || "/";
 
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true })
-      .then(clientsArr => {
+      .then((clientsArr) => {
+        // 1. Agar window khuli hai toh focus karo
         for (let client of clientsArr) {
           if (client.url.includes(url) && "focus" in client) {
             return client.focus();
           }
         }
-        return clients.openWindow(url);
+        // 2. Agar nahi khuli toh naya window open karo
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
       })
   );
 });
+
