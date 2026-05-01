@@ -280,3 +280,53 @@
         height: 26px;
     }
 }
+/* iOS Style Icons */
+.ios-icon-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+}
+
+/* Menu Items Styling */
+.ios-item {
+  transition: background 0.2s ease;
+}
+
+.ios-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  text-decoration: none;
+  width: 100%;
+}
+
+.ios-item:active {
+  background-color: #E5E5EA !important; /* iOS gray tap color */
+}
+
+/* Click Feedback */
+.active-scale:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Smooth Scrolling */
+.custom-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Offcanvas Blur */
+.offcanvas {
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+  backdrop-filter: blur(15px);
+}

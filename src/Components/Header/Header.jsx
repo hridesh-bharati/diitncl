@@ -27,8 +27,9 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const { counts } = useDashboardData();
-  const [isCleared, setIsCleared] = useState(false);
-
+  const [clearedIds, setClearedIds] = useState(() => {
+    return JSON.parse(localStorage.getItem("clearedNotifs")) || [];
+  });
   const prefetchTranslator = () => {
     import("../LanguageTranslator/LanguageTranslator");
   };
@@ -161,15 +162,24 @@ export default function Header() {
 
   const handleClearAll = (e) => {
     e.stopPropagation();
-    setIsCleared(true);
-    // Optional: Yahan database call daal sakte hain notifications ko "read" mark karne ke liye
-  };
 
+    const allIds = notifications.map(n => n.id);
+    const updated = [...new Set([...clearedIds, ...allIds])];
+
+    setClearedIds(updated);
+    localStorage.setItem("clearedNotifs", JSON.stringify(updated));
+  };
   // Filtered notifications logic
   const activeNotifications = useMemo(() => {
-    if (isCleared) return [];
-    return notifications;
-  }, [notifications, isCleared]);
+    return notifications.filter(n => !clearedIds.includes(n.id));
+  }, [notifications, clearedIds]);
+
+  const handleDeleteSingle = (id, e) => {
+    e.stopPropagation();
+    const updated = [...clearedIds, id];
+    setClearedIds(updated);
+    localStorage.setItem("clearedNotifs", JSON.stringify(updated));
+  };
 
   const totalCount = activeNotifications.length;
 
@@ -236,6 +246,9 @@ export default function Header() {
               <div className="searchBox w-100" style={{ maxWidth: '280px' }}>
                 <GlobleSearchBox routes={RouteLinks} />
               </div>
+              <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
+                <i className="bi bi-geo-alt-fill text-danger"></i>
+              </Link>
 
               <div className="header-right d-flex align-items-center gap-2 gap-md-3">
 
@@ -250,8 +263,8 @@ export default function Header() {
                     >
                       <i
                         className={`bi ${totalCount > 0
-                            ? "bi-bell-fill text-primary"
-                            : "bi-bell text-secondary"
+                          ? "bi-bell-fill text-secondary"
+                          : "bi-bell text-secondary"
                           } fs-5`}
                       ></i>
 
@@ -289,14 +302,24 @@ export default function Header() {
                       </div>
 
                       {/* Body */}
-                      <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                      <div style={{ maxHeight: "300px", overflowY: "auto", width: "320px" }}>
                         {activeNotifications.length > 0 ? (
                           activeNotifications.map((n) => (
-                            <button
+                            <div
                               key={n.id}
-                              className="dropdown-item p-3 border-bottom text-start"
+                              className="dropdown-item p-3 border-bottom text-start position-relative"
                               onClick={() => navigate(n.link)}
+                              style={{ cursor: "pointer" }}
                             >
+                              {/* 🔥 DELETE BUTTON */}
+                              <button
+                                className="btn btn-sm text-danger position-absolute top-0 end-0 m-2 "
+                                style={{ fontSize: "10px", lineHeight: "1" }}
+                                onClick={(e) => handleDeleteSingle(n.id, e)}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+
                               <div className="d-flex gap-3">
                                 <div
                                   className="rounded-circle d-flex align-items-center justify-content-center"
@@ -310,14 +333,19 @@ export default function Header() {
                                   <i className={`bi ${n.icon}`}></i>
                                 </div>
 
-                                <div>
+                                <div style={{ paddingRight: "25px" }}>
                                   <div className="fw-bold" style={{ fontSize: "13px" }}>
                                     {n.title}
                                   </div>
-                                  <small className="text-muted">{n.desc}</small>
+                                  <small
+                                    className="text-muted"
+                                    style={{ fontSize: "9px", lineHeight: "1.2" }}
+                                  >
+                                    {n.desc}
+                                  </small>
                                 </div>
                               </div>
-                            </button>
+                            </div>
                           ))
                         ) : (
                           <div className="p-4 text-center text-muted">
@@ -329,7 +357,8 @@ export default function Header() {
                     </div>
                   </div>
                 )}
-                <div className="apps-dropdown position-relative">
+
+                <div className="apps-dropdown position-relative d-none d-lg-block">
                   <button className="google-apps border-0 bg-transparent p-2 rounded-circle" onClick={() => setShowApps(!showApps)}>
                     <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
                   </button>
@@ -338,12 +367,6 @@ export default function Header() {
                       <div className="apps-grid">
                         <Link to="/chat" className="app-item" onClick={() => setShowApps(false)}>
                           <i className="bi bi-chat-dots-fill text-primary"></i><span>Chat</span>
-                        </Link>
-                        <Link to="/download-certificate" className="app-item" onClick={() => setShowApps(false)}>
-                          <i className="bi bi-patch-check-fill text-success"></i><span>Verify</span>
-                        </Link>
-                        <Link to="/contact-us" className="app-item" onClick={() => setShowApps(false)}>
-                          <i className="bi bi-envelope-fill text-danger"></i><span>Contact</span>
                         </Link>
                         <Link to="/photo-editor" className="app-item" onClick={() => setShowApps(false)}>
                           <i className="bi bi-camera-fill text-info"></i><span>Edit</span>
@@ -383,9 +406,7 @@ export default function Header() {
                     </div>
                   )}
                 </div>
-                <Link to="/branch/nichlaul/location" className="fs-4 p-0 m-0">
-                  <i className="bi bi-geo-alt-fill text-danger"></i>
-                </Link>
+
               </div>
             </div>
           </header>
@@ -413,6 +434,28 @@ export default function Header() {
               <i className="bi bi-chevron-right text-muted opacity-50"></i>
             </div>
           </Link>
+          {/* 🔥 Quick Actions */}
+          <div className="d-flex justify-content-between gap-2 mb-4">
+            {[
+              { to: userData.dashboard, icon: "bi-speedometer2", label: "Dashboard", color: "text-primary" },
+              { to: "/photo-editor", icon: "bi-camera-fill", label: "Edit Photo", color: "text-warning" },
+              { to: "/chat", icon: "bi-chat-dots-fill", label: "Chat", color: "text-success" },
+            ].map((action, index) => (
+              <Link
+                key={index}
+                to={action.to}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex-fill text-decoration-none"
+              >
+                <div className="bg-white rounded-4 shadow-sm text-center py-3 border active-scale">
+                  <i className={`bi ${action.icon} ${action.color} fs-5`}></i>
+                  <div style={{ fontSize: "11px" }} className="fw-semibold mt-1 text-dark">
+                    {action.label}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
 
           <div className="ios-menu">
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
