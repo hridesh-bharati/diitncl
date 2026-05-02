@@ -6,7 +6,7 @@ import "./Home.css";
 // Static Imports for "Above the Fold" content (Improves FCP)
 import Features from "./Features";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
-import HomeGallery from "./pages/HomeGallery";
+// import HomeGallery from "./pages/HomeGallery";
 
 // Lazy Components for bottom of the page
 const TopCourseList = lazy(() => import("./TopCourseList"));
@@ -108,9 +108,11 @@ function Home() {
             <TopCourseList />
           </div>
 
+          {/*
           <div className="m-0 p-0">
             <HomeGallery />
           </div>
+           */}
 
           {/* ADMISSION CTA */}
           <div className="card border-0 rounded-4 shadow-sm m-2 overflow-hidden bg-primary text-white">
