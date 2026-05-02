@@ -10,14 +10,14 @@ export default function AdminLayout() {
   const { counts } = useAdminCounts();
 
   const navItems = [
-    { icon: "bi-house-fill", label: "Home", count: 0, link: "/", color: "#4e73df" },
-    { icon: "bi-speedometer2", label: "Dashboard", count: 0, link: "/admin", color: "#1cc88a" },
-    { icon: "bi-calendar-check-fill", label: "New Adm", count: counts.today, link: "/admin/students", color: "#f6c23e" },
-    { icon: "bi-people-fill", label: "Students", count: counts.total, link: "/admin/admitted-student-list", color: "#e74a3b" },
-    { icon: "bi-file-text-fill", label: "Main Exams", count: counts.exams, link: "/admin/exams", color: "#36b9cc" },
-    { icon: "bi-journal-text", label: "Test Paper", count: 0, link: "/admin/practice-tests", color: "#fd7e14" },
-    { icon: "bi-chat-dots-fill", label: "Queries", count: counts.queries, link: "/admin/clients-contacts", color: "#6f42c1" },
-    { icon: "bi-clipboard-check", label: "Attendance", count: 0, link: "/admin/students/attendance", color: "#20c997" },
+    { icon: "bi-house-fill", label: "Home", count: 0, link: "/" },
+    { icon: "bi-speedometer2", label: "Dashboard", count: 0, link: "/admin" },
+    { icon: "bi-calendar-check-fill", label: "New Adm", count: counts.today, link: "/admin/students" },
+    { icon: "bi-people-fill", label: "Students", count: counts.total, link: "/admin/admitted-student-list" },
+    { icon: "bi-file-text-fill", label: "Main Exams", count: counts.exams, link: "/admin/exams" },
+    { icon: "bi-journal-text", label: "Test Paper", count: 0, link: "/admin/practice-tests" },
+    { icon: "bi-chat-dots-fill", label: "Queries", count: counts.queries, link: "/admin/clients-contacts" },
+    { icon: "bi-clipboard-check", label: "Attendance", count: 0, link: "/admin/students/attendance" },
   ];
 
   return (
@@ -25,59 +25,34 @@ export default function AdminLayout() {
       <AdminSidebar open={open} setOpen={setOpen} />
 
       <div className="flex-grow-1 d-flex flex-column overflow-hidden">
-        <header className="bg-white d-flex align-items-center justify-content-between sticky-top px-0 shadow-sm" style={{ zIndex: 1050, minHeight: "65px" }}>
-
-          <nav className="d-flex align-items-center flex-grow-1 overflow-auto no-scrollbar py-1" style={{ scrollbarWidth: 'none' }}>
-            <div className="d-flex gap-1 gap-md-5 px-2 w-100 justify-content-start justify-content-md-center">
+        {/* Header Height control ki hai py-1 se */}
+        <header className="bg-white d-flex align-items-center sticky-top shadow-sm px-2 py-1" style={{ zIndex: 1050, minHeight: "60px" }}>
+          
+          <nav className="d-flex align-items-center flex-grow-1 overflow-auto no-scrollbar" style={{ scrollbarWidth: 'none' }}>
+            <div className="d-flex gap-2 gap-md-4 w-100 justify-content-start justify-content-md-center align-items-center">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.link;
                 return (
-                  <div key={item.link} onClick={() => navigate(item.link)} className="flex-shrink-0" style={{ cursor: "pointer" }}>
-                    <div
-                      className="d-flex flex-column flex-md-row align-items-center px-3 py-1 m-0 rounded-3 transition-all"
-                      style={{
-                        // Active hone par background thoda dark aur non-active par light color
-                        backgroundColor: isActive ? `${item.color}25` : "transparent",
-                        borderBottom: `3px solid ${isActive ? item.color : 'transparent'}`,
-                        transition: "all 0.3s ease"
-                      }}
-                    >
-                      <div className="position-relative p-0">
-                        <i
-                          className={`bi ${item.icon}`}
-                          style={{
-                            fontSize: "clamp(0.9rem, 5vw, 1.2rem)",
-                            color: item.color,
-                            opacity: isActive ? 1 : 0.8
-                          }}
-                        ></i>
-
+                  <div 
+                    key={item.link} 
+                    onClick={() => navigate(item.link)} 
+                    className={`flex-shrink-0 px-2 py-1 rounded-3 transition-all ${isActive ? 'bg-primary bg-opacity-10 border-bottom border-primary border-3' : ''}`}
+                    style={{ cursor: "pointer", transition: "0.3s" }}
+                  >
+                    {/* gap-1 (Mobile) aur gap-md-2 (Desktop) use kiya hai */}
+                    <div className="d-flex flex-column flex-md-row align-items-center gap-1 gap-md-2">
+                      <div className="position-relative d-flex align-items-center">
+                        <i className={`bi ${item.icon} ${isActive ? 'text-primary' : 'text-dark'}`} style={{ fontSize: "1.1rem" }}></i>
+                        
                         {item.count > 0 && (
-                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white border-2 custom-badge"
-                            style={{
-                              fontSize: "clamp(0.55rem, 1.5vw, 0.7rem)",
-                              padding: "2px 5px",
-                              minWidth: "16px",
-                              height: "16px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                          >
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white border-1"
+                            style={{ fontSize: "0.55rem", padding: "2px 4px" }}>
                             {item.count > 99 ? "99+" : item.count}
                           </span>
                         )}
                       </div>
 
-                      <span
-                        className="ms-md-2 fw-bold text-center pt-lg-1"
-                        style={{
-                          fontSize: "clamp(0.65rem, 1.1vw, 0.85rem)",
-                          // Text color bhi item ke specific color se match karega
-                          color: isActive ? "#2d3436" : item.color,
-                          filter: isActive ? "none" : "brightness(0.8)"
-                        }}
-                      >
+                      <span className={`fw-bold text-dark ${isActive ? 'opacity-100' : 'opacity-75'}`} style={{ fontSize: "0.7rem" }}>
                         {item.label}
                       </span>
                     </div>
@@ -87,7 +62,7 @@ export default function AdminLayout() {
             </div>
           </nav>
 
-          <div className="ps-1 border-start">
+          <div className="ps-2 border-start">
             <button className="btn btn-light btn-sm rounded-circle shadow-sm" onClick={() => setOpen(true)}>
               <i className="bi bi-list fs-5"></i>
             </button>

@@ -14,7 +14,7 @@ const LanguageTranslator = lazy(() => import("../LanguageTranslator/LanguageTran
 export default function Header() {
   const { user, student, isAdmin, logout, photoURL, displayName } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showNotifMenu, setShowNotifMenu] = useState(false);
+  // const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showApps, setShowApps] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginType, setLoginType] = useState("student");
@@ -23,7 +23,7 @@ export default function Header() {
   const [loadTranslator, setLoadTranslator] = useState(false);
 
   const profileRef = useRef(null);
-  const notifRef = useRef(null);
+  // const notifRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { counts } = useDashboardData();
@@ -52,9 +52,9 @@ export default function Header() {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfileMenu(false);
       }
-      if (notifRef.current && !notifRef.current.contains(event.target)) {
-        setShowNotifMenu(false);
-      }
+      // if (notifRef.current && !notifRef.current.contains(event.target)) {
+      //   setShowNotifMenu(false);
+      // }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -182,6 +182,61 @@ export default function Header() {
   };
 
   const totalCount = activeNotifications.length;
+
+
+  const menuSections = [
+    {
+      title: "Admission Portal",
+      items: [
+        {
+          to: "/new-admission",
+          label: "New Admission",
+          icon: "bi-person-plus-fill",
+          color: "linear-gradient(135deg, #0D6EFD, #0a58ca)",
+        },
+        {
+          to: "/download-certificate",
+          label: "Verify Certificate",
+          icon: "bi-patch-check-fill",
+          color: "linear-gradient(135deg, #34C759, #11998e)",
+        },
+      ],
+    },
+    {
+      title: "About",
+      items: [
+        {
+          to: "/about",
+          label: "About Institute",
+          icon: "bi-info-circle-fill",
+          color: "linear-gradient(135deg, #5856D6, #7F7FD5)",
+        },
+        {
+          to: "/about-branch",
+          label: "About Branch",
+          icon: "bi-diagram-3-fill",
+          color: "linear-gradient(135deg, #FF2D55, #FF6A88)",
+        },
+      ],
+    },
+    {
+      title: "Academics",
+      dynamic: true, // 👈 special case
+    },
+    
+    {
+      title: "Support",
+      items: [
+        {
+          to: "/contact-us",
+          label: "Contact Us",
+          icon: "bi-envelope-fill",
+          color: "linear-gradient(135deg, #34C759, #30D158)",
+        },
+      ],
+    },
+  ];
+
 
   return (
     <>
@@ -435,19 +490,25 @@ export default function Header() {
             </div>
           </Link>
           {/* 🔥 Quick Actions */}
-          <div className="d-flex justify-content-between gap-2 mb-4">
+          <div className="d-flex gap-2 mb-4">
             {[
-              { to: userData.dashboard, icon: "bi-speedometer2", label: "Dashboard", color: "text-primary" },
-              { to: "/photo-editor", icon: "bi-camera-fill", label: "Edit Photo", color: "text-warning" },
-              { to: "/chat", icon: "bi-chat-dots-fill", label: "Chat", color: "text-success" },
+              { to: "/photo-editor", icon: "bi-camera-fill", label: "Photo Resize", color: "text-warning" },
+              { to: "/chat", icon: "bi-chat-dots-fill", label: "Community Chat", color: "text-success" },
             ].map((action, index) => (
               <Link
                 key={index}
                 to={action.to}
                 onClick={() => setIsMenuOpen(false)}
-                className="flex-fill text-decoration-none"
+                className="text-decoration-none"
+                style={{ flex: "1 1 0" }}   // ⭐ main fix
               >
-                <div className="bg-white rounded-4 shadow-sm text-center py-3 border active-scale">
+                <div
+                  className="bg-white rounded-4 text-center py-3 active-scale shadow-sm"
+                  style={{
+                    width: "100%",
+                    minHeight: "75px",   // optional: equal height feel
+                  }}
+                >
                   <i className={`bi ${action.icon} ${action.color} fs-5`}></i>
                   <div style={{ fontSize: "11px" }} className="fw-semibold mt-1 text-dark">
                     {action.label}
@@ -458,55 +519,67 @@ export default function Header() {
           </div>
 
           <div className="ios-menu">
-            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
-              <div className="ios-menu-title text-primary px-3 pt-3">Admission Portal</div>
-              <Link to="/new-admission" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between border-bottom border-light mx-2">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #0D6EFD, #0a58ca)' }}><i className="bi bi-person-plus-fill"></i></div>
-                    New Admission
-                  </div>
-                  <i className="bi bi-chevron-right text-muted small"></i>
-                </div>
-              </Link>
-              <Link to="/download-certificate" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between mx-2">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #34C759, #11998e)' }}><i className="bi bi-patch-check-fill"></i></div>
-                    Verify Certificate
-                  </div>
-                  <i className="bi bi-chevron-right text-muted small"></i>
-                </div>
-              </Link>
-            </div>
+            {menuSections.map((section, sIndex) => (
+              <div key={sIndex} className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
 
-            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
-              <div className="ios-menu-title text-primary px-3 pt-3">Academics</div>
-              <div className="px-2">
-                {courseLinks.map((link, index) => (
-                  <Link key={link.to} to={link.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                    <div className={`ios-menu-item justify-content-between ${index !== courseLinks.length - 1 ? 'border-bottom border-light' : ''}`}>
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="ios-icon" style={{ background: link.color }}><i className={`bi ${link.icon}`}></i></div>
-                        <span>{link.label}</span>
+                <div className="ios-menu-title text-primary px-3 pt-3">
+                  {section.title}
+                </div>
+
+                {/* Academics special dynamic */}
+                {section.dynamic ? (
+                  <div className="px-2">
+                    {courseLinks.map((link, index) => (
+                      <Link key={link.to} to={link.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                        <div className={`ios-menu-item justify-content-between ${index !== courseLinks.length - 1 ? 'border-bottom border-light' : ''}`}>
+                          <div className="d-flex align-items-center gap-3">
+                            <div className="ios-icon" style={{ background: link.color }}>
+                              <i className={`bi ${link.icon}`}></i>
+                            </div>
+                            <span>{link.label}</span>
+                          </div>
+                          <i className="bi bi-chevron-right text-muted small"></i>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  section.items?.map((item, index) => (
+                    <Link key={item.to} to={item.to} className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                      <div className={`ios-menu-item justify-content-between ${index !== section.items.length - 1 ? 'border-bottom border-light mx-2' : 'mx-2'}`}>
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="ios-icon" style={{ background: item.color }}>
+                            <i className={`bi ${item.icon}`}></i>
+                          </div>
+                          <span>{item.label}</span>
+                        </div>
+                        <i className="bi bi-chevron-right text-muted small"></i>
                       </div>
-                      <i className="bi bi-chevron-right text-muted small"></i>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))
+                )}
               </div>
-            </div>
+            ))}
 
+            {/* App Settings (separate because complex UI) */}
             <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mt-4">
               <div className="ios-menu-title text-primary px-3 pt-3">App Settings</div>
+
               <div className="ios-menu-item no-hover justify-content-between border-bottom border-light mx-2">
                 <div className="d-flex align-items-center gap-3">
-                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}><i className="bi bi-translate"></i></div>
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #FF9500, #FFCC00)' }}>
+                    <i className="bi bi-translate"></i>
+                  </div>
                   <span>Language</span>
                 </div>
+
                 <div className="language-wrapper-drawer">
                   {!loadTranslator ? (
-                    <button className="btn btn-light btn-sm rounded-pill px-3 fw-bold border" onMouseEnter={prefetchTranslator} onClick={() => setLoadTranslator(true)}>Change</button>
+                    <button className="btn btn-light btn-sm rounded-pill px-3 fw-bold border"
+                      onMouseEnter={prefetchTranslator}
+                      onClick={() => setLoadTranslator(true)}>
+                      Change
+                    </button>
                   ) : (
                     <Suspense fallback={<small className="text-muted">Loading...</small>}>
                       <LanguageTranslator />
@@ -514,29 +587,19 @@ export default function Header() {
                   )}
                 </div>
               </div>
+
               <div className="ios-menu-item no-hover justify-content-between mx-2">
                 <div className="d-flex align-items-center gap-3">
-                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}><i className="bi bi-moon-stars-fill"></i></div>
+                  <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #555, #000)' }}>
+                    <i className="bi bi-moon-stars-fill"></i>
+                  </div>
                   <span>Dark Mode</span>
                 </div>
+
                 <div className="form-check form-switch">
                   <input className="form-check-input shadow-none" type="checkbox" role="switch" id="darkModeSwitch" />
                 </div>
               </div>
-            </div>
-
-            {/* Added Footer Legal Info in Drawer */}
-            <div className="ios-menu-section bg-white rounded-4 shadow-sm border border-white mb-3">
-              <div className="ios-menu-title text-primary px-3 pt-3">Support</div>
-              <Link to="/contact-us" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <div className="ios-menu-item justify-content-between mx-2">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="ios-icon" style={{ background: 'linear-gradient(135deg, #34C759, #30D158)' }}><i className="bi bi-envelope-fill"></i></div>
-                    <span>Contact Us</span>
-                  </div>
-                  <i className="bi bi-chevron-right text-muted small"></i>
-                </div>
-              </Link>
             </div>
           </div>
 
@@ -572,7 +635,7 @@ export default function Header() {
             {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="." /> : <DefaultAvatar />}
           </div>
           {/* 🔥 Mobile Notification Dot */}
-          {isAdmin && totalNotifCount > 0 && (
+          {isAdmin && totalCount > 0 && (
             <span className="position-absolute bg-danger border border-white rounded-circle pulse-dot" style={{ width: '10px', height: '10px', top: '0', right: '12px' }}></span>
           )}
           <span className="nav-text-color mobile-nav-label">Account</span>
