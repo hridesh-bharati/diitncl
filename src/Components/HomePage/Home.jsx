@@ -9,7 +9,7 @@ import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
 // import HomeGallery from "./pages/HomeGallery";
 
 // Lazy Components for bottom of the page
-const TopCourseList = lazy(() => import("./TopCourseList"));
+// const TopCourseList = lazy(() => import("./TopCourseList"));
 const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
 const Testimonials = lazy(() => import("./Testimonial"));
@@ -104,15 +104,13 @@ function Home() {
 
           <RecentStudents />
 
-          <div className="mb-4 p-2 w-100">
+          {/* <div className="mb-4 p-2 w-100">
             <TopCourseList />
           </div>
-
-          {/*
           <div className="m-0 p-0">
             <HomeGallery />
-          </div>
-           */}
+          </div> */}
+           
 
           {/* ADMISSION CTA */}
           <div className="card border-0 rounded-4 shadow-sm m-2 overflow-hidden bg-primary text-white">

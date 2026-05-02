@@ -1,3 +1,4 @@
+// src\contexts\AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authListener, logoutUser, isUserAdmin } from '../firebase/auth';
 // ✅ Fixed: getDoc ko import list mein add kar diya hai

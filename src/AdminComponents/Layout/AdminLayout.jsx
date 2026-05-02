@@ -27,15 +27,15 @@ export default function AdminLayout() {
       <div className="flex-grow-1 d-flex flex-column overflow-hidden">
         {/* Header Height control ki hai py-1 se */}
         <header className="bg-white d-flex align-items-center sticky-top shadow-sm px-2 py-1" style={{ zIndex: 1050, minHeight: "60px" }}>
-          
+
           <nav className="d-flex align-items-center flex-grow-1 overflow-auto no-scrollbar" style={{ scrollbarWidth: 'none' }}>
             <div className="d-flex gap-2 gap-md-4 w-100 justify-content-start justify-content-md-center align-items-center">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.link;
                 return (
-                  <div 
-                    key={item.link} 
-                    onClick={() => navigate(item.link)} 
+                  <div
+                    key={item.link}
+                    onClick={() => navigate(item.link)}
                     className={`flex-shrink-0 px-2 py-1 rounded-3 transition-all ${isActive ? 'bg-primary bg-opacity-10 border-bottom border-primary border-3' : ''}`}
                     style={{ cursor: "pointer", transition: "0.3s" }}
                   >
@@ -43,7 +43,7 @@ export default function AdminLayout() {
                     <div className="d-flex flex-column flex-md-row align-items-center gap-1 gap-md-2">
                       <div className="position-relative d-flex align-items-center">
                         <i className={`bi ${item.icon} ${isActive ? 'text-primary' : 'text-dark'}`} style={{ fontSize: "1.1rem" }}></i>
-                        
+
                         {item.count > 0 && (
                           <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white border-1"
                             style={{ fontSize: "0.55rem", padding: "2px 4px" }}>
