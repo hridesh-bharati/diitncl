@@ -1,1 +1,0 @@
-import{j as s}from"./vendor-core-CBYG207U.js";import{C as e}from"./CommanCourse-skrZjnD_.js";import"./courseData-C9ZCdk9Y.js";function m(){const t=["DTP"];return s.jsx("div",{className:"MT3",children:s.jsx(e,{targetCourses:t,CTitle:"Desingn"})})}export{m as default};
