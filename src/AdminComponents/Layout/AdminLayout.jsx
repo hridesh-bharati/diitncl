@@ -28,7 +28,7 @@ export default function AdminLayout() {
         {/* Header Height control ki hai py-1 se */}
         <header className="bg-white d-flex align-items-center sticky-top shadow-sm px-2 py-1" style={{ zIndex: 1050, minHeight: "60px" }}>
 
-          <nav className="d-flex align-items-center flex-grow-1 overflow-auto no-scrollbar" style={{ scrollbarWidth: 'none' }}>
+          <nav className="d-flex align-items-center flex-grow-1 overflow-auto no-scrollbar pt-2" style={{ scrollbarWidth: 'none' }}>
             <div className="d-flex gap-2 gap-md-4 w-100 justify-content-start justify-content-md-center align-items-center">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.link;
