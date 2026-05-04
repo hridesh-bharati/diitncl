@@ -1,3 +1,5 @@
+// src\Components\HomePage\Home.jsx
+import AdComponent from "./AdComponent";
 import React, { Suspense, lazy, memo } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -95,7 +97,7 @@ function Home() {
             </div>
           </div>
         </div>
-
+        <AdComponent />
         {/* MAIN FEED - Heavy components wrapped in Suspense */}
         <Suspense fallback={null}>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2">
@@ -111,7 +113,7 @@ function Home() {
           <div className="m-0 p-0">
             <HomeGallery />
           </div>
-        
+
 
           {/* ADMISSION CTA */}
           <div className="card border-0 rounded-4 shadow-sm m-2 overflow-hidden bg-primary text-white">

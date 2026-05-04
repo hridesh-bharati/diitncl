@@ -12,7 +12,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App";
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
