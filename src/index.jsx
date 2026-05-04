@@ -12,7 +12,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App";
-
+import { AdSense } from "./Components/HomePage/AdSence"
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
@@ -21,6 +21,7 @@ root.render(
       <AuthProvider>
         <BrowserRouter>
           <App />
+          <AdSense />
           <ToastContainer
             position="top-right"
             autoClose={2500}
