@@ -8,199 +8,134 @@ import { getFeeLogic } from "../../../../AdminComponents/Students/Fees/FeeServic
 
 export default function Verification() {
   const [regNo, setRegNo] = useState("");
-  const [searchEmail, setSearchEmail] = useState(null); // Search se email nikalenge
-  const [liveStudent, setLiveStudent] = useState(null); // Real-time Student Data
+  const [searchEmail, setSearchEmail] = useState(null);
+  const [liveStudent, setLiveStudent] = useState(null);
   const [payments, setPayments] = useState([]);
   const [hasCompletedExam, setHasCompletedExam] = useState(false);
   const [error, setError] = useState("");
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 🔥 1. Real-time Multi-Sync Listener
-  useEffect(() => {
-    if (!searchEmail) return;
+useEffect(() => {
+  if (!searchEmail) return;
 
-    setIsSyncing(true);
-    const emailId = searchEmail.toLowerCase().trim();
+  let isMounted = true;
+  setIsSyncing(true);
+  const emailId = searchEmail.toLowerCase().trim();
 
-    // --- Part A: Student Doc Listener (Important for Status/Course changes) ---
-    const unsubStudent = onSnapshot(doc(db, "admissions", emailId), (snap) => {
-      if (snap.exists()) {
-        setLiveStudent({ id: snap.id, ...snap.data() });
+  const unsubStudent = onSnapshot(doc(db, "admissions", emailId), (snap) => {
+    if (snap.exists() && isMounted) {
+      setLiveStudent({ id: snap.id, ...snap.data() });
+    }
+  });
+
+  const unsubPay = onSnapshot(
+    query(collection(db, "admissions", emailId, "payments"), orderBy("date", "desc")),
+    (snap) => {
+      if (isMounted) {
+        setPayments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       }
-    });
+    }
+  );
 
-    // --- Part B: Payments Listener ---
-    const payQ = query(
-      collection(db, "admissions", emailId, "payments"),
-      orderBy("date", "desc")
-    );
-    const unsubPay = onSnapshot(payQ, (snap) => {
-      const payList = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setPayments(payList);
-    });
-
-    // --- Part C: Exam Record Listener ---
-    const examQ = query(
-      collection(db, "studentExams"),
+  const unsubExam = onSnapshot(
+    query(collection(db, "studentExams"),
       where("studentId", "==", emailId),
       where("status", "==", "Completed")
-    );
-    const unsubExam = onSnapshot(examQ, (eSnap) => {
-      setHasCompletedExam(!eSnap.empty);
-      setIsSyncing(false); 
-    });
+    ),
+    (eSnap) => {
+      if (isMounted) {
+        setHasCompletedExam(!eSnap.empty);
+        setIsSyncing(false);
+      }
+    }
+  );
 
-    return () => {
-      unsubStudent();
-      unsubPay();
-      unsubExam();
-    };
-  }, [searchEmail]);
+  return () => {
+    isMounted = false;
+    unsubStudent();
+    unsubPay();
+    unsubExam();
+  };
+}, [searchEmail]);
 
   const handleSearch = (admissions) => {
-    setError("");
-    setLiveStudent(null);
-    setSearchEmail(null);
-    
+    setError(""); setLiveStudent(null); setSearchEmail(null);
     if (!regNo) return setError("Please enter Registration No");
-
-    const match = admissions.find(
-      (s) => s.regNo?.toUpperCase() === regNo.trim().toUpperCase()
-    );
-
-    if (match) {
-      // Sirf email set karenge, listener baaki data fetch kar lega
-      setSearchEmail(match.email || match.id);
-    } else {
-      setError("No Record Found!");
-    }
+    const match = admissions.find(s => s.regNo?.toUpperCase() === regNo.trim().toUpperCase());
+    match ? setSearchEmail(match.email || match.id) : setError("No Record Found!");
   };
 
-  // 2. 🔥 Real-time Decision Logic
   if (liveStudent) {
-    if (isSyncing) {
-      return (
-        <div className="vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
-          <div className="spinner-border text-primary mb-2"></div>
-          <small className="text-muted fw-bold">Syncing Real-time Records...</small>
-        </div>
-      );
-    }
-
-    // --- Latest Fee Calculation using Live Data ---
-    const totalPaid = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
-    const summary = getFeeLogic(liveStudent.course, payments) || { balance: 0, netFee: 0 };
-    
-    // Yahan summary.balance use karein ya manually calculate karein
-    const actualBalance = summary.balance; 
-    const isFeeDue = actualBalance > 0;
-
-    // 🛑 Condition 1: Fee Dues
-   if (isFeeDue) {
-  return (
-    <div className="d-flex align-items-center  justify-content-center min-vh-100 p-3">
-      
-      <div className="card border-light shadow-sm rounded-4 text-center p-4 p-md-5" style={{ maxWidth: "450px", width: "100%" }}>
-        
-        <div className="bg-danger-subtle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: 80, height: 80 }}>
-          <i className="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
-        </div>
-
-        <h4 className="fw-bold text-danger">FEE DUES PENDING</h4>
-
-        <p className="text-muted small mb-3">
-          Access for <b>{liveStudent.name}</b> is locked.
-        </p>
-
-        <div className="bg-danger text-white rounded-4 py-3 mb-4 shadow-sm">
-          <small className="d-block text-uppercase fw-bold opacity-75" style={{ fontSize: "10px" }}>
-            Pending Balance
-          </small>
-          <h2 className="mb-0 fw-bold">₹{actualBalance}</h2>
-        </div>
-
-        <button
-          className="btn btn-dark w-100 rounded-pill py-2"
-          onClick={() => {
-            setLiveStudent(null);
-            setSearchEmail(null);
-          }}
-        >
-          ← Back to Search
-        </button>
-
+    if (isSyncing) return (
+      <div className="vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
+        <div className="spinner-border text-primary mb-2"></div>
+        <small className="text-muted fw-bold">Verifying Records...</small>
       </div>
-    </div>
-  );
-}
+    );
 
-    // 🛑 Condition 2: Exam / Status Check
-    if (!hasCompletedExam || liveStudent.status !== 'done') {
-      return (
-        <div className="d-flex align-items-center justify-content-center bg-light p-3 py-5 min-vh-100">
-          <div className="card shadow-lg border-0 p-4 p-md-5 text-center rounded-4" style={{ maxWidth: "450px" }}>
-            <div className="bg-warning-subtle rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: "80px", height: "80px" }}>
-              <i className="bi bi-clock-history text-warning fs-1"></i>
-            </div>
-            <h4 className="fw-bold text-dark">VERIFICATION PENDING</h4>
-            <p className="text-muted small">
-              The final certification for <b>{liveStudent.name}</b> is under review.
-            </p>
-            <hr />
-            <button className="btn btn-outline-dark w-100 rounded-pill py-2" onClick={() => {setLiveStudent(null); setSearchEmail(null);}}>← Back to Search</button>
+    const summary = getFeeLogic(liveStudent.course, payments) || { balance: 0 };
+    const actualBalance = Number(summary.balance || 0);
+
+    // 🛑 1. Fee Dues UI (Exactly as you wanted)
+    if (actualBalance > 0) return (
+      <div className="d-flex align-items-center justify-content-center min-vh-100 p-3 bg-light">
+        <div className="card border-0 shadow-lg rounded-4 text-center p-4" style={{ maxWidth: "420px" }}>
+          <div className="bg-danger-subtle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: 70, height: 70 }}>
+            <i className="bi bi-exclamation-triangle-fill text-danger fs-2"></i>
           </div>
+          <h4 className="fw-bold text-danger">FEE DUES PENDING</h4>
+          <p className="text-muted small">Access for <b>{liveStudent.name}</b> is locked due to outstanding balance.</p>
+          <div className="bg-danger text-white rounded-4 py-3 mb-4">
+            <small className="d-block text-uppercase opacity-75" style={{ fontSize: "10px" }}>Pending Amount</small>
+            <h2 className="mb-0 fw-bold">₹{actualBalance}</h2>
+          </div>
+          <button className="btn btn-dark w-100 rounded-pill py-2" onClick={() => { setLiveStudent(null); setSearchEmail(null); }}>← Back to Search</button>
         </div>
-      );
-    }
+      </div>
+    );
 
-    // ✅ Condition 3: ALL OK
+    // 🛑 2. Exam/Status Check
+    if (!hasCompletedExam || liveStudent.status?.toLowerCase() !== 'done') return (
+      <div className="d-flex align-items-center justify-content-center min-vh-100 p-3 bg-light">
+        <div className="card shadow border-0 p-4 text-center rounded-4" style={{ maxWidth: "420px" }}>
+          <div className="bg-warning-subtle rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: 70, height: 70 }}>
+            <i className="bi bi-clock-history text-warning fs-2"></i>
+          </div>
+          <h4 className="fw-bold">VERIFICATION PENDING</h4>
+          <p className="text-muted small">Final certification for <b>{liveStudent.name}</b> is under review.</p>
+          <button className="btn btn-outline-dark w-100 rounded-pill" onClick={() => { setLiveStudent(null); setSearchEmail(null); }}>← Back</button>
+        </div>
+      </div>
+    );
+
+    // ✅ 3. Verified View
     return (
       <div className="vh-100 bg-white">
         <div className="p-2 border-bottom bg-light sticky-top d-flex justify-content-between align-items-center no-print">
-          <button className="btn btn-sm btn-dark px-3 rounded-pill" onClick={() => {setLiveStudent(null); setSearchEmail(null);}}>← Back</button>
-          <span className="badge bg-success-subtle text-success border border-success-subtle px-3 rounded-pill">Status: Verified Official</span>
+          <button className="btn btn-sm btn-dark px-3 rounded-pill" onClick={() => { setLiveStudent(null); setSearchEmail(null); }}>← Back</button>
+          <span className="badge bg-success-subtle text-success border border-success px-3 rounded-pill">Status: Verified Official</span>
         </div>
         <StudentCertificate student={liveStudent} />
       </div>
     );
   }
 
- 
-  // 3. 🔍 Initial Search Screen
   return (
-    <div className="d-flex align-items-center justify-content-center p-3" style={{ background: "#F5F3FF", minHeight: "90vh" }}>
+    <div className="d-flex align-items-center justify-content-center p-3 min-vh-100" style={{ background: "#F5F3FF" }}>
       <AdmissionProvider>
         {({ admissions }) => (
-          <div className="card shadow-lg border-0 rounded-4 overflow-hidden" style={{ maxWidth: "380px", width: "100%" }}>
-            <div style={{ height: "6px", background: "linear-gradient(90deg, #4F46E5, #7C3AED)" }}></div>
+          <div className="card shadow-lg border-0 rounded-4" style={{ maxWidth: "380px", width: "100%" }}>
+            <div style={{ height: "6px", background: "linear-gradient(90deg, #4F46E5, #7C3AED)", borderRadius: "10px 10px 0 0" }}></div>
             <div className="card-body p-4 text-center">
-              <i className="bi bi-patch-check-fill display-5 text-primary mb-2"></i>
+              <i className="bi bi-patch-check-fill display-6 text-primary mb-2"></i>
               <h5 className="fw-bold mb-4">Public Verification</h5>
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(admissions); }}>
-                <div className="form-floating mb-3">
-                  <input
-                    type="text"
-                    className="form-control border-2 shadow-none rounded-3"
-                    id="regInput"
-                    placeholder="REG NO"
-                    value={regNo}
-                    onChange={(e) => setRegNo(e.target.value.trim().toUpperCase())}
-                  />
-                  <label htmlFor="regInput">REGISTRATION NO</label>
-                </div>
-                <div className="mb-4 border p-2 rounded bg-light">
-                  <Captcha onVerify={setCaptchaVerified} />
-                </div>
-                <button className="btn btn-primary w-100 py-2 fw-bold shadow-sm rounded-pill" disabled={!captchaVerified} style={{ background: "#4F46E5" }}>
-                  VERIFY NOW
-                </button>
+                <input className="form-control form-control-lg mb-3 text-center fw-bold border-2" placeholder="REGISTRATION NO" value={regNo} onChange={(e) => setRegNo(e.target.value.trim().toUpperCase())} />
+                <div className="mb-3 border p-2 rounded bg-light"><Captcha onVerify={setCaptchaVerified} /></div>
+                <button className="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm" disabled={!captchaVerified} style={{ background: "#4F46E5" }}>VERIFY NOW</button>
               </form>
-              {error && (
-                <div className="mt-3 text-danger small fw-bold alert alert-danger py-2 border-0 animate__animated animate__headShake">
-                  {error}
-                </div>
-              )}
+              {error && <div className="mt-3 text-danger small fw-bold alert alert-danger py-2 border-0">{error}</div>}
             </div>
           </div>
         )}

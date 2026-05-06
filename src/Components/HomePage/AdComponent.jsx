@@ -6,17 +6,17 @@ const AdComponent = () => {
 
   useEffect(() => {
     try {
-      // Har route change par Google ko batana ki naya ad slot chahiye
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) {
       console.error("AdSense error:", e);
     }
-  }, [pathname]);  
+  }, [pathname]);
 
   return (
     <div 
       key={pathname}  
-      style={{ overflow: "hidden", textAlign: "center", margin: "20px 0", minHeight: "100px" }}
+      className="ad-container"
+      style={{ textAlign: "center", overflow: "hidden" }}
     >
       <ins
         className="adsbygoogle"
@@ -26,6 +26,17 @@ const AdComponent = () => {
         data-ad-format="auto"
         data-full-width-responsive="true"
       ></ins>
+      
+      <style>{`
+        .adsbygoogle[data-ad-status="unfilled"],
+        .adsbygoogle:empty {
+          display: none !important;
+        }
+
+        .ad-container:has(ins[data-ad-status="filled"]) {
+          margin: 20px 0;
+        }
+      `}</style>
     </div>
   );
 };
