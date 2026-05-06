@@ -378,67 +378,67 @@ export default function Header() {
 
           {/* Profile Section - Minimalist */}
           <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
-{/* Profile Section - FIXED */}
-<div className="d-flex align-items-center gap-3 p-2 mb-4">
-  
-  {/* Avatar */}
-  <div
-    className="overflow-hidden rounded-circle bg-white shadow-sm"
-    style={{ width: 64, height: 64, border: "1px solid #e5e7eb" }}
-  >
-    {user && userData.photo ? (
-      <img
-        src={userData.photo}
-        className="w-100 h-100 object-fit-cover"
-        alt="Profile"
-      />
-    ) : (
-      <DefaultAvatar />
-    )}
-  </div>
+            {/* Profile Section - FIXED */}
+            <div className="d-flex align-items-center gap-3 p-2 mb-4">
 
-  {/* User Info */}
-  <div className="flex-grow-1">
+              {/* Avatar */}
+              <div
+                className="overflow-hidden rounded-circle bg-white shadow-sm"
+                style={{ width: 64, height: 64, border: "1px solid #e5e7eb" }}
+              >
+                {user && userData.photo ? (
+                  <img
+                    src={userData.photo}
+                    className="w-100 h-100 object-fit-cover"
+                    alt="Profile"
+                  />
+                ) : (
+                  <DefaultAvatar />
+                )}
+              </div>
 
-    {user ? (
-      <>
-        <Link
-          to={userData.dashboard}
-          onClick={() => setIsMenuOpen(false)}
-          className="text-decoration-none"
-        >
-          <h5 className="m-0 fw-bold text-dark">
-            {userData.name || "User"}
-          </h5>
+              {/* User Info */}
+              <div className="flex-grow-1">
 
-          <span className="text-muted small">
-            View Dashboard
-          </span>
-        </Link>
-      </>
-    ) : (
-      <>
-        <h5 className="m-0 fw-bold text-dark">
-          Guest User
-        </h5>
+                {user ? (
+                  <>
+                    <Link
+                      to={userData.dashboard}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-decoration-none"
+                    >
+                      <h5 className="m-0 fw-bold text-dark">
+                        {userData.name || "User"}
+                      </h5>
 
-        <Link
-          to="/login"
-          onClick={() => setIsMenuOpen(false)}
-          className="btn btn-sm p-0 fw-bold shadow-none"
-          style={{ color: "#0A84FF", fontSize: "13px" }}
-        >
-          Login to continue <i className="bi bi-arrow-right ms-1"></i>
-        </Link>
-      </>
-    )}
+                      <span className="text-muted small">
+                        View Dashboard
+                      </span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <h5 className="m-0 fw-bold text-dark">
+                      Guest User
+                    </h5>
 
-  </div>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="btn btn-sm p-0 fw-bold shadow-none"
+                      style={{ color: "#0A84FF", fontSize: "13px" }}
+                    >
+                      Login to continue <i className="bi bi-arrow-right ms-1"></i>
+                    </Link>
+                  </>
+                )}
 
-  {/* Arrow only for logged user */}
-  {user && <i className="bi bi-chevron-right text-muted small"></i>}
+              </div>
 
-</div>
+              {/* Arrow only for logged user */}
+              {user && <i className="bi bi-chevron-right text-muted small"></i>}
+
+            </div>
           </Link>
 
           {/* Quick Action Tiles - Clean Transparent Style */}

@@ -21,6 +21,7 @@ import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
 import HelmetManager from "./Components/HomePage/pages/HelmetManager";
 import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 import NotesDownload from "./Components/HomePage/pages/Notes/NotesDownload";
+import Lock from "./Components/HomePage/LockWeb/Lock";
 import { vibration } from "./Components/MobileAccessories/vibration";
 
 /* Firebase */
@@ -336,7 +337,7 @@ export default function App() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <>
+    <Lock>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
@@ -402,6 +403,6 @@ export default function App() {
           </Suspense>
         </SwipeLayout>
       </AnimatePresence>
-    </>
+    </Lock>
   );
 }
