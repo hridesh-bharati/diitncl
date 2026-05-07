@@ -225,19 +225,20 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
             </span>
           </div>
 
-          <div className="d-flex gap-1 mb-3 flex-wrap">
-            <span className="badge bg-light text-primary border rounded-pill px-3 py-2">
+          <div className="d-flex gap-1 mb-2">
+            <span className="badge bg-light text-primary border rounded-pill p-2">
               <i className="bi bi-geo-alt me-1"></i>
               {BRANCH_DISPLAY[studentBranch] || studentBranch}
             </span>
             {student.regNo && (
-              <span className="badge bg-light text-dark border rounded-pill px-3 py-2 d-flex align-items-center">
+              <span className="badge bg-light text-dark border rounded-pill p-2 d-flex align-items-center">
                 <strong>{student.regNo}</strong>
                 {isAdmin && !isDone && !isCanceled && (
                   <i className="bi bi-pencil-square ms-2 text-primary cursor-pointer" onClick={() => setEditingRegNo(true)}></i>
                 )}
               </span>
             )}
+            
           </div>
 
           {isPending && isAdmin && !showRegInput && (
