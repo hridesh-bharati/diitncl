@@ -159,6 +159,12 @@ export default function Header() {
 
   const menuSections = [
     {
+      title: "Resume",
+      items: [
+        { to: "/resume-builder", label: "Build Resume", icon: "bi-file-earmark-person-fill", color: "linear-gradient(135deg, #007AFF, #0A66C2)" },
+      ],
+    },
+    {
       title: "Admission Portal",
       items: [
         { to: "/new-admission", label: "New Admission", icon: "bi-person-plus-fill", color: "linear-gradient(135deg, #0D6EFD, #0a58ca)" },
@@ -181,14 +187,14 @@ export default function Header() {
       items: [
         { to: "/contact-us", label: "Contact Us", icon: "bi-envelope-fill", color: "linear-gradient(135deg, #34C759, #30D158)" },
       ],
-    },
+    }
   ];
 
   return (
     <>
       {!isStudentDashboard && !isAdminDashboard && (
         <>
-          <header className="google-header-advanced sticky-top bg-white">
+          <header className="google-header-advanced sticky-top ">
             <div className="header-container container-fluid px-3 px-lg-4">
               <div className="header-left d-flex align-items-center w-auto">
                 <Link to="/" className="logo d-flex align-items-center text-decoration-none me-lg-4">
@@ -309,14 +315,18 @@ export default function Header() {
                     <i className="bi bi-grid-3x3-gap-fill fs-5 text-secondary"></i>
                   </button>
                   {showApps && (
-                    <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3">
-                      <div className="apps-grid">
-                        <Link to="/chat" className="app-item" onClick={() => setShowApps(false)}>
-                          <i className="bi bi-chat-dots-fill text-primary"></i><span>Chat</span>
-                        </Link>
-                        <Link to="/photo-editor" className="app-item" onClick={() => setShowApps(false)}>
-                          <i className="bi bi-camera-fill text-info"></i><span>Edit</span>
-                        </Link>
+                    <div className="apps-menu shadow-lg border-0 position-absolute end-0 mt-2 bg-white rounded-4 p-3 shadow" style={{ width: '260px', zIndex: 1000 }}>
+                      <div className="row g-3 m-0">
+                        {[
+                          { to: "/chat", icon: "chat-text-fill", label: "Chat", cls: "text-primary" },
+                          { to: "/photo-editor", icon: "camera", label: "Editor", cls: "text-danger" },
+                          { to: "/resume-builder", icon: "file-earmark-person-fill", label: "Resume", cls: "text-info" }
+                        ].map((app, i) => (
+                          <Link key={i} to={app.to} onClick={() => setShowApps(false)} className="col-4 text-center text-decoration-none p-2 rounded-3 hover-bg">
+                            <i className={`bi bi-${app.icon} fs-3 d-block ${app.cls}`}></i>
+                            <span className="small text-secondary fw-bold" style={{ fontSize: '11px' }}>{app.label}</span>
+                          </Link>
+                        ))}
                       </div>
                     </div>
                   )}

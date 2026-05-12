@@ -126,7 +126,7 @@ export default function Footer() {
         {/* Modern Version Badge */}
         <div className="py-2 mb-5 mb-lg-0 text-center">
           <span style={{ fontSize: '11px', letterSpacing: '1px',backgroundColor: "#020617" }} className="text-uppercase opacity-50 px-4 py-2 rounded-4 text-white">
-            Build v {__APP_VERSION__} • Stable Release
+            Build v {__APP_VERSION__} • Stable Release 
           </span>
         </div>
 

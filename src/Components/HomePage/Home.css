@@ -1,50 +1,68 @@
-/* --- HERO --- */
-.hero-img { height: 240px; } /* Mobile default */
-.hero-content { bottom: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); z-index: 5; }
-.hero-title { text-shadow: 3px 3px 12px rgba(0,0,0,1); }
-
-/* Pulse Animation */
-.pulse-dot {
-  width: 8px; height: 8px; background: #fff; border-radius: 50%;
-  animation: pulse-ring 1.5s infinite;
-}
-@keyframes pulse-ring {
-  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255,255,255,0); }
-  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+/* --- Hero Section --- */
+.hero-img-adjust {
+  height: 280px;
+  object-fit: cover;
 }
 
-/* Portal Styling */
-.portal-icon { width: 56px; height: 56px; font-size: 1.4rem; transition: transform 0.2s; }
-.portal-item:active .portal-icon { transform: scale(0.92); }
+.hero-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent 60%);
+}
 
-/* Utilities */
-.extra-small { font-size: 10px; }
-.border-end-md { border-right: none; }
+/* --- Portal Styles --- */
+.portal-item-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
 
-/* ========================= */
-/* 💻 PC / DESKTOP WIDE MODE */
-/* ========================= */
+.portal-icon-box {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+}
+
+.portal-item-container:active {
+  transform: scale(0.95);
+}
+
+.portal-label-text {
+  font-weight: 600;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #212529;
+  text-transform: uppercase;
+}
+
+/* --- Responsive & Desktop --- */
+@media (max-width: 576px) {
+  .hero-img-adjust { height: 220px; }
+  .hero-text-clean { font-size: 1.5rem !important; }
+  .portal-icon-box { width: 52px; height: 52px; font-size: 1.2rem; }
+}
+
 @media (min-width: 992px) {
-  .hero-img { height: 520px; }
-  .hero-content { 
-    top: 0; 
-    bottom: auto !important; 
-    background: transparent !important; 
-    padding-left: 130px !important; 
-  }
-  .hero-title { 
-    font-size: 5.5rem !important; 
-    letter-spacing: -2px; 
-    text-shadow: 5px 5px 25px rgba(0,0,0,1); 
-  }
-  .portal-icon { width: 68px; height: 68px; font-size: 1.8rem; }
-  .border-end-md { border-right: 1px solid #eee !important; }
-  .home-feed { max-width: 100% !important; padding: 40px 20px; }
-   .hero-card {border-radius: 0 !important;}
+  .hero-img-adjust { height: 95vh; }
+  .hero-carousel-wrap { border-radius: 0 !important; }
 }
 
-@media (min-width: 1400px) {
-  .home-feed { max-width: 100% !important; }
+/* --- Animations (Combined & Cleaned) --- */
+.carousel-item.active .hero-text-clean { 
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  animation: slideFromTop 0.8s ease-out 0.2s both; 
 }
- 
+
+.carousel-item.active .animate-fade,
+.carousel-item.active .btn-primary { 
+  animation: fadeIn 1s ease-in 0.5s both; 
+}
+
+@keyframes slideFromTop {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

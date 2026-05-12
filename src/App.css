@@ -71,3 +71,6 @@ a, .nav-link, .grid-item, .ios-menu-item {
   user-select: none;
   -webkit-user-drag: none;
 }
+::placeholder{
+  font-size: 0.8rem !important;
+}

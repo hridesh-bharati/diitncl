@@ -565,5 +565,230 @@
     "optionD": "Esc",
     "correctAnswer": "B",
     "marks": 1
+  },
+  {
+    "question": "What is an Operating System?",
+    "optionA": "A hardware device",
+    "optionB": "A system software",
+    "optionC": "An input device",
+    "optionD": "A programming language",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which of the following is an Operating System?",
+    "optionA": "MS Word",
+    "optionB": "Windows",
+    "optionC": "Excel",
+    "optionD": "PowerPoint",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which Operating System is open-source?",
+    "optionA": "Windows",
+    "optionB": "macOS",
+    "optionC": "Linux",
+    "optionD": "MS Office",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which company developed Windows OS?",
+    "optionA": "Apple",
+    "optionB": "Google",
+    "optionC": "Microsoft",
+    "optionD": "IBM",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which Operating System is used in Apple iPhone?",
+    "optionA": "Android",
+    "optionB": "Windows",
+    "optionC": "Linux",
+    "optionD": "iOS",
+    "correctAnswer": "D",
+    "marks": 1
+  },
+  {
+    "question": "Which Operating System is mostly used in mobile phones?",
+    "optionA": "Android",
+    "optionB": "DOS",
+    "optionC": "Linux",
+    "optionD": "Unix",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Android is based on which Operating System?",
+    "optionA": "DOS",
+    "optionB": "Windows",
+    "optionC": "Linux",
+    "optionD": "macOS",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which of the following is a Mobile Operating System?",
+    "optionA": "Android",
+    "optionB": "iOS",
+    "optionC": "Windows Phone",
+    "optionD": "All of these",
+    "correctAnswer": "D",
+    "marks": 1
+  },
+  {
+    "question": "Which type of Operating System allows multiple users?",
+    "optionA": "Single User OS",
+    "optionB": "Multi User OS",
+    "optionC": "Mobile OS",
+    "optionD": "Embedded OS",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which type of OS can run multiple tasks at the same time?",
+    "optionA": "Single Tasking OS",
+    "optionB": "Batch OS",
+    "optionC": "Multitasking OS",
+    "optionD": "Network OS",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is known as primary memory?",
+    "optionA": "RAM",
+    "optionB": "DVD",
+    "optionC": "Pen Drive",
+    "optionD": "Hard Disk",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is non-volatile?",
+    "optionA": "RAM",
+    "optionB": "Cache",
+    "optionC": "ROM",
+    "optionD": "Register",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is fastest in computer?",
+    "optionA": "Hard Disk",
+    "optionB": "RAM",
+    "optionC": "Cache Memory",
+    "optionD": "DVD",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which memory stores BIOS settings?",
+    "optionA": "RAM",
+    "optionB": "ROM",
+    "optionC": "Cache",
+    "optionD": "Register",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of ROM?",
+    "optionA": "Read Only Memory",
+    "optionB": "Random Only Memory",
+    "optionC": "Run Only Memory",
+    "optionD": "Read Open Memory",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of RAM?",
+    "optionA": "Read Access Memory",
+    "optionB": "Random Access Memory",
+    "optionC": "Run Access Memory",
+    "optionD": "Read All Memory",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is used while computer is running?",
+    "optionA": "ROM",
+    "optionB": "DVD",
+    "optionC": "RAM",
+    "optionD": "Blu-ray",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Linux is an example of which type of software?",
+    "optionA": "Application Software",
+    "optionB": "System Software",
+    "optionC": "Utility Software",
+    "optionD": "Programming Software",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Ubuntu is a distribution of which OS?",
+    "optionA": "Windows",
+    "optionB": "Linux",
+    "optionC": "Android",
+    "optionD": "DOS",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "Which Operating System is command-line based?",
+    "optionA": "DOS",
+    "optionB": "Android",
+    "optionC": "Windows 11",
+    "optionD": "iOS",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "GUI stands for?",
+    "optionA": "General User Interface",
+    "optionB": "Graphical User Interface",
+    "optionC": "Graphic Utility Interface",
+    "optionD": "General Utility Input",
+    "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "CLI stands for?",
+    "optionA": "Command Line Interface",
+    "optionB": "Computer Line Input",
+    "optionC": "Central Line Interface",
+    "optionD": "Command Link Input",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which OS is mainly used in servers?",
+    "optionA": "Linux",
+    "optionB": "Paint",
+    "optionC": "Notepad",
+    "optionD": "Calculator",
+    "correctAnswer": "A",
+    "marks": 1
+  },
+  {
+    "question": "Which of the following is an example of secondary memory?",
+    "optionA": "RAM",
+    "optionB": "Cache",
+    "optionC": "Hard Disk",
+    "optionD": "Register",
+    "correctAnswer": "C",
+    "marks": 1
+  },
+  {
+    "question": "Which memory is directly accessed by CPU?",
+    "optionA": "RAM",
+    "optionB": "DVD",
+    "optionC": "Pen Drive",
+    "optionD": "Scanner",
+    "correctAnswer": "A",
+    "marks": 1
   }
 ]

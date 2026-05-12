@@ -29,6 +29,8 @@ import { authListener, getUserRole } from "./firebase/auth";
 import { db, app } from "./firebase/firebase";
 import { doc,setDoc,increment,getDoc,updateDoc,serverTimestamp,} from "firebase/firestore";
 import {getMessaging,onMessage,isSupported,} from "firebase/messaging";
+import ScrollUp from "./Components/HelperCmp/Scroller/ScrollUp";
+import ResumeBuilder from "./Components/Resume/ResumeBuilder";
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -337,7 +339,7 @@ export default function App() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Lock>
+    <>
       <NetworkStatus />
       <Header />
       <InstallPrompt />
@@ -360,6 +362,8 @@ export default function App() {
               <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
               <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
               <Route path="/chat" element={<ChatPage />} />
+              
+              <Route path="/resume-builder" element={<ResumeBuilder />} />
               <Route path="/photo-editor" element={<HelmetManager><PhotoEdit /></HelmetManager>} />
               <Route path="/notes-download" element={<HelmetManager><NotesDownload /></HelmetManager>} />
 
@@ -403,6 +407,7 @@ export default function App() {
           </Suspense>
         </SwipeLayout>
       </AnimatePresence>
-    </Lock>
+      <ScrollUp />
+    </>
   );
 }
