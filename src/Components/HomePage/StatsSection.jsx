@@ -21,13 +21,13 @@ const CounterItem = ({ target, label, textColor, isLast }) => {
 
   return (
     <div className={`text-center py-2 ${!isLast ? 'border-end' : ''}`} style={{ width: '25%' }}>
-      <h2 className={`fw-bold mb-0 ${textColor}`} style={{ fontSize: 'calc(1rem + 1.2vw)' }}>
+      <h2 className={`fw-bold mb-0 ${textColor}`} style={{ fontSize: 'calc(0.8rem + 1.2vw)' }}>
         {hasNumber ? `${count}${suffix}` : target}
       </h2>
       
       <p className="text-uppercase fw-bold text-muted mb-0 mt-1" 
          style={{ 
-           fontSize: 'calc(0.5rem + 0.2vw)',
+           fontSize: 'calc(0.4rem + 0.2vw)',
            letterSpacing: '0.5px',
            lineHeight: '1.2'
          }}>

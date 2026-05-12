@@ -44,7 +44,7 @@ export default function RecentStudents() {
       </div>
 
       {/* Horizontal Scroll Wrapper */}
-      <div className="d-flex gap-3 overflow-auto pb-3 custom-scrollbar" style={{ scrollSnapType: 'x mandatory' }}>
+      <div className="d-flex gap-3 overflow-auto pb-1 custom-scrollbar" style={{ scrollSnapType: 'x mandatory' }}>
         {students.map((s) => (
           <div key={s.id} className="student-card-fb shadow-sm bg-white rounded-4 overflow-hidden border border-light"
             style={{ minWidth: "160px", maxWidth: "160px", scrollSnapAlign: 'start' }}>

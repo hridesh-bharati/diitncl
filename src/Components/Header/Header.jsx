@@ -106,7 +106,16 @@ export default function Header() {
     return list;
   }, [counts, isAdmin]);
 
-  const totalNotifCount = notifications.length;
+  const totalNotifCount = useMemo(() => {
+    if (!counts) return 0;
+
+    return (
+      (counts.today || 0) +
+      (counts.queries || 0) +
+      (counts.liveExams || 0) +
+      (counts.newResults || 0)
+    );
+  }, [counts]);
 
   const handleLogout = async () => {
     try {
@@ -263,9 +272,16 @@ export default function Header() {
                   <div className="dropdown position-relative">
                     <button className="btn border-0 bg-transparent p-2 position-relative" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className={`bi ${totalCount > 0 ? "bi-bell-fill text-secondary" : "bi-bell text-secondary"} fs-5`}></i>
-                      {totalCount > 0 && (
-                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style={{ fontSize: "9px", marginTop: "8px", marginLeft: "-5px" }}>
-                          {totalCount}
+                      {totalNotifCount > 0 && (
+                        <span
+                          className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white"
+                          style={{
+                            fontSize: "9px",
+                            marginTop: "8px",
+                            marginLeft: "-5px"
+                          }}
+                        >
+                          {totalNotifCount}
                         </span>
                       )}
                     </button>

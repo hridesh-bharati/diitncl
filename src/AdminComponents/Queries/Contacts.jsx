@@ -63,7 +63,7 @@ export default function AdaptiveAdminQueries() {
   };
 
   return (
-    <div className="win11-bg py-4 px-2 min-vh-100">
+    <div className="win11-bg pt-3 pb-5 pb-lg-0 px-2 mb-5 mb-lg-0  min-vh-100">
       <div className="container">
 
         {/* Header */}
@@ -80,12 +80,12 @@ export default function AdaptiveAdminQueries() {
         </div>
 
         {/* Filter Pills */}
-        <div className="glass-panel p-2 mb-4 d-flex gap-2 overflow-auto">
+        <div className="glass-panel p-2 mb-4 d-flex gap-2 d-flex  justify-content-center overflow-auto">
           {["all", "pending", "reviewed"].map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`btn ${filter === f ? "btn-primary" : "btn-light"} rounded-pill px-4 fw-bold small text-uppercase`}
+              className={`btn ${filter === f ? "btn-primary" : "btn-light"} rounded-pill px-3 fw-bold  small text-uppercase`}
             >
               {f === "pending" ? "New" : f === "reviewed" ? "Solved" : "All"}
             </button>
