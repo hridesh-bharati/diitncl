@@ -13,14 +13,14 @@ export default function NoticeBoard() {
     return (
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             {/* Header: Glass effect using Bootstrap opacity classes */}
-            <div className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light bg-opacity-50">
-                <div className="d-flex align-items-center">
+            <div className="d-flex justify-content-between align-items-center p-3 border-bottom  maroonGD bg-opacity-50">
+                <div className="d-flex align-items-center ">
                     <div className="position-relative me-3">
                         <i className="bi bi-bell-fill text-primary h5 mb-0"></i>
                         <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-white rounded-circle"
                             style={{ animation: 'pulse 2s infinite' }}></span>
                     </div>
-                    <h6 className="mb-0 fw-bold text-dark" style={{ letterSpacing: '-0.5px' }}>Campus Updates</h6>
+                    <h6 className="mb-0 fw-bold text-white" style={{ letterSpacing: '-0.5px' }}>Campus Updates</h6>
                 </div>
                 <div className="d-flex align-items-center  gap-2 bg-white border px-2 py-1 rounded-pill shadow-sm" style={{ fontSize: '10px' }}>
                     <span className="bg-success rounded-circle" style={{ width: '6px', height: '6px' }}></span>

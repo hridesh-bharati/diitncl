@@ -74,3 +74,10 @@ a, .nav-link, .grid-item, .ios-menu-item {
 ::placeholder{
   font-size: 0.8rem !important;
 }
+.maroonGD{
+  background: linear-gradient(135deg, #B91646, #8b0e32) !important;
+  color: white !important;
+}
+.darkBG{
+  background: #0a2647 !important;
+}

@@ -8,6 +8,7 @@ import AdComponent from "./AdComponent";
 import Features from "./Features";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
 import HomeGallery from "./pages/HomeGallery";
+import StatsSection from "./StatsSection";
 
 // Lazy Components
 const TopCourseList = lazy(() => import("./TopCourseList"));
@@ -32,13 +33,6 @@ const PORTALS = [
 const SLIDES = [
   { img: "/images/vender/hero1.webp", b: "Admissions Open 2026", bc: "bg-danger", t: <>DRISHTEE <br /> COMPUTER CENTER</>, p: "high" },
   { img: "/images/vender/hero2.webp", b: "Expert Training", bc: "bg-warning text-dark", t: <>BUILD YOUR <br /> DIGITAL FUTURE</>, p: "low" }
-];
-
-const STATS = [
-  { v: "19+", l: "YEARS EXP.", c: "#0d6efd" },
-  { v: "5000+", l: "STUDENTS", c: "#198754" },
-  { v: "ISO", l: "CERTIFIED", c: "#ffc107" },
-  { v: "100%", l: "PRACTICAL", c: "#0dcaf0" }
 ];
 
 const PortalItem = memo(({ it }) => {
@@ -86,35 +80,21 @@ function Home() {
         </div>
 
         {/* STUDENT PORTAL */}
-        <div className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-white mx-1">
+        <div className="card border-0 rounded-4 shadow-sm p-3 bg-white mx-1">
           <h6 className="fw-bold mb-3 border-start border-primary border-4 ps-2 text-uppercase" style={{ fontSize: '0.85rem' }}>Student Portal</h6>
           <div className="row row-cols-3 row-cols-md-6 g-3">
             {PORTALS.map((p, i) => <PortalItem key={i} it={p} />)}
           </div>
         </div>
-
-        {/* STATS SECTION */}
-        <div className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-white mx-1">
-          <div className="row g-0 text-center">
-            {STATS.map((s, i) => (
-              <div key={i} className={`col-3 ${i !== 3 ? 'border-end' : ''} border-light-subtle`}>
-                <h6 className="fw-bolder mb-0" style={{ color: s.c }}>{s.v}</h6>
-                <div className="text-muted fw-bold mt-1" style={{ fontSize: '9px' }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <AdComponent />
 
         <Suspense fallback={<div className="text-center p-5 text-muted">Loading...</div>}>
+
+          <div className="mx-1 my-0 p-0"><StatsSection /></div>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
           <div className="mb-4"><TopCourseList /></div>
-          <div className="mb-4"><HomeGallery /></div>
-
-          {/* ADMISSION CTA */}
-          <div className="card border-0 rounded-4 shadow-sm mb-4 bg-primary text-white mx-1">
+             <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
               <div>
                 <h5 className="fw-bold mb-1">Join New Batch Today!</h5>
@@ -123,8 +103,12 @@ function Home() {
               <Link to="/courses" className="btn btn-light rounded-pill px-4 fw-bold text-primary mt-3 mt-md-0 shadow">Apply Now</Link>
             </div>
           </div>
-
           <div className="mb-4"><CardSlider /></div>
+          <div className="mb-4"><HomeGallery /></div>
+
+          {/* ADMISSION CTA */}
+       
+
           <div className="mb-4"><HomeOffers /></div>
 
           <div className="row g-3 mb-4 mx-0">

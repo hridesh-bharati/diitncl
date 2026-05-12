@@ -13,98 +13,85 @@ const courses = [
 ];
 
 const CourseCard = ({ course }) => (
-  <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden course-card bg-white position-relative w-100">
-
-    {/* Official Image Container */}
-    <div className="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center p-0">
+  <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+    <div className="ratio ratio-16x9 bg-white p-3">
       <img
         src={course.src}
         alt={course.title}
-        className="card-img-top img-fluid"
-        style={{
-          objectFit: 'contain',
-          maxHeight: '100%',
-          filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.05))'
-        }}
-      />
+        className="card-img-top img-fluid w-100 h-100"/>
     </div>
 
-    {/* Card Content */}
-    <div className="card-body p-3 d-flex flex-column text-center">
-      <h5 className="fw-bolder mb-3 mt-1" style={{ color: '#002d5b', fontSize: '1.25rem', letterSpacing: '-0.3px' }}>
+    <div className="card-body d-flex flex-column text-center p-3 bg-white">
+      <h6 className="fw-bold text-dark px-2" style={{ minHeight: '40px' }}>
         {course.title}
-      </h5>
+      </h6>
 
-      {/* Premium Gradient Button */}
-      <Link to="/courses" className="btn enroll-btn py-2 rounded-pill fw-bold text-white shadow-sm mt-auto mb-2">
+      <Link
+        to="/courses"
+        className="btn border-0 rounded-pill fw-bold text-white py-2 shadow-sm"
+        style={{ background: 'linear-gradient(135deg, #002d5b 0%, #00d2ff 100%)' }}
+      >
         Enroll Now
       </Link>
+    </div>
 
-      {/* Branding Label */}
-      <div className="brand-label position-absolute bottom-0 end-0">
-        <div className="bg-dark text-white px-3 py-1 text-end shadow-sm" style={{ borderRadius: '20px 0 0 0', fontSize: '9px' }}>
-          <div className="fw-bold lh-1">DRISHTEE</div>
-          <div className="opacity-75" style={{ fontSize: '7px' }}>Nichlaul</div>
-        </div>
-      </div>
+    <div className="position-absolute bottom-0 end-0 bg-dark text-white px-2 py-1"
+      style={{ fontSize: '9px', borderRadius: '15px 0 0 0' }}>
+      DRISHTEE
     </div>
   </div>
 );
 
 export default function TopCourseList() {
   return (
-    <section >
-      <div className="container-fluid p-0 bg-primary-subtle">
+    <section className="pt-5 bg-primary-subtle ">
+      <div className="container-fluid">
 
-        {/* Header Section */}
-        <div className="bg-white p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4 px-2">
-            <div>
-              <h4 className="fw-bold mb-0 text-primary">Top Programs</h4>
-              <p className="text-muted small m-0">Official Certification Courses</p>
+        <div className="mb-4 px-3 py-2 bg-white rounded-3">
+          {/* Row 1: Title and Button */}
+          <div className="d-flex justify-content-between align-items-center mb-1">
+            <div className="d-flex align-items-center gap-2">
+              {/* Premium Icon */}
+              <div className="text-primary">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="me-2"
+                >
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <h3 className="fw-bolder text-dark mb-0" style={{ fontSize: '1.1rem' }}>
+                Top Programs
+              </h3>
             </div>
-            <Link to="/courses" className="btn btn-outline-primary rounded-pill px-4 btn-sm fw-bold border-2">
+
+            <Link to="/courses" className="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold border-2" style={{ fontSize: '11px' }}>
               View All
             </Link>
           </div>
+
+          {/* Row 2: Subtitle */}
+          <p className="text-muted small mb-0 fw-medium" style={{ fontSize: '0.75rem', paddingLeft: '30px' }}>
+            Official Certification Courses
+          </p>
         </div>
 
-        {/* Grid: 1 per row on mobile, 2 on tablet, 4 on desktop */}
-        <div className="row g-4 justify-content-center bg-primary-subtle">
+        <div className="row g-4">
           {courses.map(course => (
-            <div key={course.id} className="col-12 col-md-6 col-lg-3">
+            <div key={course.id} className="col-12 col-sm-6 col-lg-3">
               <CourseCard course={course} />
             </div>
           ))}
         </div>
 
       </div>
-
-      <style>{`
-        .enroll-btn {
-          background: linear-gradient(135deg, #002d5b 0%, #00d2ff 100%);
-          border: none;
-          font-size: 1rem;
-          transition: all 0.3s ease-in-out;
-          letter-spacing: 0.5px;
-        }
-        .enroll-btn:hover {
-          background: linear-gradient(135deg, #001a35 0%, #00b8e6 100%);
-          transform: translateY(-3px);
-          box-shadow: 0 6px 15px rgba(0, 210, 255, 0.4);
-          color: white;
-        }
-        .course-card { 
-          transition: all 0.3s ease;
-          border: 1px solid rgba(0,0,0,0.05) !important;
-        }
-        .course-card:hover { 
-          transform: translateY(-8px); 
-          box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
-          border-color: rgba(0, 210, 255, 0.3) !important;
-        }
-        .brand-label { z-index: 5; width: 90px; }
-      `}</style>
     </section>
   );
 }

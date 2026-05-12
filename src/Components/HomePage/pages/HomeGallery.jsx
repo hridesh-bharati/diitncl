@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback, useMemo, Suspense, lazy } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { db } from "../../../firebase/firebase";
-import { 
-  collection, query, orderBy, onSnapshot, updateDoc, doc, 
-  limit, deleteDoc, arrayUnion, arrayRemove 
+import {
+  collection, query, orderBy, onSnapshot, updateDoc, doc,
+  limit, deleteDoc, arrayUnion, arrayRemove
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -31,10 +31,10 @@ export default function HomeGallery() {
 
   useEffect(() => {
     const q = query(collection(db, "galleryImages"), orderBy("createdAt", "desc"), limit(20));
-    
+
     const unsubscribe = onSnapshot(q, (s) => {
       const fetchedPosts = s.docs.map(d => ({ id: d.id, ...d.data() }));
-      
+
       setPosts(prevPosts => {
         if (prevPosts.length > 0) {
           return prevPosts.map(p => {
@@ -42,7 +42,7 @@ export default function HomeGallery() {
             return updatedDoc ? updatedDoc : p;
           });
         }
-        
+
         return fetchedPosts
           .sort(() => Math.random() - 0.5)
           .slice(0, 6);
@@ -87,8 +87,13 @@ export default function HomeGallery() {
     <div className="container-fluid py-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fw-bold m-0">Featured <span className="text-danger">Captures</span></h2>
-          <p className="text-muted small m-0">Discover something new today</p>
+          <h2 className="fw-bold m-0">
+            Our <span className="text-danger">Gallery</span>
+          </h2>
+
+          <p className="text-muted small m-0">
+            Explore student activities, achievements, events, and moments from Drishtee Computer Center.
+          </p>
         </div>
         <Link to="/gallery" className="btn btn-outline-danger rounded-pill px-4 fw-bold">View All</Link>
       </div>
@@ -102,17 +107,17 @@ export default function HomeGallery() {
           return (
             <div key={p.id} className="col-12 col-md-6 col-lg-4 mx-0 p-1">
               <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white animate-fade-in">
-                
+
                 <div className="p-3 d-flex align-items-center justify-content-between">
                   <div className="d-flex align-items-center gap-2 overflow-hidden" style={{ maxWidth: '80%' }}>
                     {/* Avatar Optimization applied here */}
-                    <img 
-                      src={p.userPhoto ? getOptimizedUrl(p.userPhoto, "avatar") : `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random`} 
-                      className="rounded-circle border" 
-                      width="32" 
-                      height="32" 
-                      alt="u" 
-                      loading="lazy" 
+                    <img
+                      src={p.userPhoto ? getOptimizedUrl(p.userPhoto, "avatar") : `https://ui-avatars.com/api/?name=${p.uploadedBy}&background=random`}
+                      className="rounded-circle border"
+                      width="32"
+                      height="32"
+                      alt="u"
+                      loading="lazy"
                     />
                     <div className="d-flex flex-column overflow-hidden">
                       <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ fontSize: '14px' }}>{p.title}</h6>
@@ -121,8 +126,8 @@ export default function HomeGallery() {
                   </div>
 
                   {(isAdmin || p.uploadedById === currentUserId) && (
-                    <button 
-                      className="btn btn-link text-danger p-0 border-0 shadow-none" 
+                    <button
+                      className="btn btn-link text-danger p-0 border-0 shadow-none"
                       onClick={() => handleDelete(p)}
                     >
                       <i className="bi bi-trash3-fill"></i>
@@ -131,17 +136,17 @@ export default function HomeGallery() {
                 </div>
 
                 <div className="post-media position-relative bg-black" style={{ height: '280px', minHeight: '280px' }}>
-                    {/* Main Image LCP Optimization applied here */}
-                    <img 
-                      src={getOptimizedUrl(p.url)} 
-                      className="w-100 h-100 object-fit-contain cursor-pointer" 
-                      alt={p.title} 
-                      onClick={() => navigate("/gallery")}
-                      loading={index <= 1 ? "eager" : "lazy"}
-                      fetchpriority={index <= 1 ? "high" : "auto"}
-                      width="600"
-                      height="500"
-                    />
+                  {/* Main Image LCP Optimization applied here */}
+                  <img
+                    src={getOptimizedUrl(p.url)}
+                    className="w-100 h-100 object-fit-contain cursor-pointer"
+                    alt={p.title}
+                    onClick={() => navigate("/gallery")}
+                    loading={index <= 1 ? "eager" : "lazy"}
+                    fetchpriority={index <= 1 ? "high" : "auto"}
+                    width="600"
+                    height="500"
+                  />
                 </div>
 
                 <div className="px-3 py-2 d-flex justify-content-between align-items-center border-bottom mx-2">
@@ -199,11 +204,11 @@ export default function HomeGallery() {
                     <form className="input-group input-group-sm" onSubmit={(e) => {
                       e.preventDefault();
                       const t = comment[p.id]?.trim();
-                      if(!t) return;
-                      updatePost(p.id, { 
-                        comments: arrayUnion({ text: t, userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4(), createdAt: new Date().toISOString() }) 
+                      if (!t) return;
+                      updatePost(p.id, {
+                        comments: arrayUnion({ text: t, userId: currentUserId, userName: displayName || "Guest", commentId: uuidv4(), createdAt: new Date().toISOString() })
                       });
-                      setComment({...comment, [p.id]: ""});
+                      setComment({ ...comment, [p.id]: "" });
                     }}>
                       <input className="form-control border-0 bg-light rounded-start-pill px-3 shadow-none" placeholder="Add comment..." value={comment[p.id] || ""} onChange={(e) => setComment({ ...comment, [p.id]: e.target.value })} />
                       <button className="btn btn-danger rounded-end-pill px-3"><i className="bi bi-send-fill"></i></button>
