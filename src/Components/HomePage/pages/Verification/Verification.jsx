@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdmissionProvider from "../../../../AdminComponents/Admissions/AdmissionProvider";
 import StudentCertificate from "../../../../AdminComponents/Certificate/StudentCertificate";
 import Captcha from "./Captcha";
-import { collection, onSnapshot, query, where, orderBy, doc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc } from "firebase/firestore";
 import { db } from "../../../../firebase/firebase";
 import { getFeeLogic } from "../../../../AdminComponents/Students/Fees/FeeServices";
 
@@ -11,53 +11,64 @@ export default function Verification() {
   const [searchEmail, setSearchEmail] = useState(null);
   const [liveStudent, setLiveStudent] = useState(null);
   const [payments, setPayments] = useState([]);
-  const [hasCompletedExam, setHasCompletedExam] = useState(false);
   const [error, setError] = useState("");
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-useEffect(() => {
-  if (!searchEmail) return;
+  useEffect(() => {
+    if (!searchEmail) return;
 
-  let isMounted = true;
-  setIsSyncing(true);
-  const emailId = searchEmail.toLowerCase().trim();
+    let isMounted = true;
+    setIsSyncing(true);
 
-  const unsubStudent = onSnapshot(doc(db, "admissions", emailId), (snap) => {
-    if (snap.exists() && isMounted) {
-      setLiveStudent({ id: snap.id, ...snap.data() });
-    }
-  });
+    const emailId = searchEmail.toLowerCase().trim();
 
-  const unsubPay = onSnapshot(
-    query(collection(db, "admissions", emailId, "payments"), orderBy("date", "desc")),
-    (snap) => {
-      if (isMounted) {
-        setPayments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    // Student Data
+    const unsubStudent = onSnapshot(
+      doc(db, "admissions", emailId),
+      (snap) => {
+        if (isMounted && snap.exists()) {
+          setLiveStudent({
+            id: snap.id,
+            ...snap.data()
+          });
+        }
       }
-    }
-  );
+    );
 
-  const unsubExam = onSnapshot(
-    query(collection(db, "studentExams"),
-      where("studentId", "==", emailId),
-      where("status", "==", "Completed")
-    ),
-    (eSnap) => {
-      if (isMounted) {
-        setHasCompletedExam(!eSnap.empty);
+    // Payments Data
+    const unsubPay = onSnapshot(
+      query(
+        collection(db, "admissions", emailId, "payments"),
+        orderBy("date", "desc")
+      ),
+      (snap) => {
+        if (!isMounted) return;
+
+        setPayments(
+          snap.docs.map(d => ({
+            id: d.id,
+            ...d.data()
+          }))
+        );
+
         setIsSyncing(false);
+      },
+      () => {
+        // Error fallback
+        if (isMounted) {
+          setPayments([]);
+          setIsSyncing(false);
+        }
       }
-    }
-  );
+    );
 
-  return () => {
-    isMounted = false;
-    unsubStudent();
-    unsubPay();
-    unsubExam();
-  };
-}, [searchEmail]);
+    return () => {
+      isMounted = false;
+      unsubStudent();
+      unsubPay();
+    };
+  }, [searchEmail]);
 
   const handleSearch = (admissions) => {
     setError(""); setLiveStudent(null); setSearchEmail(null);
@@ -77,9 +88,9 @@ useEffect(() => {
     const summary = getFeeLogic(liveStudent.course, payments) || { balance: 0 };
     const actualBalance = Number(summary.balance || 0);
 
-    // 🛑 1. Fee Dues UI (Exactly as you wanted)
+    // 🛑 1. Fee Dues UI
     if (actualBalance > 0) return (
-      <div className="d-flex align-items-center justify-content-center min-vh-100 p-3 bg-light">
+      <div className="d-flex align-items-center justify-content-center min-vh-100 p-3 bg-mesh-gradient">
         <div className="card border-0 shadow-lg rounded-4 text-center p-4" style={{ maxWidth: "420px" }}>
           <div className="bg-danger-subtle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: 70, height: 70 }}>
             <i className="bi bi-exclamation-triangle-fill text-danger fs-2"></i>
@@ -95,9 +106,9 @@ useEffect(() => {
       </div>
     );
 
-    // 🛑 2. Exam/Status Check
-    if (!hasCompletedExam || liveStudent.status?.toLowerCase() !== 'done') return (
-      <div className="d-flex align-items-center justify-content-center min-vh-100 p-3 bg-light">
+    // 🛑 2. Final Status Check (Simple & Clean)
+    if (liveStudent.status?.toLowerCase() !== "done") return (
+      <div className="d-flex align-items-center justify-content-center min-vh-100 p-3 bg-mesh-gradient">
         <div className="card shadow border-0 p-4 text-center rounded-4" style={{ maxWidth: "420px" }}>
           <div className="bg-warning-subtle rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: 70, height: 70 }}>
             <i className="bi bi-clock-history text-warning fs-2"></i>
@@ -120,16 +131,18 @@ useEffect(() => {
       </div>
     );
   }
-
   return (
-    <div className="d-flex align-items-center justify-content-center p-3 min-vh-100" style={{ background: "#F5F3FF" }}>
+    <div
+  className="d-flex align-items-center justify-content-center p-3 bg-mesh-gradient overflow-hidden"
+  style={{ height: "calc(100dvh - 65px)" }}
+>
       <AdmissionProvider>
         {({ admissions }) => (
-          <div className="card shadow-lg border-0 rounded-4" style={{ maxWidth: "380px", width: "100%" }}>
+          <div className="card shadow-lg border-0 rounded-3" style={{ maxWidth: "380px", width: "100%" }}>
             <div style={{ height: "6px", background: "linear-gradient(90deg, #4F46E5, #7C3AED)", borderRadius: "10px 10px 0 0" }}></div>
             <div className="card-body p-4 text-center">
               <i className="bi bi-patch-check-fill display-6 text-primary mb-2"></i>
-              <h5 className="fw-bold mb-4">Public Verification</h5>
+              <h5 className="fw-bold mb-4">Certificate Verification</h5>
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(admissions); }}>
                 <input className="form-control form-control-lg mb-3 text-center fw-bold border-2" placeholder="REGISTRATION NO" value={regNo} onChange={(e) => setRegNo(e.target.value.trim().toUpperCase())} />
                 <div className="mb-3 border p-2 rounded bg-light"><Captcha onVerify={setCaptchaVerified} /></div>

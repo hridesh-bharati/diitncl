@@ -154,8 +154,12 @@ export default function AdminSidebar({ open, setOpen }) {
             <NavLink to="/admin/all-images" className="text-decoration-none">
               {({ isActive }) => <NavRow item={{ label: "Gallery", icon: "bi-images", color: "#E91E63" }} isActive={isActive} />}
             </NavLink>
+
             <NavLink to="/admin/new-offers" className="text-decoration-none">
-              {({ isActive }) => <NavRow item={{ label: "Promotions", icon: "bi-megaphone-fill", color: "#FF5722" }} isActive={isActive} />}
+              {({ isActive }) => <NavRow item={{ label: "Create Offers", icon: "bi-megaphone-fill", color: "#00be39" }} isActive={isActive} />}
+            </NavLink>
+            <NavLink to="/admin/delete-offers" className="text-decoration-none">
+              {({ isActive }) => <NavRow item={{ label: "Delete Offers", icon: "bi-megaphone-fill", color: "#ac2800" }} isActive={isActive} />}
             </NavLink>
 
             {/* SYSTEM SECTION */}

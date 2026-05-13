@@ -86,7 +86,6 @@ function Home() {
             {PORTALS.map((p, i) => <PortalItem key={i} it={p} />)}
           </div>
         </div>
-        <AdComponent />
 
         <Suspense fallback={<div className="text-center p-5 text-muted">Loading...</div>}>
 
@@ -94,20 +93,17 @@ function Home() {
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
           <div className="mb-4"><TopCourseList /></div>
-             <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
+          <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
               <div>
                 <h5 className="fw-bold mb-1">Join New Batch Today!</h5>
                 <p className="small mb-0 opacity-75">Admission open for Tally, ADCA & Web Design.</p>
               </div>
-              <Link to="/courses" className="btn btn-light rounded-pill px-4 fw-bold text-primary mt-3 mt-md-0 shadow">Apply Now</Link>
+              <Link to="/courses" className="btn blueGD rounded-pill px-4 fw-bold  mt-3 mt-md-0 shadow">Apply Now</Link>
             </div>
           </div>
           <div className="mb-4"><CardSlider /></div>
           <div className="mb-4"><HomeGallery /></div>
-
-          {/* ADMISSION CTA */}
-       
 
           <div className="mb-4"><HomeOffers /></div>
 
@@ -117,6 +113,7 @@ function Home() {
           </div>
 
           <div className="mb-4"><Testimonials /></div>
+          <AdComponent />
           <div className="mb-4"><Team /></div>
         </Suspense>
 

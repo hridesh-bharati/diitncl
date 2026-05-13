@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useRef } from "react";
 
 const stats = [
   { val: 1500, suf: "+", lbl: "Students", bg: "primary" },
   { val: 95, suf: "%", lbl: "Placement", bg: "success" },
   { val: 20, suf: "+", lbl: "Partners", bg: "info" },
-  { val: 15, suf: "+", lbl: "Courses", bg: "danger" },
+  { val: 20, suf: "+", lbl: "Courses", bg: "danger" },
   { val: 10, suf: "+", lbl: "Faculties", bg: "warning" },
   { val: 4.9, suf: "★", lbl: "Rating", bg: "secondary", isF: true }
 ];

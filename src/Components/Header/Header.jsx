@@ -184,7 +184,7 @@ export default function Header() {
       title: "About",
       items: [
         { to: "/about", label: "About Institute", icon: "bi-info-circle-fill", color: "linear-gradient(135deg, #5856D6, #7F7FD5)" },
-        { to: "/about-branch", label: "About Branch", icon: "bi-diagram-3-fill", color: "linear-gradient(135deg, #FF2D55, #FF6A88)" },
+        { to: "/branch/thoothibari", label: "About Branch", icon: "bi-diagram-3-fill", color: "linear-gradient(135deg, #FF2D55, #FF6A88)" },
       ],
     },
     {

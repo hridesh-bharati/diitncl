@@ -28,8 +28,7 @@ const CourseCard = ({ course }) => (
 
       <Link
         to="/courses"
-        className="btn border-0 rounded-pill fw-bold text-white py-2 shadow-sm"
-        style={{ background: 'linear-gradient(135deg, #002d5b 0%, #00d2ff 100%)' }}
+        className="btn border-0 rounded-pill fw-bold text-white py-2 shadow-sm blueGD"
       >
         Enroll Now
       </Link>

@@ -49,7 +49,7 @@ export default function Captcha({ onVerify }) {
   const handleChange = (e) => {
     const val = e.target.value;
     setUserInput(val);
-    onVerify(val === captchaText); // Direct call to parent
+    onVerify(val === captchaText); 
   };
 
   return (

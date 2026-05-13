@@ -177,7 +177,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <VisitorCount />
 
       {/* Recent Students & Queries */}
       <div className="row g-4 mb-5 pb-5 mb-lg-0 pb-lg-0">
@@ -350,7 +349,9 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        <VisitorCount />
       </div>
+
     </div>
   );
 }

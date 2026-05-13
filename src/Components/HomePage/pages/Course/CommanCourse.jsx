@@ -99,22 +99,6 @@ function CommanCourse({ targetCourses, CTitle }) {
           )}
         </div>
       </div>
-
-      <style>{`
-        .shadow-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .shadow-hover:hover { transform: translateY(-7px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
-        .subject-tag:hover { background: #fff !important; transform: scale(1.02); }
-        .jio-btn-hover:hover { filter: brightness(1.1); letter-spacing: 0.5px; }
-        .jio-btn-hover:active { transform: scale(0.98); }
-        .min-h-3 { min-height: 3.2rem; }
-        .tracking-wider { letter-spacing: 1px; }
-        @media (min-width: 992px) {
-          .fs-pc-name { font-size: 1.6rem !important; }
-          .fs-pc-duration { font-size: 0.85rem !important; }
-          .fs-pc-desc { font-size: 0.9rem !important; }
-          .fs-pc-btn { font-size: 1.05rem !important; }
-        }
-      `}</style>
     </div>
   );
 }

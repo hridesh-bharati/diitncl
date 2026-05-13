@@ -1,3 +1,4 @@
+// src\AdminComponents\Students\StudentCard.jsx
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";

@@ -26,6 +26,7 @@ const metaData = {
   "/courses/banking": makeMeta("Banking Courses", "Specialized banking and financial computer courses for jobs."),
   "/branch/thoothibari": makeMeta("Thoothibari Branch", "Drishtee Computer Center Thoothibari branch information."),
   "/branch/nichlaul/location": makeMeta("Nichlaul Location", "Visit us at Nichlaul, Maharajganj. Get directions and contact info."),
+  "/library": makeMeta("Library", "Best Library in Nichlual."),
   "/gallery": makeMeta("Gallery", "See photos of Drishtee Computer Center campus and labs."),
   "/new-admission": makeMeta("New Admission 2026", "Apply online for computer courses at Drishtee Computer Center."),
   "/download-certificate": makeMeta("Download Certificate", "Verify and download your computer course certificate online."),
@@ -103,10 +104,6 @@ const HelmetManager = ({ children }) => {
         <meta name="description" content={meta.description} />
         <link rel="canonical" href={fullUrl} />
         <meta name="robots" content={isNoIndex ? "noindex, nofollow" : "index, follow"} />
-
-        {/* 🚀 Google AdSense Script (101% Working) */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660059673395664"
-          crossorigin="anonymous"></script>
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

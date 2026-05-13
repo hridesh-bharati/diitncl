@@ -36,7 +36,7 @@ export default function AdminLayout() {
                   <div
                     key={item.link}
                     onClick={() => navigate(item.link)}
-                    className={`flex-shrink-0 px-2 py-1 rounded-3 transition-all ${isActive ? 'bg-primary bg-opacity-10 border-bottom border-primary border-3' : ''}`}
+                    className={`flex-shrink-0 px-2 py-0 py-lg-2 rounded-3 transition-all ${isActive ? 'bg-primary bg-opacity-10 border-bottom border-primary border-3' : ''}`}
                     style={{ cursor: "pointer", transition: "0.3s" }}
                   >
                     {/* gap-1 (Mobile) aur gap-md-2 (Desktop) use kiya hai */}
@@ -52,7 +52,7 @@ export default function AdminLayout() {
                         )}
                       </div>
 
-                      <span className={`fw-bold text-dark ${isActive ? 'opacity-100' : 'opacity-75'}`} style={{ fontSize: "0.7rem" }}>
+                      <span className={`fw-bold text-dark ${isActive ? 'opacity-100' : 'opacity-75'}`} style={{ fontSize: "clamp(0.7rem, 2vw, 0.9rem)" }}>
                         {item.label}
                       </span>
                     </div>

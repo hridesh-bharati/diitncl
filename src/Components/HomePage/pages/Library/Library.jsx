@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import CountdownTimer from "./Counter";
-import ScrollUp from "../../../HelperCmp/Scroller/ScrollUp";
 import QuickSupport from "../About/QuickSupport";
 import LibraryFeatures from "./LibraryFeatures";
 
@@ -486,8 +485,6 @@ export default function DrishteeLibrary() {
       </section>
 
       <LibraryFeatures />
-      <ScrollUp />
-
       <style>{`
         .fw-black { font-weight: 900; }
         .object-fit-cover { object-fit: cover; }

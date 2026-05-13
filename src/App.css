@@ -16,6 +16,7 @@
   --radius-lg: 18px;
   --transition: 0.2s ease;
 }
+
 /* 1. Global Reset */
 * {
   margin: 0;
@@ -34,8 +35,9 @@
 }
 
 /* 3. Typography & Base */
-html, body {
-  overflow-y: auto; 
+html,
+body {
+  overflow-y: auto;
   font-family: 'Inter', sans-serif;
 
   background-color: #fff;
@@ -43,10 +45,14 @@ html, body {
 }
 
 /* 4. Links Cleanup */
-a, .nav-link, .grid-item, .ios-menu-item {
+a,
+.nav-link,
+.grid-item,
+.ios-menu-item {
   text-decoration: none !important;
   color: inherit;
 }
+
 /* Glass & Win11 Effects (Safe - No Removal) */
 .glass-panel {
   background: rgba(255, 255, 255, 0.4) !important;
@@ -66,18 +72,82 @@ a, .nav-link, .grid-item, .ios-menu-item {
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 16px !important;
   transition: all 0.3s ease;
-}/* Taaki user text select na kare swipe karte waqt */
+}
+
+/* Taaki user text select na kare swipe karte waqt */
 .swipe-container {
   user-select: none;
   -webkit-user-drag: none;
 }
-::placeholder{
+
+::placeholder {
   font-size: 0.8rem !important;
 }
-.maroonGD{
+
+.maroonGD {
   background: linear-gradient(135deg, #B91646, #8b0e32) !important;
   color: white !important;
 }
-.darkBG{
+
+.darkBG {
   background: #0a2647 !important;
+}
+
+.blueGD {
+  border: 0;
+  color: white;
+  background: linear-gradient(135deg, #002d5b 0%, #00d2ff 100%);
+
+}
+
+/* .....Hover Start...............  */
+.transition-base {
+  transition: all 0.3s ease-in-out;
+}
+
+.shadow-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* .....Hover End...............  */
+/* Animated Mesh Background */
+.bg-mesh-gradient {
+  background-color: #f5f3ff;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.bg-mesh-gradient::before,
+.bg-mesh-gradient::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.4;
+  animation: float 10s infinite alternate;
+}
+
+/* Indigo Circle (Top Left) */
+.bg-mesh-gradient::before {
+  background: #4f46e5;
+  top: -100px;
+  left: -100px;
+}
+
+/* Purple Circle (Bottom Right) */
+.bg-mesh-gradient::after {
+  background: #7c3aed;
+  bottom: -100px;
+  right: -100px;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  from { transform: translate(0, 0); }
+  to { transform: translate(50px, 50px); }
 }
