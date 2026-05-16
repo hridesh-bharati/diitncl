@@ -5,6 +5,7 @@ import { auth, db } from "../../firebase/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { subscribeUser } from "../../services/pushService";
@@ -95,6 +96,22 @@ export default function LoginForm() {
     }
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!email) return toast.error("Please enter your email address first.");
+
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email.toLowerCase());
+      toast.success("Password reset email sent! Check your inbox.");
+      setForgotPassword(false);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="d-flex align-items-center justify-content-center p-3"
       style={{ minHeight: "calc(100vh - 65px)", background: COLORS.bgSoft }}>
@@ -136,9 +153,7 @@ export default function LoginForm() {
               <div style={{ height: '3px', width: '40px', background: COLORS.blue, margin: '0 auto', borderRadius: '10px' }}></div>
             </div>
 
-            <form onSubmit={forgotPassword ? (e) => e.preventDefault() : (isSignup ? handleSignup : handleLogin)}>
-
-              {/* Email Input */}
+              <form onSubmit={forgotPassword ? handleForgotPassword : (isSignup ? handleSignup : handleLogin)}> 
               <div className="mb-3">
                 <label className="small fw-bold mb-1 opacity-75">EMAIL ADDRESS</label>
                 <div className="input-group bg-white rounded-3 border" style={{ borderColor: COLORS.inputBorder }}>
