@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/firebase";
 import { collection, query, onSnapshot, orderBy, doc } from "firebase/firestore";
 import { printSingleReceipt, getFeeLogic } from "../../AdminComponents/Students/Fees/FeeServices";
-
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// Updated StatCard for better fit (3 cards in a row possible or stacked)
+// StatCard Component
 const StatCard = ({ icon, label, value, color, colSize = "col-4" }) => (
   <div className={colSize}>
     <div className="card border-0 shadow-sm rounded-4 p-3 h-100 text-center">
@@ -21,6 +22,7 @@ const StatCard = ({ icon, label, value, color, colSize = "col-4" }) => (
 );
 
 export default function StudentDashboard() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,8 +30,9 @@ export default function StudentDashboard() {
   useEffect(() => {
     let unsubStudent = () => { };
     let unsubPay = () => { };
+    let unsubSession = () => { };
 
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+    const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
       const email = user?.email || localStorage.getItem("user_email");
 
       if (!email) {
@@ -39,8 +42,56 @@ export default function StudentDashboard() {
       }
 
       const emailId = email.toLowerCase().trim();
-      const studentDocRef = doc(db, "admissions", emailId);
 
+      // ==========================================================
+      // 🔥 WHATSAPP STYLE: REAL-TIME SESSION VERIFICATION (WITH AUTO-FIX)
+      // ==========================================================
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+
+        // Puraane users ke liye automatic session generate karne ka logic
+        unsubSession = onSnapshot(userDocRef, async (snap) => {
+          if (snap.exists()) {
+            const dbSessionId = snap.data()?.currentSessionId;
+            const localSessionId = localStorage.getItem("current_session_id");
+
+            // CASE 1: Agar database mein session nahi hai (Puraana logged-in student)
+            if (!dbSessionId) {
+              const newSessionId = Date.now().toString() + Math.random().toString(36).substring(2);
+              localStorage.setItem("current_session_id", newSessionId);
+
+              // Import check: Make sure 'setDoc' or 'updateDoc' is imported from firebase/firestore
+              const { updateDoc } = await import("firebase/firestore");
+              await updateDoc(userDocRef, { currentSessionId: newSessionId });
+              return;
+            }
+
+            // CASE 2: Database mein session hai par mobile ke local storage mein nahi hai
+            // (Yeh tab hoga jab student pehle se login tha par database mein session abhi naya bana hai)
+            if (dbSessionId && !localSessionId) {
+              localStorage.setItem("current_session_id", dbSessionId);
+              return;
+            }
+
+            // CASE 3: WhatsApp Style Multi-device Block (Dono jagah session hai par match nahi kar raha)
+            if (dbSessionId && localSessionId && dbSessionId !== localSessionId) {
+              toast.warning("Logged out! account loged in another device.");
+              localStorage.removeItem("current_session_id");
+
+              unsubStudent();
+              unsubPay();
+              unsubSession();
+
+              await signOut(auth);
+              navigate("/", { replace: true });
+            }
+          }
+        });
+      }
+      // ==========================================================
+
+      // Student Admission Profile Listener
+      const studentDocRef = doc(db, "admissions", emailId);
       unsubStudent = onSnapshot(studentDocRef, (snap) => {
         if (snap.exists()) {
           setData({ id: snap.id, ...snap.data() });
@@ -51,6 +102,7 @@ export default function StudentDashboard() {
         setLoading(false);
       });
 
+      // Payments Listener
       const payQ = query(
         collection(db, "admissions", emailId, "payments"),
         orderBy("date", "desc")
@@ -68,9 +120,9 @@ export default function StudentDashboard() {
       unsubscribeAuth();
       unsubStudent();
       unsubPay();
+      unsubSession();
     };
-  }, []);
-
+  }, [navigate]);
   const totalPaid = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
   const summary = getFeeLogic(data?.course, payments) || { balance: 0, netFee: 0 };
 
@@ -82,7 +134,7 @@ export default function StudentDashboard() {
   );
 
   return (
-    <div className="pb-5 min-vh-100  bg-light animate__animated animate__fadeIn">
+    <div className="pb-5 min-vh-100 bg-light animate__animated animate__fadeIn">
       {/* Blue Header Section */}
       <div className="p-4 mb-4 text-white shadow" style={{ background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", borderRadius: "0 0 25px 25px" }}>
         <div className="container py-2">
@@ -120,7 +172,7 @@ export default function StudentDashboard() {
       </div>
 
       <div className="container">
-        {/* 🔥 Stats Section - Updated with Total Fee Field */}
+        {/* Stats Section */}
         <div className="row g-2 mb-4">
           <StatCard icon="briefcase" label="Total Fee" value={summary?.netFee} color="primary" />
           <StatCard icon="cash-stack" label="Paid" value={totalPaid} color="success" />
