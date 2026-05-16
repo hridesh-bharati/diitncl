@@ -7,12 +7,12 @@ import "./Home.css";
 import AdComponent from "./AdComponent";
 import Features from "./Features";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
-import HomeGallery from "./pages/HomeGallery";
+// import HomeGallery from "./pages/HomeGallery";
 import StatsSection from "./StatsSection";
 
 // Lazy Components
-const TopCourseList = lazy(() => import("./TopCourseList"));
-const CardSlider = lazy(() => import("./Cardslider"));
+// const TopCourseList = lazy(() => import("./TopCourseList"));
+// const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
 const Testimonials = lazy(() => import("./Testimonial"));
 const HomeOffers = lazy(() => import("./pages/offers/HomeOffers"));
@@ -92,7 +92,7 @@ function Home() {
           <div className="mx-1 my-0 p-0"><StatsSection /></div>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
-          <div className="mb-4"><TopCourseList /></div>
+          {/* <div className="mb-4"><TopCourseList /></div> */}
           <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
               <div>
@@ -102,8 +102,8 @@ function Home() {
               <Link to="/courses" className="btn blueGD rounded-pill px-4 fw-bold  mt-3 mt-md-0 shadow">Apply Now</Link>
             </div>
           </div>
-          <div className="mb-4"><CardSlider /></div>
-          <div className="mb-4"><HomeGallery /></div>
+          {/* <div className="mb-4"><CardSlider /></div> */}
+          {/* <div className="mb-4"><HomeGallery /></div> */}
 
           <div className="mb-4"><HomeOffers /></div>
 
