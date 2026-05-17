@@ -138,9 +138,10 @@ export default function Header() {
     { to: "/courses/nielit", label: "NIELIT", desc: "CCC, O-Level Govt. courses.", icon: "bi-award", color: "linear-gradient(135deg, #FF3B30, #FF453A)" },
   ], []);
 
-  const studentZoneLinks = useMemo(() => [
+ const studentZoneLinks = useMemo(() => [
     { to: "/new-admission", label: "New Admission", icon: "bi-pencil-square", color: "linear-gradient(135deg, #007AFF, #054e9e)" },
     { to: "/download-certificate", label: "Verification", icon: "bi-shield-check", color: "linear-gradient(135deg, #34C759, #1a9638)" },
+    { to: "/resume-builder", label: "Resume Builder", icon: "bi-file-earmark-person-fill", color: "linear-gradient(135deg, #1e3c72, #2a5298)" }
   ], []);
 
   const toggleMobileMenu = () => startTransition(() => setIsMenuOpen(!isMenuOpen));
@@ -336,7 +337,6 @@ export default function Header() {
                         {[
                           { to: "/chat", icon: "chat-text-fill", label: "Chat", cls: "text-primary" },
                           { to: "/photo-editor", icon: "camera", label: "Editor", cls: "text-danger" },
-                          { to: "/resume-builder", icon: "file-earmark-person-fill", label: "Resume", cls: "text-info" }
                         ].map((app, i) => (
                           <Link key={i} to={app.to} onClick={() => setShowApps(false)} className="col-4 text-center text-decoration-none p-2 rounded-3 hover-bg">
                             <i className={`bi bi-${app.icon} fs-3 d-block ${app.cls}`}></i>

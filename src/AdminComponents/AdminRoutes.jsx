@@ -61,8 +61,6 @@ export default function AdminRoutes() {
           <Route path="analytics" element={<AttendanceAnalytics />} />
         </Route>
 
-        {/* <Route path="gallery" element={<AdminGalleryUpload />} />
-        <Route path="all-images" element={<AllPics />} /> */}
         <Route path="new-offers" element={<CreateOffer />} />
         <Route path="delete-offers" element={<DeleteOffer />} />
         <Route path="profile" element={<AdminProfile />} />
