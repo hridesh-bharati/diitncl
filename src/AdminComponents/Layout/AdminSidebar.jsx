@@ -94,6 +94,7 @@ export default function AdminSidebar({ open, setOpen }) {
                     <NavLink to="/admin/students/attendance" className="sublink-item">Daily Overview</NavLink>
                     <NavLink to="/admin/students/attendance/mark" className="sublink-item">Mark Attendance</NavLink>
                     <NavLink to="/admin/students/attendance/summary" className="sublink-item">Monthly Summary</NavLink>
+                    <NavLink to="/admin/students/attendance/history" className="sublink-item">History</NavLink>
                   </div>
                 </div>
               </div>

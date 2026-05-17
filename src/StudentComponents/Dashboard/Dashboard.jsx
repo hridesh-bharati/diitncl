@@ -7,6 +7,8 @@ import { printSingleReceipt, getFeeLogic } from "../../AdminComponents/Students/
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import AttendanceCard from "./AttendanceCard";
+
 
 // StatCard Component
 const StatCard = ({ icon, label, value, color, colSize = "col-4" }) => (
@@ -170,7 +172,9 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
-
+      <div className="m-2">
+        <AttendanceCard />
+      </div>
       <div className="container">
         {/* Stats Section */}
         <div className="row g-2 mb-4">

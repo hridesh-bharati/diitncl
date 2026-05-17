@@ -1,3 +1,4 @@
+// src\StudentComponents\Layout\StudentSidebar.jsx
 import React, { useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { auth } from "../../firebase/firebase";
