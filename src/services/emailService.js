@@ -8,7 +8,7 @@ const PUSH_API_URL = "/api/send-push"; // 🔥 Push API Endpoint
  */
 // emailService.js Update
 export const sendPushNotification = async (student, title, body, url = "/student/dashboard") => {
-  if (!student?.fcmToken) return false; // Ab subscription ki jagah fcmToken use karein
+  if (!student?.fcmToken) return false;  
 
   try {
     const response = await fetch("/api/send-push", {

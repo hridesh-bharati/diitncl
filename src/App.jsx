@@ -31,6 +31,7 @@ import { doc, setDoc, increment, getDoc, updateDoc, serverTimestamp, } from "fir
 import { getMessaging, onMessage, isSupported, } from "firebase/messaging";
 import ScrollUp from "./Components/HelperCmp/Scroller/ScrollUp";
 import ResumeBuilder from "./Components/Resume/ResumeBuilder";
+import { initForegroundNotifications } from "./services/foregroundNotification";
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -81,6 +82,14 @@ export default function App() {
   );
 
   const [loading, setLoading] = useState(true);
+
+
+
+  useEffect(() => {
+    initForegroundNotifications();
+  }, []);
+
+
 
   /* ------------------------------------------------------ */
   /* Service Worker Registration */
@@ -195,55 +204,138 @@ export default function App() {
     }
   }, []);
 
-  /* ------------------------------------------------------ */
-  /* Push Token Save After User Interaction */
-  /* ------------------------------------------------------ */
-  useEffect(() => {
-    let asked = false;
+ /* ------------------------------------------------------ */
+/* 🔥 Push Token Save + Admin Token Sync (UPDATED FINAL) */
+/* ------------------------------------------------------ */
 
-    const initPush = async () => {
+useEffect(() => {
+  let asked = false;
+
+  const initPush = async () => {
+    try {
       if (asked || !user?.uid) return;
       asked = true;
 
-      try {
-        const TOKEN_CACHE_KEY = `fcm_token_saved_${user.uid}`;
-
-        if (localStorage.getItem(TOKEN_CACHE_KEY)) {
-          console.log("⚡ Push token already cached");
-          return;
-        }
-
-        const token = await subscribeUser();
-
-        if (token) {
-          await setDoc(
-            doc(db, "admissions", user.uid),
-            {
-              fcmToken: token,
-              tokenUpdatedAt: new Date(),
-            },
-            { merge: true }
-          );
-
-          localStorage.setItem(TOKEN_CACHE_KEY, "true");
-          console.log("✅ Push token saved");
-        }
-      } catch (error) {
-        console.error("❌ Push token save error:", error);
+      /* -------------------------------------- */
+      /* Browser Support Check */
+      /* -------------------------------------- */
+      if (!("Notification" in window)) {
+        console.log("❌ Notifications not supported");
+        return;
       }
-    };
 
-    window.addEventListener("click", initPush, { once: true });
-    window.addEventListener("scroll", initPush, { once: true });
-    window.addEventListener("touchstart", initPush, { once: true });
+      /* -------------------------------------- */
+      /* Notification Permission */
+      /* -------------------------------------- */
+      let permission = Notification.permission;
 
-    return () => {
-      window.removeEventListener("click", initPush);
-      window.removeEventListener("scroll", initPush);
-      window.removeEventListener("touchstart", initPush);
-    };
-  }, [user]);
+      if (permission !== "granted") {
+        permission = await Notification.requestPermission();
+      }
 
+      if (permission !== "granted") {
+        console.log("❌ Notification permission denied");
+        return;
+      }
+
+      /* -------------------------------------- */
+      /* Cache Key */
+      /* -------------------------------------- */
+      const TOKEN_CACHE_KEY = `fcm_token_saved_${user.uid}`;
+
+      if (localStorage.getItem(TOKEN_CACHE_KEY)) {
+        console.log("⚡ Push token already cached");
+        return;
+      }
+
+      /* -------------------------------------- */
+      /* Generate FCM Token */
+      /* -------------------------------------- */
+      const token = await subscribeUser();
+
+      if (!token) {
+        console.log("❌ No FCM token received");
+        return;
+      }
+
+      console.log("🔥 FCM TOKEN:", token);
+
+      /* -------------------------------------- */
+      /* Save Token in USERS Collection */
+      /* -------------------------------------- */
+   await setDoc(
+  doc(db, "users", user.uid),
+  {
+    uid: user.uid,
+    email: user.email || "",
+    fcmToken: token,
+    role: role || "student",
+    tokenUpdatedAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  },
+  { merge: true }
+);
+
+/* ADMIN PUBLIC TOKEN SAVE */
+if (role === "admin") {
+  await setDoc(
+    doc(db, "publicAdmins", user.uid),
+    {
+      uid: user.uid,
+      email: user.email || "",
+      fcmToken: token,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+      /* -------------------------------------- */
+      /* Save Token in Admissions Collection */
+      /* -------------------------------------- */
+      await setDoc(
+        doc(db, "admissions", user.uid),
+        {
+          fcmToken: token,
+          tokenUpdatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      /* -------------------------------------- */
+      /* Local Cache */
+      /* -------------------------------------- */
+      localStorage.setItem(TOKEN_CACHE_KEY, "true");
+
+      console.log("✅ Push token saved successfully");
+
+      /* -------------------------------------- */
+      /* Test Local Notification */
+      /* -------------------------------------- */
+      new Notification("Drishtee Notifications Enabled 🔔", {
+        body: "You will now receive instant updates.",
+        icon: "/images/icon/icon-192.png",
+      });
+
+    } catch (error) {
+      console.error("❌ Push token save error:", error);
+    }
+  };
+
+  /* -------------------------------------- */
+  /* User Interaction Required for Chrome */
+  /* -------------------------------------- */
+  window.addEventListener("click", initPush, { once: true });
+  window.addEventListener("scroll", initPush, { once: true });
+  window.addEventListener("touchstart", initPush, { once: true });
+
+  return () => {
+    window.removeEventListener("click", initPush);
+    window.removeEventListener("scroll", initPush);
+    window.removeEventListener("touchstart", initPush);
+  };
+
+}, [user, role]);
   /* ------------------------------------------------------ */
   /* Firebase Auth Listener */
   /* ------------------------------------------------------ */
