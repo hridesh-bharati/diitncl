@@ -9,6 +9,7 @@ import Features from "./Features";
 import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
 import HomeGallery from "./pages/HomeGallery";
 import StatsSection from "./StatsSection";
+import BdaySection from "../Bday/BdaySection";
 
 // Lazy Components
 const TopCourseList = lazy(() => import("./TopCourseList"));
@@ -92,6 +93,7 @@ function Home() {
           <div className="mx-1 my-0 p-0"><StatsSection /></div>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
+          <BdaySection />
           <div className="mb-4"><TopCourseList /></div>
           <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
