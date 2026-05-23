@@ -1,287 +1,252 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import AdmissionProvider from '../../AdminComponents/Admissions/AdmissionProvider';
+import { db } from '../../firebase/firebase'; 
+import { authListener, getCurrentUserProfile } from '../../firebase/auth'; 
+import { collection, addDoc, query, onSnapshot, orderBy, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
 
-// Helper: Lightweight CSS Gradient Generator for Initial Avatars
-const getAvatarGradient = (name = 'S') => {
-  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#BB8FCE', '#85C1E2'];
-  const charCode = name.charCodeAt(0) || 0;
-  const color1 = colors[charCode % colors.length];
-  const color2 = colors[(charCode + 3) % colors.length];
-  return `linear-gradient(135deg, ${color1}, ${color2})`;
-};
+const BirthdayCard = ({ student, isToday, currentUser }) => {
+  const photo = student.photoUrl || student.photoURL || student.image || student.avatar;
+  const name = student.name || student.studentName || "Student";
+  const [wishText, setWishText] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [wishes, setWishes] = useState([]);
+  const [myGuestWishes, setMyGuestWishes] = useState([]);
 
-// Individual Birthday Card Component
-const BirthdayCard = ({ student, isToday }) => {
-  const studentPhoto = student.photoUrl || student.photoURL || student.image || student.avatar || null;
-  const studentName = student.name || student.studentName || "Student";
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('my_bday_wishes') || '[]');
+    setMyGuestWishes(saved);
+  }, []);
 
-  const handleWish = () => {
-    const text = isToday 
-      ? `✨ *Dear ${studentName},* ✨\n\n🎉 *Drishtee Computer Centre* wishes you a very *Happy Birthday!* 🎂\n\nMay this year bring you immense success, great health, and brilliant achievements in your learning journey. Keep shining! 🚀\n\nBest Regards,\n*Team Drishtee* 👋`
-      : `⏳ Upcoming Birthday wishes to ${studentName} from Drishtee Computer Centre! 🎈`;
-      
-    if (navigator.share) {
-      navigator.share({ title: 'Birthday Wishes', text }).catch(() => {});
+  // लाइव विशेज लोड करना
+  useEffect(() => {
+    const q = query(collection(db, "birthdayWishes"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list = [];
+      snapshot.forEach(doc => {
+        if(doc.data().studentId === (student.id || name)) {
+          list.push({ id: doc.id, ...doc.data() });
+        }
+      });
+      setWishes(list);
+    });
+    return () => unsubscribe();
+  }, [student, name]);
+
+  const submitWish = async (e) => {
+    e.preventDefault();
+    if (!wishText.trim()) return;
+
+    let senderName = "Guest";
+    if (currentUser) {
+      senderName = currentUser.name || currentUser.displayName || currentUser.email.split('@')[0];
+    } else if (guestName.trim()) {
+      senderName = guestName.trim();
     } else {
-      navigator.clipboard.writeText(text)
-        .then(() => alert(`🎉 Wish copied to clipboard for ${studentName}!`))
-        .catch(() => alert(text));
+      senderName = `Guest_${Math.floor(100 + Math.random() * 900)}`;
+    }
+
+    try {
+      const docRef = await addDoc(collection(db, "birthdayWishes"), {
+        studentId: student.id || name,
+        name: senderName,
+        message: wishText,
+        senderUid: currentUser?.uid || null,
+        createdAt: serverTimestamp()
+      });
+
+      if (!currentUser) {
+        const updatedWishes = [...myGuestWishes, docRef.id];
+        setMyGuestWishes(updatedWishes);
+        localStorage.setItem('my_bday_wishes', JSON.stringify(updatedWishes));
+      }
+
+      setWishText('');
+      setGuestName('');
+    } catch (err) {
+      alert("Error!");
     }
   };
 
-  const formatDisplayDate = (dobString) => {
-    if (!dobString) return '';
-    let parts = [];
-    if (dobString.includes('/')) {
-      parts = dobString.split('/'); 
-      if (parts.length !== 3) return '';
-      const dateObj = new Date(2000, parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-      return dateObj.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
-    } else if (dobString.includes('-')) {
-      parts = dobString.split('-'); 
-      if (parts.length !== 3) return '';
-      const dateObj = new Date(2000, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-      return dateObj.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+  const handleDelete = async (wishId) => {
+    if (window.confirm("Delete this wish?")) {
+      try {
+        await deleteDoc(doc(db, "birthdayWishes", wishId));
+        const updatedWishes = myGuestWishes.filter(id => id !== wishId);
+        setMyGuestWishes(updatedWishes);
+        localStorage.setItem('my_bday_wishes', JSON.stringify(updatedWishes));
+      } catch (err) {
+        alert("Failed to delete!");
+      }
     }
-    return dobString;
   };
 
   return (
-    <div className="col">
-      <div className={`card h-100 border-0 shadow-sm text-center p-3 position-relative transition-card ${isToday ? 'border border-primary border-2 bg-gradient-light' : ''}`}>
-        
-        {/* Avatar Section */}
-        <div className="d-flex justify-content-center my-3 position-relative align-self-center" style={{ width: '130px', height: '130px' }}>
-          {studentPhoto ? (
-            <img 
-              src={studentPhoto} 
-              alt={studentName} 
-              className="rounded-circle shadow-sm object-fit-cover w-100 h-100"
-              onError={(e) => { 
-                e.target.style.display = 'none'; 
-                if (e.target.nextSibling) e.target.nextSibling.classList.replace('d-none', 'd-flex'); 
-              }}
-            />
-          ) : null}
-          <div 
-            className={`rounded-circle shadow-sm text-white fw-bold align-items-center justify-content-center w-100 h-100 fs-3 ${studentPhoto ? 'd-none' : 'd-flex'}`} 
-            style={{ background: getAvatarGradient(studentName) }}
-          >
-            {studentName.charAt(0).toUpperCase()}
+    <div className="card border-0 shadow-sm p-2 p-md-3 mb-2 mb-md-3 bg-white rounded-3">
+      <div className="row g-2 g-md-3 align-items-stretch">
+        <div className="col-12 col-md-5 border-bottom border-end-md pb-2 pb-md-0 d-flex flex-column justify-content-between">
+          <div className="d-flex align-items-center gap-2 gap-md-3 mb-2 mb-md-3">
+            <div className="position-relative flex-shrink-0" style={{ width: '48px', height: '48px' }}>
+              {photo ? (
+                <img src={photo} alt={name} className="rounded-circle w-100 h-100 object-fit-cover shadow-sm" onError={(e) => e.target.style.display = 'none'} />
+              ) : (
+                <div className="rounded-circle bg-secondary text-white fw-bold d-flex align-items-center justify-content-center w-100 h-100 small">{name.charAt(0)}</div>
+              )}
+              {isToday && <span className="position-absolute top-0 start-0" style={{ fontSize: '11px', transform: 'translate(-15%, -15%)' }}>🎂</span>}
+            </div>
+
+            <div className="flex-grow-1 min-w-0">
+              <div className="d-flex justify-content-between align-items-center gap-1">
+                <h6 className="fw-bold mb-0 text-truncate text-dark small-md" style={{ fontSize: '13px' }}>{name}</h6>
+                <span className={`badge ${isToday ? 'bg-success-subtle text-success' : 'bg-light text-secondary border'} px-1.5 py-1`} style={{ fontSize: '9px' }}>
+                  {isToday ? '🎯 Today' : student.dob?.substring(0, 5)}
+                </span>
+              </div>
+              <p className="text-muted mb-0 text-truncate" style={{ fontSize: '10.5px' }}>{student.course || 'DCA'} • {student.branch || 'DIIT124'}</p>
+            </div>
           </div>
+
+          {/* विश इनपुट फ़ील्ड्स */}
           {isToday && (
-            <span className="position-absolute bottom-0 end-0 bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style={{ width: '30px', height: '30px', transform: 'translate(10%, 10%)' }}>
-              🎂
-            </span>
+            <form onSubmit={submitWish} className="d-flex flex-column gap-1">
+              {!currentUser && (
+                <input 
+                  type="text" 
+                  placeholder="Your Name (Optional)" 
+                  className="form-control form-control-sm bg-light border-0 py-1" 
+                  style={{ fontSize: '10.5px' }}
+                  value={guestName} 
+                  onChange={e => setGuestName(e.target.value)} 
+                />
+              )}
+              <div className="input-group input-group-sm">
+                <input 
+                  type="text" 
+                  placeholder={currentUser ? `Wish as ${currentUser.name || currentUser.email.split('@')[0]}...` : "Write a wish..."} 
+                  className="form-control bg-light border-0 py-1" 
+                  style={{ fontSize: '11px' }}
+                  value={wishText} 
+                  onChange={e => setWishText(e.target.value)} 
+                  required 
+                />
+                <button className="btn btn-primary btn-sm px-2.5 fw-bold" type="submit" style={{ fontSize: '11px' }}>Send 🚀</button>
+              </div>
+            </form>
           )}
         </div>
 
-        {/* Card Body Information */}
-        <div className="card-body d-flex flex-column p-2">
-          <h5 className="card-title fw-bold text-dark mb-1">{studentName}</h5>
-          <p className="card-text text-muted small mb-3">
-            {student.course || 'DCA/ADCA'} &bull; {student.branch || 'DIIT124'}
-          </p>
+        {/* दायाँ हिस्सा: लाइव विशेज बोर्ड */}
+        <div className="col-12 col-md-7 d-flex flex-column pt-1 pt-md-0">
+          <span className="text-muted fw-bold mb-1.5 d-block" style={{ fontSize: '10.5px' }}>✨ SENDER WISHES ({wishes.length})</span>
           
-          <div className="mt-auto">
-            {isToday ? (
-              <span className="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-2 rounded-pill w-100 fs-7">
-                🎉 Happy Birthday!
-              </span>
+          {/* मोबाइल पर कम्फर्टेबल स्क्रॉलिंग के लिए min-height को एडजस्ट किया गया है */}
+          <div className="bg-light rounded p-2 flex-grow-1 overflow-y-auto border border-light" style={{ minHeight: '80px', maxHeight: '120px', fontSize: '11px' }}>
+            {wishes.length === 0 ? (
+              <div className="text-center text-muted py-3 animate-fade" style={{ fontSize: '10.5px' }}>Be the first to wish! 🎉</div>
             ) : (
-              <span className="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill w-100 fs-7">
-                📅 {formatDisplayDate(student.dob)}
-              </span>
+              wishes.map(w => {
+                const isAdmin = currentUser?.role === 'admin';
+                const isSender = currentUser && w.senderUid === currentUser.uid;
+                const isMyGuestWish = !currentUser && myGuestWishes.includes(w.id);
+                const showDelete = isAdmin || isSender || isMyGuestWish;
+
+                return (
+                  <div key={w.id} className="bg-white rounded p-1 mb-1 shadow-0 d-flex justify-content-between align-items-center gap-2 border-start border-primary border-3">
+                    <div className="text-wrap text-break" style={{ fontSize: '10.5px' }}>
+                      <strong className="text-primary" style={{ fontSize: '10px' }}>@{w.name}:</strong> <span className="text-dark ms-1">{w.message}</span>
+                    </div>
+                    {showDelete && (
+                      <button onClick={() => handleDelete(w.id)} className="btn btn-link text-danger p-0 border-0 fw-bold me-1 flex-shrink-0" style={{ fontSize: '11px', textDecoration: 'none', lineHeight: 1 }}>
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="card-footer bg-transparent border-0 p-0 my-2">
-          <button 
-            className={`btn w-100 fw-bold rounded-3 ${isToday ? 'btn-primary shadow-sm' : 'btn-outline-primary'}`} 
-            onClick={handleWish}
-          >
-            {isToday ? 'Send Wishes 🎁' : 'Remind Me 🔔'}
-          </button>
-        </div>
       </div>
     </div>
   );
 };
 
-// Main Section Component
 export default function BdaySection() {
   const [viewTab, setViewTab] = useState('today');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = authListener(async (user) => {
+      if (user) {
+        const profile = await getCurrentUserProfile();
+        setCurrentUser(profile || user);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <AdmissionProvider>
       {({ admissions = [], loading }) => {
-        
-        const filteredBirthdays = useMemo(() => {
+        const filtered = useMemo(() => {
           const today = new Date();
-          const currentMonth = today.getMonth() + 1; 
-          const currentDate = today.getDate(); 
+          const curM = today.getMonth() + 1, curD = today.getDate();
+          const tArr = [], uArr = [];
 
-          const todayArr = [];
-          const upcomingArr = [];
+          admissions.forEach((s) => {
+            if (!s?.dob || s.status === "canceled") return;
+            const p = s.dob.includes('/') ? s.dob.split('/') : s.dob.split('-');
+            if (p.length !== 3) return;
+            const d = parseInt(s.dob.includes('/') ? p[0] : p[2], 10);
+            const m = parseInt(p[1], 10);
 
-          admissions.forEach((student) => {
-            if (!student?.dob || student.status === "canceled") return;
-
-            let dobMonth = 0;
-            let dobDate = 0;
-
-            if (student.dob.includes('/')) {
-              const parts = student.dob.split('/');
-              if (parts.length !== 3) return;
-              dobDate = parseInt(parts[0], 10);
-              dobMonth = parseInt(parts[1], 10);
-            } else if (student.dob.includes('-')) {
-              const parts = student.dob.split('-');
-              if (parts.length !== 3) return;
-              dobMonth = parseInt(parts[1], 10);
-              dobDate = parseInt(parts[2], 10);
-            } else {
-              return; 
-            }
-
-            if (dobMonth === currentMonth && dobDate === currentDate) {
-              todayArr.push(student);
-            } else {
-              const tDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-              let bDate = new Date(today.getFullYear(), dobMonth - 1, dobDate);
-              
-              if (bDate < tDate) {
-                bDate.setFullYear(today.getFullYear() + 1);
-              }
-              
-              const diffTime = bDate - tDate;
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-              if (diffDays > 0 && diffDays <= 7) {
-                upcomingArr.push({ ...student, diffDays });
-              }
+            if (m === curM && d === curD) tArr.push(s);
+            else {
+              let bDate = new Date(today.getFullYear(), m - 1, d);
+              if (bDate < today) bDate.setFullYear(today.getFullYear() + 1);
+              const diff = Math.ceil((bDate - today) / 86400000);
+              if (diff > 0 && diff <= 7) uArr.push({ ...s, diffDays: diff });
             }
           });
-
-          upcomingArr.sort((a, b) => a.diffDays - b.diffDays);
-
-          return { today: todayArr, upcoming: upcomingArr };
+          return { today: tArr, upcoming: uArr.sort((a, b) => a.diffDays - b.diffDays) };
         }, [admissions]);
 
-        if (loading) {
-          return (
-            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          );
-        }
-
-        const activeList = viewTab === 'today' ? filteredBirthdays.today : filteredBirthdays.upcoming;
+        if (loading) return <div className="text-center py-4 small text-muted">Loading...</div>;
+        const list = viewTab === 'today' ? filtered.today : filtered.upcoming;
 
         return (
-          <div className="container-fluid py-4" style={{ maxWidth: '1400px' }}>
-            
-            {/* Real App Dashboard Style Header */}
-            <div className="p-4 p-md-5 mb-4 rounded-4 darkBG text-white shadow-sm position-relative overflow-hidden">
-              <div className="position-relative z-1">
-                <h1 className="display-6 fw-extrabold mb-2">✨ Drishtee Celebrations</h1>
-                <p className="lead mb-0 opacity-90 fs-6 fs-md-5">Sharing happiness and grooming profiles within our student community.</p>
+          // मोबाइल पर फुल-विड्थ के लिए px-1 या px-2 बेस्ट रहता है
+          <div className="container-fluid mt-1 py-2 bg-light px-2 rounded-2">
+            {/* हेडर बार: मोबाइल पर बटन्स छोटे और टाइट रहें */}
+            <div className="d-flex justify-content-between align-items-center mb-2.5 border-bottom pb-2">
+              <h6 className="fw-bold mb-0 text-secondary" style={{ fontSize: '14px' }}>🎉 Celebrations</h6>
+              <div className="btn-group rounded-2 shadow-sm">
+                <button className={`btn btn-sm px-2 py-1 fw-bold ${viewTab === 'today' ? 'btn-dark' : 'btn-light text-muted'}`} style={{ fontSize: '11px' }} onClick={() => setViewTab('today')}>
+                  Today ({filtered.today.length})
+                </button>
+                <button className={`btn btn-sm px-2 py-1 fw-bold ${viewTab === 'upcoming' ? 'btn-dark' : 'btn-light text-muted'}`} style={{ fontSize: '11px' }} onClick={() => setViewTab('upcoming')}>
+                  Next 7 Days ({filtered.upcoming.length})
+                </button>
               </div>
             </div>
 
-            {/* Bootstrap Navigation Pills for Tabs */}
-            <div className="d-flex justify-content-center mb-4">
-              <ul className="nav nav-pills bg-light p-1 rounded-pill shadow-sm">
-                <li className="nav-item">
-                  <button 
-                    className={`nav-link rounded-pill fw-bold px-4 py-2 ${viewTab === 'today' ? 'active shadow-sm' : 'text-secondary'}`}
-                    onClick={() => setViewTab('today')}
-                  >
-                    📅 Today <span className={`badge ms-2 ${viewTab === 'today' ? 'bg-white text-primary' : 'bg-secondary text-white'}`}>{filteredBirthdays.today.length}</span>
-                  </button>
-                </li>
-                <li className="nav-item ">
-                  <button 
-                    className={`nav-link rounded-pill fw-bold px-4 py-2 ${viewTab === 'upcoming' ? 'active shadow-sm' : 'text-secondary'}`}
-                    onClick={() => setViewTab('upcoming')}
-                  >
-                    ⏳ Next 7 Days <span className={`badge ms-2 ${viewTab === 'upcoming' ? 'bg-white text-primary' : 'bg-secondary text-white'}`}>{filteredBirthdays.upcoming.length}</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* MASTER GRID: Balanced split into 6 cols (Left) and 6 cols (Right) */}
-            <div className="row g-4">
-              
-              {/* LEFT SIDE: Student Cards Grid (6 Columns on md and larger) */}
-              <div className="col-md-6">
-                {activeList.length === 0 ? (
-                  <div className="text-center py-5 border rounded-4 bg-light shadow-sm h-100 d-flex flex-column justify-content-center align-items-center">
-                    <div className="fs-1 mb-2">🎉</div>
-                    <h5 className="text-secondary mb-0">No birthdays scheduled in this filter!</h5>
-                  </div>
-                ) : (
-                  <div className="row  g-3">
-                    {activeList.map((student, idx) => (
-                      <BirthdayCard 
-                        key={student.id || student.applicationId || idx} 
-                        student={student} 
-                        isToday={viewTab === 'today'} 
-                      />
-                    ))}
-                  </div>
-                )}
+            {list.length === 0 ? (
+              <div className="text-center py-4 border rounded bg-white text-muted small shadow-sm">No birthdays found!</div>
+            ) : (
+              // मोबाइल पर एक्स्ट्रा पैडिंग हटाने के लिए px-0 और px-md-5 किया गया है
+              <div className="container px-0 px-md-5 d-flex flex-column gap-2">
+                {list.map((student, idx) => (
+                  <BirthdayCard 
+                    key={student.id || idx} 
+                    student={student} 
+                    isToday={viewTab === 'today'} 
+                    currentUser={currentUser} 
+                  />
+                ))}
               </div>
-
-              {/* RIGHT SIDE: Static Brand Wishes Panel (6 Columns on md and larger) */}
-              <div className="col-md-6">
-                <div className="card h-100 border-0 shadow-sm rounded-4 p-4 d-flex flex-column text-center bg-white border border-light" style={{ minHeight: '350px' }}>
-
-                  {/* Main Greeting Content */}
-                  <div className="my-auto py-3">
-                    <div className="display-5 mb-1">🎂</div>
-                    <h3 className="fw-extrabold text-dark mb-0">Happy Birthday!</h3>
-                    <p className="text-secondary p-2 pb-0">
-                      Drishtee Computer Centre wishes all our wonderful students an amazing birthday. May your skills grow and your future be filled with limitless tech achievements!
-                    </p>
-                  </div>
-
-                  {/* Corporate Signature Footer */}
-                  <div className="mt-auto pt-0 border-top">
-                    <p className="text-muted small mb-1">Warm Regards,</p>
-                    <p className="fw-bold text-dark mb-0 fs-5">Team Drishtee</p>
-                    <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 mt-2 fw-bold" style={{ fontSize: '0.75rem' }}>
-                      🚀 Learn • Grow • Achieve
-                    </span>
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-
-            {/* Extra Styling for smooth hover effects */}
-            <style jsx global>{`
-              .transition-card {
-                transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-              }
-              .transition-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
-              }
-              .bg-gradient-light {
-                background: linear-gradient(to bottom, #ffffff, #f8faff);
-              }
-              .fw-extrabold { font-weight: 800; }
-              .opacity-90 { opacity: 0.9; }
-              .fs-7 { font-size: 0.85rem; }
-            `}</style>
-
+            )}
           </div>
         );
       }}

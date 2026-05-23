@@ -43,8 +43,8 @@ const CourseCard = ({ course }) => (
 
 export default function TopCourseList() {
   return (
-    <section className="pt-5 bg-primary-subtle ">
-      <div className="container-fluid">
+    <section className="pt-2 bg-primary-subtle ">
+      <div className="container-fluid p-0">
 
         <div className="mb-4 px-3 py-2 bg-white rounded-3">
           {/* Row 1: Title and Button */}

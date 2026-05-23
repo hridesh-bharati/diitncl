@@ -84,8 +84,8 @@ export default function HomeGallery() {
   if (loading) return <div className="text-center py-5 text-danger fw-bold">Loading Gallery...</div>;
 
   return (
-    <div className="container-fluid py-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container-fluid p-1 pt-3">
+      <div className="d-flex justify-content-between bg-light p-2 m-0 align-items-center mb-4">
         <div>
           <h2 className="fw-bold m-0">
             Our <span className="text-danger">Gallery</span>
@@ -95,7 +95,7 @@ export default function HomeGallery() {
             Explore student activities, achievements, events, and moments from Drishtee Computer Center.
           </p>
         </div>
-        <Link to="/gallery" className="btn btn-outline-danger rounded-pill px-4 fw-bold">View All</Link>
+        <Link to="/gallery" className="btn btn-outline-danger rounded-pill px-4 fw-bold">View</Link>
       </div>
 
       <div className="row g-4">

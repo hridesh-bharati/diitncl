@@ -27,8 +27,8 @@ import { vibration } from "./Components/MobileAccessories/vibration";
 /* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
 import { db, app } from "./firebase/firebase";
-import { doc,setDoc,increment,getDoc,updateDoc,serverTimestamp,} from "firebase/firestore";
-import {getMessaging,onMessage,isSupported,} from "firebase/messaging";
+import { doc, setDoc, increment, getDoc, updateDoc, serverTimestamp, } from "firebase/firestore";
+import { getMessaging, onMessage, isSupported, } from "firebase/messaging";
 import ScrollUp from "./Components/HelperCmp/Scroller/ScrollUp";
 import ResumeBuilder from "./Components/Resume/ResumeBuilder";
 
@@ -94,9 +94,7 @@ export default function App() {
           "/firebase-messaging-sw.js"
         );
         console.log("✅ Service Worker Registered", reg);
-        if (reg.waiting) {
-          reg.update();
-        }
+        await reg.update();
       } catch (error) {
         console.error("❌ Service Worker Error:", error);
       }
@@ -130,13 +128,26 @@ export default function App() {
           console.log("📩 Foreground Notification:", payload);
 
           if (Notification.permission === "granted") {
-            new Notification(
-              payload?.notification?.title || "Drishtee Alert",
-              {
-                body: payload?.notification?.body || "New notification received",
-                icon: "/logo.png",
+            navigator.serviceWorker.getRegistration().then((registration) => {
+              if (registration) {
+                registration.showNotification(
+                  payload?.notification?.title || "Drishtee Alert",
+                  {
+                    body:
+                      payload?.notification?.body ||
+                      "New notification received",
+
+                    icon: "/images/icon/icon-192.png",
+
+                    badge: "/images/icon/icon-192.png",
+
+                    vibrate: [200, 100, 200],
+
+                    requireInteraction: true,
+                  }
+                );
               }
-            );
+            });
           }
         });
       } catch (error) {
@@ -362,7 +373,7 @@ export default function App() {
               <Route path="/certificate" element={<HelmetManager><Certificate /></HelmetManager>} />
               <Route path="/library" element={<HelmetManager><Library /></HelmetManager>} />
               <Route path="/chat" element={<ChatPage />} />
-              
+
               <Route path="/resume-builder" element={<ResumeBuilder />} />
               <Route path="/photo-editor" element={<HelmetManager><PhotoEdit /></HelmetManager>} />
               <Route path="/notes-download" element={<HelmetManager><NotesDownload /></HelmetManager>} />

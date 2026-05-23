@@ -17,8 +17,8 @@ export default function HomeOffers() {
   if (loading || !offers.length) return loading ? <p className="text-center small my-3 text-primary">...</p> : null;
 
   return (
-    <section className="container-fluid  my-3">
-      <h2 className="h6 fw-bold mb-3 text-dark"><i className="bi bi-megaphone-fill text-primary me-2"></i>OFFERS</h2>
+    <section className="container-fluid p-0 m-0 p-lg-2 my-3">
+      <h2 className="h6 fw-bold mb-3 text-dark"><i className="bi bi-megaphone-fill text-primary me-2"></i>Updates</h2>
       <div className="row g-2">
         {offers.map(({ id, caption, details, adminPhoto, adminName, createdAt }) => (
           <div className="col-12" key={id}>

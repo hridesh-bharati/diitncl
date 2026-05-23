@@ -13,7 +13,6 @@ const QuickSupport = () => {
   const [formData, setFormData] = useState(init);
   const [loading, setLoading] = useState(false);
 
-  // Note: Real scenario mein ADMIN_FCM_TOKEN Firestore se fetch karein
   const ADMIN_FCM_TOKEN = "YOUR_ADMIN_FCM_TOKEN_HERE"; 
 
   const handleChange = (e) => setFormData(p => ({ ...p, [e.target.name]: e.target.value }));

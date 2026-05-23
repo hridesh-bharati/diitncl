@@ -94,7 +94,7 @@ function Home() {
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
           <BdaySection />
-          <div className="mb-4"><TopCourseList /></div>
+          <div className="mb-4 p-lg-2"><TopCourseList /></div>
           <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
               <div>
@@ -104,14 +104,14 @@ function Home() {
               <Link to="/courses" className="btn blueGD rounded-pill px-4 fw-bold  mt-3 mt-md-0 shadow">Apply Now</Link>
             </div>
           </div>
-          <div className="mb-4"><CardSlider /></div>
-          <div className="mb-4"><HomeGallery /></div>
+          <div className=""><CardSlider /></div>
+          <div className="mb-4 p-lg-2"><HomeGallery /></div>
 
           <div className="mb-4"><HomeOffers /></div>
 
           <div className="row g-3 mb-4 mx-0">
-            <div className="col-12 col-md-6"><NoticeBoard /></div>
-            <div className="col-12 col-md-6"><TimeTable /></div>
+            <div className="col-12 col-md-6 p-0 m-0 p-lg-2"><NoticeBoard /></div>
+            <div className="col-12 col-md-6 p-0 m-0 p-lg-2"><TimeTable /></div>
           </div>
 
           <div className="mb-4"><Testimonials /></div>
