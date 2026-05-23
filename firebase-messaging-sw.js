@@ -1,14 +1,8 @@
-// public\firebase-messaging-sw.js
+/* firebase-messaging-sw.js */
 
-/* =========================================
-   🔥 Drishtee PWA + Firebase SW (FINAL)
-========================================= */
+importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
 
-/* 🔥 Firebase SDK */
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
-
-/* 🔥 Firebase Init */
 firebase.initializeApp({
   apiKey: "AIzaSyDm15ex3UZlOTzhHALn6ukvmRO9jobM4Y8",
   authDomain: "diit-5bff0.firebaseapp.com",
@@ -20,172 +14,99 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-/* 📦 Cache Config */
-const CACHE_NAME = "drishtee-v3";
-
-/* 🧠 Pre-cache essential assets */
-const STATIC_ASSETS = [
-  "/",
-  "/index.html",
-  "/images/icon/logo.png",
-  "/images/icon/icon-192.png"
-];
-
-/* =========================================
-   🚀 INSTALL (cache + activate fast)
-========================================= */
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
-  );
+/* ======================================
+   INSTALL
+====================================== */
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
-/* =========================================
-   🔄 ACTIVATE (clean old cache)
-========================================= */
+/* ======================================
+   ACTIVATE
+====================================== */
 self.addEventListener("activate", (event) => {
-  const whitelist = [CACHE_NAME];
-
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => {
-          if (!whitelist.includes(key)) {
-            return caches.delete(key);
-          }
-        })
-      )
-    )
-  );
-
-  self.clients.claim();
+  event.waitUntil(self.clients.claim());
 });
 
-/* =========================================
-   🌐 FETCH (HYBRID SMART STRATEGY)
-========================================= */
-self.addEventListener("fetch", (event) => {
-
-  const req = event.request;
-
-  // ❌ Skip non-GET requests
-  if (req.method !== "GET") return;
-
-  // ❌ Skip external requests (Firebase/CDN)
-  if (!req.url.startsWith(self.location.origin)) return;
-
-  // 🔹 1. Navigation (HTML) → Network First
-  if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req).catch(() => caches.match("/index.html"))
-    );
-    return;
-  }
-
-  // 🔹 2. Static files → Cache First + update
-  const isStatic = req.url.match(/\.(png|jpg|jpeg|gif|svg|ico|webp|woff2)$/);
-
-  if (isStatic) {
-    event.respondWith(
-      caches.match(req).then((cached) => {
-        const networkFetch = fetch(req)
-          .then((res) => {
-            const cloned = res.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(req, cloned);
-            });
-            return res;
-          })
-          .catch(() => cached);
-        return cached || networkFetch;
-      })
-    );
-    return;
-  }
-
-  // 🔹 3. JS/CSS → Network First + cache update
-  event.respondWith(
-    fetch(req)
-      .then(networkRes => {
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(req, networkRes.clone());
-          return networkRes;
-        });
-      })
-      .catch(() => caches.match(req))
-  );
-});
-
-/* =========================================
-   🔔 FCM BACKGROUND NOTIFICATION (FIXED)
-========================================= */
-/* =========================================
-    🔔 FCM BACKGROUND NOTIFICATION (PRO)
-========================================= */
+/* ======================================
+   BACKGROUND MESSAGE
+====================================== */
 messaging.onBackgroundMessage((payload) => {
-  console.log('🔥 Background Payload Received:', payload);
+  console.log("🔥 Background Message:", payload);
 
-  // ✅ App Badge API (Icon par Red Dot/Number dikhane ke liye)
-  // Service Worker context mein 'self.registration' use karna best hai
-  if ('setAppBadge' in self.registration) {
-    self.registration.setAppBadge(1).catch((error) => {
-      console.error("❌ Badge Error:", error);
-    });
-  }
+  const title =
+    payload?.notification?.title ||
+    payload?.data?.title ||
+    "Drishtee Alert";
 
-  const title = payload.data?.title || payload.notification?.title || "Drishtee Alert";
-  const body = payload.data?.body || payload.notification?.body || "New Update from DIIT";
-  const clickUrl = payload.data?.url || payload.fcmOptions?.link || "/student/dashboard";
+  const body =
+    payload?.notification?.body ||
+    payload?.data?.body ||
+    "New Notification";
 
-  const notificationOptions = {
-    body: body,
+  const url =
+    payload?.data?.url ||
+    "https://www.drishteeindia.com/student/dashboard";
+
+  const options = {
+    body,
     icon: "/images/icon/icon-192.png",
     badge: "/images/icon/icon-192.png",
-    vibrate: [300, 100, 300, 100, 400],
-    tag: "drishtee-msg",
-    renotify: true,
+
+    vibrate: [200, 100, 200, 100, 400],
+
     requireInteraction: true,
+
+    tag: "drishtee-alert",
+
+    renotify: true,
+
+    data: {
+      url,
+    },
+
     actions: [
-      { action: 'open', title: 'View Now' },
-      { action: 'close', title: 'Dismiss' }
+      {
+        action: "open",
+        title: "Open App 🚀",
+      },
+      {
+        action: "close",
+        title: "Dismiss",
+      },
     ],
-    data: { url: clickUrl }
   };
 
-  return self.registration.showNotification(title, notificationOptions);
+  self.registration.showNotification(title, options);
 });
 
-/* =========================================
-    🖱 NOTIFICATION CLICK HANDLING
-========================================= */
+/* ======================================
+   CLICK EVENT
+====================================== */
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  // ✅ Badge clear karein jab user react kare
-  if ('clearAppBadge' in self.registration) {
-    self.registration.clearAppBadge().catch(console.error);
-  }
+  if (event.action === "close") return;
 
-  // Agar user 'close' action par click kare toh wahi ruk jaye
-  if (event.action === 'close') return;
-
-  const url = event.notification.data?.url || "/";
+  const url =
+    event.notification.data?.url ||
+    "https://www.drishteeindia.com/";
 
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientsArr) => {
-        // 1. Agar window khuli hai toh focus karo
-        for (let client of clientsArr) {
-          if (client.url.includes(url) && "focus" in client) {
-            return client.focus();
-          }
+    clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    }).then((windowClients) => {
+
+      for (const client of windowClients) {
+        if (client.url.includes(url) && "focus" in client) {
+          return client.focus();
         }
-        // 2. Agar nahi khuli toh naya window open karo
-        if (clients.openWindow) {
-          return clients.openWindow(url);
-        }
-      })
+      }
+
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
   );
 });
-
