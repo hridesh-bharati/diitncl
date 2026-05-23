@@ -8,7 +8,7 @@ import { getFeeLogic } from "../../AdminComponents/Students/Fees/FeeServices";
 export default function CertificateWrapper() {
   const [student, setStudent] = useState(null);
   const [payments, setPayments] = useState([]);
-  const [hasCompletedExam, setHasCompletedExam] = useState(false); // 🔥 New state for exam check
+  const [hasCompletedExam, setHasCompletedExam] = useState(false);  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -122,7 +122,7 @@ export default function CertificateWrapper() {
   }
 
   // 3. 🔥 Exam Record Presence Check
-  if (!hasCompletedExam) {
+if (!hasCompletedExam && student.status !== "done") {
     return (
       <div className="container py-5 text-center">
         <div className="card border-0 shadow-sm p-5 rounded-4 bg-white border-start border-4 border-warning">
