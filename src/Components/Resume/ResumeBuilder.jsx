@@ -417,9 +417,7 @@ export default function ResumeBuilder() {
                       )
                     }
                   />
-
-                  <button
-                    className="btn btn-danger"
+                  <button className="btn btn-danger"
                     onClick={() =>
                       removeItem(
                         "computerSkills",
