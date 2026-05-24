@@ -5,8 +5,6 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  query,
-  getDocs,
 } from "firebase/firestore";
 
 import { toast } from "react-toastify";
@@ -14,7 +12,6 @@ import { toast } from "react-toastify";
 import {
   sendEmailNotification,
   supportTemplate,
-  sendPushNotification,
 } from "../../../../services/emailService";
 
 const QuickSupport = () => {
@@ -52,7 +49,7 @@ const QuickSupport = () => {
       setLoading(true);
 
       /* ======================================
-         1. SAVE QUERY
+         1. SAVE QUERY TO FIRESTORE
       ====================================== */
       await addDoc(collection(db, "studentQueries"), {
         ...formData,
@@ -61,62 +58,16 @@ const QuickSupport = () => {
       });
 
       /* ======================================
-         2. SEND EMAIL
+         2. SEND EMAIL ONLY
       ====================================== */
-      const emailPromise = sendEmailNotification(
+      await sendEmailNotification(
         "hridesh027@gmail.com",
         `New Inquiry: ${formData.title}`,
         supportTemplate(formData)
       );
 
       /* ======================================
-         3. GET PUBLIC ADMINS
-      ====================================== */
-      const adminSnap = await getDocs(
-        query(collection(db, "publicAdmins"))
-      );
-
-      /* ======================================
-         4. SEND PUSH TO ALL ADMINS
-      ====================================== */
-      const pushPromises = [];
-
-      adminSnap.forEach((docSnap) => {
-
-        const adminData = docSnap.data();
-
-        console.log("👑 PUBLIC ADMIN:", adminData);
-
-        if (adminData?.fcmToken) {
-
-          pushPromises.push(
-            sendPushNotification(
-              {
-                fcmToken: adminData.fcmToken,
-              },
-
-              "New Support Query 📢",
-
-              `${formData.fullName} sent a support query about ${formData.title}`,
-
-              "/admin/support"
-            )
-          );
-
-        }
-
-      });
-
-      /* ======================================
-         5. WAIT ALL
-      ====================================== */
-      await Promise.all([
-        emailPromise,
-        ...pushPromises,
-      ]);
-
-      /* ======================================
-         6. SUCCESS
+         3. SUCCESS
       ====================================== */
       new Audio("/audio/ring.mp3")
         .play()

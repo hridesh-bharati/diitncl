@@ -1,16 +1,8 @@
 // src/App.jsx
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
-import {
-  useEffect,
-  useState,
-  useRef,
-  lazy,
-  Suspense,
-  useCallback,
-} from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import { subscribeUser } from "./services/pushService";
 import SwipeLayout from "./Components/MobileAccessories/SwipeLayout";
 import "./App.css";
 
@@ -21,17 +13,14 @@ import InstallPrompt from "./Components/HomePage/LockWeb/InstallPrompt";
 import HelmetManager from "./Components/HomePage/pages/HelmetManager";
 import LoadingSpinner from "./AdminComponents/Common/LoadingSpinner";
 import NotesDownload from "./Components/HomePage/pages/Notes/NotesDownload";
-import Lock from "./Components/HomePage/LockWeb/Lock";
 import { vibration } from "./Components/MobileAccessories/vibration";
 
 /* Firebase */
 import { authListener, getUserRole } from "./firebase/auth";
-import { db, app } from "./firebase/firebase";
-import { doc, setDoc, increment, getDoc, updateDoc, serverTimestamp, } from "firebase/firestore";
-import { getMessaging, onMessage, isSupported, } from "firebase/messaging";
+import { db } from "./firebase/firebase";
+import { doc, setDoc, increment, serverTimestamp } from "firebase/firestore";
 import ScrollUp from "./Components/HelperCmp/Scroller/ScrollUp";
 import ResumeBuilder from "./Components/Resume/ResumeBuilder";
-import { initForegroundNotifications } from "./services/foregroundNotification";
 
 /* Lazy Pages */
 const Home = lazy(() => import("./Components/HomePage/Home"));
@@ -69,7 +58,6 @@ const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound
 
 export default function App() {
   const location = useLocation();
-  const messagingRef = useRef(null);
 
   /* Restore cached auth instantly */
   const [user, setUser] = useState(() => {
@@ -83,324 +71,14 @@ export default function App() {
 
   const [loading, setLoading] = useState(true);
 
-
-
-  useEffect(() => {
-    initForegroundNotifications();
-  }, []);
-
-
-
   /* ------------------------------------------------------ */
-  /* Service Worker Registration */
-  /* ------------------------------------------------------ */
-  useEffect(() => {
-    const registerSW = async () => {
-      if (!("serviceWorker" in navigator)) return;
-
-      try {
-        const reg = await navigator.serviceWorker.register(
-          "/firebase-messaging-sw.js"
-        );
-        console.log("✅ Service Worker Registered", reg);
-        await reg.update();
-      } catch (error) {
-        console.error("❌ Service Worker Error:", error);
-      }
-    };
-
-    if (document.readyState === "complete") {
-      registerSW();
-    } else {
-      window.addEventListener("load", registerSW);
-    }
-
-    return () => {
-      window.removeEventListener("load", registerSW);
-    };
-  }, []);
-
-  /* ------------------------------------------------------ */
-  /* Foreground Notification Listener */
-  /* ------------------------------------------------------ */
-  useEffect(() => {
-    let unsubscribe;
-
-    const initMessaging = async () => {
-      try {
-        const supported = await isSupported();
-        if (!supported) return;
-
-        messagingRef.current = getMessaging(app);
-
-        unsubscribe = onMessage(messagingRef.current, (payload) => {
-          console.log("📩 Foreground Notification:", payload);
-
-          if (Notification.permission === "granted") {
-            navigator.serviceWorker.getRegistration().then((registration) => {
-              if (registration) {
-                registration.showNotification(
-                  payload?.notification?.title || "Drishtee Alert",
-                  {
-                    body:
-                      payload?.notification?.body ||
-                      "New notification received",
-
-                    icon: "/images/icon/icon-192.png",
-
-                    badge: "/images/icon/icon-192.png",
-
-                    vibrate: [200, 100, 200],
-
-                    requireInteraction: true,
-                  }
-                );
-              }
-            });
-          }
-        });
-      } catch (error) {
-        console.error("❌ Messaging Init Error:", error);
-      }
-    };
-
-    initMessaging();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, []);
-
-  /* ------------------------------------------------------ */
-  /* Student Push Token Sync */
-  /* ------------------------------------------------------ */
-  const syncStudentPushToken = useCallback(async (userId) => {
-    try {
-      const CACHE_KEY = `student_push_sync_${userId}`;
-
-      if (localStorage.getItem(CACHE_KEY)) {
-        console.log("⚡ Student token already synced");
-        return;
-      }
-
-      const studentRef = doc(db, "admissions", userId);
-      const snap = await getDoc(studentRef);
-
-      if (snap.exists() && !snap.data()?.fcmToken) {
-        const token = await subscribeUser();
-
-        if (token) {
-          await updateDoc(studentRef, {
-            fcmToken: token,
-            tokenUpdatedAt: serverTimestamp(),
-          });
-
-          localStorage.setItem(CACHE_KEY, "true");
-          console.log("✅ Student token synced");
-        }
-      }
-    } catch (error) {
-      console.error("❌ Student token sync error:", error);
-    }
-  }, []);
-
- /* ------------------------------------------------------ */
-/* 🔥 Push Token Save + Admin Token Sync (UPDATED FINAL) */
-/* ------------------------------------------------------ */
-
-useEffect(() => {
-  let asked = false;
-
-  const initPush = async () => {
-    try {
-      if (asked || !user?.uid) return;
-      asked = true;
-
-      /* -------------------------------------- */
-      /* Browser Support Check */
-      /* -------------------------------------- */
-      if (!("Notification" in window)) {
-        console.log("❌ Notifications not supported");
-        return;
-      }
-
-      /* -------------------------------------- */
-      /* Notification Permission */
-      /* -------------------------------------- */
-      let permission = Notification.permission;
-
-      if (permission !== "granted") {
-        permission = await Notification.requestPermission();
-      }
-
-      if (permission !== "granted") {
-        console.log("❌ Notification permission denied");
-        return;
-      }
-
-      /* -------------------------------------- */
-      /* Cache Key */
-      /* -------------------------------------- */
-      const TOKEN_CACHE_KEY = `fcm_token_saved_${user.uid}`;
-
-      if (localStorage.getItem(TOKEN_CACHE_KEY)) {
-        console.log("⚡ Push token already cached");
-        return;
-      }
-
-      /* -------------------------------------- */
-      /* Generate FCM Token */
-      /* -------------------------------------- */
-      const token = await subscribeUser();
-
-      if (!token) {
-        console.log("❌ No FCM token received");
-        return;
-      }
-
-      console.log("🔥 FCM TOKEN:", token);
-
-      /* -------------------------------------- */
-      /* Save Token in USERS Collection */
-      /* -------------------------------------- */
-   await setDoc(
-  doc(db, "users", user.uid),
-  {
-    uid: user.uid,
-    email: user.email || "",
-    fcmToken: token,
-    role: role || "student",
-    tokenUpdatedAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  },
-  { merge: true }
-);
-
-/* ADMIN PUBLIC TOKEN SAVE */
-if (role === "admin") {
-  await setDoc(
-    doc(db, "publicAdmins", user.uid),
-    {
-      uid: user.uid,
-      email: user.email || "",
-      fcmToken: token,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
-}
-
-      /* -------------------------------------- */
-      /* Save Token in Admissions Collection */
-      /* -------------------------------------- */
-      await setDoc(
-        doc(db, "admissions", user.uid),
-        {
-          fcmToken: token,
-          tokenUpdatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
-
-      /* -------------------------------------- */
-      /* Local Cache */
-      /* -------------------------------------- */
-      localStorage.setItem(TOKEN_CACHE_KEY, "true");
-
-      console.log("✅ Push token saved successfully");
-
-      /* -------------------------------------- */
-      /* Test Local Notification */
-      /* -------------------------------------- */
-      new Notification("Drishtee Notifications Enabled 🔔", {
-        body: "You will now receive instant updates.",
-        icon: "/images/icon/icon-192.png",
-      });
-
-    } catch (error) {
-      console.error("❌ Push token save error:", error);
-    }
-  };
-
-  /* -------------------------------------- */
-  /* User Interaction Required for Chrome */
-  /* -------------------------------------- */
-  window.addEventListener("click", initPush, { once: true });
-  window.addEventListener("scroll", initPush, { once: true });
-  window.addEventListener("touchstart", initPush, { once: true });
-
-  return () => {
-    window.removeEventListener("click", initPush);
-    window.removeEventListener("scroll", initPush);
-    window.removeEventListener("touchstart", initPush);
-  };
-
-}, [user, role]);
-  /* ------------------------------------------------------ */
-  /* Firebase Auth Listener */
-  /* ------------------------------------------------------ */
-  useEffect(() => {
-    const unsubscribe = authListener(async (currentUser) => {
-      if (currentUser) {
-        const userData = {
-          uid: currentUser.uid,
-          email: currentUser.email,
-        };
-
-        setUser(userData);
-        localStorage.setItem(
-          "drishtee_user",
-          JSON.stringify(userData)
-        );
-
-        let cachedRole = localStorage.getItem("drishtee_role");
-
-        if (!cachedRole) {
-          const fetchedRole = await getUserRole(currentUser.uid);
-
-          setRole(fetchedRole);
-          localStorage.setItem("drishtee_role", fetchedRole);
-
-          if (fetchedRole === "student") {
-            syncStudentPushToken(currentUser.uid);
-          }
-        } else {
-          setRole(cachedRole);
-        }
-      } else {
-        const cachedUser = JSON.parse(
-          localStorage.getItem("drishtee_user")
-        );
-
-        if (cachedUser?.uid) {
-          localStorage.removeItem(
-            `fcm_token_saved_${cachedUser.uid}`
-          );
-          localStorage.removeItem(
-            `student_push_sync_${cachedUser.uid}`
-          );
-        }
-
-        setUser(null);
-        setRole(null);
-
-        localStorage.removeItem("drishtee_user");
-        localStorage.removeItem("drishtee_role");
-
-        console.log("✅ Safe logout cleanup completed");
-      }
-
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, [syncStudentPushToken]);
-
-  /* ------------------------------------------------------ */
-  /* Visitor Tracking + Device Vibration */
+  /* Visitor Tracking + Device Vibration (10/10 Optimized)  */
   /* ------------------------------------------------------ */
   useEffect(() => {
     const trackVisit = async () => {
+      // 🚀 Optimization 1: Background tabs ya prerendered visits ko track mat karo (Save Firestore Writes)
+      if (document.visibilityState !== "visible") return;
+
       try {
         const LAST_VISIT_KEY = "drishtee_last_visit";
         const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
@@ -408,25 +86,18 @@ if (role === "admin") {
         const now = Date.now();
         const lastVisit = localStorage.getItem(LAST_VISIT_KEY);
 
-        if (
-          !lastVisit ||
-          now - Number(lastVisit) > TWENTY_FOUR_HOURS
-        ) {
+        if (!lastVisit || now - Number(lastVisit) > TWENTY_FOUR_HOURS) {
           await setDoc(
             doc(db, "stats", "visitors"),
             {
               count: increment(1),
-              lastUpdated: new Date(),
+              lastUpdated: serverTimestamp(),
             },
             { merge: true }
           );
 
-          localStorage.setItem(
-            LAST_VISIT_KEY,
-            now.toString()
-          );
-
-          console.log("✅ Visitor counted");
+          localStorage.setItem(LAST_VISIT_KEY, now.toString());
+          console.log("✅ Visitor counted successfully");
         } else {
           console.log("⚡ Already counted within 24h");
         }
@@ -436,7 +107,52 @@ if (role === "admin") {
     };
 
     trackVisit();
-    vibration();
+
+    // 🚀 Optimization 2: Safe API check for Vibration (Prevents crashes in Safari/Desktop browsers)
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      vibration();
+    }
+  }, []);
+
+  /* ------------------------------------------------------ */
+  /* Safe Auth & Role Listener                              */
+  /* ------------------------------------------------------ */
+  useEffect(() => {
+    const unsubscribe = authListener(async (firebaseUser) => {
+      if (firebaseUser) {
+        const userData = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+        };
+
+        setUser(userData);
+        localStorage.setItem("drishtee_user", JSON.stringify(userData));
+
+        try {
+          const userRole = await getUserRole(firebaseUser.uid);
+          setRole(userRole || null);
+
+          if (userRole) {
+            localStorage.setItem("drishtee_role", userRole);
+          } else {
+            localStorage.removeItem("drishtee_role");
+          }
+        } catch (roleError) {
+          console.error("❌ Failed to fetch user role safely:", roleError);
+          setRole(null);
+          localStorage.removeItem("drishtee_role");
+        }
+      } else {
+        setUser(null);
+        setRole(null);
+        localStorage.removeItem("drishtee_user");
+        localStorage.removeItem("drishtee_role");
+      }
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe?.();
   }, []);
 
   if (loading) return <LoadingSpinner />;
@@ -449,7 +165,7 @@ if (role === "admin") {
 
       <AnimatePresence mode="wait">
         <SwipeLayout>
-          <Suspense fallback={<p className="text-center text-muted  p-5 m-5">Loading...</p>}>
+          <Suspense fallback={<LoadingSpinner />}>
             <Routes location={location}>
               <Route path="/" element={<HelmetManager><Home /></HelmetManager>} />
               <Route path="/about" element={<HelmetManager><About /></HelmetManager>} />
@@ -483,11 +199,10 @@ if (role === "admin") {
               <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
               <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
 
-              {/* Protected */}
               <Route
                 path="/admin/*"
                 element={
-                  user && role === "admin"
+                  Boolean(user) && role === "admin"
                     ? <AdminRoutes />
                     : <Navigate to="/login" replace />
                 }
@@ -496,7 +211,7 @@ if (role === "admin") {
               <Route
                 path="/student/*"
                 element={
-                  user && role === "student"
+                  Boolean(user) && role === "student"
                     ? <StudentRoutes />
                     : <Navigate to="/login" replace />
                 }

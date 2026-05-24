@@ -19,8 +19,6 @@ export default defineConfig(({ command }) => {
 
       VitePWA({
         registerType: "autoUpdate",
-        injectRegister: "auto",
-
         includeAssets: [
           "robots.txt",
           "sitemap.xml",
@@ -74,15 +72,14 @@ export default defineConfig(({ command }) => {
       target: "es2020",
       minify: "esbuild",
       sourcemap: "hidden",
-      // ✨ WHATSAPP OPTIMIZATION: Manual Chunking
       rollupOptions: {
         output: {
           manualChunks(id) {
-            // Firebase ko alag bundle mein dalo (kaafi heavy hota hai)
+            // Firebase core database ko alag bundle mein dalo performance ke liye
             if (id.includes("firebase")) {
               return "vendor-firebase";
             }
-            // React aur core libraries ko alag dalo
+            // React aur baki main libraries alag bundle mein
             if (id.includes("node_modules")) {
               return "vendor-core";
             }
@@ -90,7 +87,6 @@ export default defineConfig(({ command }) => {
         }
       }
     },
-
 
     resolve: {
       alias: {
