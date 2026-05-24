@@ -1,8 +1,4 @@
 // diit\src\services\emailService.js
-
-const API_URL = "/api/send-mail";
-
- 
 /**
  * 📧 Generic Email Notification Function
  */
@@ -26,6 +22,7 @@ export const sendEmailNotification = async (to, subject, html) => {
     return false;
   }
 };
+
 
 // ======================================================
 // TEMPLATES (Aapke purane templates yahan niche rahenge)
