@@ -8,7 +8,6 @@ import { db } from "../../firebase/firebase";
 // 🔹 Nodemailer & Push Service Imports
 import { 
   sendEmailNotification, 
-  sendPushNotification, 
   admissionTemplate, 
   certificateTemplate, 
   deleteAccountTemplate 
@@ -145,9 +144,6 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         sendEmailNotification(student.email, "Admission Approved - Drishtee", admissionTemplate(student, newRegNo));
       }
 
-      if (student.pushSubscription) {
-        sendPushNotification(student, "Admission Approved! 🎉", `Hi ${student.name}, Your Reg No: ${newRegNo} has been generated.`, "/student/dashboard");
-      }
 
       toast.success("Approved & Notified!");
       setShowRegInput(false);
@@ -173,9 +169,6 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
         sendEmailNotification(student.email, "Congratulations! Certificate Ready", certificateTemplate(student, percent, issDate));
       }
 
-      if (student.pushSubscription) {
-        sendPushNotification(student, "Course Completed! 🎓", `Congratulations ${student.name}! Your certificate for ${studentCourse} is ready.`, "/download-certificate");
-      }
 
       toast.success("Finalized & Notified!");
       setIsEditingFinal(false);
@@ -191,10 +184,6 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
     try {
       if (student.email) {
         await sendEmailNotification(student.email, "Student Record Deactivated", deleteAccountTemplate(student));
-      }
-
-      if (student.pushSubscription) {
-        sendPushNotification(student, "Account Deactivated ⚠️", "Your student record has been removed by the administrator.");
       }
 
       await onDelete(student.email.toLowerCase());
