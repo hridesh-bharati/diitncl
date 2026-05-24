@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { addPayment, COURSE_CONFIG, getFeeLogic } from "./FeeServices"; 
 import { toast } from "react-toastify";
-import { sendEmailNotification, feePaymentTemplate, sendPushNotification } from "../../../services/emailService"; 
+import { sendEmailNotification, feePaymentTemplate } from "../../../services/emailService"; 
 
 export default function AddPaymentModal({ student, summary }) {
   const [show, setShow] = useState(false);
@@ -77,13 +77,6 @@ export default function AddPaymentModal({ student, summary }) {
           feePaymentTemplate(student, paymentData, tempSummary)
         );
       }
-
-      sendPushNotification(
-        student,
-        "Fee Paid Successfully ✅",
-        `Received ₹${paymentData.amount} for ${paymentData.note}.`
-      );
-      
       toast.success("Payment Saved & Notifications Sent");
       setShow(false);
       setFormData(prev => ({...prev, otherType: ""})); // Reset manual text
