@@ -267,5 +267,4 @@ const QuickSupport = () => {
   );
 
 };
-
 export default QuickSupport;
