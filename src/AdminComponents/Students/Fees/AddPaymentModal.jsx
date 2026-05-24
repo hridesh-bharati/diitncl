@@ -12,7 +12,7 @@ export default function AddPaymentModal({ student, summary }) {
     method: "Cash",
     date: new Date().toISOString().split("T")[0],
     note: "Monthly Fee",
-    otherType: "", // Manual fee description (Re-exam, Project etc.)
+    otherType: "", 
   });
 
   useEffect(() => {
