@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
-import { sendEmailNotification, adminAdmissionAlertTemplate, sendPushNotification } from "../../services/emailService";
+import { sendEmailNotification, adminAdmissionAlertTemplate } from "../../services/emailService";
 
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -180,39 +180,20 @@ export default function AdmissionForm() {
             }
             await setDoc(docRef, finalData);
 
-            // Notify Admins via Push
-            const fetchAndNotifyAdmins = async () => {
-                try {
-                    const qAdmin = query(collection(db, "users"), where("role", "==", "admin"));
-                    const adminSnap = await getDocs(qAdmin);
-                    adminSnap.forEach((doc) => {
-                        const adminData = doc.data();
-                        if (adminData.pushSubscription) {
-                            sendPushNotification(
-                                adminData,
-                                "New Admission Alert! 🎓",
-                                `${form.name} has applied for ${form.course}.`,
-                                "/admin/students"
-                            );
-                        }
-                    });
-                } catch (err) {
-                    console.error("Admin Push Error:", err);
-                }
-            };
-            fetchAndNotifyAdmins();
-
             // Notify Admins via Email
-            Promise.all(
-                ADMIN_ALLOWED_EMAILS.map(adminEmail =>
-                    sendEmailNotification(
-                        adminEmail,
-                        `New Admission: ${form.name}`,
-                        adminAdmissionAlertTemplate(finalData)
+            try {
+                await Promise.all(
+                    ADMIN_ALLOWED_EMAILS.map(adminEmail =>
+                        sendEmailNotification(
+                            adminEmail,
+                            `New Admission: ${form.name}`,
+                            adminAdmissionAlertTemplate(finalData)
+                        )
                     )
-                )
-            ).catch(err => console.error("Background Email Error:", err));
-
+                );
+            } catch (err) {
+                console.error("Email Error:", err);
+            }
             setSubmittedData(finalData);
             setIsSubmitted(true);
             window.scrollTo(0, 0);
