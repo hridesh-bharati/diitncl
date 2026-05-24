@@ -1,4 +1,11 @@
 // diit\src\services\emailService.js
+
+const API_URL = "/api/send-mail";
+
+ 
+/**
+ * 📧 Generic Email Notification Function
+ */
 const API_URL = "/api/send-mail";
 
 /**
@@ -8,17 +15,14 @@ export const sendEmailNotification = async (to, subject, html) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": import.meta.env.VITE_MAIL_API_KEY,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, subject, html }),
     });
 
     const data = await response.json().catch(() => ({ success: false }));
     return data.success;
   } catch (err) {
-    console.error("Vercel Fetch Error:", err);
+    console.error("Email Fetch Error:", err);
     return false;
   }
 };
