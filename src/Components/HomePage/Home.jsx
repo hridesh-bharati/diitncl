@@ -8,10 +8,10 @@ import AdComponent from "./AdComponent";
 // Smart Lazy Loading for non-critical sections below the fold
 const Features = lazy(() => import("./Features"));
 const StatsSection = lazy(() => import("./StatsSection"));
-// const BdaySection = lazy(() => import("../Bday/BdaySection"));
-// const HomeGallery = lazy(() => import("./pages/HomeGallery"));
-// const TopCourseList = lazy(() => import("./TopCourseList"));
-// const CardSlider = lazy(() => import("./Cardslider"));
+const BdaySection = lazy(() => import("../Bday/BdaySection"));
+const HomeGallery = lazy(() => import("./pages/HomeGallery"));
+const TopCourseList = lazy(() => import("./TopCourseList"));
+const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
 const Testimonials = lazy(() => import("./Testimonial"));
 const HomeOffers = lazy(() => import("./pages/offers/HomeOffers"));
@@ -98,8 +98,8 @@ function Home() {
           <div className="mx-1 my-0 p-0"><StatsSection /></div>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
-          {/* <BdaySection /> */}
-          {/* <div className="mb-4 p-lg-2"><TopCourseList /></div> */}
+          <BdaySection />
+          <div className="mb-4 p-lg-2"><TopCourseList /></div>
           
           <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
@@ -111,7 +111,7 @@ function Home() {
             </div>
           </div>
 
-          {/* <div><CardSlider /></div> */}
+          <div><CardSlider /></div>
           {/* <div className="mb-4 p-lg-2"><HomeGallery /></div> */}
           <div className="mb-4"><HomeOffers /></div>
 
