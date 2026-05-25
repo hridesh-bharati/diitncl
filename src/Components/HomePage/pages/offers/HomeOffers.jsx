@@ -31,7 +31,7 @@ export default function HomeOffers() {
               <p className="text-muted mb-2 mt-1" style={{ fontSize: 11, lineHeight: 1.3 }}>{details}</p>
               <div className="d-flex align-items-center justify-content-between pt-2 border-top border-light">
                 <div className="d-flex align-items-center gap-2">
-                  <img src={adminPhoto?.replace("/upload/", "/upload/w_40,f_auto,q_auto/") || `https://ui-avatars.com/api/?name=${adminName}`} width="20" height="20" className="rounded-circle border" alt="" />
+                  <img src={adminPhoto?.replace("/upload/", "/upload/w_40,f_auto,q_auto/") || `https://ui-avatars.com/api/?name=${adminName}`} width="20" height="20" className="rounded-circle border" alt="Drishtee Student" />
                   <span className="fw-bold text-dark" style={{ fontSize: 9 }}>{adminName || "Drishtee"}</span>
                 </div>
                 <small className="text-muted" style={{ fontSize: 9 }}>{createdAt?.toDate?.().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</small>

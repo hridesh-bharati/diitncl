@@ -138,7 +138,7 @@ export default function Header() {
     { to: "/courses/nielit", label: "NIELIT", desc: "CCC, O-Level Govt. courses.", icon: "bi-award", color: "linear-gradient(135deg, #FF3B30, #FF453A)" },
   ], []);
 
- const studentZoneLinks = useMemo(() => [
+  const studentZoneLinks = useMemo(() => [
     { to: "/new-admission", label: "New Admission", icon: "bi-pencil-square", color: "linear-gradient(135deg, #007AFF, #054e9e)" },
     { to: "/download-certificate", label: "Verification", icon: "bi-shield-check", color: "linear-gradient(135deg, #34C759, #1a9638)" },
     { to: "/resume-builder", label: "Resume Builder", icon: "bi-file-earmark-person-fill", color: "linear-gradient(135deg, #1e3c72, #2a5298)" }
@@ -403,69 +403,64 @@ export default function Header() {
           <h2 className="fw-bolder text-dark mb-4 mt-2" style={{ letterSpacing: '-0.5px' }}>Account</h2>
 
           {/* Profile Section - Minimalist */}
-          <Link to={userData.dashboard} onClick={() => setIsMenuOpen(false)} className="text-decoration-none">
-            {/* Profile Section - FIXED */}
-            <div className="d-flex align-items-center gap-3 p-2 mb-4">
+          <div className="d-flex align-items-center gap-3 p-2 mb-4">
 
-              {/* Avatar */}
-              <div
-                className="overflow-hidden rounded-circle bg-white shadow-sm"
-                style={{ width: 64, height: 64, border: "1px solid #e5e7eb" }}
-              >
-                {user && userData.photo ? (
-                  <img
-                    src={userData.photo}
-                    className="w-100 h-100 object-fit-cover"
-                    alt="Profile"
-                  />
-                ) : (
-                  <DefaultAvatar />
-                )}
-              </div>
+            {/* Avatar */}
+            <div
+              className="overflow-hidden rounded-circle bg-white shadow-sm"
+              style={{ width: 64, height: 64, border: "1px solid #e5e7eb" }}
+            >
+              {user && userData.photo ? (
+                <img
+                  src={userData.photo}
+                  className="w-100 h-100 object-fit-cover"
+                  alt="Profile"
+                />
+              ) : (
+                <DefaultAvatar />
+              )}
+            </div>
 
-              {/* User Info */}
-              <div className="flex-grow-1">
+            {/* User Info */}
+            <div className="flex-grow-1">
 
-                {user ? (
-                  <>
-                    <Link
-                      to={userData.dashboard}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-decoration-none"
-                    >
-                      <h5 className="m-0 fw-bold text-dark">
-                        {userData.name || "User"}
-                      </h5>
+              {user ? (
+                <Link
+                  to={userData.dashboard}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-decoration-none"
+                >
+                  <h5 className="m-0 fw-bold text-dark">
+                    {userData.name || "User"}
+                  </h5>
 
-                      <span className="text-muted small">
-                        View Dashboard
-                      </span>
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <h5 className="m-0 fw-bold text-dark">
-                      Guest User
-                    </h5>
+                  <span className="text-muted small">
+                    View Dashboard
+                  </span>
+                </Link>
+              ) : (
+                <>
+                  <h5 className="m-0 fw-bold text-dark">
+                    Guest User
+                  </h5>
 
-                    <Link
-                      to="/login"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="btn btn-sm p-0 fw-bold shadow-none"
-                      style={{ color: "#0A84FF", fontSize: "13px" }}
-                    >
-                      Login to continue <i className="bi bi-arrow-right ms-1"></i>
-                    </Link>
-                  </>
-                )}
-
-              </div>
-
-              {/* Arrow only for logged user */}
-              {user && <i className="bi bi-chevron-right text-muted small"></i>}
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="btn btn-sm p-0 fw-bold shadow-none"
+                    style={{ color: "#0A84FF", fontSize: "13px" }}
+                  >
+                    Login to continue <i className="bi bi-arrow-right ms-1"></i>
+                  </Link>
+                </>
+              )}
 
             </div>
-          </Link>
+
+            {/* Arrow only for logged user */}
+            {user && <i className="bi bi-chevron-right text-muted small"></i>}
+
+          </div>
 
           {/* Quick Action Tiles - Clean Transparent Style */}
           <div className="d-flex gap-3 mb-4">

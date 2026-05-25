@@ -133,7 +133,7 @@ export default function AdminAssignExam() {
                       </td>
                       <td>
                         <div className="d-flex align-items-center gap-2">
-                          <img src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}`} alt="" style={{ width: "35px", height: "35px", objectFit: "cover", borderRadius: "4px" }} />
+                          <img src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}`} alt="Drishtee Student" style={{ width: "35px", height: "35px", objectFit: "cover", borderRadius: "4px" }} />
                           <div>
                             <div className="fw-bold small mb-0">{s.name}</div>
                             <div className={`fw-bold ${isPermitted ? 'text-success' : 'text-muted'}`} style={{ fontSize: '9px', textTransform: 'uppercase' }}>

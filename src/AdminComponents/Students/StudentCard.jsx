@@ -204,7 +204,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
           <div className="d-flex align-items-center gap-3 mb-3">
             {/* ✅ DIRECT EMAIL LINK */}
             <Link to={`/admin/students/${student.email}`}>
-              <img src={avatarUrl} alt="" style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "18px" }} />
+              <img src={avatarUrl} alt="Drishtee Student" style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "18px" }} />
             </Link>
             <div className="flex-grow-1" style={{ minWidth: 0 }}>
               <h6 className="fw-bold mb-0 text-truncate">{student.name}</h6>

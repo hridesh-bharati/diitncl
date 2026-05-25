@@ -54,7 +54,7 @@ export default function CardSlider() {
         {/* Infinite mapping logic optimized */}
         {[...slides, ...slides].map((img, i) => (
           <div key={i} style={cardStyle}>
-            <img src={`${base}/${img}`} alt="" className="w-100 h-100 object-fit-cover" loading="lazy" />
+            <img src={`${base}/${img}`} alt="Drishtee Student" className="w-100 h-100 object-fit-cover" loading="lazy" />
           </div>
         ))}
       </div>

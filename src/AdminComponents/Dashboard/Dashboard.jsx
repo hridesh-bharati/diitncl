@@ -51,7 +51,7 @@ const StudentRow = ({ student, onClick }) => (
       <div className="d-flex align-items-center gap-2">
         <div style={{ width: '35px', height: '35px', flexShrink: 0 }}>
           {student.photoUrl ? (
-            <img src={student.photoUrl} alt="" className="w-100 h-100 rounded-circle border" style={{ objectFit: 'cover' }} />
+            <img src={student.photoUrl} alt="Student" className="w-100 h-100 rounded-circle border" style={{ objectFit: 'cover' }} />
           ) : (
             <div className="w-100 h-100 rounded-circle bg-gradient-primary d-flex align-items-center justify-content-center fw-bold text-white text-uppercase">{student.name?.charAt(0)}</div>
           )}
@@ -231,7 +231,7 @@ export default function Dashboard() {
                           {s.photoUrl ? (
                             <img
                               src={s.photoUrl}
-                              alt=""
+                              alt="student"
                               className="rounded-circle border border-2 border-white shadow-sm"
                               style={{ width: '42px', height: '42px', objectFit: 'cover' }}
                             />

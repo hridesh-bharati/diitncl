@@ -93,7 +93,7 @@ export default function AdminExamResultView() {
       <div className="card border-0 shadow-sm rounded-0 mb-3 overflow-hidden">
         <div className="card-body p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
           <div className="d-flex align-items-center gap-3">
-            <img src={student?.photoUrl || `https://ui-avatars.com/api/?name=${student?.name}`} className="rounded border shadow-sm" width="55" height="55" style={{objectFit:'cover'}} alt="" />
+            <img src={student?.photoUrl || `https://ui-avatars.com/api/?name=${student?.name}`} className="rounded border shadow-sm" width="55" height="55" style={{objectFit:'cover'}} alt="Drishtee Student" />
             <div>
               <h5 className="fw-bold mb-0 text-dark">{student?.name?.toUpperCase()}</h5>
               <p className="mb-0 small text-muted fw-bold text-uppercase">{student?.course} | REG: {student?.regNo}</p>

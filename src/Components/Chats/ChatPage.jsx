@@ -25,7 +25,7 @@ const MemberCard = ({ member, onClick }) => (
 const Message = ({ msg, isMe, isAdmin, onEdit, onDelete }) => (
   <div className={`d-flex mb-2 ${isMe ? "justify-content-end" : "justify-content-start"}`}>
     {!isMe && msg.senderPhoto && (
-      <img src={msg.senderPhoto} alt="" className="rounded-circle me-2" style={{ width: 35, height: 35, objectFit: "cover" }} />
+      <img src={msg.senderPhoto} alt="Drishtee Student" className="rounded-circle me-2" style={{ width: 35, height: 35, objectFit: "cover" }} />
     )}
     <div style={{ maxWidth: "70%" }}>
       <div className={`p-2 rounded-3 shadow ${isMe ? "bg-primary text-white" : "bg-white text-dark"}`}>

@@ -87,7 +87,7 @@ export default function UploadModal({ show, onClose, userDetails }) {
               ) : up.type === "video" ? (
                 <video src={up.preview} className="w-100 rounded" style={{ maxHeight: "180px" }} muted />
               ) : (
-                <img src={up.preview} className="w-100 rounded" style={{ maxHeight: "180px", objectFit: "contain" }} alt="" />
+                <img src={up.preview} className="w-100 rounded" style={{ maxHeight: "180px", objectFit: "contain" }} alt="Drishtee Student" />
               )}
             </div>
           )}

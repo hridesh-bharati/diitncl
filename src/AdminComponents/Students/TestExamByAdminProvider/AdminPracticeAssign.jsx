@@ -92,7 +92,7 @@ export default function AdminPracticeAssign() {
                         src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}&background=random`}
                         className={`rounded-circle border ${isOn ? 'border-primary' : 'border-light'}`}
                         style={{ width: 42, height: 42, objectFit: 'cover', padding: '2px' }}
-                        alt=""
+                        alt="Drishtee Student"
                       />
                       {isOn && <span className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style={{ width: 12, height: 12 }}></span>}
                     </div>

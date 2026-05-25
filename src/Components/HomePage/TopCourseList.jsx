@@ -12,20 +12,23 @@ const courses = [
   { id: 8, title: "Java Mastery Course", src: "images/course/Java-full-stack.webp" }
 ];
 
-const CourseCard = ({ course }) => (
+// index के आधार पर पहली दो इमेजेस को eager (तुरंत) और बाकी को lazy लोड करेंगे
+const CourseCard = ({ course, index }) => (
   <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
     <div className="ratio ratio-16x9 bg-white p-3">
       <img
         src={course.src}
         alt={course.title}
-        className="card-img-top img-fluid w-100 h-100"/>
+        className="card-img-top img-fluid w-100 h-100 object-fit-contain"
+        loading={index < 2 ? "eager" : "lazy"}
+        decoding="async"
+      />
     </div>
 
     <div className="card-body d-flex flex-column text-center p-3 bg-white">
       <h6 className="fw-bold text-dark px-2" style={{ minHeight: '40px' }}>
         {course.title}
       </h6>
-
       <Link
         to="/courses"
         className="btn border-0 rounded-pill fw-bold text-white py-2 shadow-sm blueGD"
@@ -43,14 +46,11 @@ const CourseCard = ({ course }) => (
 
 export default function TopCourseList() {
   return (
-    <section className="pt-2 bg-primary-subtle ">
+    <section className="pt-2 bg-primary-subtle">
       <div className="container-fluid p-0">
-
         <div className="mb-4 px-3 py-2 bg-white rounded-3">
-          {/* Row 1: Title and Button */}
           <div className="d-flex justify-content-between align-items-center mb-1">
             <div className="d-flex align-items-center gap-2">
-              {/* Premium Icon */}
               <div className="text-primary">
                 <svg
                   width="20"
@@ -70,26 +70,22 @@ export default function TopCourseList() {
                 Top Programs
               </h3>
             </div>
-
             <Link to="/courses" className="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold border-2" style={{ fontSize: '11px' }}>
               View All
             </Link>
           </div>
-
-          {/* Row 2: Subtitle */}
           <p className="text-muted small mb-0 fw-medium" style={{ fontSize: '0.75rem', paddingLeft: '30px' }}>
             Official Certification Courses
           </p>
         </div>
 
         <div className="row g-4">
-          {courses.map(course => (
+          {courses.map((course, index) => (
             <div key={course.id} className="col-12 col-sm-6 col-lg-3">
-              <CourseCard course={course} />
+              <CourseCard course={course} index={index} />
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

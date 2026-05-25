@@ -122,7 +122,7 @@ useEffect(() => {
                 <div className="d-flex align-items-center gap-3 mb-3">
                   <img
                     src={s.studentInfo?.photoUrl || `https://ui-avatars.com/api/?name=${s.studentInfo?.name}&background=random`}
-                    alt="" 
+                    alt="Drishtee Student" 
                     className="border"
                     style={{ width: "50px", height: "50px", objectFit: "cover" }}
                   />

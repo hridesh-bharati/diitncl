@@ -171,7 +171,7 @@ export default function AttendanceMark() {
                             <td className="ps-3 small fw-bold">{idx + 1}</td>
                             <td>
                               <Link to={`/admin/students/${s.id}`}>
-                                <img src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}`} className="rounded-circle border" style={{ width: "32px", height: "32px" }} alt="" />
+                                <img src={s.photoUrl || `https://ui-avatars.com/api/?name=${s.name}`} className="rounded-circle border" style={{ width: "32px", height: "32px" }} alt="Drishtee Student" />
                               </Link>
                             </td>
                             <td><span className="small fw-bold">{s.name}</span><br /><span className="text-muted" style={{ fontSize: "10px" }}>{s.course}</span></td>

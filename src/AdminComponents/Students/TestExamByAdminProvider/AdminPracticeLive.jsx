@@ -43,7 +43,7 @@ export default function AdminPracticeLive() {
           <div className="col-12 col-md-4" key={s.id}>
             <div className="card border-0 shadow-sm rounded-4">
               <div className="card-body p-2 d-flex align-items-center gap-3">
-                <img src={s.photo || `https://ui-avatars.com/api/?name=${s.name}`} className="rounded-circle border" style={{ width: 40, height: 40, objectFit: 'cover' }} alt="" />
+                <img src={s.photo || `https://ui-avatars.com/api/?name=${s.name}`} className="rounded-circle border" style={{ width: 40, height: 40, objectFit: 'cover' }} alt="Drishtee Student" />
                 <div className="flex-grow-1 overflow-hidden">
                   <div className="fw-bold small text-dark text-truncate">{s.name}</div>
                   <div className="text-muted text-truncate" style={{ fontSize: '10px' }}>{s.regNo} | {s.title}</div>

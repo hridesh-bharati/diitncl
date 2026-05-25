@@ -1,24 +1,22 @@
-// vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { readFileSync } from "fs"; 
 
-// package.json ko read karke JSON mein convert karein
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
 
 export default defineConfig(({ command }) => {
-  const isDev = command === "serve";
-
   return {
     define: {
       '__APP_VERSION__': JSON.stringify(pkg.version),
     },
     plugins: [
-      react({ fastRefresh: isDev }),
+      // फिक्स 1: यहाँ से fastRefresh हटा दिया, अब एरर गायब हो जाएगी
+      react(), 
 
       VitePWA({
         registerType: "autoUpdate",
+        injectRegister: "inline",  
         includeAssets: [
           "robots.txt",
           "sitemap.xml",
@@ -27,13 +25,11 @@ export default defineConfig(({ command }) => {
           "images/icon/icon-512.png",
           "images/icon/apple-touch-icon.png"
         ],
-
         manifest: {
           name: "Drishtee Computer Center",
           short_name: "Drishtee",
           version: pkg.version,
-          description:
-            "Govt Registered IT Training Institute in Nichlaul | CCC, ADCA, Python, Web Development",
+          description: "Govt Registered IT Training Institute in Nichlaul | CCC, ADCA, Python, Web Development",
           start_url: "/",
           display: "standalone",
           display_override: ["standalone", "window-controls-overlay"],
@@ -55,9 +51,24 @@ export default defineConfig(({ command }) => {
             }
           ]
         },
-
         workbox: {
-          globPatterns: ["**/*.{js,css,html,png,svg,ico}"]
+          globPatterns: ["**/*.{js,css,html,ico}"],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'cloudinary-images-cache',
+                expiration: {
+                  maxEntries: 40,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            }
+          ]
         }
       })
     ],
@@ -69,19 +80,35 @@ export default defineConfig(({ command }) => {
     },
 
     build: {
-      target: "es2020",
-      minify: "esbuild",
-      sourcemap: "hidden",
+      target: "es2022",
+      minify: "terser",
+      cssCodeSplitting: true, 
+      sourcemap: false,
+      chunkSizeWarningLimit: 800,
+      
+      // फिक्स 2: terserOptions को उठाकर build के अंदर डाल दिया ताकि console.log सच में डिलीट हों
+      terserOptions: {
+        compress: {
+          drop_console: true, 
+          drop_debugger: true,
+          pure_funcs: ['console.info', 'console.error', 'console.warn']
+        },
+        output: {
+          comments: false
+        }
+      },
+
       rollupOptions: {
         output: {
           manualChunks(id) {
-            // Firebase core database ko alag bundle mein dalo performance ke liye
             if (id.includes("firebase")) {
               return "vendor-firebase";
             }
-            // React aur baki main libraries alag bundle mein
+            if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router-dom")) {
+              return "vendor-react-core";
+            }
             if (id.includes("node_modules")) {
-              return "vendor-core";
+              return "vendor-libs";
             }
           }
         }
@@ -95,11 +122,6 @@ export default defineConfig(({ command }) => {
         "@pages": "/src/pages",
         "@assets": "/src/assets"
       }
-    },
-
-    esbuild: {
-      drop: isDev ? [] : ["console", "debugger"],
-      legalComments: "none"
     }
   };
 });

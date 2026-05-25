@@ -1,17 +1,15 @@
 import React, { Suspense, lazy, memo } from "react";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./Home.css";
 
-// Components
+// Core Layout components (Immediately required)
 import AdComponent from "./AdComponent";
-import Features from "./Features";
-import ScrollUp from "../HelperCmp/Scroller/ScrollUp";
-import HomeGallery from "./pages/HomeGallery";
-import StatsSection from "./StatsSection";
-import BdaySection from "../Bday/BdaySection";
 
-// Lazy Components
+// Smart Lazy Loading for non-critical sections below the fold
+const Features = lazy(() => import("./Features"));
+const StatsSection = lazy(() => import("./StatsSection"));
+const BdaySection = lazy(() => import("../Bday/BdaySection"));
+const HomeGallery = lazy(() => import("./pages/HomeGallery"));
 const TopCourseList = lazy(() => import("./TopCourseList"));
 const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
@@ -29,11 +27,6 @@ const PORTALS = [
   { n: "Notes", i: "bi-file-earmark-pdf", l: "/notes-download", g: "linear-gradient(135deg, #f093fb, #f5576c)" },
   { n: "LMS", i: "bi-cpu-fill", l: "/login", g: "linear-gradient(135deg, #ff0844, #ffb199)" },
   { n: "App", i: "bi-phone-vibrate", l: "/base.apk", g: "linear-gradient(135deg, #373b44, #4286f4)", d: true }
-];
-
-const SLIDES = [
-  { img: "/images/vender/hero1.webp", b: "Admissions Open 2026", bc: "bg-danger", t: <>DRISHTEE <br /> COMPUTER CENTER</>, p: "high" },
-  { img: "/images/vender/hero2.webp", b: "Expert Training", bc: "bg-warning text-dark", t: <>BUILD YOUR <br /> DIGITAL FUTURE</>, p: "low" }
 ];
 
 const PortalItem = memo(({ it }) => {
@@ -57,22 +50,34 @@ function Home() {
     <div className="bg-primary-subtle min-vh-100">
       <div className="container-fluid p-2 p-lg-0">
 
-        {/* HERO SECTION */}
+        {/* HERO SECTION - Single Item LCP Optimized */}
         <div id="homeHero" className="carousel slide carousel-fade shadow-sm mb-3" data-bs-ride="carousel">
-          {/* <div className="carousel-inner bg-dark rounded-4 rounded-lg-0 overflow-hidden"> */}
           <div className="carousel-inner bg-dark rounded-4 overflow-hidden hero-carousel-wrap">
-            {SLIDES.map((s, i) => (
-              <div key={i} className={`carousel-item ${i === 0 ? 'active' : ''}`} data-bs-interval="5000">
-                <img src={s.img} className="d-block w-100 opacity-75 hero-img-adjust" alt="hero" fetchpriority={s.p} />
-                <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 text-start p-4 hero-overlay">
-                  <div className="container p-0">
-                    <span className={`badge ${s.bc} rounded-pill mb-2 animate-fade shadow-sm`}>{s.b}</span>
-                    <h1 className="fw-bolder display-5 text-white hero-text-clean animate-top">{s.t}</h1>
-                    <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-2 px-4 shadow">Explore</Link>
-                  </div>
+            
+            {/* Slide 1: Fast Immediate Render (High Priority) */}
+            <div className="carousel-item active" data-bs-interval="5000">
+              <img src="/images/vender/hero1.webp" className="d-block w-100 opacity-75 hero-img-adjust" alt="Admissions Open 2026" fetchpriority="high" decoding="async" />
+              <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 text-start p-4 hero-overlay">
+                <div className="container p-0">
+                  <span className="badge bg-danger rounded-pill mb-2 animate-fade shadow-sm">Admissions Open 2026</span>
+                  <h1 className="fw-bolder display-5 text-white hero-text-clean animate-top">DRISHTEE <br /> COMPUTER CENTER</h1>
+                  <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-2 px-4 shadow">Explore</Link>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Slide 2: Lazy loading for secondary slide */}
+            <div className="carousel-item" data-bs-interval="5000">
+              <img src="/images/vender/hero2.webp" className="d-block w-100 opacity-75 hero-img-adjust" alt="Expert Training" loading="lazy" decoding="async" />
+              <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 text-start p-4 hero-overlay">
+                <div className="container p-0">
+                  <span className="badge bg-warning text-dark rounded-pill mb-2 animate-fade shadow-sm">Expert Training</span>
+                  <h1 className="fw-bolder display-5 text-white hero-text-clean animate-top">BUILD YOUR <br /> DIGITAL FUTURE</h1>
+                  <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-2 px-4 shadow">Explore</Link>
+                </div>
+              </div>
+            </div>
+
           </div>
           <div className="position-absolute end-0 top-50 translate-middle-y z-3 pe-2 d-flex flex-column gap-2">
             <button className="btn btn-sm btn-outline-light rounded-circle text-light" data-bs-target="#homeHero" data-bs-slide="prev" style={{ background: 'rgba(0,0,0,0.3)' }}><i className="bi bi-chevron-left"></i></button>
@@ -88,25 +93,26 @@ function Home() {
           </div>
         </div>
 
-        <Suspense fallback={<div className="text-center p-5 text-muted">Loading...</div>}>
-
+        {/* Non-critical elements deferred inside Suspense */}
+        <Suspense fallback={<div className="text-center p-4 text-muted small">Loading Sections...</div>}>
           <div className="mx-1 my-0 p-0"><StatsSection /></div>
           <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
           <RecentStudents />
           <BdaySection />
           <div className="mb-4 p-lg-2"><TopCourseList /></div>
+          
           <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
             <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
               <div>
                 <h5 className="fw-bold mb-1">Join New Batch Today!</h5>
                 <p className="small mb-0 opacity-75">Admission open for Tally, ADCA & Web Design.</p>
               </div>
-              <Link to="/courses" className="btn blueGD rounded-pill px-4 fw-bold  mt-3 mt-md-0 shadow">Apply Now</Link>
+              <Link to="/courses" className="btn blueGD rounded-pill px-4 fw-bold mt-3 mt-md-0 shadow">Apply Now</Link>
             </div>
           </div>
-          <div className=""><CardSlider /></div>
-          <div className="mb-4 p-lg-2"><HomeGallery /></div>
 
+          <div><CardSlider /></div>
+          <div className="mb-4 p-lg-2"><HomeGallery /></div>
           <div className="mb-4"><HomeOffers /></div>
 
           <div className="row g-3 mb-4 mx-0">
@@ -121,7 +127,6 @@ function Home() {
 
       </div>
       <Footer />
-      <ScrollUp />
     </div>
   );
 }

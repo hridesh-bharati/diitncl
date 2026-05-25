@@ -1,6 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+/* 1. फॉन्ट का बाहरी कबाड़ हटा दिया गया है - अब लोड सीधे सिस्टम से होगा */
 
-/* src/App.css */
 :root {
   --primary-blue: #1a73e8;
   --apple-blue: #0056b3;
@@ -22,24 +21,21 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* Hide scrollbar for Firefox & IE/Edge */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-/* 2. Global Scrollbar Hide for Chrome/Safari */
 *::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
 
-/* 3. Typography & Base */
+/* 3. Typography & Base - Default System/Bootstrap Fonts */
 html,
 body {
   overflow-y: auto;
-  font-family: 'Inter', sans-serif;
-
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #fff;
   -webkit-font-smoothing: antialiased;
 }

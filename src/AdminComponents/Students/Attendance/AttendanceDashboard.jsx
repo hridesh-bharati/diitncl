@@ -290,7 +290,7 @@ export default function AttendanceDashboard() {
                             <div className="d-flex align-items-center gap-3">
                               <span className="fw-bold text-warning" style={{ width: "20px", fontSize: "14px" }}>#{idx + 1}</span>
                               <Link to="/admin/students/attendance/summary" state={{ targetedStudentId: student.id, studentName: student.name }}>
-                                <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}`} className="rounded-circle border" style={{ width: "36px", height: "36px", objectFit: "cover" }} alt="" />
+                                <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}`} className="rounded-circle border" style={{ width: "36px", height: "36px", objectFit: "cover" }} alt="Drishtee Student" />
                               </Link>
                               <Link to="/admin/students/attendance/summary" state={{ targetedStudentId: student.id, studentName: student.name }} className="text-decoration-none text-dark fw-bold" style={{fontSize: "clamp(12px, 1.5vw, 14px)"}}>
                                 {student.name}
@@ -321,7 +321,7 @@ export default function AttendanceDashboard() {
                                 <td className="text-muted py-2" style={{width: "25px"}}>{idx + 1}</td>
                                 <td style={{width: "45px"}} className="py-2">
                                   <Link to="/admin/students/attendance/summary" state={{ targetedStudentId: student.id, studentName: student.name }}>
-                                    <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}`} className="rounded-circle border" style={{ width: "32px", height: "32px", objectFit: "cover" }} alt="" />
+                                    <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.name}`} className="rounded-circle border" style={{ width: "32px", height: "32px", objectFit: "cover" }} alt="Drishtee Student" />
                                   </Link>
                                 </td>
                                 <td className="fw-semibold py-2">
