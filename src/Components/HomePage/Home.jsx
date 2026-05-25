@@ -11,7 +11,7 @@ const StatsSection = lazy(() => import("./StatsSection"));
 // const BdaySection = lazy(() => import("../Bday/BdaySection"));
 // const HomeGallery = lazy(() => import("./pages/HomeGallery"));
 // const TopCourseList = lazy(() => import("./TopCourseList"));
-const CardSlider = lazy(() => import("./Cardslider"));
+// const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
 const Testimonials = lazy(() => import("./Testimonial"));
 const HomeOffers = lazy(() => import("./pages/offers/HomeOffers"));
@@ -111,7 +111,7 @@ function Home() {
             </div>
           </div>
 
-          <div><CardSlider /></div>
+          {/* <div><CardSlider /></div> */}
           {/* <div className="mb-4 p-lg-2"><HomeGallery /></div> */}
           <div className="mb-4"><HomeOffers /></div>
 
