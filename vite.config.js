@@ -11,7 +11,6 @@ export default defineConfig(({ command }) => {
       '__APP_VERSION__': JSON.stringify(pkg.version),
     },
     plugins: [
-      // फिक्स 1: यहाँ से fastRefresh हटा दिया, अब एरर गायब हो जाएगी
       react(), 
 
       VitePWA({
@@ -86,14 +85,13 @@ export default defineConfig(({ command }) => {
       sourcemap: false,
       chunkSizeWarningLimit: 800,
       
-      // फिक्स 2: terserOptions को उठाकर build के अंदर डाल दिया ताकि console.log सच में डिलीट हों
       terserOptions: {
         compress: {
           drop_console: true, 
           drop_debugger: true,
           pure_funcs: ['console.info', 'console.error', 'console.warn']
         },
-        output: {
+        format: {
           comments: false
         }
       },
@@ -101,13 +99,18 @@ export default defineConfig(({ command }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
-            if (id.includes("firebase")) {
-              return "vendor-firebase";
-            }
-            if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router-dom")) {
-              return "vendor-react-core";
-            }
             if (id.includes("node_modules")) {
+              if (id.includes("firebase")) {
+                return "vendor-firebase";
+              }
+              if (
+                id.includes("node_modules/react/") || 
+                id.includes("node_modules/react-dom/") || 
+                id.includes("node_modules/react-router") ||
+                id.includes("node_modules/@remix-run")  
+              ) {
+                return "vendor-react-core";
+              }
               return "vendor-libs";
             }
           }
