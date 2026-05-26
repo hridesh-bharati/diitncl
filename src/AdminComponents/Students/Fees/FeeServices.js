@@ -1,7 +1,6 @@
 // src\AdminComponents\Students\Fees\FeeServices.js
 import { db } from "../../../firebase/firebase";
 import { collection, addDoc, serverTimestamp, doc, deleteDoc } from "firebase/firestore";
-
 // 1. Course Config
 export const COURSE_CONFIG = {
   "ADCA+": { duration: 18, monthly: 800, adm: 600 },
@@ -11,7 +10,6 @@ export const COURSE_CONFIG = {
   "CCC": { duration: 3, monthly: 1000, adm: 500 },
   "CAC": { duration: 3, monthly: 1000, adm: 600 }
 };
-
 // 2. Center Wise Configuration (Dynamic Address & Mobile)
 const CENTER_CONFIG = {
   "DIIT124": {
