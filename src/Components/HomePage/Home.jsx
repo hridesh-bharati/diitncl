@@ -130,9 +130,8 @@ function Home() {
         <HomeAbout />
         <Features />
         <RecentStudents />
-        
         <section className="container-fluid my-4 px-2">
-          <TopCourseList />
+         <TopCourseList />
         </section>
 
         {/* CTA Conversion Banner */}
