@@ -9,6 +9,7 @@ export const COURSE_CONFIG = {
   "DCA": { duration: 12, monthly: 700, adm: 500 },
   "DCAA": { duration: 6, monthly: 700, adm: 500 },
   "CCC": { duration: 3, monthly: 1000, adm: 500 },
+  "CAC": { duration: 3, monthly: 1000, adm: 600 }
 };
 
 // 2. Center Wise Configuration (Dynamic Address & Mobile)
