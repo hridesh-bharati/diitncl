@@ -2,14 +2,13 @@ import React, { Suspense, lazy, memo } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 
-// Core Layout components (Immediately required)
+// Core Layout component (Immediately required for LCP)
 import AdComponent from "./AdComponent";
 
-// Smart Lazy Loading for non-critical sections below the fold
+// Smart Lazy Loading for ALL sections below the fold
+const HomeAbout = lazy(() => import("./pages/HomeAbout"));
 const Features = lazy(() => import("./Features"));
 const StatsSection = lazy(() => import("./StatsSection"));
-const BdaySection = lazy(() => import("../Bday/BdaySection"));
-const HomeGallery = lazy(() => import("./pages/HomeGallery"));
 const TopCourseList = lazy(() => import("./TopCourseList"));
 const CardSlider = lazy(() => import("./Cardslider"));
 const Team = lazy(() => import("./Team"));
@@ -29,105 +28,142 @@ const PORTALS = [
   { n: "App", i: "bi-phone-vibrate", l: "/base.apk", g: "linear-gradient(135deg, #373b44, #4286f4)", d: true }
 ];
 
+// Clean HTML5 Skeleton Loader for smooth structural transitions
+const SectionPlaceholder = () => (
+  <div className="container py-4 text-center placeholder-glow" aria-hidden="true">
+    <div className="placeholder col-8 rounded mb-3" style={{ height: "30px" }}></div>
+    <div className="placeholder col-5 rounded" style={{ height: "15px" }}></div>
+  </div>
+);
+
 const PortalItem = memo(({ it }) => {
-  const content = (
-    <div className="portal-item-container">
-      <div className="portal-icon-box shadow-sm text-white rounded-4 border border-white border-2 d-flex justify-content-center align-items-center" style={{ background: it.g }}>
-        <i className={`bi ${it.i}`}></i>
-      </div>
-      <span className="portal-label-text">{it.n}</span>
-    </div>
-  );
+  const isDownload = it.d;
+  const Tag = isDownload ? "a" : Link;
+  const linkProps = isDownload ? { href: it.l, download: true } : { to: it.l };
+
   return (
     <div className="col text-center">
-      {it.d ? <a href={it.l} download className="text-decoration-none">{content}</a> : <Link to={it.l} className="text-decoration-none">{content}</Link>}
+      <Tag {...linkProps} className="text-decoration-none d-block text-dark transition-hover">
+        <div className="portal-icon-box shadow-sm text-white rounded-4 border border-white border-2 d-inline-flex justify-content-center align-items-center mb-2" style={{ background: it.g, width: "60px", height: "60px" }}>
+          <i className={`bi ${it.i} fs-4`} aria-hidden="true"></i>
+        </div>
+        <span className="d-block small fw-semibold text-secondary">{it.n}</span>
+      </Tag>
     </div>
   );
 });
 
+PortalItem.displayName = "PortalItem";
+
 function Home() {
   return (
-    <div className="bg-primary-subtle min-vh-100">
-      <div className="container-fluid p-2 p-lg-0">
+    <main className="bg-primary-subtle min-vh-100">
+      
+      {/* ================= HERO/LCP SECTION (SEO & Speed Optimized) ================= */}
+      <section id="homeHero" className="carousel slide carousel-fade shadow-sm" data-bs-ride="carousel">
+        <div className="carousel-inner bg-dark hero-carousel-wrap">
 
-        {/* HERO SECTION - Single Item LCP Optimized */}
-        <div id="homeHero" className="carousel slide carousel-fade shadow-sm mb-3" data-bs-ride="carousel">
-          <div className="carousel-inner bg-dark rounded-4 overflow-hidden hero-carousel-wrap">
-            
-            {/* Slide 1: Fast Immediate Render (High Priority) */}
-            <div className="carousel-item active" data-bs-interval="5000">
-              <img src="/images/vender/hero1.webp" className="d-block w-100 opacity-75 hero-img-adjust" alt="Admissions Open 2026" fetchpriority="high" decoding="async" />
-              <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 text-start p-4 hero-overlay">
-                <div className="container p-0">
-                  <span className="badge bg-danger rounded-pill mb-2 animate-fade shadow-sm">Admissions Open 2026</span>
-                  <h1 className="fw-bolder display-5 text-white hero-text-clean animate-top">DRISHTEE <br /> COMPUTER CENTER</h1>
-                  <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-2 px-4 shadow">Explore</Link>
-                </div>
+          {/* Slide 1: Primary LCP Asset (Highest Priority) */}
+          <div className="carousel-item active" data-bs-interval="5000">
+            <img 
+              src="/images/vender/hero1.webp" 
+              className="d-block w-100 opacity-75 hero-img-adjust" 
+              alt="Drishtee Computer Center - Admissions Open 2026" 
+              fetchPriority="high" 
+              decoding="async" 
+            />
+            <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 p-4 hero-overlay">
+              <header className="container p-0 text-start">
+                <span className="badge bg-danger rounded-pill mb-2 animate-fade shadow-sm">Admissions Open 2026</span>
+                <h1 className="fw-bolder display-5 text-white hero-text-clean animate-top m-0">DRISHTEE <br /> COMPUTER CENTER</h1>
+                <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-3 px-4 shadow">Explore Courses</Link>
+              </header>
+            </div>
+          </div>
+
+          {/* Slide 2: Secondary Asset (Lazy Pre-rendered) */}
+          <div className="carousel-item" data-bs-interval="5000">
+            <img 
+              src="/images/vender/hero2.webp" 
+              className="d-block w-100 opacity-75 hero-img-adjust" 
+              alt="Build Your Digital Future with Expert Computer Training" 
+              loading="lazy" 
+              decoding="async" 
+            />
+            <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 p-4 hero-overlay">
+              <div className="container p-0 text-start">
+                <span className="badge bg-warning text-dark rounded-pill mb-2 animate-fade shadow-sm">Expert Training</span>
+                <p className="h1 fw-bolder display-5 text-white hero-text-clean animate-top m-0">BUILD YOUR <br /> DIGITAL FUTURE</p>
+                <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-3 px-4 shadow">Explore Courses</Link>
               </div>
             </div>
-
-            {/* Slide 2: Lazy loading for secondary slide */}
-            <div className="carousel-item" data-bs-interval="5000">
-              <img src="/images/vender/hero2.webp" className="d-block w-100 opacity-75 hero-img-adjust" alt="Expert Training" loading="lazy" decoding="async" />
-              <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 text-start p-4 hero-overlay">
-                <div className="container p-0">
-                  <span className="badge bg-warning text-dark rounded-pill mb-2 animate-fade shadow-sm">Expert Training</span>
-                  <h1 className="fw-bolder display-5 text-white hero-text-clean animate-top">BUILD YOUR <br /> DIGITAL FUTURE</h1>
-                  <Link to="/courses" className="btn btn-primary rounded-pill fw-bold mt-2 px-4 shadow">Explore</Link>
-                </div>
-              </div>
-            </div>
-
           </div>
-          <div className="position-absolute end-0 top-50 translate-middle-y z-3 pe-2 d-flex flex-column gap-2">
-            <button className="btn btn-sm btn-outline-light rounded-circle text-light" data-bs-target="#homeHero" data-bs-slide="prev" style={{ background: 'rgba(0,0,0,0.3)' }}><i className="bi bi-chevron-left"></i></button>
-            <button className="btn btn-sm btn-outline-light rounded-circle text-light" data-bs-target="#homeHero" data-bs-slide="next" style={{ background: 'rgba(0,0,0,0.3)' }}><i className="bi bi-chevron-right"></i></button>
-          </div>
+
         </div>
 
-        {/* STUDENT PORTAL */}
-        <div className="card border-0 rounded-4 shadow-sm p-3 bg-white mx-1">
-          <h6 className="fw-bold mb-3 border-start border-primary border-4 ps-2 text-uppercase" style={{ fontSize: '0.85rem' }}>Student Portal</h6>
+        {/* Accessible Navigation Controls */}
+        <div className="position-absolute end-0 top-50 translate-middle-y z-3 pe-2 d-flex flex-column gap-2">
+          <button type="button" className="btn btn-sm btn-outline-light rounded-circle text-light bg-black bg-opacity-25" data-bs-target="#homeHero" data-bs-slide="prev" aria-label="Previous Slide">
+            <i className="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <button type="button" className="btn btn-sm btn-outline-light rounded-circle text-light bg-black bg-opacity-25" data-bs-target="#homeHero" data-bs-slide="next" aria-label="Next Slide">
+            <i className="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </section>
+
+      {/* ================= STUDENT PORTAL NAVIGATION ================= */}
+      <nav className="border-bottom p-3 bg-white" aria-label="Student Portal Links">
+        <div className="container-fluid">
+          <h2 className="h6 fw-bold mb-3 border-start border-primary border-4 ps-2 text-uppercase" style={{ fontSize: '0.85rem' }}>
+            Student Portal
+          </h2>
           <div className="row row-cols-3 row-cols-md-6 g-3">
             {PORTALS.map((p, i) => <PortalItem key={i} it={p} />)}
           </div>
         </div>
+      </nav>
 
-        {/* Non-critical elements deferred inside Suspense */}
-        <Suspense fallback={<div className="text-center p-4 text-muted small">Loading Sections...</div>}>
-          <div className="mx-1 my-0 p-0"><StatsSection /></div>
-          <div className="mb-4 rounded-4 overflow-hidden shadow-sm bg-white p-2 mx-1"><Features /></div>
-          <RecentStudents />
-          <BdaySection />
-          <div className="mb-4 p-lg-2"><TopCourseList /></div>
-          
-          <div className="card border-0 rounded-4 shadow-sm mb-4 darkBG text-white mx-1">
-            <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
-              <div>
-                <h5 className="fw-bold mb-1">Join New Batch Today!</h5>
-                <p className="small mb-0 opacity-75">Admission open for Tally, ADCA & Web Design.</p>
-              </div>
-              <Link to="/courses" className="btn blueGD rounded-pill px-4 fw-bold mt-3 mt-md-0 shadow">Apply Now</Link>
+      {/* ================= DEFERRED CONTENT (Everything Below Portal is Lazy Loaded) ================= */}
+      <Suspense fallback={<SectionPlaceholder />}>
+        <StatsSection />
+        <HomeAbout />
+        <Features />
+        <RecentStudents />
+        
+        <section className="container-fluid my-4 px-2">
+          <TopCourseList />
+        </section>
+
+        {/* CTA Conversion Banner */}
+        <article className="card border-0 shadow-sm mb-4 mx-2">
+          <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
+            <div>
+              <h3 className="h5 fw-bold mb-1">Join New Batch Today!</h3>
+              <p className="small mb-0 text-muted">Admission open for Tally Prime, ADCA & Professional Web Design.</p>
             </div>
+            <Link to="/courses" className="btn btn-primary rounded-pill px-4 fw-bold mt-3 mt-md-0 shadow">Apply Now</Link>
           </div>
+        </article>
 
-          <div><CardSlider /></div>
-          {/* <div className="mb-4 p-lg-2"><HomeGallery /></div> */}
-          <div className="mb-4"><HomeOffers /></div>
+        <section className="mb-4"><CardSlider /></section>
+        <section className="mb-4"><HomeOffers /></section>
 
-          <div className="row g-3 mb-4 mx-0">
-            <div className="col-12 col-md-6 p-0 m-0 p-lg-2"><NoticeBoard /></div>
-            <div className="col-12 col-md-6 p-0 m-0 p-lg-2"><TimeTable /></div>
+        {/* Notice & Updates Grid */}
+        <section className="container-fluid px-2 mb-4">
+          <div className="row g-3 mx-0">
+            <aside className="col-12 col-md-6 p-0 pe-md-2"><NoticeBoard /></aside>
+            <aside className="col-12 col-md-6 p-0 ps-md-2"><TimeTable /></aside>
           </div>
+        </section>
 
-          <div className="mb-4"><Testimonials /></div>
-          <AdComponent />
-          <div className="mb-4"><Team /></div>
-        </Suspense>
+        <section className="mb-4" id="testimonials"><Testimonials /></section>
+        <AdComponent />
+        <section className="mb-4" id="team"><Team /></section>
+        <Footer />
+      </Suspense>
 
-      </div>
-      <Footer />
-    </div>
+    </main>
   );
 }
 

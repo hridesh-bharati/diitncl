@@ -39,7 +39,7 @@ const StatsSection = () => {
   ];
 
   return (
-    <div className="container-fluid bg-white shadow-sm rounded-3 my-2">
+    <div className="container-fluid bg-white ">
       <div className="d-flex flex-nowrap align-items-center py-3">
         {stats.map((s, i) => (
           <CounterItem key={i} target={s.n} label={s.l} textColor={s.c} isLast={i === 3} />

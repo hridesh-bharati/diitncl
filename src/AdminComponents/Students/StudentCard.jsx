@@ -197,14 +197,14 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
 
   return (
     <div className="mb-4">
-      <div className="card border-0 bg-white shadow-sm overflow-hidden" style={{ borderRadius: "20px" }}>
+      <div className="card bg-white border overflow-hidden">
         <div style={{ height: "6px", background: `linear-gradient(90deg, ${STATUS_COLORS[status]}, #6366f1)` }} />
 
         <div className="card-body p-3">
           <div className="d-flex align-items-center gap-3 mb-3">
             {/* ✅ DIRECT EMAIL LINK */}
             <Link to={`/admin/students/${student.email}`}>
-              <img src={avatarUrl} alt="Drishtee Student" style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "18px" }} />
+              <img src={avatarUrl} alt="Drishtee Student" style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "50%" }} />
             </Link>
             <div className="flex-grow-1" style={{ minWidth: 0 }}>
               <h6 className="fw-bold mb-0 text-truncate">{student.name}</h6>
@@ -258,16 +258,16 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
           )}
 
           {((isAccepted && student.regNo && !editingRegNo && !showRegInput) || (isDone && isEditingFinal)) && (
-            <div className="bg-light p-3 rounded-4 mb-3 border border-primary border-opacity-25 animate__animated animate__fadeIn">
-              <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="bg-light p-3 rounded-4 mb-3 border-0">
+              <div className="d-flex justify-content-between align-items-center">
                 <h6 className="fw-bold mb-0 text-primary small">Finalize / Issue Certificate</h6>
                 <button className="btn btn-success btn-sm rounded-4 fw-bold px-3 shadow-none" onClick={handleMarkDone} disabled={loading || !percent || !admissionDate || !issDate}>Done</button>
               </div>
-              <label className="small text-muted mb-1 fw-bold">Percentage (%)</label>
+              <label className="small text-muted p-0 m-0 fw-bold">Percentage (%)</label>
               <input type="number" className="form-control form-control-sm mb-2 rounded-0 shadow-none" value={percent} onChange={(e) => setPercent(e.target.value)} />
               <div className="row g-2">
                 <div className="col-6">
-                  <label className="small text-muted mb-1 fw-bold">Admission Date</label>
+                  <label className="small text-muted p-0 m-0 fw-bold">Admission Date</label>
                   <input type="date" className="form-control form-control-sm rounded-0 shadow-none" value={admissionDate} onChange={(e) => setAdmissionDate(e.target.value)} />
                 </div>
                 <div className="col-6">
@@ -288,7 +288,7 @@ const StudentCard = React.memo(({ student: initialStudent, onSave, onDelete }) =
             </div>
           )}
 
-          <div className="d-flex justify-content-end pt-2 border-top mt-2">
+          <div className="d-flex justify-content-end">
             {isAdmin && (
               <div className="d-flex gap-1">
                 {!showDeleteConfirm ? (

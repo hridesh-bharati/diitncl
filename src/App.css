@@ -147,3 +147,98 @@ a,
   from { transform: translate(0, 0); }
   to { transform: translate(50px, 50px); }
 }
+/* ............................................. Utils */
+/* Custom Maroon Colors */
+.text-maroon {
+  color: #800020;
+}
+
+.bg-maroon {
+  background-color: #800020;
+}
+.bg-maroon:hover {
+  background-color: #1b0309;
+}
+
+.bg-maroon-light {
+  background-color: rgba(128, 0, 32, 0.1);
+}
+/* ...Animation Class fade ...  */
+/* ================= Animation Base ================= */
+
+.fade-up,
+.zoom-in,
+.slide-in-left,
+.slide-in-right {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.7s ease;
+}
+
+/* Initial States */
+.fade-up {
+  transform: translate3d(0, 35px, 0);
+}
+
+.zoom-in {
+  transform: scale3d(0.92, 0.92, 1);
+}
+
+.slide-in-left {
+  transform: translate3d(-40px, 0, 0);
+}
+
+.slide-in-right {
+  transform: translate3d(40px, 0, 0);
+}
+
+/* Active State */
+.fade-up.show,
+.zoom-in.show,
+.slide-in-left.show,
+.slide-in-right.show {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+}
+
+/* Hover Effects */
+.transition-hover {
+  transition: transform 0.3s ease;
+}
+
+.transition-hover:hover {
+  transform: translateY(-5px);
+}
+
+.hover-up {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.hover-up:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Utility */
+.object-fit-cover {
+  object-fit: cover;
+}
+
+/* Bounce */
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}

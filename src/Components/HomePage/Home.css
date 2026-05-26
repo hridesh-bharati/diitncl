@@ -13,25 +13,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease;
 }
 
 .portal-icon-box {
   width: 60px;
   height: 60px;
   font-size: 1.5rem;
-}
-
-.portal-item-container:active {
-  transform: scale(0.95);
-}
-
-.portal-label-text {
-  font-weight: 600;
-  margin-top: 8px;
-  font-size: 11px;
-  color: #212529;
-  text-transform: uppercase;
 }
 
 /* --- Responsive & Desktop --- */

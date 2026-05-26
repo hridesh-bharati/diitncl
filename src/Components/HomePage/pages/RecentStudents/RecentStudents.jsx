@@ -26,7 +26,7 @@ export default function RecentStudents() {
   if (loading) return null;
 
   return (
-    <div className="container-fluid py-4" style={{ background: "linear-gradient(135deg, #f8f9ff 0%, #eef2f7 100%)", borderRadius: "20px" }}>
+    <div className="container-fluid py-4" style={{ background: "linear-gradient(135deg, #f8f9ff 0%, #eef2f7 100%)"}}>
       
       {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-4 px-2">

@@ -16,7 +16,7 @@ const H = [
 
 export default function LiveCards() {
   return (
-    <section className="container-fluid py-5 my-3 px-0 px-lg-5 overflow-hidden">
+    <section className="container-fluid py-5 px-lg-5 overflow-hidden bg-white">
       <div className="row align-items-center g-4 g-lg-5">
         <div className="col-lg-7 order-1 order-lg-2">
           <div className="row g-3">

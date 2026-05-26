@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CountdownTimer from "./Counter";
 import QuickSupport from "../About/QuickSupport";
 import LibraryFeatures from "./LibraryFeatures";
+import useScrollAnimation from "../../../../hooks/useScrollAnimation";
 
-/* ================= DATA ================= */
+/* ================= DATA ARRAY MATRIX ================= */
 const STATS = [
   { icon: "bi-lightning-charge-fill", value: "1 Gbps", label: "Fiber Internet", color: "linear-gradient(135deg, #0072ff 0%, #00c6ff 100%)" },
   { icon: "bi-people-fill", value: "150+", label: "Study Seats", color: "linear-gradient(135deg, #0ba360 0%, #3cba92 100%)" },
@@ -20,53 +21,22 @@ const TESTIMONIALS = [
   { name: "Amit Kumar", role: "CA Student", text: "Amazing facilities with great internet speed. Highly recommended!", rating: 5 }
 ];
 
-// Library Rules
 const LIBRARY_RULES = [
   { rule: "Complete Silence Zone", desc: "No talking or phone calls inside study area", icon: "bi-mic-mute-fill", color: "danger" },
-  { rule: "No Food Inside", desc: "Only water bottles are allowed", icon: "bi-cup-straw", color: "warning" },
+  { rule: "No Food Inside", desc: "Only water bottles are allowed inside the hall", icon: "bi-cup-straw", color: "warning" },
   { rule: "Mobile on Silent", desc: "Use designated phone booths for calls", icon: "bi-phone-vibrate", color: "info" },
-  { rule: "Books Must Be Issued", desc: "No personal books allowed from outside", icon: "bi-book", color: "success" },
+  { rule: "Bag Screening", desc: "All personal bags are checked at the entrance for security", icon: "bi-shield-check", color: "success" },
   { rule: "ID Card Mandatory", desc: "Carry library ID at all times", icon: "bi-card-id", color: "primary" },
-  { rule: "Return on Time", desc: "Late fees apply for delayed returns", icon: "bi-clock-history", color: "dark" }
+  { rule: "Return on Time", desc: "Late fees apply for delayed book returns", icon: "bi-clock-history", color: "dark" }
 ];
 
-// Membership Plans
 const MEMBERSHIP_PLANS = [
-  {
-    name: "Daily Pass",
-    price: "₹50",
-    duration: "per day",
-    features: ["Full day access", "Free WiFi", "Water Facility", "Newspaper Access"],
-    popular: false,
-    color: "primary"
-  },
-  {
-    name: "Monthly",
-    price: "₹999",
-    duration: "per month",
-    features: ["30 Days Access", "Free WiFi", "Locker Facility", "Tea/Coffee", "Printing 50 pages", "Book Issuing"],
-    popular: true,
-    color: "success"
-  },
-  {
-    name: "Quarterly",
-    price: "₹2499",
-    duration: "3 months",
-    features: ["90 Days Access", "Free WiFi", "Locker Facility", "Tea/Coffee", "Printing 200 pages", "Book Issuing", "1 Free Workshop"],
-    popular: false,
-    color: "info"
-  },
-  {
-    name: "Yearly",
-    price: "₹8999",
-    duration: "12 months",
-    features: ["365 Days Access", "Free WiFi", "Premium Locker", "Unlimited Tea/Coffee", "Printing 1000 pages", "Book Issuing", "4 Free Workshops", "Priority Support"],
-    popular: false,
-    color: "danger"
-  }
+  { name: "Daily Pass", price: "₹50", duration: "per day", features: ["Full day access", "Free WiFi", "Water Facility", "Newspaper Access"], popular: false, color: "primary" },
+  { name: "Monthly", price: "₹999", duration: "per month", features: ["30 Days Access", "Free WiFi", "Locker Facility", "Tea/Coffee", "Printing 50 pages", "Book Issuing"], popular: true, color: "success" },
+  { name: "Quarterly", price: "₹2499", duration: "3 months", features: ["90 Days Access", "Free WiFi", "Locker Facility", "Tea/Coffee", "Printing 200 pages", "Book Issuing", "1 Free Workshop"], popular: false, color: "info" },
+  { name: "Yearly", price: "₹8999", duration: "12 months", features: ["365 Days Access", "Free WiFi", "Premium Locker", "Unlimited Tea/Coffee", "Printing 1000 pages", "Book Issuing", "4 Free Workshops", "Priority Support"], popular: false, color: "danger" }
 ];
 
-// Book Categories
 const BOOK_CATEGORIES = [
   { name: "UPSC Civil Services", count: 2500, icon: "bi-bank", color: "primary" },
   { name: "SSC & Banking", count: 1800, icon: "bi-calculator-fill", color: "success" },
@@ -76,7 +46,6 @@ const BOOK_CATEGORIES = [
   { name: "Law (CLAT)", count: 800, icon: "bi-briefcase-fill", color: "dark" }
 ];
 
-// Facilities Detailed
 const FACILITIES_DETAILED = [
   { title: "High-Speed Internet", desc: "1 Gbps fiber optic connection for seamless online learning", icon: "bi-wifi", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" },
   { title: "AC Study Rooms", desc: "Fully air-conditioned halls with comfortable seating", icon: "bi-wind", gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" },
@@ -86,34 +55,33 @@ const FACILITIES_DETAILED = [
   { title: "Printing Service", desc: "High-speed printing & photocopy at minimal cost", icon: "bi-printer", gradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)" }
 ];
 
-export default function DrishteeLibrary() {
-  const [activePlan, setActivePlan] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(0);
+const GALLERY_IMAGES = ["library.webp", "d2.jpg", "d3.jpg", "d1.jpg"];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add('show');
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-up, .zoom-in, .slide-in-left, .slide-in-right').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-  const images = ["library.webp", "d2.jpg", "d3.jpg", "d1.jpg"];
+const FAQ_DATA = [
+  { q: "What are the library timings?", a: "Our library is open 24×7, 365 days a year. You can study anytime you want." },
+  { q: "Can I bring my own books?", a: "Yes, you can bring your own study materials. However, all bags are screened at the entrance for security." },
+  { q: "Is WiFi available?", a: "Yes, we provide 1 Gbps high-speed fiber internet connection to all members." },
+  { q: "How can I become a member?", a: "Visit our library with a valid ID proof and fill out the membership form. Plans start from just ₹999/month." },
+  { q: "Is there a parking facility?", a: "Yes, we have a dedicated, secured parking space for bikes and cycles." },
+  { q: "Can I take library books home?", a: "Yes, monthly and yearly members can issue up to 3 books at a time for a duration of 7 days." }
+];
+
+export default function DrishteeLibrary() {
+  // Shared GPU Optimized Animation Execution
+  useScrollAnimation();
+
   return (
-    <div className="bg-light overflow-hidden">
+    <main className="bg-light overflow-hidden">
 
       {/* ================= HERO SECTION ================= */}
-      <section className="position-relative d-flex align-items-center justify-content-center"
-        style={{ minHeight: "500px", height: "80vh" }}>
+      <section className="position-relative d-flex align-items-center justify-content-center" style={{ minHeight: "500px", height: "80vh" }}>
         <div className="position-absolute top-0 start-0 w-100 h-100">
           <img
             src="/images/library/library.webp"
-            alt="Drishtee Library"
+            alt="Drishtee Library Study Environment"
             className="w-100 h-100 object-fit-cover"
           />
-          <div className="position-absolute top-0 start-0 w-100 h-100"
-            style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.85))" }} />
+          <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.85))" }} />
         </div>
 
         <div className="container position-relative text-white text-center text-md-start">
@@ -127,15 +95,14 @@ export default function DrishteeLibrary() {
                 A modern, silent and secure study space designed for serious aspirants preparing for competitive exams like UPSC, NEET, SSC & Banking.
               </p>
               <div className="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 fade-up">
-                <button className="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow">Reserve Seat</button>
-                <button className="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">Visit Today</button>
+                <button type="button" className="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow">Reserve Seat</button>
+                <button type="button" className="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">Visit Today</button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="position-absolute bottom-0 start-50 translate-middle-x mb-4 animate-bounce">
+        <div className="position-absolute bottom-0 start-50 translate-middle-x mb-4 animate-bounce" aria-hidden="true">
           <i className="bi bi-chevron-down fs-1 text-white opacity-75"></i>
         </div>
       </section>
@@ -147,9 +114,9 @@ export default function DrishteeLibrary() {
             <div key={i} className="col-6 col-md-3 zoom-in">
               <div
                 className="rounded-4 p-3 p-md-4 shadow-lg text-center border-0 h-100 transition-hover"
-                style={{ background: s.color, color: "white", transition: "transform 0.3s ease" }}
+                style={{ background: s.color, color: "white" }}
               >
-                <i className={`bi ${s.icon} fs-2 text-white opacity-75 mb-2 d-block`} />
+                <i className={`bi ${s.icon} fs-2 text-white opacity-75 mb-2 d-block`} aria-hidden="true" />
                 <h4 className="fw-bold mb-0 text-white">{s.value}</h4>
                 <small className="text-white-50 fw-semibold d-block">{s.label}</small>
               </div>
@@ -175,25 +142,25 @@ export default function DrishteeLibrary() {
               <div className="row mt-4 g-3">
                 <div className="col-md-6">
                   <div className="d-flex gap-2 align-items-center">
-                    <i className="bi bi-check-circle-fill text-success"></i>
+                    <i className="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
                     <span>Established in 2018</span>
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="d-flex gap-2 align-items-center">
-                    <i className="bi bi-check-circle-fill text-success"></i>
+                    <i className="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
                     <span>5000+ Happy Members</span>
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="d-flex gap-2 align-items-center">
-                    <i className="bi bi-check-circle-fill text-success"></i>
+                    <i className="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
                     <span>10,000+ Books Collection</span>
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="d-flex gap-2 align-items-center">
-                    <i className="bi bi-check-circle-fill text-success"></i>
+                    <i className="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
                     <span>98% Member Satisfaction</span>
                   </div>
                 </div>
@@ -207,7 +174,7 @@ export default function DrishteeLibrary() {
       <section className="container py-5">
         <div className="text-center mb-5 fade-up">
           <span className="badge bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-pill mb-3">
-            <i className="bi bi-book-half me-2"></i>Our Collection
+            <i className="bi bi-book-half me-2" aria-hidden="true"></i>Our Collection
           </span>
           <h2 className="display-5 fw-bold">Vast Collection of <span className="text-primary">Study Materials</span></h2>
           <p className="text-muted mx-auto" style={{ maxWidth: "600px" }}>
@@ -216,18 +183,17 @@ export default function DrishteeLibrary() {
         </div>
         <div className="row g-4">
           {BOOK_CATEGORIES.map((cat, idx) => (
-            <div key={idx} className="col-md-6 col-lg-4 slide-in-left" style={{ animationDelay: `${idx * 100}ms` }}>
-              <div className="card border-0 shadow-sm rounded-4 p-3 bg-white transition-all hover-up">
+            <div key={idx} className="col-md-6 col-lg-4 slide-in-left" style={{ animationDelay: `${idx * 50}ms` }}>
+              <div className="card border-0 shadow-sm rounded-4 p-3 bg-white hover-up">
                 <div className="d-flex align-items-center gap-3">
-                  <div className={`bg-${cat.color} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center`}
-                    style={{ width: "60px", height: "60px" }}>
-                    <i className={`bi ${cat.icon} fs-2 text-${cat.color}`}></i>
+                  <div className={`bg-${cat.color} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center`} style={{ width: "60px", height: "60px" }}>
+                    <i className={`bi ${cat.icon} fs-2 text-${cat.color}`} aria-hidden="true"></i>
                   </div>
                   <div className="flex-grow-1">
                     <h6 className="fw-bold mb-1">{cat.name}</h6>
                     <p className="small text-muted mb-0">{cat.count}+ Books</p>
                   </div>
-                  <i className="bi bi-arrow-right-circle text-primary fs-4 opacity-50"></i>
+                  <i className="bi bi-arrow-right-circle text-primary fs-4 opacity-50" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -244,10 +210,10 @@ export default function DrishteeLibrary() {
           </div>
           <div className="row g-4">
             {FACILITIES_DETAILED.map((fac, idx) => (
-              <div key={idx} className="col-md-6 col-lg-4 zoom-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                <div className="card border-0 rounded-4 overflow-hidden shadow-sm transition-all hover-up">
+              <div key={idx} className="col-md-6 col-lg-4 zoom-in" style={{ animationDelay: `${idx * 50}ms` }}>
+                <div className="card border-0 rounded-4 overflow-hidden shadow-sm hover-up">
                   <div className="p-4 text-white" style={{ background: fac.gradient }}>
-                    <i className={`bi ${fac.icon} fs-1 mb-3 d-block`}></i>
+                    <i className={`bi ${fac.icon} fs-1 mb-3 d-block`} aria-hidden="true"></i>
                     <h5 className="fw-bold mb-2">{fac.title}</h5>
                     <p className="opacity-90 small mb-0">{fac.desc}</p>
                   </div>
@@ -258,7 +224,7 @@ export default function DrishteeLibrary() {
         </div>
       </section>
 
-      {/* ================= WHY CHOOSE DRISHTEE (ENHANCED) ================= */}
+      {/* ================= WHY CHOOSE DRISHTEE ================= */}
       <section className="container py-5">
         <div className="bg-white rounded-5 p-4 p-md-5 shadow-sm fade-up">
           <h3 className="fw-bold text-primary mb-4">Why Choose Drishtee?</h3>
@@ -269,10 +235,10 @@ export default function DrishteeLibrary() {
                 and fully air-conditioned halls, Drishtee Library ensures comfort even during long study hours.
               </p>
               <ul className="list-unstyled">
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> Silent Study Zones</li>
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> Ergonomic Seating</li>
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> Uninterrupted Power Backup</li>
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> Individual Study Carrels</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> Silent Study Zones</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> Ergonomic Seating</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> Uninterrupted Power Backup</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> Individual Study Carrels</li>
               </ul>
             </div>
             <div className="col-md-6">
@@ -281,15 +247,15 @@ export default function DrishteeLibrary() {
                 maintain deep concentration. Clean washrooms, drinking water and free tea add convenience.
               </p>
               <ul className="list-unstyled">
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> 24/7 CCTV Monitoring</li>
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> RO Drinking Water & Tea</li>
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> Daily Newspaper Access</li>
-                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold"></i> Personal Lockers</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> 24/7 CCTV Monitoring</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> RO Drinking Water & Tea</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> Daily Newspaper Access</li>
+                <li className="mb-2"><i className="bi bi-check2-circle text-success me-2 fw-bold" aria-hidden="true"></i> Personal Lockers</li>
               </ul>
             </div>
           </div>
           <div className="mt-3 p-3 bg-light rounded-4 text-center">
-            <p className="text-muted mb-0 fw-bold italic">"Drishtee is not just a library — it is a disciplined ecosystem built to support serious preparation."</p>
+            <blockquote className="text-muted mb-0 fw-bold fst-italic">"Drishtee is not just a library — it is a disciplined ecosystem built to support serious preparation."</blockquote>
           </div>
         </div>
       </section>
@@ -298,18 +264,17 @@ export default function DrishteeLibrary() {
       <section className="container py-5">
         <div className="text-center mb-5 fade-up">
           <span className="badge bg-danger bg-opacity-10 text-danger px-4 py-2 rounded-pill mb-3">
-            <i className="bi bi-shield-check me-2"></i>Library Guidelines
+            <i className="bi bi-shield-check me-2" aria-hidden="true"></i>Library Guidelines
           </span>
           <h2 className="display-5 fw-bold">Rules & <span className="text-primary">Regulations</span></h2>
           <p className="text-muted">Maintaining discipline for everyone's benefit</p>
         </div>
         <div className="row g-3">
           {LIBRARY_RULES.map((rule, idx) => (
-            <div key={idx} className="col-md-6 col-lg-4 slide-in-right" style={{ animationDelay: `${idx * 100}ms` }}>
-              <div className="d-flex gap-3 p-3 rounded-4 bg-white shadow-sm transition-all hover-up">
-                <div className={`bg-${rule.color} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0`}
-                  style={{ width: "50px", height: "50px" }}>
-                  <i className={`bi ${rule.icon} fs-3 text-${rule.color}`}></i>
+            <div key={idx} className="col-md-6 col-lg-4 slide-in-right" style={{ animationDelay: `${idx * 50}ms` }}>
+              <div className="d-flex gap-3 p-3 rounded-4 bg-white shadow-sm hover-up">
+                <div className={`bg-${rule.color} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: "50px", height: "50px" }}>
+                  <i className={`bi ${rule.icon} fs-3 text-${rule.color}`} aria-hidden="true"></i>
                 </div>
                 <div>
                   <h6 className="fw-bold mb-1">{rule.rule}</h6>
@@ -326,18 +291,18 @@ export default function DrishteeLibrary() {
         <div className="container">
           <div className="text-center mb-5 fade-up">
             <span className="badge bg-success bg-opacity-10 text-success px-4 py-2 rounded-pill mb-3">
-              <i className="bi bi-credit-card me-2"></i>Membership
+              <i className="bi bi-credit-card me-2" aria-hidden="true"></i>Membership
             </span>
             <h2 className="display-5 fw-bold">Choose Your <span className="text-primary">Plan</span></h2>
             <p className="text-muted">Flexible membership options to suit your study needs</p>
           </div>
           <div className="row g-4">
             {MEMBERSHIP_PLANS.map((plan, idx) => (
-              <div key={idx} className="col-md-6 col-lg-3 zoom-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                <div className={`card border-0 rounded-4 shadow-sm h-100 transition-all hover-up ${plan.popular ? 'border border-warning border-2' : ''}`}>
+              <div key={idx} className="col-md-6 col-lg-3 zoom-in" style={{ animationDelay: `${idx * 50}ms` }}>
+                <div className={`card border-0 rounded-4 shadow-sm h-100 hover-up ${plan.popular ? 'border border-warning border-2' : ''}`}>
                   {plan.popular && (
                     <div className="position-absolute top-0 start-50 translate-middle bg-warning text-dark px-3 py-1 rounded-pill small fw-bold">
-                      <i className="bi bi-star-fill me-1"></i>Most Popular
+                      <i className="bi bi-star-fill me-1" aria-hidden="true"></i>Most Popular
                     </div>
                   )}
                   <div className="card-body p-4 text-center">
@@ -349,13 +314,13 @@ export default function DrishteeLibrary() {
                     <ul className="list-unstyled text-start mt-4 mb-4">
                       {plan.features.map((feature, i) => (
                         <li key={i} className="mb-2">
-                          <i className="bi bi-check-circle-fill text-success me-2 small"></i>
+                          <i className="bi bi-check-circle-fill text-success me-2 small" aria-hidden="true"></i>
                           <small>{feature}</small>
                         </li>
                       ))}
                     </ul>
-                    <button className={`btn btn-${plan.color} w-100 rounded-pill py-2 fw-bold`}>
-                      Choose Plan <i className="bi bi-arrow-right ms-2"></i>
+                    <button type="button" className={`btn btn-${plan.color} w-100 rounded-pill py-2 fw-bold`}>
+                      Choose Plan <i className="bi bi-arrow-right ms-2" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
@@ -366,27 +331,23 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= GALLERY PREVIEW ================= */}
-      <div className="row g-3">
-        {images.map((img, idx) => (
-          <div
-            key={idx}
-            className="col-md-4 col-lg-3 zoom-in p-4"
-            style={{ animationDelay: `${idx * 100}ms` }}
-          >
-            <div
-              className="position-relative rounded-4 overflow-hidden shadow-sm"
-              style={{ height: "200px" }}
-            >
-              <img
-                src={`/images/library/${img}`}
-                alt={`Library View ${idx + 1}`}
-                className="w-100 h-100 object-fit-cover transition-scale"
-                style={{ cursor: "pointer" }}
-              />
+      <section className="container-fluid px-3 py-4 bg-white">
+        <div className="row g-3">
+          {GALLERY_IMAGES.map((img, idx) => (
+            <div key={idx} className="col-6 col-md-4 col-lg-3 zoom-in" style={{ animationDelay: `${idx * 50}ms` }}>
+              <div className="position-relative rounded-4 overflow-hidden bg-light border border-light-subtle" style={{ height: "200px" }}>
+                <img
+                  src={`/images/library/${img}`}
+                  alt={`Drishtee Library Premises View ${idx + 1}`}
+                  className="w-100 h-100 object-fit-cover"
+                  style={{ cursor: "pointer" }}
+                  loading="lazy"
+                />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
 
       {/* ================= TESTIMONIALS ================= */}
       <section className="py-5" style={{ background: "#f0f2f5" }}>
@@ -394,18 +355,17 @@ export default function DrishteeLibrary() {
           <h3 className="fw-bold mb-5 text-center fade-up">What Our Students Say</h3>
           <div className="row g-4">
             {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="col-md-6 col-lg-4 fade-up" style={{ transitionDelay: `${i * 100}ms` }}>
+              <article key={i} className="col-md-6 col-lg-4 fade-up" style={{ transitionDelay: `${i * 50}ms` }}>
                 <div className="bg-white rounded-4 p-4 shadow-sm h-100 border-top border-5 border-primary">
-                  <div className="text-warning mb-3">
+                  <div className="text-warning mb-3" aria-label={`Rating ${t.rating} out of 5`}>
                     {[...Array(t.rating)].map((_, r) => (
-                      <i key={r} className="bi bi-star-fill"></i>
+                      <i key={r} className="bi bi-star-fill" aria-hidden="true"></i>
                     ))}
                   </div>
                   <p className="text-muted mb-4 fst-italic">“{t.text}”</p>
                   <div className="d-flex align-items-center">
-                    <div className="bg-gradient-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                      style={{ width: '45px', height: '45px', background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
-                      <i className="bi bi-person-fill fs-4"></i>
+                    <div className="text-white rounded-circle d-flex align-items-center justify-content-center me-3 bg-gradient-primary" style={{ width: '45px', height: '45px' }}>
+                      <i className="bi bi-person-fill fs-4" aria-hidden="true"></i>
                     </div>
                     <div>
                       <h6 className="fw-bold mb-0">{t.name}</h6>
@@ -413,7 +373,7 @@ export default function DrishteeLibrary() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
@@ -428,18 +388,10 @@ export default function DrishteeLibrary() {
         <div className="row justify-content-center">
           <div className="col-lg-8">
             <div className="accordion shadow-sm rounded-4 overflow-hidden" id="faqAccordion">
-              {[
-                { q: "What are the library timings?", a: "Our library is open 24×7, 365 days a year. You can study anytime you want." },
-                { q: "Can I bring my own books?", a: "Yes, you can bring your own books. However, all bags are checked at the entrance for security." },
-                { q: "Is WiFi available?", a: "Yes, we provide 1 Gbps high-speed fiber internet connection to all members." },
-                { q: "How can I become a member?", a: "Visit our library with valid ID proof and fill the membership form. Membership starts from just ₹999/month." },
-                { q: "Is there a parking facility?", a: "Yes, we have dedicated parking space for bikes and cycles." },
-                { q: "Can I take books home?", a: "Yes, monthly and yearly members can issue up to 3 books at a time for 7 days." }
-              ].map((faq, idx) => (
+              {FAQ_DATA.map((faq, idx) => (
                 <div key={idx} className="accordion-item border-0 border-bottom">
                   <h2 className="accordion-header">
-                    <button className="accordion-button collapsed bg-white fw-bold" type="button" data-bs-toggle="collapse"
-                      data-bs-target={`#faq${idx}`} style={{ background: "white" }}>
+                    <button className="accordion-button collapsed bg-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target={`#faq${idx}`} aria-expanded="false" aria-controls={`faq${idx}`}>
                       {faq.q}
                     </button>
                   </h2>
@@ -454,13 +406,12 @@ export default function DrishteeLibrary() {
       </section>
 
       {/* ================= CTA & COUNTDOWN ================= */}
-      <section className="container py-5 mb-5 mx-0 mx-lg-auto px-0 fade-up">
-        <div className="rounded-5 p-4 p-lg-5  text-center text-white position-relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
-          <div className="position-absolute top-0 end-0 p-4 opacity-25">
+      <section className="container py-5 mb-5 mx-0 mx-lg-auto px-0 bg-white fade-up">
+        <div className="rounded-5 p-4 p-lg-5 text-center position-relative overflow-hidden">
+          <div className="position-absolute top-0 end-0 p-4 opacity-25" aria-hidden="true">
             <i className="bi bi-journal-bookmark-fill fs-1"></i>
           </div>
-          <div className="position-absolute bottom-0 start-0 p-4 opacity-25">
+          <div className="position-absolute bottom-0 start-0 p-4 opacity-25" aria-hidden="true">
             <i className="bi bi-brightness-high-fill fs-1"></i>
           </div>
           <div className="position-relative z-1">
@@ -469,15 +420,15 @@ export default function DrishteeLibrary() {
             <div className="d-inline-block p-4 bg-white bg-opacity-10 rounded-5 backdrop-blur mb-4">
               <CountdownTimer />
             </div>
-            <div className="mt-3 bg-white">
+            <div className="mt-3 bg-white text-dark rounded-4 overflow-hidden shadow-sm">
               <QuickSupport />
             </div>
             <div className="mt-4">
-              <button className="btn btn-warning btn-lg rounded-pill px-5 fw-bold me-3 my-1">
-                <i className="bi bi-calendar-check me-2"></i>Book Free Trial
+              <button type="button" className="btn btn-warning btn-lg rounded-pill px-5 fw-bold me-3 my-1">
+                <i className="bi bi-calendar-check me-2" aria-hidden="true"></i>Book Free Trial
               </button>
-              <button className="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold my-1">
-                <i className="bi bi-whatsapp me-2"></i>Call Now
+              <button type="button" className="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold my-1">
+                <i className="bi bi-whatsapp me-2" aria-hidden="true"></i>Call Now
               </button>
             </div>
           </div>
@@ -485,42 +436,6 @@ export default function DrishteeLibrary() {
       </section>
 
       <LibraryFeatures />
-      <style>{`
-        .fw-black { font-weight: 900; }
-        .object-fit-cover { object-fit: cover; }
-        .transition-hover { transition: all 0.3s ease; }
-        .transition-hover:hover { transform: translateY(-5px); }
-        .hover-up { transition: all 0.3s ease; }
-        .hover-up:hover { transform: translateY(-8px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important; }
-        .transition-scale { transition: transform 0.3s ease; }
-        .hover-overlay { transition: all 0.3s ease; }
-        .hover-overlay:hover { background: rgba(0,0,0,0.5); }
-        .hover-overlay:hover .bi-zoom-in { opacity: 1 !important; }
-        .transition-opacity { transition: opacity 0.3s ease; }
-        .backdrop-blur { backdrop-filter: blur(10px); }
-        .animate-bounce {
-          animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .fade-up, .zoom-in, .slide-in-left, .slide-in-right {
-          opacity: 0;
-          transform: translateY(30px);
-          transition: all 0.6s ease;
-        }
-        .zoom-in { transform: scale(0.9); }
-        .slide-in-left { transform: translateX(-50px); }
-        .slide-in-right { transform: translateX(50px); }
-        .fade-up.show, .zoom-in.show, .slide-in-left.show, .slide-in-right.show {
-          opacity: 1;
-          transform: translate(0) scale(1);
-        }
-        .bg-gradient-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-      `}</style>
-    </div>
+    </main>
   );
 }
