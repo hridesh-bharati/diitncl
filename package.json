@@ -15,8 +15,9 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css,json}\""
   },
   "reactSnap": {
-    "inlineCss": true
-  },
+  "inlineCss": true,
+  "source": "dist"
+},
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@react-pdf/renderer": "^3.4.1",
