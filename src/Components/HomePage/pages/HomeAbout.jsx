@@ -8,28 +8,22 @@ export default function HomeAbout() {
 
         {/* Image Section */}
         <div className="col-lg-6 p-0">
-          {/* <img
-            src="images/vender/home1.webp"
-            alt="Drishtee Computer Center"
-            className="img-fluid w-100 h-100"
-            style={{ objectFit: "cover" }}
-          /> */}
           <img
-            src="about.webp"
+            src="images/vender/home.webp"
             className="img-fluid"
-            width="600"
-            height="400"
+            width="1200"
+            height="800"
             alt="Drishtee Computer Center"
           />
         </div>
 
         {/* Content Section */}
-        <div className="col-lg-6 bg-light d-flex flex-column justify-content-center p-4 p-lg-5">
+        <div className="col-lg-6 bg-light d-flex flex-column justify-content-center p-3">
 
           {/* Tag */}
           <div>
             <span
-              className="badge rounded-pill px-3 py-2 mb-3 bg-maroon-light text-maroon"
+              className="badge rounded-pill px-3 pb-2 mb-3 bg-maroon-light text-maroon"
               style={{ fontSize: "0.85rem" }}
             >
               Since 2007 • Nichlaul
@@ -70,7 +64,7 @@ export default function HomeAbout() {
           <div>
             <Link
               to="/about"
-              className="btn px-4 py-2 rounded-pill fw-semibold text-white bg-maroon"
+              className="btn px-4 py-2 rounded-pill fw-semibold text-white bg-maroon w-100"
             >
               Read More
             </Link>

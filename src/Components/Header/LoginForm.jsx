@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -16,31 +15,23 @@ import {
   doc,
   getDoc,
   setDoc,
+  onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
-
 
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginForm() {
   const { ADMIN_ALLOWED_EMAILS } = useAuth();
-
   const navigate = useNavigate();
 
   const [isAdmin, setIsAdmin] = useState(false);
-
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [isSignup, setIsSignup] = useState(false);
-
   const [forgotPassword, setForgotPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
 
   const COLORS = {
@@ -53,50 +44,90 @@ export default function LoginForm() {
   };
 
   /* =========================================================
-     AUTO LOGIN REDIRECT
+      REALTIME SESSION CHECK + AUTO REDIRECT (ANTI-MULTI DEVICE)
   ========================================================= */
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    let snapshotUnsubscribe = null;
+
+    const authUnsubscribe = auth.onAuthStateChanged(async (user) => {
       try {
-        if (!user) return;
-
-        const isAllowedAdmin =
-          ADMIN_ALLOWED_EMAILS?.includes(
-            user.email?.toLowerCase()
-          );
-
-        // Student email verification required
-        if (!user.emailVerified && !isAllowedAdmin) {
+        if (!user) {
+          if (snapshotUnsubscribe) {
+            snapshotUnsubscribe();
+            snapshotUnsubscribe = null;
+          }
           return;
         }
 
+        const isAllowedAdmin = ADMIN_ALLOWED_EMAILS?.includes(
+          user.email?.toLowerCase()
+        );
+
+        if (!user.emailVerified && !isAllowedAdmin) return;
+
         const userRef = doc(db, "users", user.uid);
 
-        const userSnap = await getDoc(userRef);
+        if (snapshotUnsubscribe) snapshotUnsubscribe();
 
-        if (!userSnap.exists()) return;
+        snapshotUnsubscribe = onSnapshot(userRef, async (snapshot) => {
+          try {
+            if (!snapshot.exists()) return;
 
-        const userData = userSnap.data();
+            const userData = snapshot.data();
+            const role = userData?.role;
 
-        const role = userData?.role;
+            /* =========================================================
+                STUDENT SINGLE DEVICE REALTIME FORCE LOGOUT
+            ========================================================= */
+            if (role === "student") {
+              const localSessionId = localStorage.getItem("current_session_id");
+              const serverSessionId = userData?.currentSessionId;
 
-        if (role === "admin") {
-          navigate("/admin", { replace: true });
-        } else {
-          navigate("/student/dashboard", {
-            replace: true,
-          });
-        }
+              if (serverSessionId && localSessionId && serverSessionId !== localSessionId) {
+                // Unsubscribe listener first to avoid trigger loop during signout
+                if (snapshotUnsubscribe) {
+                  snapshotUnsubscribe();
+                  snapshotUnsubscribe = null;
+                }
+
+                localStorage.removeItem("current_session_id");
+                await auth.signOut();
+
+                toast.warning("Logged out! Your account was logged in from another device.");
+                navigate("/", { replace: true });
+                return;
+              }
+            }
+
+            /* =========================================================
+                SAFE ROUTE REDIRECTS
+            ========================================================= */
+            const currentPath = window.location.pathname;
+
+            if (role === "admin" && currentPath !== "/admin") {
+              navigate("/admin", { replace: true });
+            }
+
+            if (role === "student" && currentPath !== "/student/dashboard") {
+              navigate("/student/dashboard", { replace: true });
+            }
+          } catch (err) {
+            console.error("Snapshot Process Error:", err);
+          }
+        });
       } catch (err) {
-        console.error(err);
+        console.error("Auth Watcher Error:", err);
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      if (authUnsubscribe) authUnsubscribe();
+      if (snapshotUnsubscribe) snapshotUnsubscribe();
+    };
   }, [navigate, ADMIN_ALLOWED_EMAILS]);
 
   /* =========================================================
-     LOGIN
+      LOGIN + NEW DEVICE TOKEN REPLACEMENT
   ========================================================= */
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -104,134 +135,94 @@ export default function LoginForm() {
     try {
       setLoading(true);
 
-      const userCred =
-        await signInWithEmailAndPassword(
-          auth,
-          email.toLowerCase(),
-          password
-        );
+      const userCred = await signInWithEmailAndPassword(
+        auth,
+        email.toLowerCase(),
+        password
+      );
 
       const user = userCred.user;
 
-      // Email verification check
       if (!user.emailVerified && !isAdmin) {
         await auth.signOut();
-
-        return toast.error(
-          "Please verify your email first."
-        );
+        return toast.error("Please verify your email first.");
       }
 
       const userRef = doc(db, "users", user.uid);
-
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
         await auth.signOut();
-
         throw new Error("Account data not found.");
       }
 
       const userData = userSnap.data();
-
       const role = userData?.role;
 
-      // Unauthorized role protection
-      if (
-        (isAdmin && role !== "admin") ||
-        (!isAdmin && role !== "student")
-      ) {
+      if ((isAdmin && role !== "admin") || (!isAdmin && role !== "student")) {
         await auth.signOut();
-
         throw new Error("Unauthorized access.");
       }
 
-
-
-
-
       /* =========================================================
-         SINGLE DEVICE LOGIN FOR STUDENTS
+          GENERATE NEW SESSION & REPLACE DEVICE TOKENS
       ========================================================= */
-
       if (role === "student") {
-        const sessionId =
-          Date.now().toString() +
-          Math.random()
-            .toString(36)
-            .substring(2);
+        const newSessionId = Date.now().toString() + Math.random().toString(36).substring(2);
 
-        localStorage.setItem(
-          "current_session_id",
-          sessionId
-        );
+        // Save local session immediately before database call
+        localStorage.setItem("current_session_id", newSessionId);
 
-        await setDoc(
-          doc(db, "users", user.uid),
-          {
-            lastLogin: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        const currentFcmToken = window.fcmToken || null;
+
+        const updatePayload = {
+          currentSessionId: newSessionId, // Overwrites old device sessions on snapshot
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+
+        // Old Token auto replacement checks
+        if (currentFcmToken) {
+          updatePayload.fcmToken = currentFcmToken;
+        }
+
+        await setDoc(userRef, updatePayload, { merge: true });
       }
 
       toast.success("Welcome back!");
-
-      navigate(
-        role === "admin"
-          ? "/admin"
-          : "/student/dashboard"
-      );
+      navigate(role === "admin" ? "/admin" : "/student/dashboard");
     } catch (error) {
       console.error(error);
-
-      toast.error(
-        error?.message || "Login failed"
-      );
+      toast.error(error?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================================================
-     SIGNUP
+      SIGNUP
   ========================================================= */
   const handleSignup = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      return toast.error(
-        "Passwords do not match"
-      );
+      return toast.error("Passwords do not match");
     }
 
-    if (
-      isAdmin &&
-      !ADMIN_ALLOWED_EMAILS.includes(
-        email.toLowerCase()
-      )
-    ) {
-      return toast.error(
-        "Unauthorized admin email"
-      );
+    if (isAdmin && !ADMIN_ALLOWED_EMAILS.includes(email.toLowerCase())) {
+      return toast.error("Unauthorized admin email");
     }
 
     try {
       setLoading(true);
 
-      const userCred =
-        await createUserWithEmailAndPassword(
-          auth,
-          email.toLowerCase(),
-          password
-        );
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        email.toLowerCase(),
+        password
+      );
 
       const user = userCred.user;
-
-      /* =========================================================
-         SAVE USER DATA
-      ========================================================= */
 
       await setDoc(doc(db, "users", user.uid), {
         email: email.toLowerCase(),
@@ -239,46 +230,27 @@ export default function LoginForm() {
         createdAt: serverTimestamp(),
       });
 
-      /* =========================================================
-         SEND VERIFICATION EMAIL
-      ========================================================= */
+      await sendEmailVerification(user);
 
-      await user.reload();
-      await sendEmailVerification(auth.currentUser);
-
-      toast.success(
-        "Account created successfully!"
-      );
-
-      toast.info(
-        "Verification email sent. Please check inbox."
-      );
+      toast.success("Account created successfully!");
+      toast.info("Verification email sent. Please check inbox.");
 
       await auth.signOut();
 
       setIsSignup(false);
-
       setEmail("");
-
       setPassword("");
-
       setConfirmPassword("");
     } catch (error) {
       console.error(error);
-
-      toast.error(
-        error?.message || "Signup failed"
-      );
+      toast.error(error?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================================================
-     FORGOT PASSWORD
-  ========================================================= */
-/* =========================================================
-     FORGOT PASSWORD (UPDATED & FIXED)
+      FORGOT PASSWORD
   ========================================================= */
   const handleForgotPassword = async (e) => {
     e.preventDefault();
@@ -289,16 +261,11 @@ export default function LoginForm() {
 
     try {
       setLoading(true);
-
-      // Sahi Firebase Auth function jo user ko reset link bhejta hai
       await sendPasswordResetEmail(auth, email.toLowerCase());
-
-      toast.success("Password reset email sent! Please check your inbox.");
-      
-      // Form state ko wapas login par le jayein
+      toast.success("Password reset email sent!");
       setForgotPassword(false);
     } catch (error) {
-      console.error("Reset Error:", error);
+      console.error(error);
       toast.error(error?.message || "Reset failed");
     } finally {
       setLoading(false);
@@ -313,10 +280,7 @@ export default function LoginForm() {
         background: COLORS.bgSoft,
       }}
     >
-      <div
-        className="w-100"
-        style={{ maxWidth: "420px" }}
-      >
+      <div className="w-100" style={{ maxWidth: "420px" }}>
         {/* LOGO */}
         <div className="text-center mb-3 mb-sm-4">
           <h2
@@ -324,19 +288,14 @@ export default function LoginForm() {
             style={{
               color: COLORS.blue,
               letterSpacing: "0.5px",
-              fontSize:
-                "calc(1.6rem + 0.6vw)",
+              fontSize: "calc(1.6rem + 0.6vw)",
             }}
           >
             DRISHTEE
           </h2>
-
           <small
             className="text-muted text-uppercase fw-bold d-block mt-1"
-            style={{
-              fontSize: "11px",
-              letterSpacing: "1.5px",
-            }}
+            style={{ fontSize: "11px", letterSpacing: "1.5px" }}
           >
             Verified Education Portal
           </small>
@@ -344,7 +303,6 @@ export default function LoginForm() {
 
         {/* CARD */}
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-          {/* TOP TOGGLE */}
           <div className="d-flex p-2 bg-white border-bottom">
             <button
               type="button"
@@ -355,13 +313,8 @@ export default function LoginForm() {
               }}
               className="flex-fill py-2 border-0 rounded-3 fw-bold"
               style={{
-                color: !isAdmin
-                  ? COLORS.blue
-                  : "#6c757d",
-
-                backgroundColor: !isAdmin
-                  ? COLORS.blueLight
-                  : "transparent",
+                color: !isAdmin ? COLORS.blue : "#6c757d",
+                backgroundColor: !isAdmin ? COLORS.blueLight : "transparent",
               }}
             >
               Student
@@ -376,20 +329,14 @@ export default function LoginForm() {
               }}
               className="flex-fill py-2 border-0 rounded-3 fw-bold"
               style={{
-                color: isAdmin
-                  ? COLORS.blue
-                  : "#6c757d",
-
-                backgroundColor: isAdmin
-                  ? COLORS.blueLight
-                  : "transparent",
+                color: isAdmin ? COLORS.blue : "#6c757d",
+                backgroundColor: isAdmin ? COLORS.blueLight : "transparent",
               }}
             >
               Admin
             </button>
           </div>
 
-          {/* BODY */}
           <div className="card-body p-4">
             <div className="text-center mb-4">
               <h4 className="fw-bold">
@@ -412,23 +359,17 @@ export default function LoginForm() {
             >
               {/* EMAIL */}
               <div className="mb-3">
-                <label className="small fw-bold mb-1">
-                  EMAIL
-                </label>
-
+                <label className="small fw-bold mb-1">EMAIL</label>
                 <div className="input-group border rounded-3">
                   <span className="input-group-text bg-transparent border-0">
                     <i className="bi bi-envelope"></i>
                   </span>
-
                   <input
                     type="email"
                     className="form-control border-0 shadow-none"
                     placeholder="Enter email"
                     value={email}
-                    onChange={(e) =>
-                      setEmail(e.target.value)
-                    }
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -438,18 +379,10 @@ export default function LoginForm() {
               {!forgotPassword && (
                 <div className="mb-3">
                   <div className="d-flex justify-content-between mb-1">
-                    <label className="small fw-bold">
-                      PASSWORD
-                    </label>
-
+                    <label className="small fw-bold">PASSWORD</label>
                     <small
-                      style={{
-                        cursor: "pointer",
-                        color: COLORS.blue,
-                      }}
-                      onClick={() =>
-                        setForgotPassword(true)
-                      }
+                      style={{ cursor: "pointer", color: COLORS.blue }}
+                      onClick={() => setForgotPassword(true)}
                     >
                       Forgot?
                     </small>
@@ -459,39 +392,20 @@ export default function LoginForm() {
                     <span className="input-group-text bg-transparent border-0">
                       <i className="bi bi-lock"></i>
                     </span>
-
                     <input
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       className="form-control border-0 shadow-none"
                       placeholder="Enter password"
                       value={password}
-                      onChange={(e) =>
-                        setPassword(e.target.value)
-                      }
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
-
                     <span
                       className="input-group-text bg-transparent border-0"
-                      style={{
-                        cursor: "pointer",
-                      }}
-                      onClick={() =>
-                        setShowPassword(
-                          !showPassword
-                        )
-                      }
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      <i
-                        className={`bi ${showPassword
-                          ? "bi-eye-slash"
-                          : "bi-eye"
-                          }`}
-                      />
+                      <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
                     </span>
                   </div>
                 </div>
@@ -500,32 +414,23 @@ export default function LoginForm() {
               {/* CONFIRM PASSWORD */}
               {isSignup && !forgotPassword && (
                 <div className="mb-3">
-                  <label className="small fw-bold mb-1">
-                    CONFIRM PASSWORD
-                  </label>
-
+                  <label className="small fw-bold mb-1">CONFIRM PASSWORD</label>
                   <div className="input-group border rounded-3">
                     <span className="input-group-text bg-transparent border-0">
                       <i className="bi bi-check-circle"></i>
                     </span>
-
                     <input
                       type="password"
                       className="form-control border-0 shadow-none"
                       placeholder="Confirm password"
                       value={confirmPassword}
-                      onChange={(e) =>
-                        setConfirmPassword(
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                     />
                   </div>
                 </div>
               )}
 
-              {/* BUTTON */}
               <button
                 type="submit"
                 disabled={loading}
@@ -547,41 +452,30 @@ export default function LoginForm() {
               </button>
             </form>
 
-            {/* BOTTOM */}
             <div className="text-center mt-4">
               {forgotPassword ? (
                 <button
                   className="btn btn-link text-decoration-none"
-                  onClick={() =>
-                    setForgotPassword(false)
-                  }
+                  onClick={() => setForgotPassword(false)}
                 >
                   Back to Login
                 </button>
               ) : (
                 <>
                   <small className="text-muted">
-                    {isSignup
-                      ? "Already have account?"
-                      : "New here?"}
+                    {isSignup ? "Already have account?" : "New here?"}
                   </small>
-
                   <button
                     className="btn btn-link text-decoration-none"
-                    onClick={() =>
-                      setIsSignup(!isSignup)
-                    }
+                    onClick={() => setIsSignup(!isSignup)}
                   >
-                    {isSignup
-                      ? "Login"
-                      : "Create Account"}
+                    {isSignup ? "Login" : "Create Account"}
                   </button>
                 </>
               )}
             </div>
           </div>
 
-          {/* FOOTER */}
           <div className="bg-light text-center p-3 border-top">
             <small className="text-muted">
               <i className="bi bi-shield-lock-fill me-1"></i>

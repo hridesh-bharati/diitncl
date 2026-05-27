@@ -56,6 +56,8 @@ const AdminRoutes = lazy(() => import("./AdminComponents/AdminRoutes"));
 const StudentRoutes = lazy(() => import("./StudentComponents/StudentRoutes"));
 const PageNotFound = lazy(() => import("./Components/HomePage/pages/PageNotFound"));
 
+
+
 export default function App() {
   const location = useLocation();
 
@@ -194,10 +196,12 @@ export default function App() {
               <Route path="/courses/banking" element={<HelmetManager><Banking /></HelmetManager>} />
 
               {/* Legal */}
-              <Route path="/terms" element={<HelmetManager><Term /></HelmetManager>} />
+              <Route path="/terms-conditions" element={<HelmetManager><Term /></HelmetManager>} />
               <Route path="/privacy-policy" element={<HelmetManager><PrivacyPolicy /></HelmetManager>} />
-              <Route path="/faq" element={<HelmetManager><FAQ /></HelmetManager>} />
+              <Route path="/faqs" element={<HelmetManager><FAQ /></HelmetManager>} />
               <Route path="/disclaimer" element={<HelmetManager><Discription /></HelmetManager>} />
+
+
 
               <Route
                 path="/admin/*"

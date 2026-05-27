@@ -1,109 +1,125 @@
-import React from "react";
+import React, { memo } from "react";
 import { Link } from "react-router-dom";
 
-const footerData = {
+// Data ko component se bahar rakha hai taaki har render par ye recreate na ho (Memory optimization)
+const FOOTER_DATA = {
   brand: {
     name: "DRISHTEE COMPUTER CENTRE",
     cert: "ISO 9001:2015 Certified",
+    regNo: "Regd. No: IN-UP874921029384V",
+    ministry: "Recognized by Govt. of India",
     tagline: "Empowering youth through Digital Literacy & Vocational Excellence."
   },
-  links: [
+  exploreLinks: [
     { name: "Home", path: "/" },
     { name: "About Center", path: "/about" },
     { name: "Our Courses", path: "/courses" },
     { name: "Verify Certificate", path: "/download-certificate" },
-    { name: "Student Support", path: "/contact-us" },
-    { name: "Privacy Policy", path: "/privacy-policy" }
+    { name: "Student Support", path: "/contact-us" }
+  ],
+  legalLinks: [
+    { name: "Privacy Policy", path: "/privacy-policy" },
+    { name: "Terms & Conditions", path: "/terms-conditions" },
+    { name: "FAQs", path: "/faqs" },
+    { name: "Disclaimer", path: "/disclaimer" },
+    { name: "Student Grievance", path: "/contact-us" }
   ],
   helpline: [
     { label: "Admin Office", num: "9918151032", icon: "bi-building" },
     { label: "Technical Support", num: "7267995307", icon: "bi-headset" }
   ],
-  socials: [
-    { icon: "bi-whatsapp", url: "https://wa.me/919918151032", color: "#25D366" },
-    { icon: "bi-facebook", url: "#", color: "#1877F2" },
-    { icon: "bi-youtube", url: "#", color: "#FF0000" },
-    { icon: "bi-instagram", url: "#", color: "#E4405F" }
-  ]
+  address: "Main Road, Near Head Post Office, Gorakhpur, UP - 273001",
 };
 
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
+// Current year ko global scope me calculate kiya taaki re-renders me load na pade
+const CURRENT_YEAR = new Date().getFullYear();
 
+const Footer = () => {
   return (
     <footer className="text-white pt-5" style={{ backgroundColor: "#0f172a" }}>
-      <div className="pb-5 pb-lg-0 mb-lg-0 pb-l">
+      <div className="pb-5 pb-lg-0 mb-lg-0">
         <div className="container">
           <div className="row g-4 pb-5">
 
-            {/* Brand Profile */}
-            <div className="col-lg-4 col-md-12">
+            {/* Brand Profile & Authorisation */}
+            <section className="col-lg-4 col-md-12" aria-labelledby="footer-brand-name">
               <div className="mb-4">
-               
-                <h4 className="fw-bold mb-1 tracking-tight">{footerData.brand.name}</h4>
-                <span className="badge bg-warning text-dark mb-3">{footerData.brand.cert}</span>
-                <p className="text-white-50 small pe-lg-5" style={{ lineHeight: "1.7" }}>
-                  {footerData.brand.tagline} Join us to bridge the gap between education and employability.
+                {/* Heading hierarchy sudhari (h2 for screen readers/SEO) */}
+                <h2 id="footer-brand-name" className="h4 fw-bold mb-1 tracking-tight">
+                  {FOOTER_DATA.brand.name}
+                </h2>
+                <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
+                  <span className="badge bg-warning text-dark">{FOOTER_DATA.brand.cert}</span>
+                  <small className="text-white-50 border-start ps-2 border-secondary" style={{ fontSize: '12px' }}>
+                    {FOOTER_DATA.brand.regNo}
+                  </small>
+                </div>
+                <p className="text-white-50 small pe-lg-5 mb-3" style={{ lineHeight: "1.7" }}>
+                  {FOOTER_DATA.brand.tagline} {FOOTER_DATA.brand.ministry}.
                 </p>
+                {/* Semantic <address> tag for local SEO */}
+                <address className="text-white-50 small d-flex align-items-start mt-2 fst-normal">
+                  <i className="bi bi-geo-alt-fill text-warning me-2 mt-1" aria-hidden="true"></i>
+                  <span>{FOOTER_DATA.address}</span>
+                </address>
               </div>
-
-            </div>
+            </section>
 
             {/* Quick Navigation */}
-            <div className="col-lg-3 col-md-4 col-6">
-              <h6 className="text-uppercase fw-bold mb-4 text-warning small tracking-widest">Explore</h6>
+            <nav className="col-lg-2 col-md-4 col-6" aria-label="Quick Links">
+              <h3 className="h6 text-uppercase fw-bold mb-4 text-warning tracking-widest">Explore</h3>
               <ul className="list-unstyled">
-                {footerData.links.map((link) => (
+                {FOOTER_DATA.exploreLinks.map((link) => (
                   <li key={link.path} className="mb-2">
                     <Link
                       to={link.path}
                       className="text-decoration-none text-white-50 hover-text-white transition-all d-flex align-items-center"
                     >
-                      <i className="bi bi-arrow-right-short me-1"></i> {link.name}
+                      <i className="bi bi-arrow-right-short me-1" aria-hidden="true"></i> {link.name}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
 
-            {/* Support Section with Glassmorphism */}
-            <div className="col-lg-5 col-md-8">
-              <h6 className="text-uppercase fw-bold mb-4 text-warning small">Contact Support</h6>
-              <div className="row g-3">
-                {footerData.helpline.map((item, i) => (
-                  <div className="col-sm-6" key={i}>
-                    <a href={`tel:${item.num}`} className="text-decoration-none group">
-                      <div className="p-3 border border-secondary rounded-3 ">
-                        <div className="d-flex align-items-center mb-2">
-                          <i className={`bi ${item.icon} text-warning me-2 fs-5`}></i>
-                          <span className="small text-white-50 fw-medium">{item.label}</span>
+            {/* Legal & Authorised Links */}
+            <nav className="col-lg-2 col-md-4 col-6" aria-label="Legal Links">
+              <h3 className="h6 text-uppercase fw-bold mb-4 text-warning tracking-widest">Legal & FAQ</h3>
+              <ul className="list-unstyled">
+                {FOOTER_DATA.legalLinks.map((link) => (
+                  <li key={link.path} className="mb-2">
+                    <Link
+                      to={link.path}
+                      className="text-decoration-none text-white-50 hover-text-white transition-all d-flex align-items-center"
+                    >
+                      <i className="bi bi-shield-check me-2 text-white-20" style={{ fontSize: '12px' }} aria-hidden="true"></i> {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Support Section & Socials */}
+            <section className="col-lg-4 col-md-4 col-12" aria-label="Contact and Socials">
+              <h3 className="h6 text-uppercase fw-bold mb-4 text-warning">Contact Support</h3>
+              <div className="row g-3 mb-4">
+                {FOOTER_DATA.helpline.map((item) => (
+                  <div className="col-12" key={item.num}>
+                    <a href={`tel:${item.num}`} className="text-decoration-none group" aria-label={`Call ${item.label} at +91 ${item.num}`}>
+                      <div className="p-2 px-3 border border-secondary rounded-3">
+                        <div className="d-flex align-items-center">
+                          <i className={`bi ${item.icon} text-warning me-3 fs-5`} aria-hidden="true"></i>
+                          <div>
+                            <span className="d-block small text-white-50 fw-medium" style={{ fontSize: '11px' }}>{item.label}</span>
+                            <span className="fw-bold text-white tracking-wide">+91 {item.num}</span>
+                          </div>
                         </div>
-                        <div className="fw-bold text-white tracking-wide">+91 {item.num}</div>
                       </div>
                     </a>
                   </div>
                 ))}
-                {/* Social Icons */}
-                <div className="d-flex gap-2">
-                  {footerData.socials.map((soc, idx) => (
-                    <a
-                      key={idx}
-                      href={soc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-sm border rounded-circle border-opacity-10 bg-light">
-                      <i
-                        className={`bi ${soc.icon}`}
-                        style={{
-                          color: soc.color,
-                          fontSize: '1.2rem'
-                        }}
-                      ></i>
-                    </a>
-                  ))}
-                </div>
               </div>
-            </div>
+            </section>
 
           </div>
 
@@ -112,7 +128,7 @@ export default function Footer() {
             <div className="row align-items-center g-3">
               <div className="col-md-6 text-center text-md-start">
                 <p className="mb-0 text-white-50 small">
-                  © {currentYear} <span className="text-white fw-semibold">DIIT CENTER</span>.
+                  © {CURRENT_YEAR} <span className="text-white fw-semibold">DIIT CENTER</span>. All Rights Reserved.
                 </p>
               </div>
               <div className="col-md-6 text-center text-md-end">
@@ -123,14 +139,17 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        {/* Modern Version Badge */}
+
+        {/* Version Badge */}
         <div className="py-2 mb-5 mb-lg-0 text-center">
-          <span style={{ fontSize: '11px', letterSpacing: '1px',backgroundColor: "#020617" }} className="text-uppercase opacity-50 px-4 py-2 rounded-4 text-white">
-            Build v {__APP_VERSION__} • Stable Release 
-          </span>
+          <small style={{ fontSize: '11px', letterSpacing: '1px', backgroundColor: "#020617" }} className="text-uppercase opacity-50 px-4 py-2 rounded-4 text-white d-inline-block">
+            Build v 1.0.0 • Stable Release
+          </small>
         </div>
 
       </div>
     </footer>
   );
-}
+};
+
+export default memo(Footer);
