@@ -28,13 +28,6 @@ const PORTALS = [
   { n: "App", i: "bi-phone-vibrate", l: "/base.apk", g: "linear-gradient(135deg, #373b44, #4286f4)", d: true }
 ];
 
-// Clean HTML5 Skeleton Loader for smooth structural transitions
-const SectionPlaceholder = () => (
-  <div className="container py-4 text-center placeholder-glow" aria-hidden="true">
-    <div className="placeholder col-8 rounded mb-3" style={{ height: "30px" }}></div>
-    <div className="placeholder col-5 rounded" style={{ height: "15px" }}></div>
-  </div>
-);
 
 const PortalItem = memo(({ it }) => {
   const isDownload = it.d;
@@ -125,7 +118,7 @@ function Home() {
       </nav>
 
       {/* ================= DEFERRED CONTENT (Everything Below Portal is Lazy Loaded) ================= */}
-      <Suspense fallback={<SectionPlaceholder />}>
+      <Suspense fallback={null}>
         <StatsSection />
         <HomeAbout />
         <Features />

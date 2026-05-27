@@ -8,11 +8,18 @@ export default function HomeAbout() {
 
         {/* Image Section */}
         <div className="col-lg-6 p-0">
-          <img
-            src="images/vender/home2.png"
+          {/* <img
+            src="images/vender/home1.webp"
             alt="Drishtee Computer Center"
             className="img-fluid w-100 h-100"
             style={{ objectFit: "cover" }}
+          /> */}
+          <img
+            src="about.webp"
+            className="img-fluid"
+            width="600"
+            height="400"
+            alt="Drishtee Computer Center"
           />
         </div>
 

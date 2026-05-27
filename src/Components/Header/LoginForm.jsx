@@ -243,7 +243,8 @@ export default function LoginForm() {
          SEND VERIFICATION EMAIL
       ========================================================= */
 
-      await sendEmailVerification(user);
+      await user.reload();
+      await sendEmailVerification(auth.currentUser);
 
       toast.success(
         "Account created successfully!"
@@ -276,34 +277,29 @@ export default function LoginForm() {
   /* =========================================================
      FORGOT PASSWORD
   ========================================================= */
+/* =========================================================
+     FORGOT PASSWORD (UPDATED & FIXED)
+  ========================================================= */
   const handleForgotPassword = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      return toast.error(
-        "Please enter your email address"
-      );
+      return toast.error("Please enter your email address");
     }
 
     try {
       setLoading(true);
 
-      await sendPasswordResetEmail(
-        auth,
-        email.toLowerCase()
-      );
+      // Sahi Firebase Auth function jo user ko reset link bhejta hai
+      await sendPasswordResetEmail(auth, email.toLowerCase());
 
-      toast.success(
-        "Password reset email sent!"
-      );
-
+      toast.success("Password reset email sent! Please check your inbox.");
+      
+      // Form state ko wapas login par le jayein
       setForgotPassword(false);
     } catch (error) {
-      console.error(error);
-
-      toast.error(
-        error?.message || "Reset failed"
-      );
+      console.error("Reset Error:", error);
+      toast.error(error?.message || "Reset failed");
     } finally {
       setLoading(false);
     }
@@ -492,8 +488,8 @@ export default function LoginForm() {
                     >
                       <i
                         className={`bi ${showPassword
-                            ? "bi-eye-slash"
-                            : "bi-eye"
+                          ? "bi-eye-slash"
+                          : "bi-eye"
                           }`}
                       />
                     </span>

@@ -84,7 +84,7 @@ const About = () => {
             </div>
             <div className="col-lg-5 d-none d-lg-block zoom-in">
               <div className="bg-white rounded-4 p-2 shadow-lg">
-                <img src="/images/vender/homepic.webp" alt="Drishtee Computer Center Advanced IT Lab" className="img-fluid rounded-3" />
+                <img src="/images/vender/home.webp" alt="Drishtee Computer Center Advanced IT Lab" className="img-fluid rounded-3" />
               </div>
             </div>
           </div>
