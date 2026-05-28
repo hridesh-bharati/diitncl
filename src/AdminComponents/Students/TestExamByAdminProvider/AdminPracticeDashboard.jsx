@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function AdminPracticeDashboard() {
     const cards = [
         {
-            title: "Upload Test",
+            title: "Upload Test and Assign",
             path: "/admin/practice-tests/upload",  
             icon: "bi-upload",
             color: "primary",

@@ -1,8 +1,16 @@
 // src\AdminComponents\Admissions\AdmissionProvider.jsx
-import { useEffect, useState, useMemo } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { toast } from "react-toastify";
+
+const AdmissionContext = createContext(null);
+
+export function useAdmissions() {
+  const context = useContext(AdmissionContext);
+  if (!context) throw new Error("useAdmissions must be used within an AdmissionProvider");
+  return context;
+}
 
 export default function AdmissionProvider({ children }) {
   const [admissions, setAdmissions] = useState([]);
@@ -11,10 +19,7 @@ export default function AdmissionProvider({ children }) {
 
   useEffect(() => {
     let isMounted = true;
-    const q = query(
-      collection(db, "admissions"),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(collection(db, "admissions"), orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(q,
       (snap) => {
@@ -39,8 +44,7 @@ export default function AdmissionProvider({ children }) {
 
   const updateAdmission = async (id, updatedData) => {
     try {
-      const docRef = doc(db, "admissions", id);
-      await updateDoc(docRef, updatedData);
+      await updateDoc(doc(db, "admissions", id), updatedData);
     } catch (err) {
       console.error("Update Error:", err);
       toast.error("Database update failed");
@@ -66,5 +70,9 @@ export default function AdmissionProvider({ children }) {
     deleteAdmission
   }), [admissions, loading, error]);
 
-  return typeof children === "function" ? children(value) : children;
+  return (
+    <AdmissionContext.Provider value={value}>
+      {typeof children === "function" ? children(value) : children}
+    </AdmissionContext.Provider>
+  );
 }

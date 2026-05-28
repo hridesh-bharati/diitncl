@@ -10,14 +10,15 @@ export default function AdminLayout() {
   const { counts } = useAdminCounts();
 
   const navItems = [
-    { icon: "bi-house-fill", label: "Home", count: 0, link: "/" },
+    { icon: "bi-house", label: "Home", count: 0, link: "/" },
     { icon: "bi-speedometer2", label: "Dashboard", count: 0, link: "/admin" },
-    { icon: "bi-calendar-check-fill", label: "New Adm", count: counts.today, link: "/admin/students" },
-    { icon: "bi-people-fill", label: "Students", count: counts.total, link: "/admin/admitted-student-list" },
-    { icon: "bi-file-text-fill", label: "Main Exams", count: counts.exams, link: "/admin/exams" },
-    { icon: "bi-journal-text", label: "Test Paper", count: 0, link: "/admin/practice-tests" },
-    { icon: "bi-chat-dots-fill", label: "Queries", count: counts.queries, link: "/admin/clients-contacts" },
-    { icon: "bi-clipboard-check", label: "Attendance", count: 0, link: "/admin/students/attendance" },
+    { icon: "bi-person-plus", label: "New Adm", count: counts.today, link: "/admin/students" },
+    { icon: "bi-people", label: "Students", count: counts.total, link: "/admin/admitted-student-list" },
+    { icon: "bi-journal-check", label: "Main Exams", count: counts.exams, link: "/admin/exams" },
+    { icon: "bi-pencil-square", label: "Test Paper", count: 0, link: "/admin/practice-tests" },
+    { icon: "bi-chat-left-text", label: "Queries", count: counts.queries, link: "/admin/clients-contacts" },
+    { icon: "bi-calendar2-check", label: "Attendance", count: 0, link: "/admin/students/attendance" },
+    { icon: "bi-file-earmark-arrow-up", label: "Notes", count: 0, link: "/admin/upload-notes" },
   ];
 
   return (

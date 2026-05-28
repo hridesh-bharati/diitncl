@@ -7,7 +7,6 @@ import { auth, db } from "../../firebase/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   sendPasswordResetEmail,
 } from "firebase/auth";
 
@@ -20,6 +19,9 @@ import {
 } from "firebase/firestore";
 
 import { useAuth } from "../../contexts/AuthContext";
+
+// Email Normalizer Function ko component se bahar rakha taaki render loops na baje
+const normalizeEmail = (value) => value.trim().toLowerCase();
 
 export default function LoginForm() {
   const { ADMIN_ALLOWED_EMAILS } = useAuth();
@@ -44,12 +46,12 @@ export default function LoginForm() {
   };
 
   /* =========================================================
-      REALTIME SESSION CHECK + AUTO REDIRECT (ANTI-MULTI DEVICE)
+      REALTIME SESSION CHECK + AUTO LOGOUT OLD DEVICE
   ========================================================= */
   useEffect(() => {
     let snapshotUnsubscribe = null;
 
-    const authUnsubscribe = auth.onAuthStateChanged(async (user) => {
+    const authUnsubscribe = auth.onAuthStateChanged((user) => {
       try {
         if (!user) {
           if (snapshotUnsubscribe) {
@@ -59,16 +61,11 @@ export default function LoginForm() {
           return;
         }
 
-        const isAllowedAdmin = ADMIN_ALLOWED_EMAILS?.includes(
-          user.email?.toLowerCase()
-        );
-
-        if (!user.emailVerified && !isAllowedAdmin) return;
-
         const userRef = doc(db, "users", user.uid);
 
         if (snapshotUnsubscribe) snapshotUnsubscribe();
 
+        // Realtime listener active kiya
         snapshotUnsubscribe = onSnapshot(userRef, async (snapshot) => {
           try {
             if (!snapshot.exists()) return;
@@ -80,11 +77,12 @@ export default function LoginForm() {
                 STUDENT SINGLE DEVICE REALTIME FORCE LOGOUT
             ========================================================= */
             if (role === "student") {
+              // Har db update snapshot par local storage ko fresh read kiya jata hai
               const localSessionId = localStorage.getItem("current_session_id");
               const serverSessionId = userData?.currentSessionId;
 
+              // FIXED SAFE CONDITION: Dono valid tokens hone chahiye aur unmatched hone chahiye
               if (serverSessionId && localSessionId && serverSessionId !== localSessionId) {
-                // Unsubscribe listener first to avoid trigger loop during signout
                 if (snapshotUnsubscribe) {
                   snapshotUnsubscribe();
                   snapshotUnsubscribe = null;
@@ -93,7 +91,7 @@ export default function LoginForm() {
                 localStorage.removeItem("current_session_id");
                 await auth.signOut();
 
-                toast.warning("Logged out! Your account was logged in from another device.");
+                toast.warning("Logged out! Aapka account kisi dusre device mein login hua hai.");
                 navigate("/", { replace: true });
                 return;
               }
@@ -124,7 +122,7 @@ export default function LoginForm() {
       if (authUnsubscribe) authUnsubscribe();
       if (snapshotUnsubscribe) snapshotUnsubscribe();
     };
-  }, [navigate, ADMIN_ALLOWED_EMAILS]);
+  }, [navigate]);
 
   /* =========================================================
       LOGIN + NEW DEVICE TOKEN REPLACEMENT
@@ -132,21 +130,18 @@ export default function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    const normalizedEmail = normalizeEmail(email);
+
     try {
       setLoading(true);
 
       const userCred = await signInWithEmailAndPassword(
         auth,
-        email.toLowerCase(),
+        normalizedEmail,
         password
       );
 
       const user = userCred.user;
-
-      if (!user.emailVerified && !isAdmin) {
-        await auth.signOut();
-        return toast.error("Please verify your email first.");
-      }
 
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
@@ -165,27 +160,21 @@ export default function LoginForm() {
       }
 
       /* =========================================================
-          GENERATE NEW SESSION & REPLACE DEVICE TOKENS
+          GENERATE NEW SESSION (PURANA DEVICE AUTO LOGOUT HOGA)
       ========================================================= */
       if (role === "student") {
         const newSessionId = Date.now().toString() + Math.random().toString(36).substring(2);
 
-        // Save local session immediately before database call
+        // STEP 1: Sabse pehle local storage me lock save hoga
         localStorage.setItem("current_session_id", newSessionId);
 
-        const currentFcmToken = window.fcmToken || null;
-
         const updatePayload = {
-          currentSessionId: newSessionId, // Overwrites old device sessions on snapshot
+          currentSessionId: newSessionId, // Yeh data push hote hi purana device catch karega aur drop ho jayega
           lastLogin: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
 
-        // Old Token auto replacement checks
-        if (currentFcmToken) {
-          updatePayload.fcmToken = currentFcmToken;
-        }
-
+        // STEP 2: Ab firestore update query call hogi
         await setDoc(userRef, updatePayload, { merge: true });
       }
 
@@ -200,16 +189,18 @@ export default function LoginForm() {
   };
 
   /* =========================================================
-      SIGNUP
+      SIGNUP (Bina email verification link ke)
   ========================================================= */
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    const normalizedEmail = normalizeEmail(email);
 
     if (password !== confirmPassword) {
       return toast.error("Passwords do not match");
     }
 
-    if (isAdmin && !ADMIN_ALLOWED_EMAILS.includes(email.toLowerCase())) {
+    if (isAdmin && !ADMIN_ALLOWED_EMAILS.includes(normalizedEmail)) {
       return toast.error("Unauthorized admin email");
     }
 
@@ -218,22 +209,20 @@ export default function LoginForm() {
 
       const userCred = await createUserWithEmailAndPassword(
         auth,
-        email.toLowerCase(),
+        normalizedEmail,
         password
       );
 
       const user = userCred.user;
 
       await setDoc(doc(db, "users", user.uid), {
-        email: email.toLowerCase(),
+        email: normalizedEmail,
         role: isAdmin ? "admin" : "student",
         createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(), 
       });
 
-      await sendEmailVerification(user);
-
-      toast.success("Account created successfully!");
-      toast.info("Verification email sent. Please check inbox.");
+      toast.success("Account created successfully! You can login now.");
 
       await auth.signOut();
 
@@ -255,13 +244,15 @@ export default function LoginForm() {
   const handleForgotPassword = async (e) => {
     e.preventDefault();
 
-    if (!email) {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
       return toast.error("Please enter your email address");
     }
 
     try {
       setLoading(true);
-      await sendPasswordResetEmail(auth, email.toLowerCase());
+      await sendPasswordResetEmail(auth, normalizedEmail);
       toast.success("Password reset email sent!");
       setForgotPassword(false);
     } catch (error) {

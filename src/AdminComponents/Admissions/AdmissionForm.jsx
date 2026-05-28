@@ -5,23 +5,27 @@ import {
     doc,
     getDoc,
     setDoc,
-    collection,
-    serverTimestamp,
-    query,
-    where,
-    getDocs
+    serverTimestamp
 } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { staticCourses } from "../../Components/HomePage/pages/Course/courseData";
 import { sendEmailNotification, adminAdmissionAlertTemplate } from "../../services/emailService";
-
 import { ADMIN_ALLOWED_EMAILS } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
-
+import "./AdmissionForm.css";
 const BRANCHES = [
     { id: "DIIT124", name: "DIIT124 - Main Branch" },
     { id: "DIIT125", name: "DIIT125 - East Branch" }
 ];
+
+// ✅ Section Heading Component (Defined at Top to prevent Hoisting Issues)
+const SectionHeading = ({ icon, title }) => (
+    <div className="section-heading-bar shadow-sm">
+        <h6 className="m-0 fw-bold d-flex align-items-center" style={{ color: "#001529", fontSize: '15px' }}>
+            <span className="me-2 text-primary">{icon}</span> {title}
+        </h6>
+    </div>
+);
 
 // ✅ Convert YYYY-MM-DD to DD/MM/YY
 const formatToDDMMYY = (dateString) => {
@@ -180,7 +184,7 @@ export default function AdmissionForm() {
             }
             await setDoc(docRef, finalData);
 
-            // Notify Admins via Email
+            // Notify Admins via Email Securely
             try {
                 await Promise.all(
                     ADMIN_ALLOWED_EMAILS.map(adminEmail =>
@@ -228,7 +232,8 @@ export default function AdmissionForm() {
                                 <tbody>
                                     <tr>
                                         <th width="40%">Application ID:</th>
-                                        <td className="fw-bold text-primary">{submittedData.applicationId}</td>                                    </tr>
+                                        <td className="fw-bold text-primary">{submittedData.applicationId}</td>
+                                    </tr>
                                     <tr>
                                         <th>Study Center:</th>
                                         <td>{submittedData.branch}</td>
@@ -412,7 +417,9 @@ export default function AdmissionForm() {
                                         </label>
                                     </div>
                                     <span className="fw-bold text-muted small">STUDENT PHOTO (MAX 50KB)</span> <br />
-                                    <Link to="/photo-editor?mode=admission">Edit</Link>
+                                    <Link to="/photo-editor?mode=admission" className="btn btn-sm btn-warning w-100">
+                                        Resize Picture
+                                    </Link>
                                 </div>
                             </div>
 
@@ -479,10 +486,7 @@ export default function AdmissionForm() {
                                     </select>
                                 </div>
                                 <div className="col-md-4">
-                                    <label className="gov-label">
-                                        Aadhar Number <span className="text-muted">(Optional)</span>
-                                    </label>
-
+                                    <label className="gov-label">Aadhar Number <span className="text-muted">(Optional)</span></label>
                                     <input
                                         type="text"
                                         className="form-control gov-input"
@@ -490,7 +494,8 @@ export default function AdmissionForm() {
                                         value={form.aadharNo}
                                         onChange={handleChange}
                                         maxLength="12"
-                                        placeholder="Enter 12 digit Aadhar (optional)"
+                                        inputMode="numeric"
+                                        placeholder="Enter 12 digit Aadhar"
                                     />
                                 </div>
                                 <div className="col-md-6">
@@ -539,6 +544,7 @@ export default function AdmissionForm() {
                                             value={form.mobile}
                                             onChange={handleChange}
                                             maxLength="10"
+                                            inputMode="numeric"
                                             placeholder="10 Digit Mobile No."
                                             required
                                         />
@@ -573,6 +579,7 @@ export default function AdmissionForm() {
                                         value={form.pincode}
                                         onChange={handleChange}
                                         maxLength="6"
+                                        inputMode="numeric"
                                         placeholder="Enter Pincode"
                                         required
                                     />
@@ -695,67 +702,6 @@ export default function AdmissionForm() {
                 </div>
             </div>
 
-            <style>{`
-                .admission-bg { background: #e9ecef; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
-                .admission-card { border-radius: 12px; overflow: hidden; border: none; }
-                
-                .gov-header { background: #001529; color: white; border-bottom: 6px solid #f57c00; }
-                .main-title { font-size: 1.5rem; letter-spacing: 1px; }
-                .sub-title { font-size: 0.75rem; color: #ffca28; }
-                .form-tagline { background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 10px; font-weight: 600; display: inline-block; }
-
-                .section-heading-bar { 
-                    background: #f8f9fa; 
-                    border-left: 5px solid #001529; 
-                    padding: 12px 15px; 
-                    margin-bottom: 20px; 
-                    border-radius: 0 4px 4px 0;
-                }
-                
-                .gov-label { font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.3px; }
-                .gov-input { border-radius: 5px; border: 1px solid #ced4da; padding: 10px; font-size: 14px; transition: 0.3s; }
-                .gov-input:focus { border-color: #001529; box-shadow: 0 0 0 0.2rem rgba(0,21,41,0.25); }
-                .input-group-text { border: 1px solid #ced4da; border-right: none; }
-                .highlight-box { border: 2px solid #001529 !important; }
-
-                .photo-frame { width: 140px; height: 170px; border: 2px solid #001529; position: relative; background: #fdfdfd; padding: 5px; }
-                .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
-                .upload-icon { position: absolute; bottom: -10px; right: -10px; background: #f57c00; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #fff; transition: 0.3s; }
-                .upload-icon:hover { background: #ff9800; transform: scale(1.1); }
-
-                .declaration-box { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; }
-                .btn-final-submit { background: #001529; color: white; border: none; padding: 15px; font-weight: bold; font-size: 18px; border-radius: 8px; transition: 0.3s; }
-                .btn-final-submit:hover:not(:disabled) { background: #002a52; transform: translateY(-2px); }
-                .btn-final-submit:disabled { opacity: 0.7; cursor: not-allowed; }
-
-                .receipt-main-title { font-size: 24px; font-weight: 800; color: #001529; margin: 0; }
-                .receipt-sub-title { font-size: 12px; letter-spacing: 2px; font-weight: 600; color: #555; }
-
-                @media (min-width: 992px) {
-                    .main-title { font-size: 2.5rem; }
-                    .sub-title { font-size: 1rem; }
-                    .section-heading-bar h6 { font-size: 18px !important; }
-                    .gov-label { font-size: 13px; }
-                    .gov-input { padding: 12px; }
-                }
-
-                .spin { animation: rotate 1s linear infinite; }
-                @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-                @media print { 
-                    .no-print { display: none !important; } 
-                    .container { width: 100% !important; max-width: 100% !important; padding: 0; }
-                    .receipt-box { box-shadow: none !important; border: 1px solid #000 !important; }
-                }
-            `}</style>
         </div>
     );
 }
-
-const SectionHeading = ({ icon, title }) => (
-    <div className="section-heading-bar shadow-sm">
-        <h6 className="m-0 fw-bold d-flex align-items-center" style={{ color: "#001529", fontSize: '15px' }}>
-            <span className="me-2 text-primary">{icon}</span> {title}
-        </h6>
-    </div>
-);

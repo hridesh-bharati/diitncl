@@ -1,4 +1,3 @@
-// src/AdminComponents/AdminRoutes.jsx
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import AdminLayout from "./Layout/AdminLayout";
 
@@ -9,7 +8,7 @@ import StudentList from "./Students/StudentList";
 import StudentProfile from "./Students/StudentProfile";
 import StudentCertificate from "./Certificate/StudentCertificate";
 import FeePage from "./Students/Fees/FeePage";
-import AdmissionList from "./Admissions/AdmitedStudent";
+import AdmittedList from "./Admissions/AdmitedStudent.jsx";
 import AttendanceDashboard from "./Students/Attendance/AttendanceDashboard";
 import AttendanceMark from "./Students/Attendance/AttendanceMark";
 import AttendanceSummary from "./Students/Attendance/AttendanceSummary";
@@ -31,7 +30,6 @@ import AdminCompletedExams from "./Students/Exams/admin/pages/AdminCompletedExam
 import AdminExamResultView from "./Students/Exams/admin/pages/AdminExamResultView";
 import AdminExamDetail from "./Students/Exams/admin/pages/AdminExamDetail.jsx";
 
-
 // Practice Test Imports
 import AdminPracticeUpload from "./Students/TestExamByAdminProvider/AdminPracticeUpload.jsx";
 import AdminPracticeResults from "./Students/TestExamByAdminProvider/AdminPracticeResults.jsx";
@@ -42,13 +40,23 @@ import StudentTestRecords from "./Students/TestExamByAdminProvider/StudentTestRe
 import AdminPracticeDashboard from "./Students/TestExamByAdminProvider/AdminPracticeDashboard.jsx";
 import AttendanceHistory from "./Students/Attendance/AttendanceHistory.jsx";
 
+import AdmissionProvider from "./Admissions/AdmissionProvider.jsx";
+
+import NotesUpload from "./Notes/NotesUpload.jsx"
+
 export default function AdminRoutes() {
   return (
     <Routes>
       <Route element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
-        <Route path="admitted-student-list" element={<AdmissionList />} />
-        <Route path="students" element={<StudentList />} />
+
+        {/* --- 🔥 CENTRAL ADMISSION DATA STREAM LAYER --- */}
+        <Route element={<AdmissionProvider><Outlet /></AdmissionProvider>}>
+          <Route path="admitted-student-list" element={<AdmittedList />} /> {/* ✅ Sahi dynamic component map ho gaya */}
+          <Route path="students" element={<StudentList />} />
+        </Route>
+
+        {/* Profiles and Specific Records Section */}
         <Route path="students/:id" element={<StudentProfile />} />
         <Route path="students/:id/certificate" element={<StudentCertificate />} />
         <Route path="students/:id/fees" element={<FeePage />} />
@@ -61,7 +69,6 @@ export default function AdminRoutes() {
           <Route path="summary" element={<AttendanceSummary />} />
           <Route path="analytics" element={<AttendanceAnalytics />} />
           <Route path="history" element={<AttendanceHistory />} />
-
         </Route>
 
         <Route path="new-offers" element={<CreateOffer />} />
@@ -71,6 +78,8 @@ export default function AdminRoutes() {
         <Route path="clients-contacts" element={<Contacts />} />
         <Route path="clients-contacts/:id" element={<Contacts />} />
         <Route path="visiters-list" element={<VisitorCount />} />
+        <Route path="upload-notes" element={<NotesUpload />} />
+        
 
         {/* --- 🔥 ADMIN EXAM MANAGEMENT --- */}
         <Route path="exams" element={<ExamProvider><Outlet /></ExamProvider>}>
@@ -86,7 +95,6 @@ export default function AdminRoutes() {
             <Route path="assign" element={<AdminAssignExam />} />
           </Route>
         </Route>
-
 
         <Route path="practice-tests">
           <Route index element={<AdminPracticeDashboard />} />

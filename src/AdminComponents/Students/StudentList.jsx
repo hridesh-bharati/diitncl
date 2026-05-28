@@ -1,158 +1,146 @@
-// src/AdminComponents/Students/StudentList.jsx
 import React, { useState, useMemo } from "react";
-import AdmissionProvider from "../Admissions/AdmissionProvider";
-import StudentCard from "./StudentCard";
+import { useAdmissions } from "../Admissions/AdmissionProvider";
+import StudentCard, { getActualStatus } from "./StudentCard";
 
 const BRANCH_MAP = { Main: "DIIT124", East: "DIIT125" };
-const STATUS_OPTIONS = ["all", "pending", "accepted", "done", "canceled"];
+const STATUSES = [
+  { id: "all", label: "All Status", icon: "bi-grid-fill", cls: "text-muted" },
+  { id: "pending", label: "Pending", icon: "bi-clock-history", cls: "text-warning" },
+  { id: "accepted", label: "Accepted", icon: "bi-check-circle-fill", cls: "text-info" },
+  { id: "done", label: "Done", icon: "bi-patch-check-fill", cls: "text-success" },
+  { id: "canceled", label: "Canceled", icon: "bi-x-circle-fill", cls: "text-danger" }
+];
 
-const getActualStatus = (s) => {
-  if (s.status === "canceled") return "canceled";
-  return s.regNo && s.issueDate ? "done" : s.regNo ? "accepted" : "pending";
-};
-
-const exportToCSV = (data, status) => {
+const exportToCSV = (data, name) => {
   if (!data.length) return;
   const headers = ["Reg No", "Name", "Course", "Branch", "Status", "Mobile"];
-  const rows = data.map(s => [
-    s.regNo || "N/A", s.name, s.course, s.branch || "N/A", getActualStatus(s), s.mobile
-  ]);
+  const rows = data.map(s => [s.regNo || "N/A", s.name, s.course || "General", s.branch || "N/A", getActualStatus(s), s.mobile]);
   const content = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
   const blob = new Blob([content], { type: "text/csv" });
-  const link = Object.assign(document.createElement("a"), {
-    href: URL.createObjectURL(blob),
-    download: `Students_${status}.csv`
-  });
+  const link = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `Students_${name}.csv` });
   link.click();
 };
 
 export default function StudentList() {
+  const { admissions, loading, updateAdmission, deleteAdmission } = useAdmissions();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("pending");
+  const [branchFilter, setBranchFilter] = useState("all");
+  const [isSearching, setIsSearching] = useState(false);
+
+  const filtered = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    return admissions.filter(s => {
+      return (statusFilter === "all" || getActualStatus(s) === statusFilter) &&
+        (branchFilter === "all" || (s.branch || s.centerCode) === BRANCH_MAP[branchFilter]) &&
+        (!term || [s.name, s.regNo, s.mobile].some(f => f?.toLowerCase().includes(term)));
+    });
+  }, [admissions, searchTerm, statusFilter, branchFilter]);
+
+  const activeStatus = STATUSES.find(s => s.id === statusFilter);
+
+  const renderStatusDropdown = () => STATUSES.map(s => (
+    <li key={s.id}>
+      <button className={`dropdown-item d-flex align-items-center justify-content-between py-2 small ${statusFilter === s.id ? "fw-bold text-primary bg-light" : ""}`} onClick={() => setStatusFilter(s.id)}>
+        <span className="d-flex align-items-center gap-2"><i className={`bi ${s.icon} ${s.cls}`}></i>{s.label}</span>
+        {statusFilter === s.id && <i className="bi bi-check2 text-primary"></i>}
+      </button>
+    </li>
+  ));
+
+  if (loading) return <div className="text-center py-5"><div className="spinner-border spinner-border-sm text-primary"></div></div>;
 
   return (
-    <AdmissionProvider>
-      {({ admissions = [], loading, updateAdmission, deleteAdmission }) => {
-
-        // Core Filter Logic (Only Search & Status - Blazing Fast)
-        const filtered = useMemo(() => {
-          const term = searchTerm.trim().toLowerCase();
-          return admissions.filter(s => {
-            const matchesStatus = statusFilter === "all" || getActualStatus(s) === statusFilter;
-            const matchesSearch = !term || 
-              s.name?.toLowerCase().includes(term) || 
-              s.regNo?.toLowerCase().includes(term) || 
-              s.mobile?.includes(term);
-            return matchesStatus && matchesSearch;
-          }).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        }, [admissions, searchTerm, statusFilter]);
-
-        // Pure UI Metric Counts (No useless state attached)
-        const mainCount = admissions.filter(s => (s.branch || s.centerCode) === BRANCH_MAP.Main).length;
-        const eastCount = admissions.filter(s => (s.branch || s.centerCode) === BRANCH_MAP.East).length;
-
-        return (
-          <div className="container-fluid py-3 px-3 mb-5" style={{ backgroundColor: "#fafafa" }}>
-            
-            {/* Minimal App Title */}
-            <div className="mb-3">
-              <h5 className="fw-bold text-dark mb-0">Admissions</h5>
-              <p className="text-muted small mb-0 opacity-75">Live pipeline updates and student onboarding.</p>
+    <div className="card border overflow-hidden rounded-3" style={{ minHeight: "90vh" }}>
+      <div className="bg-white sticky-top shadow-sm px-3 py-2" style={{ zIndex: 1020, top: 0 }}>
+        {isSearching ? (
+          <div className="d-flex align-items-center w-100 py-1 d-md-none">
+            <button onClick={() => { setIsSearching(false); setSearchTerm(""); }} className="btn btn-link text-dark p-0 me-2">
+              <i className="bi bi-arrow-left fs-5"></i>
+            </button>
+            <div className="position-relative flex-grow-1">
+              <input type="text" className="form-control border-0 bg-light shadow-none py-2 ps-4 pe-5 rounded-pill" style={{ fontSize: "14px" }} placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} autoFocus />
+              {searchTerm && <i className="bi bi-x-circle-fill position-absolute end-0 top-50 translate-middle-y me-3 text-muted" onClick={() => setSearchTerm("")}></i>}
             </div>
-
-            {/* --- PURE UI STAT CARDS (FLAT GRADIENTS, NO BUTTON JUNK) --- */}
-            <div className="row g-2 mb-3">
-              <div className="col-6 col-md-3">
-                <div className="p-3 rounded-3 text-white" style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
-                  <div className="text-uppercase fw-bold opacity-75" style={{ fontSize: '10px' }}>Total Students</div>
-                  <div className="fs-3 fw-bold mt-0.5">{admissions.length}</div>
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className="p-3 rounded-3 text-white" style={{ background: "linear-gradient(135deg, #059669, #10b981)" }}>
-                  <div className="text-uppercase fw-bold opacity-75" style={{ fontSize: '10px' }}>Main Branch</div>
-                  <div className="fs-3 fw-bold mt-0.5">{mainCount}</div>
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className="p-3 rounded-3 text-white" style={{ background: "linear-gradient(135deg, #ea580c, #f97316)" }}>
-                  <div className="text-uppercase fw-bold opacity-75" style={{ fontSize: '10px' }}>East Branch</div>
-                  <div className="fs-3 fw-bold mt-0.5">{eastCount}</div>
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className="p-3 rounded-3 text-white" style={{ background: "linear-gradient(135deg, #0284c7, #06b6d4)" }}>
-                  <div className="text-uppercase fw-bold opacity-75" style={{ fontSize: '10px' }}>Filtered</div>
-                  <div className="fs-3 fw-bold mt-0.5">{filtered.length}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* --- ULTRA CLEAN INLINE CONTROLS (PC + MOBILE INLINE) --- */}
-            <div className="bg-white p-2 border-bottom mb-4 rounded-2">
-              <div className="d-flex align-items-center gap-2">
-                
-                {/* Search Box */}
-                <div className="position-relative flex-grow-1">
-                  <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted small"></i>
-                  <input
-                    type="text"
-                    className="form-control border-0 bg-light ps-4 py-2 rounded-2"
-                    style={{ fontSize: "14px" }}
-                    placeholder="Search here..."
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </div>
-
-                {/* Minimal Status Dropdown */}
-                <div>
-                  <select 
-                    className="form-select border-0 bg-light rounded-2 py-2 fw-bold text-secondary" 
-                    style={{ fontSize: "13px", width: "110px", cursor: 'pointer' }}
-                    value={statusFilter}
-                    onChange={e => setStatusFilter(e.target.value)}
-                  >
-                    {STATUS_OPTIONS.map(s => (
-                      <option key={s} value={s}>{s === 'all' ? 'All ' : s.toUpperCase()}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Native Share Icon for Export */}
-                <button 
-                  onClick={() => exportToCSV(filtered, statusFilter)} 
-                  className="btn btn-light border-0 rounded-2 p-2 d-flex align-items-center justify-content-center text-primary"
-                  style={{ width: "38px", height: "38px" }}
-                  disabled={!filtered.length}
-                >
-                  <i className="bi bi-share-fill"></i>
-                </button>
-
-              </div>
-            </div>
-
-            {/* Grid Area */}
-            {loading ? (
-              <div className="text-center py-5"><div className="spinner-border spinner-border-sm text-primary"></div></div>
-            ) : (
-              <div className="row g-2 g-md-3">
-                {filtered.length > 0 ? (
-                  filtered.map(student => (
-                    <div key={student.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
-                      <StudentCard student={student} onSave={updateAdmission} onDelete={deleteAdmission} />
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-12 text-center text-muted py-5 bg-white rounded-2 border-bottom">
-                    <div className="fw-semibold small">No results found</div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-        );
-      }}
-    </AdmissionProvider>
+        ) : (
+          <div className="d-flex justify-content-between align-items-center py-1">
+            <h5 className="fw-bold text-primary mb-0 d-flex align-items-center gap-2" style={{ letterSpacing: "-0.5px" }}>
+              <i className="bi bi-person-badge-fill"></i> Admissions
+              <span className="badge bg-light text-secondary border rounded-pill fw-semibold" style={{ fontSize: "10px" }}>{filtered.length}</span>
+            </h5>
+
+            <div className="d-none d-md-block flex-grow-1 mx-4" style={{ maxWidth: "350px" }}>
+              <div className="position-relative">
+                <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                <input type="text" className="form-control border-0 shadow-none ps-5 py-2 rounded-pill" style={{ fontSize: "14px", backgroundColor: "#f0f2f5" }} placeholder="Search students..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="d-flex gap-2 align-items-center">
+              <button onClick={() => setIsSearching(true)} className="btn btn-light rounded-circle p-0 border-0 d-md-none d-flex align-items-center justify-content-center" style={{ width: "36px", height: "36px", background: "#e4e6eb" }}>
+                <i className="bi bi-search text-dark" style={{ fontSize: "14px" }}></i>
+              </button>
+              
+              <div className="dropdown d-md-none">
+                <button className="btn btn-light rounded-circle p-0 border-0 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" style={{ width: "36px", height: "36px", background: statusFilter !== "all" ? "#e7f3ff" : "#e4e6eb", color: statusFilter !== "all" ? "#1877f2" : "#000" }}>
+                  <i className="bi bi-sliders" style={{ fontSize: "14px" }}></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">{renderStatusDropdown()}</ul>
+              </div>
+
+              <button onClick={() => exportToCSV(filtered, statusFilter)} className="btn btn-light rounded-circle p-0 border-0 d-flex align-items-center justify-content-center" style={{ width: "36px", height: "36px", background: "#e4e6eb" }} disabled={!filtered.length}>
+                <i className="bi bi-download" style={{ fontSize: "14px" }}></i>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!isSearching && (
+          <div className="d-flex align-items-center justify-content-between pt-2 mt-1 border-top gap-2">
+            <div className="d-flex p-1 rounded-pill bg-light flex-grow-1" style={{ backgroundColor: "#f0f2f5" }}>
+              {["all", "Main", "East"].map(b => {
+                const count = b === "all" ? admissions.length : admissions.filter(s => (s.branch || s.centerCode) === BRANCH_MAP[b]).length;
+                const isAct = branchFilter === b;
+                return (
+                  <button key={b} onClick={() => setBranchFilter(b)} className="btn btn-sm rounded-pill border-0 fw-bold flex-fill py-1" style={{ fontSize: "12px", backgroundColor: isAct ? "#fff" : "transparent", color: isAct ? "#1877f2" : "#65676b", boxShadow: isAct ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>
+                    {b === "all" ? "All" : b} ({count})
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="dropdown d-none d-md-block">
+              <button className="btn btn-sm rounded-pill border-0 fw-bold px-3 py-1.5 d-flex align-items-center gap-1.5" type="button" data-bs-toggle="dropdown" style={{ backgroundColor: statusFilter !== "all" ? "#e7f3ff" : "#e4e6eb", color: statusFilter !== "all" ? "#1877f2" : "#050505" }}>
+                <i className="bi bi-sliders"></i> {activeStatus?.label}
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
+                {renderStatusDropdown()}
+                {statusFilter !== "all" && (
+                  <li><button className="dropdown-item text-center text-danger fw-bold pt-2 border-top small" onClick={() => setStatusFilter("all")}>Reset Status</button></li>
+                )}
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="px-2 mt-2">
+        <div className="row g-2 mb-4 mb-lg-0">
+          {filtered.length > 0 ? (
+            filtered.map(st => (
+              <div key={st.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
+                <StudentCard student={st} onSave={updateAdmission} onDelete={deleteAdmission} />
+              </div>
+            ))
+          ) : (
+            <div className="col-12 text-center text-muted py-5 bg-white rounded-3 border">
+              <i className="bi bi-hourglass-split display-6 opacity-50 d-block mb-2"></i>
+              <div className="fw-bold">No Pending Record</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
