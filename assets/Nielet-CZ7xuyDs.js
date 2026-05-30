@@ -1,0 +1,1 @@
+import{j as r}from"./vendor-react-core-BSrC6coB.js";import{C as s}from"./CommanCourse-DR8omQx5.js";import"./courseData-C9ZCdk9Y.js";function e(){return r.jsx("div",{className:"MT3",children:r.jsx(s,{targetCourses:["CCC","O LEVEL","A LEVEL","B LEVEL"],CTitle:"NIELIT"})})}export{e as default};

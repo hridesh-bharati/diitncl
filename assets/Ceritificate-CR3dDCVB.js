@@ -1,1 +1,0 @@
-import{j as r}from"./vendor-react-core-B1r7G9ku.js";import{C as e}from"./CommanCourse-D7NG-4dg.js";import"./courseData-C9ZCdk9Y.js";function o(){return r.jsx("div",{className:"MT3",children:r.jsx(e,{targetCourses:["cca","cac"],CTitle:"Computer certificate course"})})}export{o as default};
