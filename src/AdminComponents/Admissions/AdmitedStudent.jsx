@@ -1,3 +1,4 @@
+// src\AdminComponents\Admissions\AdmitedStudent.jsx
 import React, { useState, useMemo, useEffect } from "react";
 import { useAdmissions } from "./AdmissionProvider";
 import StudentCard, { getActualStatus } from "../Students/StudentCard";
@@ -31,7 +32,10 @@ export default function AdmittedList() {
       if (bCode === BRANCH_MAP.East) counts.east++;
 
       return (branchFilter === "all" || bCode === BRANCH_MAP[branchFilter]) &&
-        (!search || [s.name, s.regNo, s.phone, s.mobile].some(f => f?.toLowerCase().includes(search)));
+        (!search ||
+          [s.name, s.regNo, s.phone, s.mobile, s.email]
+            .some(f => f?.toLowerCase().includes(search))
+        );
     });
     return { filteredList: list, stats: counts };
   }, [admissions, branchFilter, searchTerm]);
@@ -46,7 +50,7 @@ export default function AdmittedList() {
 
   return (
     <div className="container-fluid py-3 min-vh-100 bg-light-subtle">
-      
+
       {/* --- MINIMAL APP BAR HEADER --- */}
       <div className="bg-white sticky-top shadow-sm rounded-3 p-2 mb-3 border row g-2 align-items-center z-3">
         <div className="col-12 col-md-4 d-flex align-items-center justify-content-between justify-content-md-start gap-2">
