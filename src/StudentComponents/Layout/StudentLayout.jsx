@@ -1,3 +1,4 @@
+// src\StudentComponents\Layout\StudentLayout.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/firebase";
@@ -133,7 +134,7 @@ export default function StudentLayout() {
         </header>
 
         {/* PAGE CONTENT */}
-        <main className="flex-grow-1 overflow-auto p-3 p-md-4">
+        <main className="flex-grow-1 overflow-auto p-0 p-md-4">
           <Outlet />
         </main>
       </div>

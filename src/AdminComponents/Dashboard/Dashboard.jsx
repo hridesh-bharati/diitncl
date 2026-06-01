@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import "./Dashboard.css";
-import VisitorCount from "./VisitorCount";
+// import VisitorCount from "./VisitorCount";
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler);
@@ -349,7 +349,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <VisitorCount />
+       {/* <VisitorCount /> */}
       </div>
 
     </div>

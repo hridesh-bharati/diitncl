@@ -29,17 +29,19 @@ export default function Header() {
     import("../LanguageTranslator/LanguageTranslator");
   };
 
-  const getSmallPhoto = (url) => {
-    if (!url || !url.includes("cloudinary")) return null;
-    return url.replace("/upload/", "/upload/w_120,h_120,c_thumb,g_face,f_auto,q_auto/");
+  // Cloudinary filter hata diya, ab yeh direct Firebase Storage ya Auth URL return karega
+  const getStudentPhoto = (url) => {
+    if (!url) return null;
+    return url; // Firebase direct URL support karta hai
   };
 
   const userData = useMemo(() => ({
-    name: displayName,
+    name: displayName || student?.name || "Student",
     email: student?.email || user?.email || "student@drishteeindia.com",
-    photo: getSmallPhoto(photoURL),
+    // Agar student data me photoUrl/photo ho toh pehle woh, nahi toh Auth ki photoURL uthaega
+    photo: getStudentPhoto(student?.photoUrl || student?.photo || photoURL),
     dashboard: isAdmin ? "/admin" : "/student"
-  }), [displayName, student?.email, user?.email, photoURL, isAdmin]);
+  }), [displayName, student?.name, student?.email, student?.photoUrl, student?.photo, user?.email, photoURL, isAdmin]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -403,9 +405,8 @@ export default function Header() {
         <div className="offcanvas-body p-4 pt-0 custom-scrollbar">
           <h2 className="fw-bolder text-dark mb-4 mt-2" style={{ letterSpacing: '-0.5px' }}>Account</h2>
 
-          {/* Profile Section - Minimalist */}
+          {/* Profile Section */}
           <div className="d-flex align-items-center gap-3 p-2 mb-4">
-
             {/* Avatar */}
             <div
               className="overflow-hidden rounded-circle bg-white shadow-sm"
@@ -424,7 +425,6 @@ export default function Header() {
 
             {/* User Info */}
             <div className="flex-grow-1">
-
               {user ? (
                 <Link
                   to={userData.dashboard}
@@ -434,7 +434,6 @@ export default function Header() {
                   <h5 className="m-0 fw-bold text-dark">
                     {userData.name || "User"}
                   </h5>
-
                   <span className="text-muted small">
                     View Dashboard
                   </span>
@@ -444,7 +443,6 @@ export default function Header() {
                   <h5 className="m-0 fw-bold text-dark">
                     Guest User
                   </h5>
-
                   <Link
                     to="/login"
                     onClick={() => setIsMenuOpen(false)}
@@ -455,15 +453,13 @@ export default function Header() {
                   </Link>
                 </>
               )}
-
             </div>
 
             {/* Arrow only for logged user */}
             {user && <i className="bi bi-chevron-right text-muted small"></i>}
-
           </div>
 
-          {/* Quick Action Tiles - Clean Transparent Style */}
+          {/* Quick Action Tiles */}
           <div className="d-flex gap-3 mb-4">
             {[
               { to: "/photo-editor", icon: "bi-camera-fill", label: "Photo Resize", color: "text-warning" },
@@ -551,7 +547,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Sign Out - Native Look */}
+          {/* Sign Out */}
           <div className="mt-2 pb-4">
             {user && (
               <button onClick={handleLogout} className="btn btn-white w-100 py-3 rounded-4 fw-bold text-danger border-0 mb-3 shadow-none">
