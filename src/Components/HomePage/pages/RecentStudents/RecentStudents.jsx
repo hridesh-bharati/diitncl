@@ -9,9 +9,10 @@ export default function RecentStudents() {
   const [loading, setLoading] = useState(true);
   const { isAdmin } = useAuth();
 
+  // Cloudinary filter hata diya, ab Firebase aur anya URLs direct load honge
   const getOptimizedImg = (url) => {
-    if (!url || !url.includes("cloudinary")) return "/images/icon/default-avatar.png";
-    return url.replace("/upload/", "/upload/w_400,h_500,c_fill,g_face,f_auto,q_auto/");
+    if (!url) return "/images/icon/default-avatar.png";
+    return url; // Firebase Storage direct link support karta hai
   };
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function RecentStudents() {
             {/* Content Area */}
             <div className="p-3 text-center">
               <div className="fw-bold text-dark text-truncate mb-1" style={{ fontSize: "14px" }}>
-                <i className="bi bi-patch-check-fill text-primary shadow-" style={{ fontSize: "13px" }}></i> {s.name}
+                <i className="bi bi-patch-check-fill text-primary" style={{ fontSize: "13px" }}></i> {s.name}
               </div>
               
               <div className="mb-3">

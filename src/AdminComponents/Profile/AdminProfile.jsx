@@ -24,9 +24,10 @@ export default function AdminProfile() {
 
   if (!user || !isAdmin) return <p className="text-center p-5 fw-bold text-danger">Unauthorized</p>;
 
+  // Cloudinary filter hata diya taaki Firebase Storage URL directly load ho sake
   const getOptimizedUrl = (url) => {
-    if (!url || !url.includes("cloudinary")) return url || "/images/icon/default-avatar.png";
-    return url.replace("/upload/", "/upload/w_200,h_200,c_thumb,g_face,f_auto,q_auto/");
+    if (!url) return "/images/icon/default-avatar.png";
+    return url; // Firebase url ko direct return karega
   };
 
   const uploadImg = async (file) => {
@@ -42,6 +43,9 @@ export default function AdminProfile() {
       if (res.ok) {
         await updateDoc(doc(db, "users", user.uid), { photoURL: data.secure_url });
         await updateProfile(user, { photoURL: data.secure_url });
+        
+        // State ko turant update karein taaki nayi photo screen par dikhe
+        setForm(prev => ({ ...prev, photoURL: data.secure_url }));
         toast.success("Photo Updated");
       }
     } catch (e) { toast.error("Upload failed"); }
@@ -60,7 +64,6 @@ export default function AdminProfile() {
   };
 
   return (
-    // ✅ mt-0 aur h-auto fix scroll issues on mobile
     <div className="container-fluid p-2 pt-5 d-flex align-items-center justify-content-center">
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden w-100" style={{ maxWidth: 360 }}>
 
@@ -76,7 +79,11 @@ export default function AdminProfile() {
             {edit && (
               <label className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow"
                 style={{ width: 28, height: 28, cursor: "pointer", border: "2px solid white" }}>
-                {loading.img ? <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }}></span> : <i className="bi bi-camera-fill style={{fontSize: 12}}"></i>}
+                {loading.img ? (
+                  <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }}></span>
+                ) : (
+                  <i className="bi bi-camera-fill" style={{ fontSize: 12 }}></i>
+                )}
                 <input type="file" hidden accept="image/*" onChange={e => uploadImg(e.target.files[0])} />
               </label>
             )}

@@ -406,10 +406,11 @@ export default function Header() {
           <h2 className="fw-bolder text-dark mb-4 mt-2" style={{ letterSpacing: '-0.5px' }}>Account</h2>
 
           {/* Profile Section */}
+          {/* Profile Section */}
           <div className="d-flex align-items-center gap-3 p-2 mb-4">
             {/* Avatar */}
             <div
-              className="overflow-hidden rounded-circle bg-white shadow-sm"
+              className="overflow-hidden rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center"
               style={{ width: 64, height: 64, border: "1px solid #e5e7eb" }}
             >
               {user && userData.photo ? (
@@ -419,7 +420,9 @@ export default function Header() {
                   alt="Profile"
                 />
               ) : (
-                <DefaultAvatar />
+                <div style={{ width: "100%", height: "100%" }}>
+                  <DefaultAvatar />
+                </div>
               )}
             </div>
 
@@ -432,7 +435,7 @@ export default function Header() {
                   className="text-decoration-none"
                 >
                   <h5 className="m-0 fw-bold text-dark">
-                    {userData.name || "User"}
+                    {userData.name}
                   </h5>
                   <span className="text-muted small">
                     View Dashboard
@@ -576,9 +579,20 @@ export default function Header() {
           <i className="bi bi-book fs-5"></i><span className="mobile-nav-label">Library</span>
         </NavLink>
         <button onClick={toggleMobileMenu} className="btn border-0 d-flex flex-column align-items-center p-0 shadow-none position-relative">
-          <div className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm`} style={{ width: '28px', height: '28px' }}>
-            {userData.photo ? <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="." /> : <DefaultAvatar />}
+          <div
+            className={`rounded-circle border border-2 ${isMenuOpen ? 'border-primary' : 'border-light'} overflow-hidden shadow-sm d-flex align-items-center justify-content-center`}
+            style={{ width: '28px', height: '28px' }}
+          >
+            {/* user लॉगिन है और फोटो उपलब्ध है तभी img टैग चलेगा, वरना सीधे DefaultAvatar */}
+            {user && userData.photo ? (
+              <img src={userData.photo} className="w-100 h-100 object-fit-cover" alt="Profile" />
+            ) : (
+              <div style={{ width: "100%", height: "100%" }}>
+                <DefaultAvatar />
+              </div>
+            )}
           </div>
+
           {isAdmin && totalCount > 0 && (
             <span className="position-absolute bg-danger border border-white rounded-circle pulse-dot" style={{ width: '10px', height: '10px', top: '0', right: '12px' }}></span>
           )}

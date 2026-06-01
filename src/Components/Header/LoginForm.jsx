@@ -219,7 +219,7 @@ export default function LoginForm() {
         email: normalizedEmail,
         role: isAdmin ? "admin" : "student",
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(), 
+        updatedAt: serverTimestamp(),
       });
 
       toast.success("Account created successfully! You can login now.");

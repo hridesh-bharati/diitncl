@@ -25,11 +25,11 @@ export default function AdminList() {
     fetchAdmins();
   }, []);
 
-  // Cloudinary resize (100x100)
-  const getSmallImg = (url) =>
-    url?.includes("cloudinary")
-      ? url.replace("/upload/", "/upload/w_100,h_100,c_thumb,g_face,f_auto,q_auto/")
-      : null; // null => show DefaultAvatar
+  // Firebase Storage ya safe backup links ke liye Cloudinary filter hata diya gaya hai
+  const getSmallImg = (url) => {
+    if (!url) return null;
+    return url; // Firebase url direct render ho jayega
+  };
 
   if (loading) return (
     <div className="text-center p-5">
@@ -47,50 +47,53 @@ export default function AdminList() {
       </div>
 
       <div className="row g-2">
-        {admins.map((admin) => (
-          <div key={admin.id} className="col-12 col-md-6 col-lg-4">
-            <div className="card border-0 shadow-sm rounded-3">
-              <div className="card-body p-2 d-flex align-items-center">
+        {admins.map((admin) => {
+          const imgUrl = getSmallImg(admin.photoURL);
+          return (
+            <div key={admin.id} className="col-12 col-md-6 col-lg-4">
+              <div className="card border-0 shadow-sm rounded-3">
+                <div className="card-body p-2 d-flex align-items-center">
 
-                {/* Optimized Avatar */}
-                <div style={{ width: 50, height: 50, flexShrink: 0 }}>
-                  {getSmallImg(admin.photoURL) ? (
-                    <img
-                      src={getSmallImg(admin.photoURL)}
-                      alt={admin.name || "Admin"}
-                      className="rounded-circle border"
-                      style={{ width: "50px", height: "50px", objectFit: "cover" }}
-                      loading="lazy"
+                  {/* Optimized Avatar */}
+                  <div style={{ width: 50, height: 50, flexShrink: 0 }}>
+                    {imgUrl ? (
+                      <img
+                        src={imgUrl}
+                        alt={admin.name || "Admin"}
+                        className="rounded-circle border"
+                        style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <DefaultAvatar />
+                    )}
+                  </div>
+
+                  {/* Admin Info */}
+                  <div className="ms-3 flex-grow-1 overflow-hidden">
+                    <h6 className="mb-0 text-truncate small fw-bold">{admin.name || "Admin"}</h6>
+                    <p className="text-muted text-truncate mb-0" style={{ fontSize: 11 }}>{admin.email}</p>
+                    {admin.phone && (
+                      <a href={`tel:${admin.phone}`} className="text-primary text-decoration-none fw-medium" style={{ fontSize: 11 }}>
+                        <i className="bi bi-telephone-fill me-1"></i>{admin.phone}
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Status Indicator */}
+                  <div className="ms-auto ps-2">
+                    <div
+                      className="bg-success rounded-circle"
+                      style={{ width: 8, height: 8 }}
+                      title="Verified"
                     />
-                  ) : (
-                    <DefaultAvatar />
-                  )}
-                </div>
+                  </div>
 
-                {/* Admin Info */}
-                <div className="ms-3 flex-grow-1 overflow-hidden">
-                  <h6 className="mb-0 text-truncate small fw-bold">{admin.name || "Admin"}</h6>
-                  <p className="text-muted text-truncate mb-0" style={{ fontSize: 11 }}>{admin.email}</p>
-                  {admin.phone && (
-                    <a href={`tel:${admin.phone}`} className="text-primary text-decoration-none fw-medium" style={{ fontSize: 11 }}>
-                      <i className="bi bi-telephone-fill me-1"></i>{admin.phone}
-                    </a>
-                  )}
                 </div>
-
-                {/* Status Indicator */}
-                <div className="ms-auto ps-2">
-                  <div
-                    className="bg-success rounded-circle"
-                    style={{ width: 8, height: 8 }}
-                    title="Verified"
-                  />
-                </div>
-
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {admins.length === 0 && <p className="text-center text-muted mt-5 small">No admins found</p>}
