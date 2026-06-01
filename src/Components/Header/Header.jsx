@@ -281,8 +281,8 @@ export default function Header() {
                           className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white"
                           style={{
                             fontSize: "9px",
-                            marginTop: "8px",
-                            marginLeft: "-5px"
+                            marginTop: "10px",
+                            marginLeft: "-10px"
                           }}
                         >
                           {totalNotifCount}

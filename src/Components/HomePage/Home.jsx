@@ -4,7 +4,6 @@ import "./Home.css";
 
 // Core Layout component (Immediately required for LCP)
 import AdComponent from "./AdComponent";
-
 // Smart Lazy Loading for ALL sections below the fold
 const HomeAbout = lazy(() => import("./pages/HomeAbout"));
 const Features = lazy(() => import("./Features"));
@@ -18,6 +17,9 @@ const Footer = lazy(() => import("../Footer/Footer"));
 const NoticeBoard = lazy(() => import("../HelperCmp/FeaturesUpdate/NoticeBoard"));
 const TimeTable = lazy(() => import("../HelperCmp/FeaturesUpdate/TimeTable"));
 const RecentStudents = lazy(() => import("./pages/RecentStudents/RecentStudents"));
+const Map = lazy(() => import("./Map/Map"));
+const DrishteeEcosystem = lazy(() => import("./DrishteeEcosystem/DrishteeEcosystem"));
+
 
 const PORTALS = [
   { n: "Test", i: "bi-shield-check", l: "/student/practice-tests", g: "linear-gradient(135deg, #667eea, #764ba2)" },
@@ -51,19 +53,19 @@ PortalItem.displayName = "PortalItem";
 function Home() {
   return (
     <main className="bg-primary-subtle min-vh-100">
-      
+
       {/* ================= HERO/LCP SECTION (SEO & Speed Optimized) ================= */}
       <section id="homeHero" className="carousel slide carousel-fade shadow-sm" data-bs-ride="carousel">
         <div className="carousel-inner bg-dark hero-carousel-wrap">
 
           {/* Slide 1: Primary LCP Asset (Highest Priority) */}
           <div className="carousel-item active" data-bs-interval="5000">
-            <img 
-              src="/images/vender/hero1.webp" 
-              className="d-block w-100 opacity-75 hero-img-adjust" 
-              alt="Drishtee Computer Center - Admissions Open 2026" 
-              fetchPriority="high" 
-              decoding="async" 
+            <img
+              src="/images/vender/hero1.webp"
+              className="d-block w-100 opacity-75 hero-img-adjust"
+              alt="Drishtee Computer Center - Admissions Open 2026"
+              fetchPriority="high"
+              decoding="async"
             />
             <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 p-4 hero-overlay">
               <header className="container p-0 text-start">
@@ -76,12 +78,12 @@ function Home() {
 
           {/* Slide 2: Secondary Asset (Lazy Pre-rendered) */}
           <div className="carousel-item" data-bs-interval="5000">
-            <img 
-              src="/images/vender/hero2.webp" 
-              className="d-block w-100 opacity-75 hero-img-adjust" 
-              alt="Build Your Digital Future with Expert Computer Training" 
-              loading="lazy" 
-              decoding="async" 
+            <img
+              src="/images/vender/hero2.webp"
+              className="d-block w-100 opacity-75 hero-img-adjust"
+              alt="Build Your Digital Future with Expert Computer Training"
+              loading="lazy"
+              decoding="async"
             />
             <div className="carousel-caption d-flex align-items-center start-0 end-0 bottom-0 top-0 p-4 hero-overlay">
               <div className="container p-0 text-start">
@@ -123,12 +125,10 @@ function Home() {
         <HomeAbout />
         <Features />
         <RecentStudents />
-        <section className="container-fluid my-4 px-2">
-         <TopCourseList />
-        </section>
+        <TopCourseList />
 
         {/* CTA Conversion Banner */}
-        <article className="card border-0 shadow-sm mb-4 mx-2">
+        <article className="card border-0 shadow-sm my-2 mx-2">
           <div className="card-body p-4 d-md-flex align-items-center justify-content-between text-center text-md-start">
             <div>
               <h3 className="h5 fw-bold mb-1">Join New Batch Today!</h3>
@@ -148,10 +148,11 @@ function Home() {
             <aside className="col-12 col-md-6 p-0 ps-md-2"><TimeTable /></aside>
           </div>
         </section>
-
+        <DrishteeEcosystem />
         <section className="mb-4" id="testimonials"><Testimonials /></section>
         <AdComponent />
         <section className="mb-4" id="team"><Team /></section>
+        <Map />
         <Footer />
       </Suspense>
 

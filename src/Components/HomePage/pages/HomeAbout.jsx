@@ -37,28 +37,19 @@ export default function HomeAbout() {
 
           {/* Divider */}
           <div
-            className="rounded mb-4 bg-maroon"
+            className="rounded bg-maroon"
             style={{ width: "70px", height: "4px" }}
           ></div>
 
-          {/* Shortened Paragraph 1 */}
-          <p
-            className="text-secondary lh-lg"
-            style={{ textAlign: "justify", fontSize: "1rem" }}
-          >
-            <strong>Drishtee Computer Center</strong>, established in
-            <strong> 2007 </strong> in Nichlaul, has been a trusted
-            name in computer education and skill development for
-            nearly two decades, successfully guiding thousands of students toward brighter careers.
+          <p className="text-muted lh-lg">
+            <strong>Drishtee Computer Center</strong>, established in <strong>2007</strong>, is the pioneer IT skill development ecosystem and top-rated <strong>computer institute in Nichlaul</strong>. For nearly two decades, we have been bridging the digital divide by transforming thousands of local students into career-ready IT professionals.
           </p>
 
-          {/* Shortened Paragraph 2 */}
-          <p
-            className="text-secondary lh-lg mb-4"
-            style={{ textAlign: "justify", fontSize: "1rem" }}
-          >
-            We focus on providing modern technical knowledge and practical training in Software, Accounting, Designing, and Programming to build real-world expertise.
+          <p className="text-muted lh-lg">
+            Our government-aligned curriculum provides advanced practical training across high-demand industry segments including <strong>Software Engineering, Financial Accounting (Tally Prime), Graphic Designing, and Full-Stack Programming</strong> to build real-world corporate competencies.
           </p>
+
+          
 
           {/* Button */}
           <div>
