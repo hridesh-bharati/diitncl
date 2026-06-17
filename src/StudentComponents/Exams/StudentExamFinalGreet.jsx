@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function StudentExamFinalGreet() {
   const navigate = useNavigate();
-  const { studentExamId } = useParams(); // Result check karne ke liye ID
+  const { studentExamId } = useParams();  
 
   return (
     <div className="bg-light d-flex align-items-center justify-content-center p-3">

@@ -99,15 +99,6 @@
     "marks": 1
   },
   {
-    "question": "AngularJS is a JavaScript framework maintained by?",
-    "optionA": "Microsoft",
-    "optionB": "Google",
-    "optionC": "Facebook",
-    "optionD": "Oracle",
-    "correctAnswer": "B",
-    "marks": 1
-  },
-  {
     "question": "In C programming, which symbol is used for comments?",
     "optionA": "//",
     "optionB": "/* */",
@@ -270,15 +261,6 @@
     "marks": 1
   },
   {
-    "question": "AngularJS expressions are written inside?",
-    "optionA": "[ ]",
-    "optionB": "{ }",
-    "optionC": "{{ }}",
-    "optionD": "( )",
-    "correctAnswer": "C",
-    "marks": 1
-  },
-  {
     "question": "Which key is used to refresh the active window?",
     "optionA": "F1",
     "optionB": "F5",
@@ -378,15 +360,6 @@
     "marks": 1
   },
   {
-    "question": "In AngularJS, 'ng-app' directive defines?",
-    "optionA": "A controller",
-    "optionB": "A model",
-    "optionC": "An application",
-    "optionD": "A view",
-    "correctAnswer": "C",
-    "marks": 1
-  },
-  {
     "question": "The speed of a CPU is measured in?",
     "optionA": "GB",
     "optionB": "GHz",
@@ -481,15 +454,6 @@
     "optionA": "Fast and Small",
     "optionB": "Slow and Large",
     "optionC": "Used for printing only",
-    "optionD": "None",
-    "correctAnswer": "A",
-    "marks": 1
-  },
-  {
-    "question": "In AngularJS, 'ng-model' is used for?",
-    "optionA": "Two-way data binding",
-    "optionB": "Deleting data",
-    "optionC": "Styling data",
     "optionD": "None",
     "correctAnswer": "A",
     "marks": 1
@@ -594,15 +558,6 @@
     "marks": 1
   },
   {
-    "question": "Which directive in AngularJS repeats an HTML element?",
-    "optionA": "ng-copy",
-    "optionB": "ng-repeat",
-    "optionC": "ng-iterate",
-    "optionD": "ng-loop",
-    "correctAnswer": "B",
-    "marks": 1
-  },
-  {
     "question": "Which device is used to connect a computer to the Internet?",
     "optionA": "Scanner",
     "optionB": "Modem",
@@ -627,6 +582,15 @@
     "optionC": "Cut",
     "optionD": "Copy",
     "correctAnswer": "B",
+    "marks": 1
+  },
+  {
+    "question": "What is the full form of RAM?",
+    "optionA": "Random Access Memory",
+    "optionB": "Read Only Memory",
+    "optionC": "Rapid Access Memory",
+    "optionD": "Run Access Memory",
+    "correctAnswer": "A",
     "marks": 1
   }
 ]
