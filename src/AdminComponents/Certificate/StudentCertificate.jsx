@@ -89,16 +89,19 @@ const HeaderSection = ({ student }) => (
                 <p className="certificate-sub-title fw-bold cert-center ms-2">An ISO 9001:2008 Certified Institute</p>
             </div>
             <div>
-                <div className="certificate-photo-container ms-4">
-                    <img
-                        src={student.photoUrl}
-                        className="certificate-photo"
-                        alt="Student"
-                        crossOrigin="anonymous"
-                        onError={(e) => { e.target.src = "/images/icon/icon.webp"; }}
-                    />
-                </div>
-            </div>
+    <div className="certificate-photo-container ms-4">
+        <img
+            src={student.photoUrl}
+            className="certificate-photo"
+            alt="Student"
+            crossOrigin="anonymous"
+            onError={(e) => { 
+                e.target.src = ""; 
+                e.target.style.display = "none"; 
+            }}
+        />
+    </div>
+</div>
         </div>
         <div className="text-end cert-right fw-bold">
             <p className="m-0 mt-1">Reg under The Indian trust act 1882</p>
