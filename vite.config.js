@@ -3,12 +3,19 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { readFileSync } from "fs"; 
 
+// package.json से बेस वर्जन पढ़ें (जैसे: "1.0.0")
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
+
+// अगर GitHub Actions से बिल्ड नंबर मिल रहा है तो उसे जोड़ें, वरना लोकल बेस वर्जन रखें
+const appVersion = process.env.VITE_BUILD_VERSION 
+  ? `${pkg.version}-build.${process.env.VITE_BUILD_VERSION}` 
+  : `${pkg.version}-local`;
 
 export default defineConfig(({ command }) => {
   return {
     define: {
-      '__APP_VERSION__': JSON.stringify(pkg.version),
+      // अब पूरे ऐप में __APP_VERSION__ से नया डायनामिक वर्जन मिलेगा
+      '__APP_VERSION__': JSON.stringify(appVersion),
     },
     plugins: [
       react(), 
@@ -27,7 +34,7 @@ export default defineConfig(({ command }) => {
         manifest: {
           name: "Drishtee Computer Center",
           short_name: "Drishtee",
-          version: pkg.version,
+          version: appVersion, // PWA Manifest को भी नया डायनामिक वर्जन मिलेगा
           description: "Govt Registered IT Training Institute in Nichlaul | CCC, ADCA, Python, Web Development",
           start_url: "/",
           display: "standalone",
